@@ -1,0 +1,130 @@
+plugins {
+    id 'java'
+    id 'maven-publish'
+    id 'java-library'
+    id 'signing'
+}
+
+group = 'de.linusdev'
+archivesBaseName = 'lutils'
+version = '1.0.0'
+
+targetCompatibility = JavaVersion.VERSION_11
+sourceCompatibility = JavaVersion.VERSION_11
+compileJava.options.encoding = 'UTF-8'
+
+tasks.named('compileJava') {
+    options.javaModuleVersion = provider { project.version }
+}
+
+java {
+    withJavadocJar()
+    withSourcesJar()
+}
+
+javadoc {
+    options.encoding = 'UTF-8'
+    options.addStringOption('Xdoclint:none', '-quiet')
+    title = "LUtils"
+
+    configure(options) {
+        tags(
+                'implNote:a:Implementation Note:',
+                'implSpec:a:Implemenatation Requirements:',
+                'apiNote:a:API Note:'
+        )
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    api 'org.jetbrains:annotations:23.0.0'
+
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
+}
+
+test {
+    useJUnitPlatform()
+}
+
+publishing {
+    repositories {
+        maven {
+            if(project.hasProperty("ossrhUsername") && project.hasProperty("ossrhPassword")){
+                name = "OSSRH"
+                def releasesRepoUrl = 'https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/'
+                def snapshotsRepoUrl = 'https://s01.oss.sonatype.org/content/repositories/snapshots/'
+                url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
+
+                credentials {
+                    username = ossrhUsername
+                    password = ossrhPassword
+                }
+
+            }else {
+                project.logger.lifecycle("no OSSRH username and password given. Cannot deploy.")
+            }
+        }
+
+        maven {
+            if(project.hasProperty("githubUsername") && project.hasProperty("githubToken")){
+                name = "GitHubPackages"
+                url = uri("https://maven.pkg.github.com/lni-dev/llog")
+                credentials {
+                    username = githubUsername
+                    password = githubToken
+                }
+            }else {
+                project.logger.lifecycle("no github username and token given. Cannot publish package.")
+            }
+        }
+    }
+
+    publications {
+
+        mavenJava(MavenPublication) {
+            artifactId = 'LUtils'
+            from components.java
+            pom {
+                name = 'LUtils'
+                description = 'LUtils'
+                url = 'https://www.linusdev.de'
+                groupId = 'de.linusdev'
+                version = project.version
+
+                licenses {
+                    license {
+                        name = 'The Apache License, Version 2.0'
+                        url = 'https://www.apache.org/licenses/LICENSE-2.0.txt'
+                    }
+                }
+                developers {
+                    developer {
+                        id = 'linusdev'
+                        name = 'Linus Andera'
+                        email = 'linus@linusdev.de'
+                        organizationUrl = 'https://www.linusdev.de'
+                    }
+                }
+
+                scm {
+                    connection = 'scm:git:git://github.com/lni-dev/luitls.git'
+                    developerConnection ='scm:git:ssh://github.com:lni-dev/lutils.git'
+                    url = 'https://github.com/lni-dev/llog/tree/master'
+                }
+            }
+        }
+    }
+}
+
+signing {
+    if(project.hasProperty("signing.keyId") && project.hasProperty("signing.password") && project.hasProperty("signing.secretKeyRingFile")){
+        sign publishing.publications.mavenJava
+    }else {
+        project.logger.lifecycle("No Signing information given. Cannot sign.")
+    }
+}
