@@ -73,7 +73,7 @@ publishing {
         maven {
             if(project.hasProperty("githubUsername") && project.hasProperty("githubToken")){
                 name = "GitHubPackages"
-                url = uri("https://maven.pkg.github.com/lni-dev/llog")
+                url = uri("https://maven.pkg.github.com/lni-dev/LUtils")
                 credentials {
                     username = githubUsername
                     password = githubToken
@@ -87,12 +87,12 @@ publishing {
     publications {
 
         mavenJava(MavenPublication) {
-            artifactId = 'LUtils'
+            artifactId = 'lutils'
             from components.java
             pom {
                 name = 'LUtils'
-                description = 'LUtils'
-                url = 'https://www.linusdev.de'
+                description = 'Utils Library'
+                url = 'https://www.linusdev.de/lutils'
                 groupId = 'de.linusdev'
                 version = project.version
 
@@ -112,9 +112,9 @@ publishing {
                 }
 
                 scm {
-                    connection = 'scm:git:git://github.com/lni-dev/luitls.git'
-                    developerConnection ='scm:git:ssh://github.com:lni-dev/lutils.git'
-                    url = 'https://github.com/lni-dev/llog/tree/master'
+                    connection = 'scm:git:git://github.com/lni-dev/LUtils.git'
+                    developerConnection ='scm:git:ssh://github.com/lni-dev/LUtils.git'
+                    url = 'https://github.com/lni-dev/LUtils/tree/master'
                 }
             }
         }
