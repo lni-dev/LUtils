@@ -10,6 +10,20 @@ import org.jetbrains.annotations.Nullable;
 import java.util.*;
 import java.util.function.Function;
 
+/**
+ * A thread safe linked list implementation. It can only be traversed in a single direction.
+ * Tt can not be traversed in reverse. That is because every node only stores the next element, but not
+ * the previous element.<br>
+ * <br>
+ * This list allows modification during iteration. Whether the modification applies during the iteration
+ * depends solely on the order, in which the iteration and modification events happen.<br>
+ * <br>
+ * For more complex operations, which must be thread safe, this list also provides a {@link #doSynchronized(Function) doSynchronized}
+ * method, which executes the given {@link Function} synchronized on this list's lock. Which means, no modifying operations
+ * can be started by other threads, while the lock is being hold. Reading operations are still possible by all threads.
+ *
+ * @param <O> element class
+ */
 public class LLinkedList<O> implements List<O> {
 
     final @NotNull Object lock = new Object();
@@ -24,9 +38,11 @@ public class LLinkedList<O> implements List<O> {
     }
 
     /**
-     * Executes given consumer synchronized on this list's lock
+     * Executes given consumer synchronized on this list's lock. See {@link LLinkedList} for more information.
      * @param function {@link Function}
+     * @see LLinkedList
      */
+    @SuppressWarnings("unused")
     public <R> R doSynchronized(@NotNull Function<LLinkedList<O>, R> function) {
         synchronized (lock) {
             return function.apply(this);
@@ -70,7 +86,8 @@ public class LLinkedList<O> implements List<O> {
 
     @NotNull
     @Override
-    public <T> T @NotNull [] toArray(@NotNull T @NotNull [] a) {
+    public <T> T @NotNull [] toArray(T @NotNull [] a) {
+        //noinspection unchecked: class will be of correct type.
         return (T[]) Arrays.copyOf(toArray(), size, a.getClass());
     }
 
@@ -90,11 +107,12 @@ public class LLinkedList<O> implements List<O> {
     @Override
     public boolean remove(Object o) {
         synchronized (lock) {
-            Iterator<O> iterator = iterator();
+            LLinkedListIterator<O> iterator = iterator();
 
             while (iterator().hasNext()){
                 if(Objects.equals(iterator.next(), o)){
-                    iterator.remove();
+                    //noinspection DataFlowIssue: Will not be null, because next() has been called at least once.
+                    remove(iterator.getLastEntry(), iterator.getCurrentEntry());
                     return true;
                 }
             }
@@ -109,7 +127,7 @@ public class LLinkedList<O> implements List<O> {
      * @param beforeEntry the entry before the entry to remove
      * @param removeEntry entry to remove
      */
-    void remove(@NotNull LLinkedListEntry<O> beforeEntry, @NotNull LLinkedListEntry<O> removeEntry) {
+    private void remove(@NotNull LLinkedListEntry<O> beforeEntry, @NotNull LLinkedListEntry<O> removeEntry) {
         synchronized (lock) {
             if(removeEntry == tail) {
                 //we are removing the last entry, so we need to change the tail
@@ -121,6 +139,41 @@ public class LLinkedList<O> implements List<O> {
 
             }
             size--;
+        }
+    }
+
+    void removeEntry(@NotNull LLinkedListEntry<O> entry) {
+        synchronized (lock) {
+            LLinkedListIterator<O> iterator = iterator();
+
+            while (iterator().hasNext()){
+                if(iterator.getCurrentEntry() == entry){
+                    //noinspection DataFlowIssue: Will not be null, because next() has been called at least once.
+                    remove(iterator.getLastEntry(), iterator.getCurrentEntry());
+                    return;
+                }
+            }
+        }
+    }
+
+    /**
+     * adds {@code toAddEntry} to this list after the entry {@code beforeEntry}.
+     * @param beforeEntry the entry after which the new entry should be added
+     * @param toAddEntry entry to add
+     */
+    void add(@NotNull LLinkedListEntry<O> beforeEntry, @NotNull LLinkedListEntry<O> toAddEntry) {
+        synchronized (lock) {
+            if(beforeEntry == tail) {
+                tail.setNext(toAddEntry);
+                tail = toAddEntry;
+
+                size++;
+                return;
+            }
+
+            LLinkedListEntry<O> toMove = beforeEntry.getNext();
+            beforeEntry.setNext(toAddEntry);
+            toAddEntry.setNext(toMove);
         }
     }
 
@@ -260,14 +313,10 @@ public class LLinkedList<O> implements List<O> {
         throw new UnsupportedOperationException("Not implemented");
     }
 
-    /**
-     * This List cannot be traversed in reverse.
-     * @throws UnsupportedOperationException always
-     */
     @NotNull
     @Override
     public ListIterator<O> listIterator() {
-        throw new UnsupportedOperationException("Not implemented: This List cannot be traversed in reverse.");
+        return new LLinkedListIterator<>(this);
     }
 
     /**
@@ -277,14 +326,33 @@ public class LLinkedList<O> implements List<O> {
     @NotNull
     @Override
     public ListIterator<O> listIterator(int index) {
-        throw new UnsupportedOperationException("Not implemented: This List cannot be traversed in reverse.");
+
+        if(index == 0)
+            return listIterator();
+
+        LLinkedListEntry<O> before = getEntry(index - 1);
+        LLinkedListEntry<O> next = before.getNext();
+
+        if(next == null)
+            throw new IndexOutOfBoundsException(index);
+
+        return new LLinkedListIterator<>(this, index, before, next);
     }
 
     @NotNull
     @Override
     public List<O> subList(int fromIndex, int toIndex) {
-        //TODO: implement
-        throw new UnsupportedOperationException("Not implemented");
+        LLinkedList<O> sub = new LLinkedList<>();
+
+        int index = 0;
+        for(O o : this) {
+            if(index >= toIndex)
+                return sub;
+            if(index >= fromIndex)
+                sub.add(o);
+        }
+
+        return sub;
     }
 
     @NotNull LLinkedListEntry<O> getHead() {
