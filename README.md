@@ -12,3 +12,6 @@ dependencies {
     implementation 'de.linusdev:lutils:1.0.0'
 }
 ```
+
+## Contents
+- [LLinkedList](https://github.com/lni-dev/LUtils/blob/master/src/main/java/de/linusdev/lutils/llist/LLinkedList.java): A thread safe linked list
