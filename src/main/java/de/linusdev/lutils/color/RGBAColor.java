@@ -123,13 +123,16 @@ public interface RGBAColor extends SimpleDatable, Color {
         double b = blue();
 
         if(r == g && g == b) {
-            return Color.ofHsva(0, 0, r, alpha());
+            return Color.ofHsva(0, 0, r * 100d, alpha());
         } else if(r > g && r > b) {
             double min = Math.min(g, b);
-            return Color.ofHsva(60 * (((g - b) / (r - min)) % 6), (r - min) / r, r, alpha());
+            return Color.ofHsva((60d * ((g - b) / (r - min))) % 360d, ((r - min) * 100d) / r, r * 100d, alpha());
+        } else if(g > b) {
+            double min = Math.min(r, b);
+            return Color.ofHsva((60d * ((b - r) / (g - min)) + 120d) % 360d, ((g - min) * 100d) / g, g * 100d, alpha());
+        } else {
+            double min = Math.min(r, g);
+            return Color.ofHsva((60d * ((r - g) / (b - min)) + 120d) % 360d, ((b - min) * 100d) / b, b * 100d, alpha());
         }
-
-        //TODO: implement
-        return null;
     }
 }
