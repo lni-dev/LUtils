@@ -52,21 +52,21 @@ public class RGBAColorIntImpl implements RGBAColor {
 
     @Override
     public double red() {
-        return 1d / ((double) red);
+        return ((double) red) / 255d;
     }
 
     @Override
     public double green() {
-        return 1d / ((double) green);
+        return ((double) green) / 255d;
     }
 
     @Override
     public double blue() {
-        return 1d / ((double) blue);
+        return ((double) blue) / 255d;
     }
 
     @Override
     public double alpha() {
-        return 1d / ((double) alpha);
+        return ((double) alpha) / 255d;
     }
 }
