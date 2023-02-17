@@ -69,4 +69,9 @@ public class RGBAColorDoubleImpl implements RGBAColor {
     public double alpha() {
         return alpha;
     }
+
+    @Override
+    public String toString() {
+        return "(" + red() + ", " + green() + ", " + blue() + ", " + alpha() + ")";
+    }
 }

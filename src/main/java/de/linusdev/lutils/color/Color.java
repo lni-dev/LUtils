@@ -4,7 +4,7 @@
 
 package de.linusdev.lutils.color;
 
-import de.linusdev.lutils.color.impl.HSVColorImpl;
+import de.linusdev.lutils.color.impl.HSVAColorImpl;
 import de.linusdev.lutils.color.impl.RGBAColorDoubleImpl;
 import de.linusdev.lutils.color.impl.RGBAColorIntImpl;
 import org.jetbrains.annotations.Contract;
@@ -15,14 +15,14 @@ import org.jetbrains.annotations.Range;
 public interface Color {
 
     @Contract(value = "_, _, _ -> new", pure = true)
-    static @NotNull RGBAColor ofRgb(@Range(from = RGBAColor.RGB_INT_MIN, to = RGBAColor.RGB_INT_MAX) int r,
+    static @NotNull RGBAColor ofRGB(@Range(from = RGBAColor.RGB_INT_MIN, to = RGBAColor.RGB_INT_MAX) int r,
                                     @Range(from = RGBAColor.RGB_INT_MIN, to = RGBAColor.RGB_INT_MAX) int g,
                                     @Range(from = RGBAColor.RGB_INT_MIN, to = RGBAColor.RGB_INT_MAX)int b) {
         return new RGBAColorIntImpl(r, g, b, 255);
     }
 
     @Contract(value = "_, _, _, _ -> new", pure = true)
-    static @NotNull RGBAColor ofRgba(@Range(from = RGBAColor.RGB_INT_MIN, to = RGBAColor.RGB_INT_MAX) int r,
+    static @NotNull RGBAColor ofRGBA(@Range(from = RGBAColor.RGB_INT_MIN, to = RGBAColor.RGB_INT_MAX) int r,
                                      @Range(from = RGBAColor.RGB_INT_MIN, to = RGBAColor.RGB_INT_MAX) int g,
                                      @Range(from = RGBAColor.RGB_INT_MIN, to = RGBAColor.RGB_INT_MAX) int b,
                                      @Range(from = RGBAColor.RGB_INT_MIN, to = RGBAColor.RGB_INT_MAX) int a) {
@@ -30,33 +30,33 @@ public interface Color {
     }
 
     @Contract(value = "_, -> new", pure = true)
-    static @NotNull RGBAColor ofRgba(int hex) {
+    static @NotNull RGBAColor ofRGBA(int hex) {
         return new RGBAColorIntImpl(hex & 0xff000000, hex & 0x00ff0000, hex & 0x0000ff00, hex & 0x000000ff);
     }
 
     @Contract(value = "_, -> new", pure = true)
-    static @NotNull RGBAColor ofRgb(int hex) {
+    static @NotNull RGBAColor ofRGB(int hex) {
         return new RGBAColorIntImpl(hex & 0x00ff0000, hex & 0x0000ff00, hex & 0x000000ff, 255);
     }
 
     @Contract(value = "_, _, _ -> new", pure = true)
-    static @NotNull RGBAColor ofRgb(double r, double g, double b) {
+    static @NotNull RGBAColor ofRGB(double r, double g, double b) {
         return new RGBAColorDoubleImpl(r, g, b, 1d);
     }
 
     @Contract(value = "_, _, _, _ -> new", pure = true)
-    static @NotNull RGBAColor ofRgba(double r, double g, double b, double a) {
+    static @NotNull RGBAColor ofRGBA(double r, double g, double b, double a) {
         return new RGBAColorDoubleImpl(r, g, b, a);
     }
 
     @Contract(value = "_, _, _ -> new", pure = true)
-    static @NotNull HSVColor ofHsv(double h, double s, double v) {
-        return new HSVColorImpl(h,s,v, 1d);
+    static @NotNull HSVAColor ofHSV(double h, double s, double v) {
+        return new HSVAColorImpl(h,s,v, 1d);
     }
 
     @Contract(value = "_, _, _, _ -> new", pure = true)
-    static @NotNull HSVColor ofHsva(double h, double s, double v, double a) {
-        return new HSVColorImpl(h,s,v, a);
+    static @NotNull HSVAColor ofHSVA(double h, double s, double v, double a) {
+        return new HSVAColorImpl(h,s,v, a);
     }
 
     /**
@@ -66,6 +66,11 @@ public interface Color {
      */
     @NotNull RGBAColor toRGBAColor();
 
-    @NotNull HSVColor toHSVColor();
+    /**
+     * This {@link Color} converted to {@link HSVAColor}. If this is already a {@link HSVAColor}, this object itself
+     * may be returned.
+     * @return {@link HSVAColor}
+     */
+    @NotNull HSVAColor toHSVAColor();
 
 }

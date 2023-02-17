@@ -10,8 +10,8 @@ import me.linusdev.data.SimpleDatable;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * Represents a rgba color.<br>
- * r = red, g = green, b = blue, a = alpha / transparency.<br>
+ * Represents a {@link Color} as RGBA.<br>
+ * R = red, G = green, B = blue, A = alpha / transparency.<br>
  */
 @SuppressWarnings("unused")
 public interface RGBAColor extends SimpleDatable, Color {
@@ -75,7 +75,7 @@ public interface RGBAColor extends SimpleDatable, Color {
      * Returns a hex color with the format: {@code #rrggbbaa}.
      * @return this color as rgba hex.
      */
-    default int toRgbaHex() {
+    default int toRGBAHex() {
         //    #             FF                   FF                 FF             FF
         return (getRed() << 24) + (getGreen() << 16) + (getBlue() << 8) + (getAlpha());
     }
@@ -84,7 +84,7 @@ public interface RGBAColor extends SimpleDatable, Color {
      * Returns a hex color with the format: {@code #00rrggbb}.
      * @return this color as rgb hex.
      */
-    default int toRgbHex() {
+    default int toRGBHex() {
         //    #00           FF                  FF            FF
         return (getRed() << 16) + (getGreen() << 8) + (getBlue());
     }
@@ -107,7 +107,7 @@ public interface RGBAColor extends SimpleDatable, Color {
 
     @Override
     default @NotNull Integer simplify() {
-        return toRgbaHex();
+        return getAlpha() == 255 ? toRGBHex() : toRGBAHex();
     }
 
     @Override
@@ -116,23 +116,23 @@ public interface RGBAColor extends SimpleDatable, Color {
     }
 
     @Override
-    default @NotNull HSVColor toHSVColor() {
+    default @NotNull HSVAColor toHSVAColor() {
 
         double r = red();
         double g = green();
         double b = blue();
 
         if(r == g && g == b) {
-            return Color.ofHsva(0, 0, r * 100d, alpha());
+            return Color.ofHSVA(0, 0, r * 100d, alpha());
         } else if(r > g && r > b) {
             double min = Math.min(g, b);
-            return Color.ofHsva((60d * ((g - b) / (r - min))) % 360d, ((r - min) * 100d) / r, r * 100d, alpha());
+            return Color.ofHSVA((60d * ((g - b) / (r - min))) % 360d, ((r - min) * 100d) / r, r * 100d, alpha());
         } else if(g > b) {
             double min = Math.min(r, b);
-            return Color.ofHsva((60d * ((b - r) / (g - min)) + 120d) % 360d, ((g - min) * 100d) / g, g * 100d, alpha());
+            return Color.ofHSVA((60d * ((b - r) / (g - min)) + 120d) % 360d, ((g - min) * 100d) / g, g * 100d, alpha());
         } else {
             double min = Math.min(r, g);
-            return Color.ofHsva((60d * ((r - g) / (b - min)) + 120d) % 360d, ((b - min) * 100d) / b, b * 100d, alpha());
+            return Color.ofHSVA((60d * ((r - g) / (b - min)) + 120d) % 360d, ((b - min) * 100d) / b, b * 100d, alpha());
         }
     }
 }

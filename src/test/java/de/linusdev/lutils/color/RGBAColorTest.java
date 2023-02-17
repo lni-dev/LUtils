@@ -12,7 +12,7 @@ class RGBAColorTest {
 
     @Test
     void colorInt() {
-        RGBAColor color = Color.ofRgba(222, 100, 50, 245);
+        RGBAColor color = Color.ofRGBA(222, 100, 50, 245);
 
         assertEquals(222, color.getRed());
         assertEquals(100, color.getGreen() );
@@ -27,7 +27,7 @@ class RGBAColorTest {
 
     @Test
     void colorDouble() {
-        RGBAColor color = Color.ofRgba(222d / 255d, 100d / 255d, 50d / 255d, 245d / 255d);
+        RGBAColor color = Color.ofRGBA(222d / 255d, 100d / 255d, 50d / 255d, 245d / 255d);
 
         assertEquals(222, color.getRed());
         assertEquals(100, color.getGreen() );
@@ -42,17 +42,17 @@ class RGBAColorTest {
 
     @Test
     void hex() {
-        RGBAColor color = Color.ofRgba(222, 100, 50, 255);
+        RGBAColor color = Color.ofRGBA(222, 100, 50, 255);
 
-        assertEquals(0xde6432ff, color.toRgbaHex());
-        assertEquals(0xde6432, color.toRgbHex());
+        assertEquals(0xde6432ff, color.toRGBAHex());
+        assertEquals(0xde6432, color.toRGBHex());
     }
 
 
     @Test
     void toHSVColor() {
-        RGBAColor color = Color.ofRgba(222, 100, 50, 245);
-        HSVColor hsv = color.toHSVColor();
+        RGBAColor color = Color.ofRGBA(222, 100, 50, 245);
+        HSVAColor hsv = color.toHSVAColor();
 
         assertEquals(17, Math.round(hsv.hue()));
         assertEquals(77, Math.round(hsv.saturation()));
