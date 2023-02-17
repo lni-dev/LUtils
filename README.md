@@ -16,3 +16,4 @@ dependencies {
 ## Contents
 - [LLinkedList](https://github.com/lni-dev/LUtils/blob/master/src/main/java/de/linusdev/lutils/llist/LLinkedList.java): A thread safe linked list
 - [SGR](https://github.com/lni-dev/LUtils/blob/master/src/main/java/de/linusdev/ansi/sgr/SGR.java): ANSI "Select Graphic Rendition" control sequence
+- [Color](https://github.com/lni-dev/LUtils/blob/master/src/main/java/de/linusdev/color/Color.java): Color class (RGBA and HSVA)
