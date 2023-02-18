@@ -39,6 +39,22 @@ public class SGR {
     /**
      *
      * @param delimiter delimiter used to seperated arguments.
+     */
+    public SGR(@NotNull String delimiter) {
+        this.delimiter = delimiter;
+        this.sb = new StringBuilder(SGR_START_CODE);
+    }
+
+    /**
+     * same as {@link #SGR(String)} , with the {@code delimiter} {@link #SGR_PARAMETER_DELIMITER}.
+     */
+    public SGR() {
+        this(SGR_PARAMETER_DELIMITER);
+    }
+    
+    /**
+     *
+     * @param delimiter delimiter used to seperated arguments.
      * @param sgrParam first {@link SGRParameter}
      * @param params parameters for {@code sgrParam}
      */
@@ -62,7 +78,8 @@ public class SGR {
      * @return this
      */
     public SGR add(@NotNull SGRParameter sgrParam, @NotNull String @NotNull ... params) {
-        sb.append(delimiter);
+        if(sb.length() > SGR_START_CODE.length()) 
+            sb.append(delimiter);
         sb.append(sgrParam.construct(delimiter, params));
         return this;
     }

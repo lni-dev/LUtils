@@ -26,5 +26,7 @@ class SGRTest {
         assertEquals("\033[48;2;20;30;40m", new SGR(SGRParameters.BACKGROUND_COLOR_24_BIT, "2", "20", "30", "40").construct());
         assertEquals("\033[48,2,20,30,40m", new SGR(",", SGRParameters.BACKGROUND_COLOR_24_BIT, "2", "20", "30", "40").construct());
         assertEquals("\033[48;2;20;30;40m", new SGR(SGRParameters.BACKGROUND_COLOR_24_BIT, "20", "30", "40").construct());
+
+        assertEquals("\033[48;2;20;30;40m", new SGR().add(SGRParameters.BACKGROUND_COLOR_24_BIT, "20", "30", "40").construct());
     }
 }
