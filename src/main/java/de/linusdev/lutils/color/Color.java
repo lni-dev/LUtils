@@ -14,6 +14,15 @@ import org.jetbrains.annotations.Range;
 @SuppressWarnings("unused")
 public interface Color {
 
+    RGBAColor BLACK = ofRGB(0, 0, 0);
+    RGBAColor RED = ofRGB(255, 0, 0);
+    RGBAColor GREEN = ofRGB(0, 255, 0);
+    RGBAColor BLUE = ofRGB(0, 0, 255);
+    RGBAColor WHITE = ofRGB(255, 255, 255);
+
+    RGBAColor CYAN = ofRGB(17, 168, 205);
+    RGBAColor ORANGE = ofRGB(250, 138, 10);
+
     @Contract(value = "_, _, _ -> new", pure = true)
     static @NotNull RGBAColor ofRGB(@Range(from = RGBAColor.RGB_INT_MIN, to = RGBAColor.RGB_INT_MAX) int r,
                                     @Range(from = RGBAColor.RGB_INT_MIN, to = RGBAColor.RGB_INT_MAX) int g,
