@@ -20,6 +20,16 @@ public interface Header {
     }
 
     /**
+     * Create new {@link Header}.
+     * @param key header key
+     * @param value header value
+     * @return new {@link Header}
+     */
+    static @NotNull Header of(@NotNull String key, @NotNull String value) {
+        return new HeaderImpl(key, value);
+    }
+
+    /**
      * Key of this {@link Header}.
      * @return key as {@link String}
      */

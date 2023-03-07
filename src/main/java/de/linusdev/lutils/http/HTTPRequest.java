@@ -66,16 +66,13 @@ public class HTTPRequest<B> {
             version = HTTPVersions.of(parts[1]);
         }
 
-
         String line;
         while((line = reader.readLine()) != null) {
-            Header header = Header.of(line);
-
-            headers.put(header.getKey(), header);
-
             if(line.isEmpty()) { //end of headers
                 break;
             }
+            Header header = Header.of(line);
+            headers.put(header.getKey(), header);
         }
 
         body = parser.parse(in);
@@ -83,10 +80,15 @@ public class HTTPRequest<B> {
         return new HTTPRequest<>(method, path, version, headers, body);
     }
 
-    /**
-     * {@link RequestMethod} of this request.
-     * @return {@link RequestMethod}
-     */
+    public static @NotNull HTTPRequest<Void> parse(@NotNull InputStream in) throws IOException {
+        return parse(in, in1 -> null);
+    }
+
+
+        /**
+         * {@link RequestMethod} of this request.
+         * @return {@link RequestMethod}
+         */
     public @NotNull RequestMethod getMethod() {
         return method;
     }
