@@ -45,7 +45,7 @@ public class HTTPRequest<B> {
 
         InputStreamReader isr = new InputStreamReader(in, StandardCharsets.UTF_8);
 
-        BufferedReader reader = new BufferedReader(isr);
+        HTTPRequestReader reader = new HTTPRequestReader(in);
 
         String first = reader.readLine();
         String[] parts = first.split(" ");
