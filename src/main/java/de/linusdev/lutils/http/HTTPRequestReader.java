@@ -23,13 +23,15 @@ public class HTTPRequestReader {
     private final ByteBuffer bufBytes;
     private final CharBuffer bufChars;
 
-    private int nextByte = -1;
+    private int nextByte = -2;
 
     public HTTPRequestReader(@NotNull CharsetDecoder decoder, @NotNull InputStream stream) {
         this.decoder = decoder;
         this.stream = stream;
         this.bufBytes = ByteBuffer.allocate(1024);
         this.bufChars = CharBuffer.allocate(1024);
+        bufBytes.limit(0);
+        bufChars.limit(0);
     }
 
     public HTTPRequestReader(@NotNull InputStream stream) {
@@ -51,14 +53,19 @@ public class HTTPRequestReader {
 
         if(nextByte != -1) {
             bufBytes.position(0);
-            bufBytes.put((byte) nextByte);
-            bufBytes.limit(1);
+            if(nextByte > 0) {
+                bufBytes.put((byte) nextByte);
+                bufBytes.limit(1);
+            } else {
+                bufBytes.limit(0);
+            }
+
 
             int byteCount = stream.read(bufBytes.array());
 
             if(byteCount != -1) {
                 nextByte = stream.read();
-                bufBytes.limit(byteCount + 1);
+                bufBytes.limit(byteCount + bufBytes.limit());
             } else {
                 nextByte = -1;
             }
@@ -70,10 +77,35 @@ public class HTTPRequestReader {
     }
 
     public void decodeChars() {
+
+        bufChars.position(0);
+        bufChars.limit(bufChars.capacity());
+        int oldPos = bufBytes.position();
         CoderResult result = decoder.decode(bufBytes, bufChars, nextByte == -1);
+        int read = bufBytes.position() - oldPos;
+        bufBytes.position(oldPos);
+        bufChars.limit(read);
 
-        result.
+        if(result.isUnderflow()){
+            return;
+        } else if(result.isOverflow()) {
+            //TODO: does this happen
+            throw new RuntimeException("yes");
+        }
 
+    }
+
+    public int readChar() throws IOException {
+        if(bufChars.remaining() == 0) {
+            if(nextByte == -1 || readBytesToBuffer() == 0) return -1;
+            else {
+                decodeChars();
+                if(bufChars.remaining() == 0) return -1;
+            }
+        }
+
+        bufBytes.position(bufBytes.position() + 1);
+        return bufChars.get();
     }
 
 
@@ -83,7 +115,7 @@ public class HTTPRequestReader {
         boolean pcr = false;
         int r;
         char c;
-        while((r = read()) != -1) {
+        while((r = readChar()) != -1) {
             c = (char) r;
 
             if(pcr && c == '\n') {
@@ -99,5 +131,17 @@ public class HTTPRequestReader {
 
         if(pcr) str.append('\r');
         return str.toString();
+    }
+
+    public @NotNull InputStream getInputStreamForRemaining() {
+
+        HTTPRequestReader this_ = this;
+
+        return new InputStream() {
+            @Override
+            public int read() throws IOException {
+                return this_.readByte();
+            }
+        };
     }
 }

@@ -43,15 +43,13 @@ public class HTTPRequest<B> {
 
     public static <B> @NotNull HTTPRequest<B> parse(@NotNull InputStream in, @NotNull BodyParser<B> parser) throws IOException {
 
-        InputStreamReader isr = new InputStreamReader(in, StandardCharsets.UTF_8);
-
         HTTPRequestReader reader = new HTTPRequestReader(in);
 
         String first = reader.readLine();
         String[] parts = first.split(" ");
 
         if(parts.length <= 1)
-            throw new IllegalArgumentException("Malformed HTTP Request");
+            throw new IllegalArgumentException("Malformed HTTP Request: first line: " + first);
 
         RequestMethod method = RequestMethod.of(parts[0]);
         String path = null;
@@ -75,7 +73,7 @@ public class HTTPRequest<B> {
             headers.put(header.getKey(), header);
         }
 
-        body = parser.parse(in);
+        body = parser.parse(reader.getInputStreamForRemaining());
 
         return new HTTPRequest<>(method, path, version, headers, body);
     }
