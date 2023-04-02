@@ -9,7 +9,7 @@ repositories {
 }
 
 dependencies {
-    implementation 'de.linusdev:lutils:1.0.4'
+    implementation 'de.linusdev:lutils:1.0.5'
 }
 ```
 
@@ -17,3 +17,4 @@ dependencies {
 - [LLinkedList](https://github.com/lni-dev/LUtils/blob/master/src/main/java/de/linusdev/lutils/llist/LLinkedList.java): A thread safe linked list
 - [SGR](https://github.com/lni-dev/LUtils/blob/master/src/main/java/de/linusdev/lutils/ansi/sgr/SGR.java): ANSI "Select Graphic Rendition" control sequence
 - [Color](https://github.com/lni-dev/LUtils/blob/master/src/main/java/de/linusdev/lutils/color/Color.java): Color class (RGBA and HSVA)
+- [Bitfield](https://github.com/lni-dev/LUtils/blob/master/src/main/java/de/linusdev/lutils/bitfield/): Bitfield classes
