@@ -2,7 +2,7 @@
  * Copyright (c) 2023 Linus Andera all rights reserved
  */
 
-package de.linusdev.lutils.http.version;
+package de.linusdev.lutils.http_WIP.version;
 
 import org.jetbrains.annotations.NotNull;
 

@@ -2,21 +2,18 @@
  * Copyright (c) 2023 Linus Andera all rights reserved
  */
 
-package de.linusdev.lutils.http;
+package de.linusdev.lutils.http_WIP;
 
-import de.linusdev.lutils.http.body.BodyParser;
-import de.linusdev.lutils.http.header.Header;
-import de.linusdev.lutils.http.method.RequestMethod;
-import de.linusdev.lutils.http.version.HTTPVersion;
-import de.linusdev.lutils.http.version.HTTPVersions;
+import de.linusdev.lutils.http_WIP.body.BodyParser;
+import de.linusdev.lutils.http_WIP.header.Header;
+import de.linusdev.lutils.http_WIP.method.RequestMethod;
+import de.linusdev.lutils.http_WIP.version.HTTPVersion;
+import de.linusdev.lutils.http_WIP.version.HTTPVersions;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;

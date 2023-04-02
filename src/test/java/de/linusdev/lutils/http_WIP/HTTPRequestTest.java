@@ -2,11 +2,11 @@
  * Copyright (c) 2023 Linus Andera all rights reserved
  */
 
-package de.linusdev.lutils.http;
+package de.linusdev.lutils.http_WIP;
 
-import de.linusdev.lutils.http.header.Header;
-import de.linusdev.lutils.http.method.Methods;
-import de.linusdev.lutils.http.method.RequestMethod;
+import de.linusdev.lutils.http_WIP.header.Header;
+import de.linusdev.lutils.http_WIP.method.Methods;
+import de.linusdev.lutils.http_WIP.method.RequestMethod;
 import org.junit.jupiter.api.Test;
 
 import java.io.BufferedReader;
