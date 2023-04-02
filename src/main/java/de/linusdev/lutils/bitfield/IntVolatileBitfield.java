@@ -11,7 +11,7 @@ import org.jetbrains.annotations.NotNull;
  * @param <V> field value
  */
 @SuppressWarnings({"NonAtomicOperationOnVolatileField", "unused"})
-public class IntVolatileBitfield<V extends LongBitFieldValue> {
+public class IntVolatileBitfield<V extends IntBitFieldValue> {
 
     private volatile long value;
 
