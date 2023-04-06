@@ -7,24 +7,32 @@ package de.linusdev.lutils.bitfield;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * Bitfield class using a volatile int. It is not thread safe!
+ * Bitfield class using a volatile long. It is not thread safe!
  * @param <V> field value
  */
 @SuppressWarnings({"NonAtomicOperationOnVolatileField", "unused"})
-public class IntVolatileBitfield<V extends IntBitFieldValue> {
+public class LongVolatileBitfield<V extends LongBitFieldValue> {
 
     private volatile long value;
 
-    public IntVolatileBitfield(long value) {
+    public LongVolatileBitfield(long value) {
         this.value = value;
     }
 
-    public IntVolatileBitfield() {
+    public LongVolatileBitfield() {
         this.value = 0L;
     }
 
     public void replaceWith(long value) {
         this.value = value;
+    }
+
+    /**
+     * Get the value of this bitfield
+     * @return bitfield as int
+     */
+    public long getValue() {
+        return value;
     }
 
     /**

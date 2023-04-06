@@ -23,6 +23,14 @@ public class IntBitfield<V extends IntBitFieldValue> {
         this.value = 0;
     }
 
+    /**
+     * Get the value of this bitfield
+     * @return bitfield as int
+     */
+    public int getValue() {
+        return value;
+    }
+
     public void replaceWith(int value) {
         this.value = value;
     }

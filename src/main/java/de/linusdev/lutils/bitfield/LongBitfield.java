@@ -23,6 +23,14 @@ public class LongBitfield<V extends LongBitFieldValue> {
         this.value = 0L;
     }
 
+    /**
+     * Get the value of this bitfield
+     * @return bitfield as int
+     */
+    public long getValue() {
+        return value;
+    }
+
     public void replaceWith(long value) {
         this.value = value;
     }
