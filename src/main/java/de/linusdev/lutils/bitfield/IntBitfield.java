@@ -15,6 +15,32 @@ public class IntBitfield<V extends IntBitFieldValue> {
 
     private int value;
 
+    public IntBitfield(@NotNull V flag) {
+        this();
+        set(flag);
+    }
+
+    public IntBitfield(@NotNull V flag1, @NotNull V flag2) {
+        this();
+        set(flag1, flag2);
+    }
+
+    public IntBitfield(@NotNull V flag1, @NotNull V flag2, @NotNull V flag3) {
+        this();
+        set(flag1, flag2, flag3);
+    }
+
+    public IntBitfield(@NotNull V flag1, @NotNull V flag2, @NotNull V flag3, @NotNull V flag4) {
+        this();
+        set(flag1, flag2, flag3, flag4);
+    }
+
+    @SafeVarargs
+    public IntBitfield(@NotNull V @NotNull ... flags) {
+        this();
+        set(flags);
+    }
+
     public IntBitfield(int value) {
         this.value = value;
     }

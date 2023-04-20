@@ -15,6 +15,32 @@ public class LongVolatileBitfield<V extends LongBitFieldValue> {
 
     private volatile long value;
 
+    public LongVolatileBitfield(@NotNull V flag) {
+        this();
+        set(flag);
+    }
+
+    public LongVolatileBitfield(@NotNull V flag1, @NotNull V flag2) {
+        this();
+        set(flag1, flag2);
+    }
+
+    public LongVolatileBitfield(@NotNull V flag1, @NotNull V flag2, @NotNull V flag3) {
+        this();
+        set(flag1, flag2, flag3);
+    }
+
+    public LongVolatileBitfield(@NotNull V flag1, @NotNull V flag2, @NotNull V flag3, @NotNull V flag4) {
+        this();
+        set(flag1, flag2, flag3, flag4);
+    }
+
+    @SafeVarargs
+    public LongVolatileBitfield(@NotNull V @NotNull ... flags) {
+        this();
+        set(flags);
+    }
+
     public LongVolatileBitfield(long value) {
         this.value = value;
     }
