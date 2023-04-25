@@ -20,18 +20,18 @@ import de.linusdev.lutils.async.executable.ExecutableFuture;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
-public class QueueableFuture<T, R extends QResponse> extends ExecutableFuture<T, R, QueueableImpl<T, R>> {
+public class QueueableFuture<T, R extends QResponse> extends ExecutableFuture<T, R, QueueableBase<T, R>> {
 
     private final long createdMillis;
 
-    public QueueableFuture(@NotNull QueueableImpl<T, R> task) {
+    public QueueableFuture(@NotNull QueueableBase<T, R> task) {
         super(task);
         createdMillis = System.currentTimeMillis();
     }
 
     @ApiStatus.Internal
     @Override
-    public @NotNull QueueableImpl<T, R> getTask() {
+    public @NotNull QueueableBase<T, R> getTask() {
         assert super.getTask() != null; //Initialised in constructor as @NotNull
         return super.getTask();
     }

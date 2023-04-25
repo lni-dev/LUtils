@@ -10,6 +10,7 @@ import de.linusdev.lutils.async.consumer.SingleResultConsumer;
 import de.linusdev.lutils.async.error.MessageError;
 import de.linusdev.lutils.async.error.StandardErrorTypes;
 import de.linusdev.lutils.async.error.ThrowableAsyncError;
+import de.linusdev.lutils.async.exception.CannotQueueTaskException;
 import de.linusdev.lutils.async.exception.ErrorException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -32,7 +33,7 @@ public interface PTask<R, S> extends Task<R, S> {
      * @param consumer {@link Consumer} to set listeners before the Future is queued.
      * @return {@link Future}
      */
-    @NotNull Future<R, S> consumeAndQueue(@Nullable Consumer<Future<R, S>> consumer);
+    @NotNull Future<R, S> consumeAndQueue(@Nullable Consumer<Future<R, S>> consumer) throws CannotQueueTaskException;
 
     @Override
     default @NotNull Future<R, S> queue() {

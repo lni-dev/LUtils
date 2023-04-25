@@ -15,7 +15,44 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Consumer;
 
+/**
+ * A {@link Future} which can be completed with the {@link #complete(Object, Object, AsyncError)} method.
+ * This method will then call all listeners ({@link Future#then(ResultConsumer) see}, ...) in the current Thread.
+ * <br><br>
+ * For the usage in combination with a {@link CompletableTask}, see {@link CompletableTask}.
+ * <br><br>
+ * <b>Example:</b>
+ * <pre>{@code
+ * //Create the future
+ * var future = CompletableFuture.<String, Nothing>create(asyncManager);
+ *
+ * new Thread(() -> {
+ *     try {
+ *         Thread.sleep(3000);
+ *         //Complete the future in a different Thread
+ *         future.complete("Hello", Nothing.INSTANCE, null);
+ *     } catch (Throwable e) {
+ *         future.complete(null, Nothing.INSTANCE,
+ *                 new ThrowableAsyncError(e));
+ *     }
+ * }).start();
+ *
+ * //End User:
+ * Future<String, Nothing> returnedFuture = future;
+ * String res = returnedFuture.getResult();
+ * System.out.println("Result: " + res);}</pre>
+ * @see Future
+ */
+@SuppressWarnings("unused")
 public class CompletableFuture<R, S, T extends CompletableTask<R, S>> extends AbstractFuture<R, S, T> {
+
+    protected CompletableFuture(@NotNull AsyncManager asyncManager) {
+        this(null, asyncManager);
+    }
+
+    public static <R, S> @NotNull CompletableFuture<R, S, CompletableTask<R, S>> create(@NotNull AsyncManager asyncManager) {
+        return new CompletableFuture<>(asyncManager);
+    }
 
     public CompletableFuture(@Nullable T task, @NotNull AsyncManager asyncManager) {
         super(task, asyncManager);

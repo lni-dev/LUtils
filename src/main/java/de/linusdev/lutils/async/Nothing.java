@@ -16,10 +16,10 @@
 
 package de.linusdev.lutils.async;
 
+import de.linusdev.lutils.async.queue.QResponse;
 import org.jetbrains.annotations.NotNull;
 
-@SuppressWarnings("InstantiationOfUtilityClass")
-public final class Nothing {
+public final class Nothing implements QResponse {
 
     public final static @NotNull Nothing INSTANCE = new Nothing();
 

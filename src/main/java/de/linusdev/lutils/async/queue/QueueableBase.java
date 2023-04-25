@@ -21,15 +21,45 @@ import de.linusdev.lutils.async.Future;
 import de.linusdev.lutils.async.executable.ExecutableFuture;
 import de.linusdev.lutils.async.executable.ExecutableTaskBase;
 import de.linusdev.lutils.async.manager.AsyncManager;
+import de.linusdev.lutils.async.manager.AsyncQueue;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Consumer;
 
-public abstract class QueueableImpl<T, R extends QResponse> extends ExecutableTaskBase<T, R> implements Queueable<T, R> {
+/**
+ * <p>
+ *     {@link Queueable} base.
+ * </p><br>
+ * <b>Example: </b>
+ * <pre>{@code
+ * QueueableImpl<String, Nothing> queueable = new QueueableImpl<>(manager) {
+ *     @Override
+ *     @NotNull
+ *     public ComputationResult<String, Nothing> execute()
+ *              throws InterruptedException {
+ *         //Execute task
+ *         Thread.sleep(3000);
+ *         return new ComputationResult<>("test", Nothing.INSTANCE, null);
+ *     }
+ * };
+ *
+ *
+ * Queueable<String, Nothing> qableToReturn = queueable;
+ *
+ * //End User:
+ * String result = qableToReturn.queue().getResult();
+ * System.out.println("Result: " + result);}</pre>
+ * @param <T> return type
+ * @param <R> response type
+ */
+public abstract class QueueableBase<T, R extends QResponse> extends ExecutableTaskBase<T, R> implements Queueable<T, R> {
 
-    public QueueableImpl(@NotNull AsyncManager asyncManager) {
+    protected final @NotNull AsyncQueue<R> asyncQueue;
+
+    public <M extends AsyncManager & AsyncQueue<R>> QueueableBase(@NotNull M asyncManager) {
         super(asyncManager);
+        this.asyncQueue = asyncManager;
     }
 
     @Override
@@ -44,5 +74,10 @@ public abstract class QueueableImpl<T, R extends QResponse> extends ExecutableTa
     protected void launch(@NotNull ExecutableFuture<T, R, ExecutableTaskBase<T, R>> future) {
         //Done in consumeAndQueue
         throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public @NotNull AsyncQueue<R> getAsyncQueue() {
+        return asyncQueue;
     }
 }

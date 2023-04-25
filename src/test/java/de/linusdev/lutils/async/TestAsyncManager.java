@@ -4,20 +4,23 @@
 
 package de.linusdev.lutils.async;
 
+import de.linusdev.lutils.async.completeable.CompletableFuture;
 import de.linusdev.lutils.async.completeable.CompletableTask;
+import de.linusdev.lutils.async.error.ThrowableAsyncError;
 import de.linusdev.lutils.async.exception.NonBlockingThreadException;
 import de.linusdev.lutils.async.executable.ExecutableFuture;
 import de.linusdev.lutils.async.executable.ExecutableTask;
 import de.linusdev.lutils.async.executable.ExecutableTaskBase;
 import de.linusdev.lutils.async.manager.AsyncManager;
 import de.linusdev.lutils.async.manager.AsyncQueue;
-import de.linusdev.lutils.async.queue.QResponse;
+import de.linusdev.lutils.async.queue.Queueable;
 import de.linusdev.lutils.async.queue.QueueableFuture;
+import de.linusdev.lutils.async.queue.QueueableBase;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
-public class TestAsyncManager implements AsyncManager, AsyncQueue<QResponse> {
+public class TestAsyncManager implements AsyncManager, AsyncQueue<Nothing> {
     @Override
     public void checkThread() throws NonBlockingThreadException {
 
@@ -29,42 +32,68 @@ public class TestAsyncManager implements AsyncManager, AsyncQueue<QResponse> {
     }
 
     @Override
-    public void queue(@NotNull QueueableFuture<?, QResponse> future) {
+    public void queue(@NotNull QueueableFuture<?, Nothing> future) {
         try {
+            System.out.println("queue");
             future.executeHere();
-            future.getTask().execute();
         } catch (InterruptedException e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
         }
     }
 
     @Test
-    public void test() throws InterruptedException {
-        TestAsyncManager manager = new TestAsyncManager();
-
-        CompletableTask<String, Nothing> t = new CompletableTask<>(manager);
-        var future = t.consumeAndQueue(stringNothingFuture -> {
-            stringNothingFuture.then((result, secondary) -> System.out.println(result));
-        });
-
+    public void completableFuture() throws InterruptedException {
+        TestAsyncManager asyncManager = new TestAsyncManager();
+        var future = CompletableFuture.<String, Nothing>create(asyncManager);
 
         new Thread(() -> {
-
             try {
                 Thread.sleep(3000);
-                System.out.println("complete");
-                future.complete("Hallo", Nothing.INSTANCE, null);
+                //complete the future in a different Thread
+                future.complete("Hello", Nothing.INSTANCE, null);
             } catch (Throwable e) {
-                e.printStackTrace();
+                future.complete(null, Nothing.INSTANCE,
+                        new ThrowableAsyncError(e));
             }
         }).start();
 
-        String res = future.getResult();
+        //End User:
+        Future<String, Nothing> returnedFuture = future;
+        String res = returnedFuture.getResult();
         System.out.println("Result: " + res);
     }
 
     @Test
-    public void test2() {
+    public void completableTask() throws InterruptedException {
+        TestAsyncManager asyncManager = new TestAsyncManager();
+        CompletableTask<String, Nothing> task = new CompletableTask<>(asyncManager) {
+            @Override
+            public void start(
+                    @NotNull CompletableFuture<String, Nothing, CompletableTask<String, Nothing>> future
+            ) {
+                new Thread(() -> {
+                    try {
+                        Thread.sleep(3000);
+                        //complete the future in a different Thread
+                        future.complete("Hello", Nothing.INSTANCE, null);
+                    } catch (Throwable e) {
+                        future.complete(null, Nothing.INSTANCE,
+                                new ThrowableAsyncError(e));
+                    }
+                }).start();
+            }
+        };
+
+        Task<String, Nothing> taskToReturn = task;
+
+        //End User:
+        Future<String, Nothing> f = taskToReturn.queue();
+        String res = f.getResult();
+        System.out.println("Result: " + res);
+    }
+
+    @Test
+    public void executableTask() throws InterruptedException {
         TestAsyncManager manager = new TestAsyncManager();
 
         ExecutableTask<String, Nothing> task = new ExecutableTaskBase<>(manager) {
@@ -74,7 +103,7 @@ public class TestAsyncManager implements AsyncManager, AsyncQueue<QResponse> {
                     try {
                         future.executeHere();
                     } catch (InterruptedException e) {
-                        throw new RuntimeException(e);
+                       e.printStackTrace();
                     }
                 }).start();
             }
@@ -86,6 +115,27 @@ public class TestAsyncManager implements AsyncManager, AsyncQueue<QResponse> {
             }
         };
 
-        task.queue((result, secondary) -> System.out.println(result));
+        task.queue((result, secondary) -> System.out.println(result)).get();
+    }
+
+    public void queueable() throws InterruptedException {
+        TestAsyncManager manager = new TestAsyncManager();
+
+        QueueableBase<String, Nothing> queueable = new QueueableBase<>(manager) {
+            @Override
+            @NotNull
+            public ComputationResult<String, Nothing> execute() throws InterruptedException {
+                //Execute task
+                Thread.sleep(3000);
+                return new ComputationResult<>("test", Nothing.INSTANCE, null);
+            }
+        };
+
+
+        Queueable<String, Nothing> qableToReturn = queueable;
+
+        //End User:
+        String result = qableToReturn.queue().getResult();
+        System.out.println("Result: " + result);
     }
 }
