@@ -18,7 +18,7 @@ package de.linusdev.lutils.color;
 
 import de.linusdev.lutils.ansi.sgr.SGR;
 import de.linusdev.lutils.ansi.sgr.SGRParameters;
-import me.linusdev.data.SimpleDatable;
+import de.linusdev.lutils.interfaces.Simplifiable;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -26,7 +26,7 @@ import org.jetbrains.annotations.NotNull;
  * R = red, G = green, B = blue, A = alpha / transparency.<br>
  */
 @SuppressWarnings("unused")
-public interface RGBAColor extends SimpleDatable, Color {
+public interface RGBAColor extends Simplifiable, Color {
 
     int RGB_INT_MIN = 0;
     int RGB_INT_MAX= 255;

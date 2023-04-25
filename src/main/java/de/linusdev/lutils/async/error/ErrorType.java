@@ -16,13 +16,13 @@
 
 package de.linusdev.lutils.async.error;
 
-import me.linusdev.data.SimpleDatable;
+import de.linusdev.lutils.interfaces.Simplifiable;
 import org.jetbrains.annotations.NotNull;
 
 /**
  * @see StandardErrorTypes
  */
-public interface ErrorType extends SimpleDatable {
+public interface ErrorType extends Simplifiable {
 
     /**
      * Name of this error type.

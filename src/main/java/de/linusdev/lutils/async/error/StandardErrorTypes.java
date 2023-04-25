@@ -16,10 +16,10 @@
 
 package de.linusdev.lutils.async.error;
 
-import me.linusdev.data.SimpleDatable;
+import de.linusdev.lutils.interfaces.Simplifiable;
 import org.jetbrains.annotations.NotNull;
 
-public enum StandardErrorTypes implements ErrorType, SimpleDatable {
+public enum StandardErrorTypes implements ErrorType, Simplifiable {
 
     THROWABLE,
     FILE_ALREADY_EXISTS,
