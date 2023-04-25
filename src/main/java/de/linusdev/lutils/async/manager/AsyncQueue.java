@@ -8,7 +8,7 @@ import de.linusdev.lutils.async.queue.QResponse;
 import de.linusdev.lutils.async.queue.QueueableFuture;
 import org.jetbrains.annotations.NotNull;
 
-public interface AsyncQueue<R extends QResponse> {
+public interface AsyncQueue<R extends QResponse> extends AsyncManager {
 
     void queue(@NotNull QueueableFuture<?, R> future);
 

@@ -20,7 +20,6 @@ package de.linusdev.lutils.async.queue;
 import de.linusdev.lutils.async.Future;
 import de.linusdev.lutils.async.executable.ExecutableFuture;
 import de.linusdev.lutils.async.executable.ExecutableTaskBase;
-import de.linusdev.lutils.async.manager.AsyncManager;
 import de.linusdev.lutils.async.manager.AsyncQueue;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -57,7 +56,7 @@ public abstract class QueueableBase<T, R extends QResponse> extends ExecutableTa
 
     protected final @NotNull AsyncQueue<R> asyncQueue;
 
-    public <M extends AsyncManager & AsyncQueue<R>> QueueableBase(@NotNull M asyncManager) {
+    public QueueableBase(@NotNull AsyncQueue<R> asyncManager) {
         super(asyncManager);
         this.asyncQueue = asyncManager;
     }

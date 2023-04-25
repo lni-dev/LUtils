@@ -118,13 +118,14 @@ public class TestAsyncManager implements AsyncManager, AsyncQueue<Nothing> {
         task.queue((result, secondary) -> System.out.println(result)).get();
     }
 
+    @Test
     public void queueable() throws InterruptedException {
         TestAsyncManager manager = new TestAsyncManager();
 
+
         QueueableBase<String, Nothing> queueable = new QueueableBase<>(manager) {
             @Override
-            @NotNull
-            public ComputationResult<String, Nothing> execute() throws InterruptedException {
+            public @NotNull ComputationResult<String, Nothing> execute() throws InterruptedException {
                 //Execute task
                 Thread.sleep(3000);
                 return new ComputationResult<>("test", Nothing.INSTANCE, null);
