@@ -7,7 +7,7 @@ plugins {
 
 group = 'de.linusdev'
 archivesBaseName = 'lutils'
-version = '1.0.10'
+version = '1.0.11'
 
 targetCompatibility = JavaVersion.VERSION_11
 sourceCompatibility = JavaVersion.VERSION_11
@@ -15,6 +15,12 @@ compileJava.options.encoding = 'UTF-8'
 
 tasks.named('compileJava') {
     options.javaModuleVersion = provider { project.version }
+}
+
+jar {
+    manifest {
+        attributes('Automatic-Module-Name': 'de.linusdev.lutils')
+    }
 }
 
 java {
