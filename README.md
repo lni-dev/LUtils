@@ -9,7 +9,7 @@ repositories {
 }
 
 dependencies {
-    implementation 'de.linusdev:lutils:1.0.9'
+    implementation 'de.linusdev:lutils:1.0.11'
 }
 ```
 
