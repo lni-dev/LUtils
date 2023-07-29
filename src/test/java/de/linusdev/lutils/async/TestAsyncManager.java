@@ -75,7 +75,6 @@ public class TestAsyncManager implements AsyncManager, AsyncQueue<Nothing> {
                     try {
                         Thread.sleep(3000);
                         //complete the future in a different Thread
-                        if(future.startIfNotCanceled()) return;
                         future.complete("Hello", Nothing.INSTANCE, null);
                     } catch (Throwable e) {
                         future.complete(null, Nothing.INSTANCE,

@@ -138,7 +138,7 @@ public class CompletableFuture<R, S, T extends CompletableTask<R, S>> extends Ab
                 return true;
 
             started = true;
-            return true;
+            return false;
         }
     }
 
