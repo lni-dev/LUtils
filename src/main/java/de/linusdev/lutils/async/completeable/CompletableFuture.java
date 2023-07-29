@@ -41,6 +41,8 @@ import java.util.function.Consumer;
  * new Thread(() -> {
  *     try {
  *         Thread.sleep(3000);
+ *         //start the future, if it was not canceled
+ *         if(future.startIfNotCanceled()) return;
  *         //Complete the future in a different Thread
  *         future.complete("Hello", Nothing.INSTANCE, null);
  *     } catch (Throwable e) {
@@ -58,16 +60,29 @@ import java.util.function.Consumer;
 @SuppressWarnings("unused")
 public class CompletableFuture<R, S, T extends CompletableTask<R, S>> extends AbstractFuture<R, S, T> {
 
-    protected CompletableFuture(@NotNull AsyncManager asyncManager) {
-        this(null, asyncManager);
+    private final boolean supportsBeforeExecutionListener;
+
+    protected CompletableFuture(
+            @NotNull AsyncManager asyncManager,
+            boolean supportsBeforeExecutionListener
+    ) {
+        this(null, asyncManager, supportsBeforeExecutionListener);
     }
 
-    public static <R, S> @NotNull CompletableFuture<R, S, CompletableTask<R, S>> create(@NotNull AsyncManager asyncManager) {
-        return new CompletableFuture<>(asyncManager);
+    public static <R, S> @NotNull CompletableFuture<R, S, CompletableTask<R, S>> create(
+            @NotNull AsyncManager asyncManager,
+            boolean supportsBeforeExecutionListener
+    ) {
+        return new CompletableFuture<>(asyncManager, supportsBeforeExecutionListener);
     }
 
-    public CompletableFuture(@Nullable T task, @NotNull AsyncManager asyncManager) {
+    public CompletableFuture(
+            @Nullable T task,
+            @NotNull AsyncManager asyncManager,
+            boolean supportsBeforeExecutionListener
+    ) {
         super(task, asyncManager);
+        this.supportsBeforeExecutionListener = supportsBeforeExecutionListener;
     }
 
     public void complete(@Nullable R result, @NotNull S secondary, @Nullable AsyncError error) {
@@ -77,6 +92,10 @@ public class CompletableFuture<R, S, T extends CompletableTask<R, S>> extends Ab
         synchronized (lock) {
             this.result =  new ComputationResult<>(result, secondary, error);
             this.done = true;
+
+            if(isCanceled())
+                return; //If it was canceled return here, so the listeners will not be called.
+
             lock.notifyAll();
         }
 
@@ -92,13 +111,49 @@ public class CompletableFuture<R, S, T extends CompletableTask<R, S>> extends Ab
         }
     }
 
-    @Override
-    public @NotNull Future<R, S> beforeExecution(@NotNull Consumer<Future<R, S>> consumer) {
-        throw new UnsupportedOperationException("Completable future does not support before execution listener.");
+    /**
+     * Set the future's state to {@link #hasStarted() started} if it was not {@link #isCanceled() canceled} or already
+     * {@link #hasStarted() started} before.
+     * <br>
+     * To {@link #complete(Object, Object, AsyncError)} a future it is not required to call this function before. (but it is
+     * recommended)
+     * @return {@code true} if the future was {@link #cancel() canceled} or {@link #hasStarted() started}. {@code false}
+     * if execution may be started.
+     */
+    public boolean startIfNotCanceled() {
+        synchronized (lock) {
+            if(isCanceled() || hasStarted() || isDone())
+                return true;
+        }
+
+        try {
+            final Consumer<Future<R, S>> before = this.before;
+            if(before != null) before.accept(this);
+        } catch (Throwable t) {
+            getAsyncManager().onExceptionInListener(this, task, t);
+        }
+
+        synchronized (lock) {
+            if (isCanceled() || hasStarted() || isDone())
+                return true;
+
+            started = true;
+            return true;
+        }
     }
 
     @Override
-    public @NotNull Future<R, S> cancel() {
-        throw new UnsupportedOperationException("Completable future cannot be canceled.");
+    public @NotNull Future<R, S> beforeExecution(@NotNull Consumer<Future<R, S>> consumer) {
+        if(!supportsBeforeExecutionListener)
+            throw new UnsupportedOperationException("Completable future does not support before execution listener.");
+        return super.beforeExecution(consumer);
+    }
+
+    /**
+     *
+     * @return {@code true} if this future supports a {@link #beforeExecution(Consumer)} listener.
+     */
+    public boolean supportsBeforeExecutionListener() {
+        return supportsBeforeExecutionListener;
     }
 }

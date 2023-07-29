@@ -50,7 +50,12 @@ public class ExecutableFuture<R, S, T extends ExecutableTask<R, S>> extends Abst
     public @Nullable ComputationResult<R, S> executeHere() throws InterruptedException {
 
         synchronized (lock) {
-            if (isDone() || hasStarted()) return result;
+            if (isDone() || hasStarted())
+                return get();
+            if(isCanceled())
+                return null;
+
+            started = true;
         }
 
         try {
@@ -61,11 +66,8 @@ public class ExecutableFuture<R, S, T extends ExecutableTask<R, S>> extends Abst
         }
 
         synchronized (lock) {
-            if(isCanceled()) {
-                lock.notifyAll();
+            if(isCanceled())
                 return null;
-            }
-            started = true;
         }
 
         assert task != null; //initialized in constructor as @NotNull
@@ -74,6 +76,10 @@ public class ExecutableFuture<R, S, T extends ExecutableTask<R, S>> extends Abst
         synchronized (lock) {
             this.result = result;
             this.done = true;
+
+            if(isCanceled())
+                return result; //if it was canceled, return here to avoid calling then listeners.
+
             lock.notifyAll();
         }
 

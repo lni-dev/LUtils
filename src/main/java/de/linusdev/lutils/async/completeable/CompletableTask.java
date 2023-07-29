@@ -20,8 +20,10 @@ import de.linusdev.lutils.async.ComputationResult;
 import de.linusdev.lutils.async.Future;
 import de.linusdev.lutils.async.PTask;
 import de.linusdev.lutils.async.Task;
+import de.linusdev.lutils.async.error.AsyncError;
 import de.linusdev.lutils.async.exception.CannotQueueTaskException;
 import de.linusdev.lutils.async.manager.AsyncManager;
+import org.jetbrains.annotations.NonBlocking;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -41,6 +43,7 @@ import java.util.function.Consumer;
  *         //Store the future for later completion or start execution...
  *         new Thread(() -> {
  *             try {
+ *                 //Do work:
  *                 Thread.sleep(3000);
  *                 //complete the future in a different Thread
  *                 future.complete("Hello", Nothing.INSTANCE, null);
@@ -78,14 +81,24 @@ public abstract class CompletableTask<R, S> implements PTask<R, S> {
 
     @Override
     public @NotNull CompletableFuture<R, S, CompletableTask<R, S>> consumeAndQueue(@Nullable Consumer<Future<R, S>> consumer) {
-        CompletableFuture<R, S, CompletableTask<R, S>> future = new CompletableFuture<>(this, asyncManager);
+        CompletableFuture<R, S, CompletableTask<R, S>> future = new CompletableFuture<>(this, asyncManager, true);
         if(consumer != null) consumer.accept(future);
+        if(future.startIfNotCanceled()) return future;
         start(future);
         return future;
     }
 
-    public abstract void start(@NotNull CompletableFuture<R, S, CompletableTask<R, S>> future) throws CannotQueueTaskException;
-
+    /**
+     * This method should start the execution of this task. The execution should start in a new thread and not block the
+     * current thread. Once the execution has finished, the future must be {@link CompletableFuture#complete(Object, Object, AsyncError) completed}
+     * with the execution result.
+     * <br><br>
+     * {@link CompletableFuture#startIfNotCanceled()} will automatically be called before this method.
+     * @param future the future which should be {@link CompletableFuture#complete(Object, Object, AsyncError) completed}
+     * @throws CannotQueueTaskException if the task cannot be started
+     */
+    @NonBlocking
+    protected abstract void start(@NotNull CompletableFuture<R, S, CompletableTask<R, S>> future) throws CannotQueueTaskException;
 
     @Override
     public @NotNull AsyncManager getAsyncManager() {
