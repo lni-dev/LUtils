@@ -2,15 +2,29 @@ package de.linusdev.lutils.struct.array;
 
 import de.linusdev.lutils.struct.abstracts.NativeParsable;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Range;
 
 import java.util.Iterator;
 
 public interface NativeArray<T> extends Iterable<T>, NativeParsable {
 
-    T get(int index);
+    /**
+     * Get {@link T} with at {@code index}
+     * @param index index to get from. Must be greater than 0 and smaller then {@link #length()}.
+     * @return {@link T} at {@code index}
+     */
+    T get(@Range(from = 0, to = Integer.MAX_VALUE) int index);
 
-    void set(int index, T t);
+    /**
+     * Sets given {@link T} at index.
+     * @param index index to set.  Must be greater than 0 and smaller then {@link #length()}.
+     * @param item to set at index
+     */
+    void set(int index, T item);
 
+    /**
+     * @return length of this array.
+     */
     int length();
 
     @NotNull

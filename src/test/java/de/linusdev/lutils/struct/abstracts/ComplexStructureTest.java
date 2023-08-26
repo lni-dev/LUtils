@@ -7,13 +7,27 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class ComplexStructureTest {
+public class ComplexStructureTest {
 
     @Test
     void test() {
-        TestStruct testStruct = new TestStruct(true);
+        TestStruct testStruct = new TestStruct(true, true);
 
         assertFalse(testStruct.getInfo().isCompressed());
+
+        assertTrue(testStruct.isInitialised());
+        assertTrue(testStruct.pArray.isInitialised());
+        assertTrue(testStruct.dArray.isInitialised());
+
+        assertTrue(testStruct.getPointer() != 0L);
+
+        assertEquals(0, testStruct.getOffset());
+        assertEquals(0, testStruct.pArray.getOffset());
+        assertEquals(testStruct.pArray.getRequiredSize() + 4, testStruct.dArray.getOffset());
+
+        assertEquals(testStruct, testStruct.getMostParentStructure());
+        assertEquals(testStruct, testStruct.pArray.getMostParentStructure());
+        assertEquals(testStruct, testStruct.dArray.getMostParentStructure());
 
         System.out.println(testStruct);
 
@@ -27,9 +41,9 @@ class ComplexStructureTest {
         public final @StructValue @FixedLength(value = 3, elementTypes = Double.class)
         PrimitiveTypeArray<Double> dArray = new PrimitiveTypeArray<>(Double.class, 3, false);
 
-        public TestStruct(boolean trackModifications) {
+        public TestStruct(boolean trackModifications, boolean allocateBuffer) {
             super(trackModifications);
-            init(true);
+            init(allocateBuffer);
         }
     }
 }

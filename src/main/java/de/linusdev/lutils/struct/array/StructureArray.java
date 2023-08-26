@@ -39,7 +39,7 @@ public class StructureArray<T extends Structure> extends ModTrackingStructure im
     private final @NotNull ArrayStructureInfo info;
     private final @NotNull ElementCreator<T> creator;
 
-    private final @Nullable Structure @NotNull [] items;
+    private final Structure @NotNull [] items;
     private final int size;
 
     public StructureArray(
@@ -75,14 +75,25 @@ public class StructureArray<T extends Structure> extends ModTrackingStructure im
         return size;
     }
 
+    /**
+     * Similar to {@link #get(int)}, but if the item at {@code index} is still {@code null},
+     * a new item will be {@link ElementCreator#create() created}.
+     * @see #get(int)
+     */
     @SuppressWarnings("unchecked")
-    public T get(int index) {
+    public @NotNull T getOrCreate(int index) {
         if(items[index] == null) {
             Structure item = (items[index] = creator.create());
-            if(item != null)
-                callUseBufferOf(item, this.mostParentStructure, this.offset + (elementInfo.getRequiredSize() * index));
+            callUseBufferOf(item, this.mostParentStructure, this.offset + (elementInfo.getRequiredSize() * index));
+            return (T) item;
         }
 
+        return (T) items[index];
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public T get(int index) {
         return (T) items[index];
     }
 
@@ -94,7 +105,7 @@ public class StructureArray<T extends Structure> extends ModTrackingStructure im
 
     @FunctionalInterface
     public interface ElementCreator<T extends Structure> {
-        @Nullable T create();
+        @NotNull T create();
     }
 
     @Override

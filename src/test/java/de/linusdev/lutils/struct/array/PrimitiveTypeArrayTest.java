@@ -11,6 +11,11 @@ class PrimitiveTypeArrayTest {
         int length = 13;
         PrimitiveTypeArray<Float> pArray = new PrimitiveTypeArray<>(Float.class, length, true);
 
+        assertTrue(pArray.isInitialised());
+        assertTrue(pArray.getPointer() != 0L);
+        assertEquals(0, pArray.getOffset());
+        assertEquals(pArray, pArray.getMostParentStructure());
+
         assertEquals(pArray.getInfo().getAlignment(), Float.BYTES);
         assertEquals(pArray.getInfo().getRequiredSize(), Float.BYTES * length);
         assertArrayEquals(pArray.getInfo().getSizes(), new int[]{0, Float.BYTES * length, 0});
