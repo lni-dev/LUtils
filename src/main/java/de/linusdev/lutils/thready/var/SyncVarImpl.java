@@ -34,9 +34,7 @@ public class SyncVarImpl<T> implements SyncVar<T>{
 
     @Override
     public @Nullable T get() {
-        synchronized (lock) {
-            return var;
-        }
+        return var;
     }
 
     @Override
