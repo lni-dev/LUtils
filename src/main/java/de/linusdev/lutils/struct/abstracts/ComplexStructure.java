@@ -98,7 +98,7 @@ public abstract class ComplexStructure extends ModTrackingStructure {
         super(trackModifications);
     }
 
-    public void init(boolean allocateBuffer, @Nullable Structure @NotNull ... items) {
+    protected void init(boolean allocateBuffer, @Nullable Structure @NotNull ... items) {
         this.items = items.length == 0 ? getInfo().getChildren(this) : items;
 
         if(allocateBuffer)
@@ -106,7 +106,7 @@ public abstract class ComplexStructure extends ModTrackingStructure {
     }
 
     @Override
-    public void useBuffer(@NotNull Structure mostParentStructure, int offset) {
+    protected void useBuffer(@NotNull Structure mostParentStructure, int offset) {
         super.useBuffer(mostParentStructure, offset);
         if(items == null)
             return;
