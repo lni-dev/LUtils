@@ -26,13 +26,9 @@ import java.nio.FloatBuffer;
 
 public abstract class BBFloatN extends BBVector implements FloatN {
 
-
-
     protected FloatBuffer buf;
-    protected final int memberCount;
 
-    public BBFloatN(int count, boolean allocateBuffer) {
-        this.memberCount = count;
+    public BBFloatN(boolean allocateBuffer) {
         if(allocateBuffer)
             allocate();
     }

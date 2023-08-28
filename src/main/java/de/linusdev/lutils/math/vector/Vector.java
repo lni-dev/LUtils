@@ -109,7 +109,7 @@ public interface Vector {
      * @throws UnsupportedOperationException if this vector is not {@link #isView() a view on another vector}.
      */
     default @NotNull Vector getOriginal() {
-        throw new UnsupportedOperationException("This vector is not buffer backed.");
+        throw new UnsupportedOperationException("This vector is not a view vector.");
     }
 
     /**

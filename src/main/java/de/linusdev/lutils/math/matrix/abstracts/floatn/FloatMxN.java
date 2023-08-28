@@ -14,24 +14,27 @@
  * limitations under the License.
  */
 
-package de.linusdev.lutils.math.vector.buffer.floatn;
+package de.linusdev.lutils.math.matrix.abstracts.floatn;
 
-
-import de.linusdev.lutils.math.vector.abstracts.floatn.Float1;
-import de.linusdev.lutils.math.vector.buffer.BBVectorInfo;
-import de.linusdev.lutils.struct.info.StructureInfo;
+import de.linusdev.lutils.math.general.FloatElements;
+import de.linusdev.lutils.math.matrix.Matrix;
 import org.jetbrains.annotations.NotNull;
 
-public class BBFloat1 extends BBFloatN implements Float1 {
+public interface FloatMxN extends Matrix, FloatElements {
 
-    public static BBVectorInfo INFO = BBVectorInfo.create(ELEMENT_TYPE_NAME, MEMBER_COUNT, ELEMENT_SIZE);
+    float get(int y, int x);
 
-    public BBFloat1(boolean allocateBuffer) {
-        super(allocateBuffer);
+    void put(int y, int x, float value);
+
+    @SuppressWarnings("UnusedReturnValue")
+    default @NotNull FloatMxN fillFromArray(float @NotNull [] data) {
+        for(int y = 0; y < getHeight(); y++) {
+            for(int x = 0; x < getWidth(); x++) {
+                put(y, x, (data[y * getWidth() + x]));
+            }
+        }
+
+        return this;
     }
 
-    @Override
-    public @NotNull StructureInfo getInfo() {
-        return INFO;
-    }
 }

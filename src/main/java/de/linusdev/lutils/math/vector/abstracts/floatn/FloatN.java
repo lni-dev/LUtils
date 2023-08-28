@@ -16,13 +16,11 @@
 
 package de.linusdev.lutils.math.vector.abstracts.floatn;
 
+import de.linusdev.lutils.math.general.FloatElements;
 import de.linusdev.lutils.math.vector.Vector;
 import org.jetbrains.annotations.NotNull;
 
-public interface FloatN extends Vector {
-
-    @NotNull String ELEMENT_TYPE_NAME = "float";
-    int ELEMENT_SIZE = Float.BYTES;
+public interface FloatN extends Vector, FloatElements {
 
     /**
      * Get component at position {@code index}.
@@ -43,9 +41,17 @@ public interface FloatN extends Vector {
     void put(int index, float value);
 
     @Override
-    @NotNull
-    default FloatN getOriginal() {
-        throw new UnsupportedOperationException();
+    default @NotNull FloatN getOriginal() {
+        throw new UnsupportedOperationException("This vector is not a view vector.");
+    }
+
+    @SuppressWarnings("UnusedReturnValue")
+    default @NotNull FloatN fillFromArray(float @NotNull [] data) {
+        for(int x = 0; x < getMemberCount(); x++) {
+            put(x, (data[x]));
+        }
+
+        return this;
     }
 
     abstract class View extends Vector.View<FloatN> implements FloatN {

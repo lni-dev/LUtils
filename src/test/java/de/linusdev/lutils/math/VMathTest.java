@@ -1,0 +1,627 @@
+package de.linusdev.lutils.math;
+
+import de.linusdev.lutils.math.matrix.abstracts.floatn.Float3x3;
+import de.linusdev.lutils.math.matrix.abstracts.floatn.Float4x4;
+import de.linusdev.lutils.math.matrix.abstracts.floatn.FloatMxN;
+import de.linusdev.lutils.math.matrix.array.floatn.ABFloat3x3;
+import de.linusdev.lutils.math.matrix.array.floatn.ABFloat4x4;
+import de.linusdev.lutils.math.matrix.buffer.floatn.BBFloat3x3;
+import de.linusdev.lutils.math.matrix.buffer.floatn.BBFloat4x4;
+import de.linusdev.lutils.math.vector.abstracts.floatn.Float3;
+import de.linusdev.lutils.math.vector.abstracts.floatn.Float4;
+import de.linusdev.lutils.math.vector.abstracts.floatn.FloatN;
+import de.linusdev.lutils.math.vector.array.floatn.ABFloat1;
+import de.linusdev.lutils.math.vector.array.floatn.ABFloat2;
+import de.linusdev.lutils.math.vector.array.floatn.ABFloat3;
+import de.linusdev.lutils.math.vector.array.floatn.ABFloat4;
+import de.linusdev.lutils.math.vector.buffer.floatn.BBFloat1;
+import de.linusdev.lutils.math.vector.buffer.floatn.BBFloat2;
+import de.linusdev.lutils.math.vector.buffer.floatn.BBFloat3;
+import de.linusdev.lutils.math.vector.buffer.floatn.BBFloat4;
+import org.jetbrains.annotations.NotNull;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+
+import java.util.ArrayList;
+import java.util.Collection;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+class VMathTest {
+    @Test
+    void add() {
+        BBFloat4 a = new BBFloat4(true);
+        a.xyzw(1f, 2f, 3f, 4f);
+
+        BBFloat4 b = new BBFloat4(true);
+        b.xyzw(1f, 2f, 3f, 4f);
+
+        VMath.add(a, b, a);
+
+        assertEquals(2f, a.x());
+        assertEquals(4f, a.y());
+        assertEquals(6f, a.z());
+        assertEquals(8f, a.w());
+    }
+
+    @Test
+    void subtract() {
+        BBFloat4 a = new BBFloat4(true);
+        a.xyzw(2f, 2f, 3f, 1f);
+
+        BBFloat4 b = new BBFloat4(true);
+        b.xyzw(1f, 2f, 3f, 4f);
+
+        VMath.subtract(a, b, a);
+
+        assertEquals(1f, a.x());
+        assertEquals(0f, a.y());
+        assertEquals(0f, a.z());
+        assertEquals(-3f, a.w());
+    }
+
+    @Test
+    void multiply() {
+        BBFloat4 a = new BBFloat4(true);
+        a.xyzw(2f, 2f, 3f, 1f);
+
+        BBFloat4 b = new BBFloat4(true);
+        b.xyzw(1f, 2f, 3f, 4f);
+
+        VMath.multiply(a, b, a);
+
+        assertEquals(2f, a.x());
+        assertEquals(4f, a.y());
+        assertEquals(9f, a.z());
+        assertEquals(4f, a.w());
+    }
+
+    @Test
+    void divide() {
+        BBFloat4 a = new BBFloat4(true);
+        a.xyzw(2f, 2f, 3f, 1f);
+
+        BBFloat4 b = new BBFloat4(true);
+        b.xyzw(1f, 2f, 3f, 4f);
+
+        VMath.divide(a, b, a);
+
+        assertEquals(2f, a.x());
+        assertEquals(1f, a.y());
+        assertEquals(1f, a.z());
+        assertEquals(1f/4f, a.w());
+    }
+
+    @Test
+    void scale() {
+        BBFloat4 a = new BBFloat4(true);
+        a.xyzw(2f, 2f, 3f, 1f);
+
+        VMath.scale(a, 2.f, a);
+
+        assertEquals(4f, a.x());
+        assertEquals(4f, a.y());
+        assertEquals(6f, a.z());
+        assertEquals(2f, a.w());
+    }
+
+    @Test
+    void dot() {
+        BBFloat4 a = new BBFloat4(true);
+        a.xyzw(2f, 2f, 3f, 1f);
+
+        BBFloat4 b = new BBFloat4(true);
+        b.xyzw(1f, 2f, 3f, 4f);
+
+        assertEquals(2f+4f+9f+4f, VMath.dot(a, b));
+    }
+
+    @Test
+    void cross() {
+        BBFloat3 a = new BBFloat3(true);
+        a.xyz(2f, 2f, 3f);
+
+        BBFloat3 b = new BBFloat3(true);
+        b.xyz(1f, 2f, 3f);
+
+        VMath.cross(a, b, a);
+
+        assertEquals(0f, a.x());
+        assertEquals(-3f, a.y());
+        assertEquals(2f, a.z());
+    }
+
+    @Test
+    void normalize() {
+        BBFloat3 a = new BBFloat3(true);
+        a.xyz(2f, 2f, 3f);
+
+        VMath.normalize(a, a);
+
+        assertEquals(0.48507127f, a.x());
+        assertEquals(0.48507127f, a.y());
+        assertEquals(0.7276069f, a.z());
+    }
+
+    @Test
+    void determinantFloat4x4() {
+        ABFloat4x4 mat = new ABFloat4x4();
+
+        mat.put(0, 0, 1);
+        mat.put(0, 1, -5.5f);
+        mat.put(0, 2, 3);
+        mat.put(0, 3, 7);
+
+        mat.put(1, 0, 8);
+        mat.put(1, 1, 2);
+        mat.put(1, 2, -1.5f);
+        mat.put(1, 3, 1);
+
+        mat.put(2, 0, 3);
+        mat.put(2, 1, 4);
+        mat.put(2, 2, 7.67f);
+        mat.put(2, 3, 5.5f);
+
+        mat.put(3, 0, 3.2f);
+        mat.put(3, 1, 2.1f);
+        mat.put(3, 2, 5f);
+        mat.put(3, 3, 6.6f);
+
+        System.out.println("Matrix: " + mat);
+        System.out.println("Determinant: " + VMath.determinant(mat));
+
+        assertEquals(959.26385f, VMath.determinant(mat));
+    }
+
+    @Test
+    void adjugateFloat4x4() {
+        ABFloat4x4 res = new ABFloat4x4();
+        ABFloat4x4 mat = new ABFloat4x4();
+
+        mat.put(0, 0, 1);
+        mat.put(0, 1, 5.5f);
+        mat.put(0, 2, 3);
+        mat.put(0, 3, 7);
+
+        mat.put(1, 0, 8);
+        mat.put(1, 1, 2);
+        mat.put(1, 2, 1.5f);
+        mat.put(1, 3, 1);
+
+        mat.put(2, 0, 3);
+        mat.put(2, 1, 4);
+        mat.put(2, 2, 7);
+        mat.put(2, 3, 5.5f);
+
+        mat.put(3, 0, 3.2f);
+        mat.put(3, 1, 2.1f);
+        mat.put(3, 2, 5f);
+        mat.put(3, 3, 6.6f);
+
+        System.out.println("toAdjugate: " + mat);
+
+        VMath.adjugate(mat, res);
+
+        System.out.println("Adjugate: " + res);
+
+        assertEquals(20.42501f,     res.get(0, 0));
+        assertEquals(-95.40001f,    res.get(0, 1));
+        assertEquals(41.60000f,     res.get(0, 2));
+        assertEquals(-41.87500f,    res.get(0, 3));
+
+        assertEquals(-138.89999f,   res.get(1, 0));
+        assertEquals(-39.70000f,    res.get(1, 1));
+        assertEquals(-102.50000f,   res.get(1, 2));
+        assertEquals(238.75000f,    res.get(1, 3));
+
+        assertEquals(107.899994f,   res.get(2, 0));
+        assertEquals(42.749996f,    res.get(2, 1));
+        assertEquals(-188.90001f,   res.get(2, 2));
+        assertEquals(36.50000f,     res.get(2, 3));
+
+        assertEquals(-47.450012f,   res.get(3, 0));
+        assertEquals(26.500006f,    res.get(3, 1));
+        assertEquals(155.54999f,    res.get(3, 2));
+        assertEquals(-197.25000f,   res.get(3, 3));
+    }
+
+    @Test
+    void inverseFloat4x4() {
+        ABFloat4x4 res = new ABFloat4x4();
+        ABFloat4x4 mat = new ABFloat4x4();
+
+        mat.put(0, 0, 1);
+        mat.put(0, 1, 5.5f);
+        mat.put(0, 2, 3);
+        mat.put(0, 3, 7);
+
+        mat.put(1, 0, 8);
+        mat.put(1, 1, 2);
+        mat.put(1, 2, 1.5f);
+        mat.put(1, 3, 1);
+
+        mat.put(2, 0, 3);
+        mat.put(2, 1, 4);
+        mat.put(2, 2, 7);
+        mat.put(2, 3, 5.5f);
+
+        mat.put(3, 0, 3.2f);
+        mat.put(3, 1, 2.1f);
+        mat.put(3, 2, 5f);
+        mat.put(3, 3, 6.6f);
+
+        System.out.println("toInverse: " + mat);
+
+        VMath.inverse(mat, res);
+
+        System.out.println("Inverse: " + res);
+
+        assertEquals(-0.027161822f,             res.get(0, 0));
+        assertEquals(0.12686592f,               res.get(0, 1));
+        assertEquals(-0.05532098561525345,      res.get(0, 2));
+        assertEquals(0.055686691711825526106f,  res.get(0, 3));
+
+        assertEquals(0.18471357f,               res.get(1, 0));
+        assertEquals(0.052794308321420259988f,  res.get(1, 1));
+        assertEquals(0.13630772299611024305f,   res.get(1, 2));
+        assertEquals(-0.31749725722264702952f,  res.get(1, 3));
+
+        assertEquals(-0.143488809466362f,       res.get(2, 0));
+        assertEquals(-0.056850288f,             res.get(2, 1));
+        assertEquals(0.25120518f,               res.get(2, 2));
+        assertEquals(-0.04853884770105389139f,  res.get(2, 3));
+
+        assertEquals(0.06310052f,               res.get(3, 0));
+        assertEquals(-0.035240542f,             res.get(3, 1));
+        assertEquals(-0.20685527f,              res.get(3, 2));
+        assertEquals(0.26230925230227068722f,   res.get(3, 3));
+    }
+
+    private static Collection<Arguments> provideMultiplyFloat4TimesFloat4x4() {
+        ArrayList<Arguments> list = new ArrayList<>();
+
+        float[] left = new float[] {
+                1.3f, 4.2f, 6.55f, 3f,
+                1f, 1f, 5.4f, 3.3f,
+                -1f, 22.45f, 6.6f, 0.1f,
+                -5f, 2.35f, 3.6f, 0.7f
+        };
+        float[] right = new float[] {3.3f, 4.5f, -1f, 7.88f};
+
+        Float4x4[] float4x4s = new Float4x4[]{
+                new ABFloat4x4(),
+                new BBFloat4x4(true),
+                new ABFloat4x4(),
+                new BBFloat4x4(true),
+                new BBFloat4x4(true),
+                new BBFloat4x4(true),
+                new BBFloat4x4(true),
+                new BBFloat4x4(true),
+                new ABFloat4x4(),
+                new ABFloat4x4(),
+                new ABFloat4x4(),
+                new ABFloat4x4(),
+        };
+
+        Float4[] float4s = new Float4[] {
+                new ABFloat4(),
+                new BBFloat4(true),
+                new ABFloat4().wzyx(),
+                new BBFloat4(true).wzyx(),
+                new ABFloat4(),
+                new BBFloat4(true),
+                new ABFloat4().wzyx(),
+                new BBFloat4(true).wzyx(),
+                new ABFloat4(),
+                new BBFloat4(true),
+                new ABFloat4().wzyx(),
+                new BBFloat4(true).wzyx(),
+        };
+
+
+
+        Float4[] stores = new Float4[] {
+                new ABFloat4(),
+                new BBFloat4(true),
+                new ABFloat4().wzyx(),
+                new BBFloat4(true).wzyx(),
+                float4s[4],
+                float4s[5],
+                float4s[6],
+                float4s[7],
+                float4s[8].wzyx(),
+                float4s[9].wzyx(),
+                float4s[10].wzyx(),
+                float4s[11].wzyx()
+        };
+
+        for(Float4 f : float4s) {
+            f.xyzw(right[0], right[1], right[2], right[3]);
+        }
+
+        for(Float4x4 f : float4x4s) {
+            f.fillFromArray(left);
+        }
+
+        for(int i = 0; i < float4s.length; i++) {
+            list.add(Arguments.of(float4x4s[i], float4s[i], stores[i], 40.28f, 28.404f, 91.913f, -4.009f));
+        }
+
+        return list;
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideMultiplyFloat4TimesFloat4x4")
+    void testMultiplyFloat4TimesFloat4x4(
+            @NotNull Float4x4 left, @NotNull Float4 right,  @NotNull Float4 store,
+            float resX, float resY, float resZ, float resW
+    ) {
+
+        System.out.println("left: " + left);
+        System.out.println("right: " + right);
+
+        VMath.multiply(left, right, store);
+
+        assertTrue(VMath.equals(store, new float[]{resX, resY, resZ, resW}, 0.0001f));
+    }
+
+    private static Collection<Arguments> provideMultiplyFloat3TimesFloat3x3() {
+        ArrayList<Arguments> list = new ArrayList<>();
+
+        float[] left = new float[] {
+                1.3f, 4.2f, 6.55f,
+                1f, 1f, 5.4f,
+                -1f, 22.45f, 6.6f,
+        };
+        float[] right = new float[] {3.3f, 4.5f, -1f,};
+
+        Float3x3[] float3x3s = new Float3x3[]{
+                new ABFloat3x3(),
+                new BBFloat3x3(true),
+                new ABFloat3x3(),
+                new BBFloat3x3(true),
+                new BBFloat3x3(true),
+                new BBFloat3x3(true),
+                new BBFloat3x3(true),
+                new BBFloat3x3(true),
+                new ABFloat3x3(),
+                new ABFloat3x3(),
+                new ABFloat3x3(),
+                new ABFloat3x3(),
+        };
+
+        Float3[] float3s = new Float3[] {
+                new ABFloat3(),
+                new BBFloat3(true),
+                new ABFloat3().zyx(),
+                new BBFloat3(true).zyx(),
+                new ABFloat3(),
+                new BBFloat3(true),
+                new ABFloat3().zyx(),
+                new BBFloat3(true).zyx(),
+                new ABFloat3(),
+                new BBFloat3(true),
+                new ABFloat3().zyx(),
+                new BBFloat3(true).zyx(),
+        };
+
+
+
+        Float3[] stores = new Float3[] {
+                new ABFloat3(),
+                new BBFloat3(true),
+                new ABFloat3().zyx(),
+                new BBFloat3(true).zyx(),
+                float3s[4],
+                float3s[5],
+                float3s[6],
+                float3s[7],
+                float3s[8].zyx(),
+                float3s[9].zyx(),
+                float3s[10].zyx(),
+                float3s[11].zyx()
+        };
+
+        for(Float3 f : float3s) {
+            f.fillFromArray(right);
+        }
+
+        for(Float3x3 f : float3x3s) {
+            f.fillFromArray(left);
+        }
+
+        for(int i = 0; i < float3s.length; i++) {
+            list.add(Arguments.of(float3x3s[i], float3s[i], stores[i], 16.64f, 2.4f, 91.125f));
+        }
+
+        return list;
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideMultiplyFloat3TimesFloat3x3")
+    void testMultiplyFloat3TimesFloat3x3(
+            @NotNull Float3x3 left, @NotNull Float3 right, @NotNull Float3 store,
+            float resX, float resY, float resZ
+    ) {
+
+        System.out.println("left: " + left);
+        System.out.println("right: " + right);
+
+        VMath.multiply(left, right, store);
+
+        System.out.println("result: " + store);
+
+        assertTrue(VMath.equals(store, new float[]{resX, resY, resZ}, 0.0001f));
+    }
+
+
+    private static @NotNull Collection<Arguments> provideVectorEqualsArgs() {
+        ArrayList<Arguments> list = new ArrayList<>();
+
+        FloatN[] vectorsA = new FloatN[] {
+                new ABFloat1(),
+                new ABFloat2(),
+                new ABFloat3(),
+                new ABFloat4(),
+                new ABFloat1(),
+                new ABFloat2(),
+                new ABFloat3(),
+                new ABFloat4(),
+                new BBFloat1(true),
+                new BBFloat2(true),
+                new BBFloat3(true),
+                new BBFloat4(true),
+                new BBFloat1(true),
+                new BBFloat2(true),
+                new BBFloat3(true),
+                new BBFloat4(true),
+        };
+
+        FloatN[] vectorsB = new FloatN[] {
+                new ABFloat1(),
+                new ABFloat2(),
+                new ABFloat3(),
+                new ABFloat4(),
+                new BBFloat1(true),
+                new BBFloat2(true),
+                new BBFloat3(true),
+                new BBFloat4(true),
+                new ABFloat1(),
+                new ABFloat2(),
+                new ABFloat3(),
+                new ABFloat4(),
+                new BBFloat1(true),
+                new BBFloat2(true),
+                new BBFloat3(true),
+                new BBFloat4(true),
+        };
+
+        float[][] datasA = new float[][] {
+                {1.f},
+                {1.f, 3.45f},
+                {1.f, 3.45f, 7.23f},
+                {1.f, 3.45f, 7.23f, 99.9f},
+                {1.f},
+                {1.f, 3.45f},
+                {1.f, 3.45f, 7.23f},
+                {1.f, 3.45f, 7.23f, 99.9f},
+                {1.f},
+                {1.f, 3.45f},
+                {1.f, 3.45f, 7.23f},
+                {1.f, 3.45f, 7.23f, 99.9f},
+                {1.f},
+                {1.f, 3.462f},
+                {1.f, 3.46f, 7.23f},
+                {1.f, 1.45f, 7.23f, 99.9f},
+        };
+
+        float[][] datasB = new float[][] {
+                {1.f},
+                {1.f, 3.45f},
+                {1.f, 3.45f, 7.23f},
+                {1.f, 3.45f, 7.23f, 99.9f},
+                {1.f},
+                {1.f, 3.46f},
+                {1.f, 3.45f, 77.23f},
+                {1.f, 3.45f, 7.23f, 99.9f},
+                {1.f},
+                {1.f, 3.45f},
+                {1.f, 3.45f, 7.23f},
+                {1.f, 3.45f, 7.23f, 99.9f},
+                {10.f},
+                {1.f, 3.45f},
+                {1.f, 3.45f, 7.23f},
+                {1.f, 4.45f, 7.23f, 99.9f},
+        };
+
+        float[] epsilons = new float[] {
+                0.0f, 0.0f, 0.0f, 0.0f,
+                0.0f, 0.01f, 5.0f, 0.0f,
+                0.0f, 0.0f, 0.0f, 0.0f,
+                0.0f, 0.01f, 0.01f, 0.0f,
+        };
+
+        boolean[] equals = new boolean[] {
+                true, true, true, true,
+                true, true, false, true,
+                true, true, true, true,
+                false, false, true, false,
+        };
+
+        for(int i = 0; i < equals.length; i++) {
+            vectorsA[i].fillFromArray(datasA[i]);
+            vectorsB[i].fillFromArray(datasB[i]);
+            list.add(Arguments.of(vectorsA[i], vectorsB[i], datasB[i], epsilons[i], equals[i]));
+        }
+
+
+        return list;
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideVectorEqualsArgs")
+    void testEqualsVector(@NotNull FloatN vector, @NotNull FloatN other, float @NotNull [] data, float epsilon, boolean result) {
+        assertEquals(result, VMath.equals(vector, data, epsilon));
+        assertEquals(result, VMath.equals(vector, other, epsilon));
+    }
+
+    private static @NotNull Collection<Arguments> provideMatrixEqualsArgs() {
+        ArrayList<Arguments> list = new ArrayList<>();
+
+        FloatMxN[] matricesA = new FloatMxN[]{
+                new ABFloat4x4(),
+                new ABFloat3x3(),
+                new BBFloat4x4(true),
+                new BBFloat3x3(true)
+        };
+
+        FloatMxN[] matricesB = new FloatMxN[]{
+                new ABFloat4x4(),
+                new BBFloat3x3(true),
+                new BBFloat4x4(true),
+                new ABFloat3x3(),
+        };
+
+        float[][] datasA = new float[][]{
+                {1.f, 4.3f, 5.55f, 46.4f, 1.f, 4.44f, 8.5f, 436.4f, 11.2f, 9.23f, 5.515f, 436.4f, 14.f, 4.23f, 5.455f, 465.4f,},
+                {1.f, 4.3f, 5.75f, 46.4f, 1.f, 4.44f, 8.5f, 434.4f, 11.2f,},
+                {1.f, 4.3f, 5.55f, 46.4f, 1.f, 4.44f, 8.5f, 436.4f, 11.2f, 9.23f, 5.515f, 436.4f, 14.f, 4.23f, 5.455f, 465.4f,},
+                {1.f, 4.3f, 5.55f, 46.4f, 1.f, 4.44f, 8.5f, 436.4f, 11.2f,},
+        };
+
+        float[][] datasB = new float[][]{
+                {1.f, 4.3f, 5.55f, 46.4f, 1.f, 4.44f, 8.5f, 436.4f, 11.2f, 9.23f, 5.515f, 436.4f, 14.f, 4.23f, 5.455f, 465.4f,},
+                {1.f, 4.3f, 5.55f, 46.4f, 1.f, 4.44f, 8.5f, 436.4f, 11.2f,},
+                {1.f, 4.3f, 5.55f, 46.4f, 1.f, 4.46f, 8.5f, 436.4f, 11.2f, 9.23f, 5.515f, 436.4f, 14.f, 4.23f, 5.455f, 465.4f,},
+                {1.f, 4.3f, 5.56f, 46.4f, 1.f, 4.43f, 8.51f, 436.4f, 11.2f,},
+        };
+
+        float[] epsilons = new float[]{
+                0.0f, 10.0f, 0.0f, 0.011f,
+        };
+
+        boolean[] equals = new boolean[]{
+                true, true, false, true,
+        };
+
+
+        for (int i = 0; i < equals.length; i++) {
+            matricesA[i].fillFromArray(datasA[i]);
+            matricesB[i].fillFromArray(datasB[i]);
+            list.add(Arguments.of(matricesA[i], matricesB[i], datasB[i], epsilons[i], equals[i]));
+        }
+
+        return list;
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideMatrixEqualsArgs")
+    void testEqualsMatrix(@NotNull FloatMxN matrix, @NotNull FloatMxN other, float @NotNull [] data, float epsilon, boolean result) {
+        assertEquals(result, VMath.equals(matrix, data, epsilon));
+        assertEquals(result, VMath.equals(matrix, other, epsilon));
+    }
+
+}

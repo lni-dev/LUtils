@@ -58,6 +58,10 @@ public interface Float3 extends FloatN, Vector3 {
         put(2, other.get(2));
     }
 
+    default @NotNull Float3 zyx() {
+        return new Float3.View(this, new int[]{2, 1, 0});
+    }
+
     class View extends FloatN.View implements Float3 {
         protected View(@NotNull FloatN original, int @NotNull [] mapping) {
             super(original, mapping);

@@ -18,9 +18,28 @@ package de.linusdev.lutils.math.matrix;
 
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * MxN Matrix
+ * <br><br>
+ * N: {@link #getWidth() Width} of the Matrix<br>
+ * M: {@link #getHeight() Height}  of the Matrix<br>
+ * <br><br>
+ * parameters of get and put methods:<br>
+ * x: from 0 (inclusive) to N (exclusive)<br>
+ * y: from 0 (inclusive) to M (exclusive)<br>
+ */
 public interface Matrix {
 
-    /*static @NotNull String toString(@NotNull String name, @NotNull FloatNxM matrix) {
+    @FunctionalInterface
+    interface MatrixGetter<M extends Matrix> {
+        @NotNull Object get(@NotNull M matrix, int y, int x);
+    }
+
+    static <M extends Matrix> @NotNull String toString(
+            @NotNull M matrix,
+            @NotNull String name,
+            @NotNull MatrixGetter<M> getter
+    ) {
         StringBuilder sb = new StringBuilder();
 
         sb
@@ -32,7 +51,7 @@ public interface Matrix {
 
         for(int y = 0; y < matrix.getHeight(); y++) {
             for(int x = 0; x < matrix.getWidth(); x++) {
-                sb.append(String.format(" % 10.2f ", matrix.get(x, y)));
+                sb.append(String.format(" % 10.2f ", ((Number) getter.get(matrix, y, x)).doubleValue()));
             }
             if(y != matrix.getHeight()-1)
                 sb.append("\n");
@@ -41,7 +60,7 @@ public interface Matrix {
         sb.append("\n]");
 
         return sb.toString();
-    }*/
+    }
 
     /**
      * For a NxM Matrix, return N.

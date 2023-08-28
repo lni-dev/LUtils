@@ -160,7 +160,8 @@ public class StructureArray<T extends Structure> extends ModTrackingStructure im
             StructureInfo elementInfo = SSMUtils.getInfo(arrayInfo.elementClass, null, null, null);
             StaticGenerator elementGenerator = SSMUtils.getGenerator(arrayInfo.elementClass, null);
 
-            return elementGenerator.getStructTypeName(language, arrayInfo.elementClass, elementInfo) + varName + "[]";
+            return elementGenerator.getStructTypeName(language, arrayInfo.elementClass, elementInfo) + varName
+                    + "[" + arrayInfo.length + "]" + language.lineEnding;
         }
     }
 }

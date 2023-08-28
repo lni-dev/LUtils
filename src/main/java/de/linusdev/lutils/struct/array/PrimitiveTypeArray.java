@@ -258,7 +258,8 @@ public class PrimitiveTypeArray<T> extends Structure implements NativeArray<T> {
         @Override
         public @NotNull String getStructVarDef(@NotNull Language language, @NotNull Class<?> selfClazz, @NotNull StructureInfo info, @NotNull String varName) {
             ArrayStructureInfo arrayInfo = (ArrayStructureInfo) info;
-            return language.getPrimitiveElementTypeName(arrayInfo.elementClass) + varName + "[]";
+            return language.getPrimitiveElementTypeName(arrayInfo.elementClass) + varName + "[" +  arrayInfo.length + "]"
+                    + language.lineEnding;
         }
     }
 }

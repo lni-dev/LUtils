@@ -16,13 +16,11 @@
 
 package de.linusdev.lutils.math.vector.abstracts.intn;
 
+import de.linusdev.lutils.math.general.IntElements;
 import de.linusdev.lutils.math.vector.Vector;
 import org.jetbrains.annotations.NotNull;
 
-public interface IntN extends Vector {
-
-    @NotNull String ELEMENT_TYPE_NAME = "int";
-    int ELEMENT_SIZE = Integer.BYTES;
+public interface IntN extends Vector, IntElements {
 
     /**
      * Get component at position {@code index}.
@@ -41,4 +39,9 @@ public interface IntN extends Vector {
      *  may result in undefined behavior.
      */
     void put(int index, int value);
+
+    @Override
+    default @NotNull IntN getOriginal() {
+        throw new UnsupportedOperationException("This vector is not a view vector.");
+    }
 }
