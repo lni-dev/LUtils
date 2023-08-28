@@ -22,11 +22,11 @@ import de.linusdev.lutils.math.vector.abstracts.floatn.Float2;
 public class ABFloat2 extends ABFloatN implements Float2 {
 
     public ABFloat2(float x, float y) {
-        super(new float[]{x, y}, 0, MEMBER_COUNT);
+        super(new float[]{x, y}, 0);
     }
 
     public ABFloat2(float[] array, int arrayStartIndex) {
-        super(array, arrayStartIndex, MEMBER_COUNT);
+        super(array, arrayStartIndex);
     }
 
     public ABFloat2() {

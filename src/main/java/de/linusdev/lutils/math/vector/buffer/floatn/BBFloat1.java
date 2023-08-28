@@ -24,7 +24,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class BBFloat1 extends BBFloatN implements Float1 {
 
-    public static BBVectorInfo INFO = BBVectorInfo.create(ELEMENT_TYPE_NAME, MEMBER_COUNT, ELEMENT_SIZE);
+    public static final BBVectorInfo INFO = BBVectorInfo.create(ELEMENT_TYPE_NAME, MEMBER_COUNT, ELEMENT_SIZE);
 
     public BBFloat1(boolean allocateBuffer) {
         super(allocateBuffer);

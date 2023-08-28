@@ -23,11 +23,11 @@ import de.linusdev.lutils.math.vector.abstracts.floatn.Float4;
 public class ABFloat4 extends ABFloatN implements Float4 {
 
     public ABFloat4(float x, float y, float z, float w) {
-        super(new float[]{x, y, z, w}, 0, MEMBER_COUNT);
+        super(new float[]{x, y, z, w}, 0);
     }
 
     public ABFloat4(float[] array, int arrayStartIndex) {
-        super(array, arrayStartIndex, MEMBER_COUNT);
+        super(array, arrayStartIndex);
     }
 
     public ABFloat4() {

@@ -24,18 +24,15 @@ public abstract class ABFloatN implements FloatN {
     protected final float[] array;
 
     protected final int arrayStartIndex;
-    protected final int memberCount;
 
-    public ABFloatN(float[] array, int arrayStartIndex, int memberCount) {
+    public ABFloatN(float[] array, int arrayStartIndex) {
         this.array = array;
         this.arrayStartIndex = arrayStartIndex;
-        this.memberCount = memberCount;
     }
 
     public ABFloatN(int memberCount) {
         this.array = new float[memberCount];
         this.arrayStartIndex = 0;
-        this.memberCount = memberCount;
     }
 
     @Override

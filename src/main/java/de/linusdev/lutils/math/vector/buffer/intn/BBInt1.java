@@ -10,7 +10,7 @@ public class BBInt1 extends BBIntN implements Int1 {
     public static final @NotNull BBVectorInfo INFO = BBVectorInfo.create(ELEMENT_TYPE_NAME, MEMBER_COUNT, ELEMENT_SIZE);
 
     public BBInt1(boolean allocateBuffer) {
-        super(MEMBER_COUNT, allocateBuffer);
+        super(allocateBuffer);
     }
 
     @Override

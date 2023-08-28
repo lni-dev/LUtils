@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
 
 public class Utils {
 
-    public static Unsafe UNSAFE;
+    public static final Unsafe UNSAFE;
 
     static {
         Field f;

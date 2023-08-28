@@ -27,10 +27,8 @@ import java.nio.IntBuffer;
 public abstract class BBIntN extends BBVector implements IntN {
 
     protected IntBuffer buf;
-    protected final int memberCount;
 
-    public BBIntN(int count, boolean allocateBuffer) {
-        this.memberCount = count;
+    public BBIntN( boolean allocateBuffer) {
         if(allocateBuffer)
             allocate();
     }
