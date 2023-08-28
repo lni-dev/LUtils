@@ -18,7 +18,7 @@ public class BBVectorInfo extends StructureInfo {
         int postPadding = size > 16 ? (16 - (size % 16)) % 16 : (Integer.highestOneBit(size) << 1) % size;
 
         return new BBVectorInfo(
-                Math.min(size, 16),
+                Math.min(size + postPadding, 16),
                 false,
                 0,
                 size,

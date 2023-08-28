@@ -13,7 +13,7 @@ public class BBMatrixInfo extends StructureInfo {
             @NotNull String elementTypeName
     ) {
         int size = width * height * elementSize;
-        int postPadding = elementSize - (size % elementSize);
+        int postPadding = (elementSize - (size % elementSize)) % elementSize;
 
         return new BBMatrixInfo(elementSize, false, 0, size, postPadding, elementTypeName, width, height);
     }
