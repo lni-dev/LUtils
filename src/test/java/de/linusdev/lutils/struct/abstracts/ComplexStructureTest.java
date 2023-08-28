@@ -54,13 +54,13 @@ public class ComplexStructureTest {
 
     public static class Test2Struct extends ComplexStructure {
 
-        public final @StructValue BBFloat4 a = new BBFloat4(false);
-        public final @StructValue BBFloat1 b = new BBFloat1(false);
-        public final @StructValue BBFloat4 c = new BBFloat4(false);
-        public final @StructValue BBFloat2 d = new BBFloat2(false);
-        public final @StructValue BBFloat3 e = new BBFloat3(false);
+        public final @StructValue(5) BBFloat4 a = new BBFloat4(false);
+        public final @StructValue(1) BBFloat1 b = new BBFloat1(false);
+        public final @StructValue(2) BBFloat4 c = new BBFloat4(false);
+        public final @StructValue(3) BBFloat2 d = new BBFloat2(false);
+        public final @StructValue(4) BBFloat3 e = new BBFloat3(false);
 
-        public final @StructValue BBFloat4x4 f = new BBFloat4x4(false);
+        public final @StructValue(0) BBFloat4x4 f = new BBFloat4x4(false);
 
         public Test2Struct(boolean trackModifications, boolean allocateBuffer) {
             super(trackModifications);
@@ -77,9 +77,16 @@ public class ComplexStructureTest {
         assertTrue(testStruct.getPointer() != 0L);
         assertEquals(0, testStruct.getOffset());
 
+        assertEquals(16, testStruct.a.getRequiredSize());
+        assertEquals(4, testStruct.b.getRequiredSize());
+        assertEquals(16, testStruct.c.getRequiredSize());
+        assertEquals(8, testStruct.d.getRequiredSize());
+        assertEquals(16, testStruct.e.getRequiredSize());
+        assertEquals(64, testStruct.f.getRequiredSize());
+
+        assertEquals(0, testStruct.f.getOffset());
+        assertEquals(128, testStruct.a.getOffset());
 
         System.out.println(testStruct);
-        System.out.println(testStruct.f.getRequiredSize());
-
     }
 }
