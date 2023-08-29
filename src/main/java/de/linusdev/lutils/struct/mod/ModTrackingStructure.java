@@ -80,16 +80,51 @@ public abstract class ModTrackingStructure extends Structure {
         return ret;
     }
 
-
+    /**
+     * Whether this structure tracks modifications using {@link ModificationInfo}.
+     */
     public boolean tracksModifications() {
         return trackModifications;
     }
 
-    public void acquireModificationLock() {
+    /**
+     * Calls {@link ModificationsHandler#handle(ModificationInfo)} for each {@link ModificationInfo}.
+     * If this structure was not {@link #isModified() modified}, {@code false} will be returned.
+     * @param handler {@link ModificationsHandler}
+     * @return {@code true} if this structure was {@link #isModified() modified}.
+     */
+    @SuppressWarnings("unused")
+    public boolean handleModifications(@NotNull ModificationsHandler handler) {
+        if (!isModified())
+            return false;
+
+        //set structure to unmodified first. During copying there may be coming in new modifications,
+        //that must be copied in the next handleModifications()...
+        unmodified();
+
+        if (!tracksModifications()) {
+            //No info about the modifications given. Copy the complete buffer.
+            handler.handle(new ModificationInfo(0, getRequiredSize()));
+            return true;
+        }
+
+        //Acquire lock for this structure's modifications info.
         modificationLock.lock();
+        try {
+            ModificationInfo first = getFirstModificationInfo(true);
+
+            while (first != null) {
+                handler.handle(first);
+                first = first.next;
+            }
+        } finally {
+            modificationLock.unlock();
+        }
+
+        return true;
     }
 
-    public void releaseModificationLock() {
-        modificationLock.unlock();
+    public interface ModificationsHandler {
+        void handle(@NotNull ModificationInfo info);
     }
 }
