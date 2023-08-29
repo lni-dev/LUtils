@@ -30,20 +30,30 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
+import java.util.Map;
 
 @StructureSettings(requiresCalculateInfoMethod = true)
 public abstract class ComplexStructure extends ModTrackingStructure {
 
     protected Structure [] items;
 
-    private static final @NotNull HashMap<Class<?>, ComplexStructureInfo> INFO_HASH_MAP = new HashMap<>();
+    private static final @NotNull Map<Class<?>, ComplexStructureInfo> INFO_MAP = new HashMap<>();
+    private static final @NotNull Object INFO_MAP_LOCK = new Object();
 
     @SuppressWarnings("unused")
     public static final @NotNull StaticGenerator GENERATOR = new StaticGenerator() {
 
         @Override
         public @NotNull ComplexStructureInfo calculateInfo(@NotNull Class<?> selfClazz, @Nullable FixedLength fixedLength) {
-            return INFO_HASH_MAP.computeIfAbsent(selfClazz, ComplexStructureInfo::generateFromStructVars);
+            synchronized (INFO_MAP_LOCK) {
+                ComplexStructureInfo info = INFO_MAP.get(selfClazz);
+                if(info == null) {
+                    info = ComplexStructureInfo.generateFromStructVars(selfClazz);
+                    INFO_MAP.put(selfClazz, info);
+                }
+
+                return info;
+            }
         }
 
         @Override
@@ -64,15 +74,14 @@ public abstract class ComplexStructure extends ModTrackingStructure {
                 if((((i-1) % 2) == 0)) {
                     StructVarInfo childInfo = childrenInfo[(i - 1)/2];
                     StaticGenerator childGenerator = SSMUtils.getGenerator(childInfo.getClazz(), null);
-                    String varDef = childGenerator.getStructVarDef(language, childInfo.getClazz(), childInfo.getInfo(), childInfo.getVarName());
-                    text = varDef + "\n";
+                    text = childGenerator.getStructVarDef(language, childInfo.getClazz(), childInfo.getInfo(), childInfo.getVarName());
                 } else {
                     StringBuilder pad = new StringBuilder();
                     paddingIndex = language.addPadding(pad, sizes[i], paddingIndex);
                     text = pad.toString();
                 }
 
-                sb.append(Utils.indent(text, "    "));
+                sb.append(Utils.indent(text, "    ")).append("\n");
             }
 
             sb.append(language.getEndStructString(true, getStructTypeName(language, selfClazz, info)));

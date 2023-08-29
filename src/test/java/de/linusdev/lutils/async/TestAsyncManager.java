@@ -19,7 +19,10 @@ import de.linusdev.lutils.async.queue.QueueableBase;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.parallel.Execution;
+import org.junit.jupiter.api.parallel.ExecutionMode;
 
+@Execution(ExecutionMode.CONCURRENT)
 public class TestAsyncManager implements AsyncManager, AsyncQueue<Nothing> {
     @Override
     public void checkThread() throws NonBlockingThreadException {

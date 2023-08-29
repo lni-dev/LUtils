@@ -80,21 +80,15 @@ public abstract class ModTrackingStructure extends Structure {
         return ret;
     }
 
-    /**
-     *
-     * @return {@code true} if this structure tracks modifications.
-     */
-    @ApiStatus.Internal
+
     public boolean tracksModifications() {
         return trackModifications;
     }
 
-    @ApiStatus.Internal
     public void acquireModificationLock() {
         modificationLock.lock();
     }
 
-    @ApiStatus.Internal
     public void releaseModificationLock() {
         modificationLock.unlock();
     }

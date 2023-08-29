@@ -1,9 +1,11 @@
 package de.linusdev.lutils.struct.abstracts;
 
+import de.linusdev.lutils.struct.generator.Language;
+import de.linusdev.lutils.struct.generator.StaticGenerator;
 import de.linusdev.lutils.struct.info.StructureInfo;
 import de.linusdev.lutils.struct.utils.BufferUtils;
+import de.linusdev.lutils.struct.utils.SSMUtils;
 import de.linusdev.lutils.struct.utils.Utils;
-import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -11,6 +13,25 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
 public abstract class Structure implements NativeParsable {
+
+    /**
+     * Generate struct code for given {@code structClass}
+     * @param language {@link Language} to generate the struct code in
+     * @param structClass Class of the structure to generate code for
+     * @return struct code
+     * @throws IllegalArgumentException if given class cannot generate struct code.
+     */
+    public static @NotNull String generateStructCode(@NotNull Language language, @NotNull Class<? extends Structure> structClass) {
+        StaticGenerator generator = SSMUtils.getGenerator(structClass, null);
+        StructureInfo info = SSMUtils.getInfo(structClass, null, null, generator);
+
+        String code = generator.generateStructCode(language, structClass, info);
+
+        if(code == null)
+            throw new IllegalArgumentException("Structure '" + structClass.getCanonicalName() + "' cannot generate struct code.");
+
+        return code;
+    }
 
     protected Structure mostParentStructure;
     protected ByteBuffer byteBuf;
@@ -124,13 +145,10 @@ public abstract class Structure implements NativeParsable {
     }
 
     /**
-     * Called on the most parental structure if on it or any of its children {@link #modified(int, int)} is called.
-     * @param offset modified region start
-     * @param size modified region size
+     * Marks this structure has not modified. May only be called on the most parental structure.
      */
-    @ApiStatus.OverrideOnly
-    protected void onModification(int offset, int size) {
-        modified = true;
+    public void unmodified() {
+        modified = false;
     }
 
     /**
@@ -144,11 +162,12 @@ public abstract class Structure implements NativeParsable {
     }
 
     /**
-     * Marks this structure has not modified. May only be called on the most parental structure.
+     * Called on the most parental structure if on it or any of its children {@link #modified(int, int)} is called.
+     * @param offset modified region start
+     * @param size modified region size
      */
-    @ApiStatus.Internal
-    public void unmodified() {
-        modified = false;
+    protected void onModification(int offset, int size) {
+        modified = true;
     }
 
     /**
@@ -156,7 +175,6 @@ public abstract class Structure implements NativeParsable {
      * has been called.
      * @return the most parental structure.
      */
-    @ApiStatus.Internal
     public Structure getMostParentStructure() {
         return mostParentStructure;
     }
