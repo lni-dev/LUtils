@@ -48,8 +48,6 @@ public abstract class ModTrackingStructure extends Structure {
 
     @Override
     protected void onModification(int offset, int size) {
-        super.onModification(offset, size);
-
         if(trackModifications) {
             modificationLock.lock();
 
@@ -65,6 +63,8 @@ public abstract class ModTrackingStructure extends Structure {
 
             modificationLock.unlock();
         }
+
+        super.onModification(offset, size);
     }
 
     /**

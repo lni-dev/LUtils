@@ -18,7 +18,6 @@ package de.linusdev.lutils.math.vector.abstracts.intn;
 
 import de.linusdev.lutils.math.general.IntElements;
 import de.linusdev.lutils.math.vector.Vector;
-import org.jetbrains.annotations.NotNull;
 
 public interface IntN extends Vector, IntElements {
 
@@ -39,9 +38,4 @@ public interface IntN extends Vector, IntElements {
      *  may result in undefined behavior.
      */
     void put(int index, int value);
-
-    @Override
-    default @NotNull IntN getOriginal() {
-        throw new UnsupportedOperationException("This vector is not a view vector.");
-    }
 }

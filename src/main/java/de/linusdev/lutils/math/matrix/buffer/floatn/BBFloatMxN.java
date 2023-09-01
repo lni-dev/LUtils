@@ -65,12 +65,27 @@ public abstract class BBFloatMxN extends Structure implements FloatMxN {
 
     @Override
     public float get(int y, int x) {
-        return buf.get((y * getWidth()) + x);
+        return buf.get(positionToIndex(y, x));
     }
 
     @Override
     public void put(int y, int x, float value) {
-        buf.put((y * getWidth()) + x, value);
+        buf.put(positionToIndex(y, x), value);
+    }
+
+    @Override
+    public float get(int index) {
+        return buf.get(index);
+    }
+
+    @Override
+    public void put(int index, float value) {
+        buf.put(index, value);
+    }
+
+    @Override
+    public @NotNull Structure getStructure() {
+        return this;
     }
 
     @Override
@@ -85,6 +100,9 @@ public abstract class BBFloatMxN extends Structure implements FloatMxN {
 
     @Override
     public String toString() {
-        return Matrix.toString(this, "BBFloat", BBFloatMxN::get);
+        return toString(
+                ELEMENT_TYPE_NAME + getWidth() + "x" + getHeight(),
+                Matrix.toString(this, ELEMENT_TYPE_NAME, BBFloatMxN::get)
+        );
     }
 }

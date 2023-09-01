@@ -1,12 +1,9 @@
 package de.linusdev.lutils.math.vector.abstracts.floatn;
 
+import de.linusdev.lutils.math.VMath;
 import de.linusdev.lutils.math.vector.array.floatn.ABFloat4;
-import de.linusdev.lutils.math.vector.buffer.floatn.BBFloat1;
-import de.linusdev.lutils.math.vector.buffer.floatn.BBFloat2;
-import de.linusdev.lutils.math.vector.buffer.floatn.BBFloat3;
 import de.linusdev.lutils.math.vector.buffer.floatn.BBFloat4;
 import org.jetbrains.annotations.NotNull;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -83,5 +80,15 @@ class Float4Test {
         assertEquals(x, vector.x());
         assertEquals(y, vector.y());
         assertEquals(z, vector.z());
+
+        //FactorView
+        vector.xyzw(x, y, z, w);
+        Float4 factorised = vector.createFactorizedView(-1f, 2f, .5f, -2f);
+
+        System.out.println("vector: " + vector);
+        System.out.println(" vector.factorized_xyzw(-1f, 2f, .5f, -2f): " + factorised);
+        assertTrue(VMath.equals(factorised, new float[] {x * -1f, y * 2f, z * .5f, w * -2f}, 0.0f));
+
+
     }
 }

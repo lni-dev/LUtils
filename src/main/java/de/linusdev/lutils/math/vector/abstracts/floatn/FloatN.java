@@ -41,8 +41,8 @@ public interface FloatN extends Vector, FloatElements {
     void put(int index, float value);
 
     @Override
-    default @NotNull FloatN getOriginal() {
-        throw new UnsupportedOperationException("This vector is not a view vector.");
+    default @NotNull FloatN.View getAsView() {
+        throw new UnsupportedOperationException("This vector is not a view on another vector.");
     }
 
     @SuppressWarnings("UnusedReturnValue")
@@ -55,6 +55,7 @@ public interface FloatN extends Vector, FloatElements {
     }
 
     abstract class View extends Vector.View<FloatN> implements FloatN {
+
         protected View(@NotNull FloatN original, int @NotNull [] mapping) {
             super(original, mapping);
         }
@@ -70,8 +71,81 @@ public interface FloatN extends Vector, FloatElements {
         }
 
         @Override
+        public boolean hasFactor() {
+            return false;
+        }
+
+        @Override
+        public float @NotNull [] getFactor() {
+            throw new UnsupportedOperationException("This view has no factor");
+        }
+
+        @Override
+        public @NotNull FloatN.View getAsView() {
+            return this;
+        }
+
+        @Override
         public String toString() {
             return Vector.toString(this, ELEMENT_TYPE_NAME, FloatN::get);
         }
     }
+
+    abstract class FactorView extends View implements FloatN {
+
+        /**
+         * Used by {@link #isView() view vectors} to calculate the factor directly to the original vector if a view of
+         * a view vector is created.
+         * @param view the view vector, which the view should be created upon
+         * @param mapping the mapping on the view vector
+         * @param factor the factor on the view vector
+         * @return factor directly to the original vector
+         */
+        static float @NotNull [] recalculateFactorToOriginal(
+                @NotNull FloatN.View view,
+                int @NotNull [] mapping,
+                float @NotNull [] factor
+        ) {
+            float[] viewFactor = view.getFactor();
+            float[] newFactor = new float[factor.length];
+
+            for(int i = 0; i < mapping.length; i++)
+                newFactor[i] = viewFactor[mapping[i]] * factor[i];
+
+            return newFactor;
+        }
+
+        protected final float @NotNull [] factor;
+
+        protected FactorView(@NotNull FloatN original, int @NotNull [] mapping, float @NotNull [] factor) {
+            super(original, mapping);
+            if(original.isView() && original.getAsView().hasFactor())
+                this.factor = recalculateFactorToOriginal(original.getAsView(), mapping, factor);
+            else
+                this.factor = factor;
+
+        }
+
+        @Override
+        public float get(int index) {
+            return original.get(mapping[index]) * factor[index];
+        }
+
+        @Override
+        public void put(int index, float value) {
+            original.put(mapping[index], value / factor[index]);
+        }
+
+        @Override
+        public boolean hasFactor() {
+            return true;
+        }
+
+        @Override
+        public float @NotNull [] getFactor() {
+            return factor;
+        }
+
+    }
+
 }

@@ -16,6 +16,7 @@
 
 package de.linusdev.lutils.math.matrix;
 
+import de.linusdev.lutils.math.vector.Vector;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -28,7 +29,7 @@ import org.jetbrains.annotations.NotNull;
  * x: from 0 (inclusive) to N (exclusive)<br>
  * y: from 0 (inclusive) to M (exclusive)<br>
  */
-public interface Matrix {
+public interface Matrix extends Vector {
 
     @FunctionalInterface
     interface MatrixGetter<M extends Matrix> {
@@ -62,6 +63,20 @@ public interface Matrix {
         return sb.toString();
     }
 
+    @Override
+    default int getMemberCount() {
+        return getWidth() * getHeight();
+    }
+
+    /**
+     * @param y y-pos
+     * @param x x-pos
+     * @return index of given position in this {@link Matrix}
+     */
+    default int positionToIndex(int y, int x) {
+        return y * getWidth() + x;
+    }
+
     /**
      * For a NxM Matrix, return N.
      * @return width of the matrix
@@ -78,12 +93,18 @@ public interface Matrix {
      * Whether this matrix is array backed.
      * @return {@code true} if this matrix is array backed.
      */
+    @Override
     boolean isArrayBacked();
 
     /**
      * Whether this vector is buffer backed.
      * @return {@code true} if this vector is buffer backed.
      */
+    @Override
     boolean isBufferBacked();
 
+    @Override
+    default boolean isView() {
+        return false;
+    }
 }

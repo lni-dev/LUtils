@@ -27,23 +27,6 @@ import java.util.function.BiFunction;
 public interface Vector {
 
     /**
-     * Used by {@link #isView() view vectors} to calculate the mapping directly to the original vectors if a view of
-     * a view vector is created.
-     * @param view the view vector, which the view should be created upon
-     * @param mapping the mapping on the view vector
-     * @return mapping directly to the original vector
-     */
-    static int @NotNull [] recalculateMappingToOriginal(@NotNull Vector view, int @NotNull [] mapping) {
-        int[] viewMapping = view.getMapping();
-        int[] newMapping = new int[mapping.length];
-
-        for(int i = 0; i < mapping.length; i++)
-            newMapping[i] = viewMapping[mapping[i]];
-
-        return newMapping;
-    }
-
-    /**
      * {@link Object#toString() toString()} method for {@link Vector} subclasses.
      * @param vector the {@link Vector}
      * @param elementTypeName the element type name of the vector
@@ -104,21 +87,12 @@ public interface Vector {
     boolean isView();
 
     /**
-     *
-     * @return the original vector this vector views to
-     * @throws UnsupportedOperationException if this vector is not {@link #isView() a view on another vector}.
+     * Used to avoid unsafe casting.
+     * @return the vector itself, but as {@link View}.
+     * @throws UnsupportedOperationException if this vector is not a {@link #isView() view}.
      */
-    default @NotNull Vector getOriginal() {
-        throw new UnsupportedOperationException("This vector is not a view vector.");
-    }
-
-    /**
-     * The returned mapping must always map to a non view vector.
-     * @return the mapping to the original vector
-     * @throws UnsupportedOperationException if this vector is not {@link #isView() a view on another vector}.
-     */
-    default int @NotNull [] getMapping() {
-        throw new UnsupportedOperationException("This vector is not buffer backed.");
+    default @NotNull View<?> getAsView() {
+        throw new UnsupportedOperationException("This vector is not a view on another vector.");
     }
 
     /**
@@ -126,27 +100,52 @@ public interface Vector {
      * @param <V> {@link FloatN}, {@link IntN} or {@link LongN}
      */
     abstract class View<V extends Vector> implements Vector {
+
+        /**
+         * Used by {@link #isView() view vectors} to calculate the mapping directly to the original vectors if a view of
+         * a view vector is created.
+         * @param view the view vector, which the view should be created upon
+         * @param mapping the mapping on the view vector
+         * @return mapping directly to the original vector
+         */
+        static int @NotNull [] recalculateMappingToOriginal(@NotNull View<?> view, int @NotNull [] mapping) {
+            int[] viewMapping = view.getMapping();
+            int[] newMapping = new int[mapping.length];
+
+            for(int i = 0; i < mapping.length; i++)
+                newMapping[i] = viewMapping[mapping[i]];
+
+            return newMapping;
+        }
+
         protected final @NotNull V original;
         protected final int @NotNull [] mapping;
 
         protected View(@NotNull V original, int @NotNull [] mapping) {
             if(original.isView()) {
-                mapping = Vector.recalculateMappingToOriginal(original, mapping);
+                mapping = recalculateMappingToOriginal(original.getAsView(), mapping);
                 //noinspection unchecked: original and view must have the same element type
-                original = (V) original.getOriginal();
+                original = (V) original.getAsView().getOriginal();
             }
 
             this.original = original;
             this.mapping = mapping;
         }
 
+        /**
+         *
+         * @return the original vector this vector views to
+         */
         @NotNull
-        @Override
         public V getOriginal() {
             return original;
         }
 
-        @Override
+        /**
+         * The returned mapping must always map to a non view vector.
+         * @return the mapping to the original vector
+         * @throws UnsupportedOperationException if this vector is not {@link #isView() a view on another vector}.
+         */
         public int @NotNull [] getMapping() {
             return mapping;
         }
@@ -164,6 +163,26 @@ public interface Vector {
         @Override
         public boolean isView() {
             return true;
+        }
+
+        /**
+         * @return {@code true} if this view has a factor when getting/setting values.
+         */
+        abstract public boolean hasFactor();
+
+        /**
+         * The factor for each component. The factor[i] is used for the i-component of this view vector,
+         * not on the original.<br>
+         * The returned array will always be of the same type as the vector (FloatN -> float[], ...).
+         * @return factor array
+         */
+        public @NotNull Object getFactor() {
+            throw new UnsupportedOperationException("This view has no factor");
+        }
+
+        @Override
+        public @NotNull View<V> getAsView() {
+            return this;
         }
     }
 

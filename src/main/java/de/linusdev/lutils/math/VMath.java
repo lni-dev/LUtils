@@ -558,10 +558,10 @@ public class VMath {
      */
     @SuppressWarnings("unused")
     private static boolean uniqueVector(@NotNull Vector unique, @NotNull Vector @NotNull ... vectors) {
-        Vector original = unique.isView() ? unique.getOriginal() : unique;
+        Vector original = unique.isView() ? unique.getAsView().getOriginal() : unique;
 
         for(int i = 0; i < vectors.length; i++) {
-            if(original == (vectors[i].isView() ? vectors[i].getOriginal() : vectors[i]))
+            if(original == (vectors[i].isView() ? vectors[i].getAsView().getOriginal() : vectors[i]))
                 return false;
         }
 
@@ -576,11 +576,11 @@ public class VMath {
      * @return {@code true} if no vector in {@code vectors} is a {@link Vector#isView() view} on {@code unique}
      */
     private static boolean uniqueViewVector(@NotNull Vector unique, @NotNull Vector @NotNull ... vectors) {
-        Vector original = unique.isView() ? unique.getOriginal() : unique;
+        Vector original = unique.isView() ? unique.getAsView().getOriginal() : unique;
 
         for(int i = 0; i < vectors.length; i++) {
             if(
-                    vectors[i].isView() && original == vectors[i].getOriginal()
+                    vectors[i].isView() && original == vectors[i].getAsView().getOriginal()
                             || unique.isView() && original == vectors[i]
             ) {
                 return false;

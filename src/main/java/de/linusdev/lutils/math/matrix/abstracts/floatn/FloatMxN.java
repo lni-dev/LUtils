@@ -16,25 +16,53 @@
 
 package de.linusdev.lutils.math.matrix.abstracts.floatn;
 
-import de.linusdev.lutils.math.general.FloatElements;
 import de.linusdev.lutils.math.matrix.Matrix;
+import de.linusdev.lutils.math.vector.abstracts.floatn.Float2;
+import de.linusdev.lutils.math.vector.abstracts.floatn.Float3;
+import de.linusdev.lutils.math.vector.abstracts.floatn.Float4;
+import de.linusdev.lutils.math.vector.abstracts.floatn.FloatN;
 import org.jetbrains.annotations.NotNull;
 
-public interface FloatMxN extends Matrix, FloatElements {
+public interface FloatMxN extends Matrix, FloatN {
 
     float get(int y, int x);
 
     void put(int y, int x, float value);
 
-    @SuppressWarnings("UnusedReturnValue")
-    default @NotNull FloatMxN fillFromArray(float @NotNull [] data) {
-        for(int y = 0; y < getHeight(); y++) {
-            for(int x = 0; x < getWidth(); x++) {
-                put(y, x, (data[y * getWidth() + x]));
-            }
-        }
+    default @NotNull Float2 createFloat2View(
+            int y1, int x1,
+            int y2, int x2
+    ) {
+        return Float2.createView(this, new int[]{
+                positionToIndex(y1, x1),
+                positionToIndex(y2, x2)
+        });
+    }
 
-        return this;
+    default @NotNull Float3 createFloat3View(
+            int y1, int x1,
+            int y2, int x2,
+            int y3, int x3
+    ) {
+        return Float3.createView(this, new int[]{
+                positionToIndex(y1, x1),
+                positionToIndex(y2, x2),
+                positionToIndex(y3, x3)
+        });
+    }
+
+    default @NotNull Float4 createFloat4View(
+            int y1, int x1,
+            int y2, int x2,
+            int y3, int x3,
+            int y4, int x4
+    ) {
+        return Float4.createView(this, new int[]{
+                positionToIndex(y1, x1),
+                positionToIndex(y2, x2),
+                positionToIndex(y3, x3),
+                positionToIndex(y4, x4)
+        });
     }
 
 }

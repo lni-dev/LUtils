@@ -29,12 +29,22 @@ public abstract class ABFloatMxN implements FloatMxN {
 
     @Override
     public float get(int y, int x) {
-        return array[(y * getWidth()) + x];
+        return array[positionToIndex(y, x)];
     }
 
     @Override
     public void put(int y, int x, float value) {
-        array[(y * getWidth()) + x] = value;
+        array[positionToIndex(y, x)] = value;
+    }
+
+    @Override
+    public float get(int index) {
+        return array[index];
+    }
+
+    @Override
+    public void put(int index, float value) {
+        array[index] = value;
     }
 
     @Override

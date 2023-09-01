@@ -18,7 +18,6 @@ package de.linusdev.lutils.math.vector.abstracts.longn;
 
 import de.linusdev.lutils.math.general.LongElements;
 import de.linusdev.lutils.math.vector.Vector;
-import org.jetbrains.annotations.NotNull;
 
 public interface LongN extends Vector, LongElements {
 
@@ -39,9 +38,4 @@ public interface LongN extends Vector, LongElements {
      *  may result in undefined behavior.
      */
     void put(int index, long value);
-
-    @Override
-    default @NotNull LongN getOriginal() {
-        throw new UnsupportedOperationException("This vector is not a view vector.");
-    }
 }

@@ -35,6 +35,7 @@ public class ModificationInfo {
         if(endOffset + split  < this.startOffset) { // new < this
             if(previous == null) {
                 previous = new ModificationInfo(startOffset, endOffset);
+                previous.next = this;
                 return previous;
             } else {
                 if(previous == checked) {
@@ -51,6 +52,7 @@ public class ModificationInfo {
         } else if(startOffset - split > this.endOffset) { //this < new
             if(next == null) {
                 next = new ModificationInfo(startOffset, endOffset);
+                next.previous = this;
                 return next;
             } else {
                 if(next == checked) {
@@ -73,13 +75,15 @@ public class ModificationInfo {
             if(previous != null && previous.endOffset + split < this.startOffset) {
                 this.startOffset = previous.startOffset;
                 this.previous = previous.previous;
-                this.previous.next = this;
+                if(this.previous != null)
+                    this.previous.next = this;
             }
 
             if(next != null && this.endOffset + split > next.startOffset) {
                 this.endOffset = next.endOffset;
                 this.next = next.next;
-                this.next.previous = this;
+                if(this.next != null)
+                    this.next.previous = this;
             }
 
             return null;

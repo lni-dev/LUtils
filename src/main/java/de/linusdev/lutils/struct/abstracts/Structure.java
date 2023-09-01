@@ -114,10 +114,12 @@ public abstract class Structure implements NativeParsable {
      * @return A nice string describing this structure
      */
     protected String toString(@NotNull String name, @Nullable String content) {
-        return String.format("%s (alignment=%d, size=%d) %s",
+        return String.format("%s (alignment=%d, size=%d, offsetStart=%d, offsetEnd=%d) %s",
                 name,
                 getAlignment(),
                 getRequiredSize(),
+                getOffset(),
+                getOffset() + getRequiredSize(),
                 content == null ? "" : ("{\n" + Utils.indent(content, "    ") + "\n}")
         );
     }

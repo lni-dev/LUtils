@@ -18,6 +18,7 @@ package de.linusdev.lutils.math.vector.abstracts.floatn;
 
 import de.linusdev.lutils.math.vector.abstracts.vectorn.Vector2;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public interface Float2 extends FloatN, Vector2 {
 
@@ -43,12 +44,37 @@ public interface Float2 extends FloatN, Vector2 {
     }
 
     default Float2 yx() {
-        return new Float2.View(this, new int[]{1, 0});
+        return createView(this, new int[]{1, 0});
+    }
+
+    default @NotNull Float2 createFactorizedView(float factorX, float factorY) {
+        return createView(this,
+                new int[]{0, 1},
+                new float[]{factorX, factorY}
+        );
+    }
+
+    static @NotNull Float2 createView(@NotNull FloatN original, int @NotNull [] mapping) {
+        return createView(original, mapping, null);
+    }
+
+    static @NotNull Float2 createView(@NotNull FloatN original, int @NotNull [] mapping, float @Nullable [] factor) {
+        if((original.isView() && original.getAsView().hasFactor()) || factor != null) {
+            return new Float2.FactorView(original, mapping, factor == null ? new float[]{1f,1f} : factor);
+        }
+
+        return new Float2.View(original, mapping);
     }
 
     class View extends FloatN.View implements Float2 {
-        protected View(@NotNull FloatN original, int @NotNull [] mapping) {
+        private View(@NotNull FloatN original, int @NotNull [] mapping) {
             super(original, mapping);
+        }
+    }
+
+    class FactorView extends FloatN.FactorView implements Float2 {
+        private FactorView(@NotNull FloatN original, int @NotNull [] mapping, float @NotNull [] factor) {
+            super(original, mapping, factor);
         }
     }
 
