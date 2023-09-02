@@ -31,6 +31,8 @@ import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
+import static de.linusdev.lutils.math.vector.Vector.View.isMappingSpecial;
+
 @SuppressWarnings({"UnusedReturnValue", "ForLoopReplaceableByForEach"})
 public class VMath {
 
@@ -571,6 +573,7 @@ public class VMath {
     /**
      * Checks if no {@link Vector} in {@code vectors} is a {@link Vector#isView() view} on {@code unique}. Or if {@code unique}
      * itself is a view, that {@code unique} is not a view on any vector in {@code vectors}.
+     * Views with a non-{@link Vector.View#isMappingSpecial(Vector) special} {@link Vector.View#getMapping() mapping} are allowed.
      * @param vectors array of {@link Vector vectors}
      * @param unique vector which should be checked if it is unique (view wise)
      * @return {@code true} if no vector in {@code vectors} is a {@link Vector#isView() view} on {@code unique}
@@ -578,11 +581,12 @@ public class VMath {
     private static boolean uniqueViewVector(@NotNull Vector unique, @NotNull Vector @NotNull ... vectors) {
         Vector original = unique.isView() ? unique.getAsView().getOriginal() : unique;
 
+        boolean uniqueHasSpecialMapping = unique.isView() && isMappingSpecial(unique);
+
         for(int i = 0; i < vectors.length; i++) {
-            if(
-                    vectors[i].isView() && original == vectors[i].getAsView().getOriginal()
-                            || unique.isView() && original == vectors[i]
-            ) {
+            if(vectors[i].isView() && original == vectors[i].getAsView().getOriginal()) {
+                return !isMappingSpecial(vectors[i]);
+            } else if(uniqueHasSpecialMapping && unique.isView() && original == vectors[i]) {
                 return false;
             }
         }
@@ -615,7 +619,8 @@ public class VMath {
 
     /**
      * Marks that no other parameter may be a {@link Vector#isView() view} on this parameter. But they may
-     * be the same parameter. If this parameter is a {@link Vector#isView() view}, it may not view on any other parameter.
+     * be the same parameter. If this parameter is a {@link Vector#isView() view}, it may not view on any other parameter.<br>
+     * Views with a non-{@link Vector.View#isMappingSpecial(Vector) special} {@link Vector.View#getMapping() mapping} are allowed.
      */
     @Documented
     @Retention(RetentionPolicy.CLASS)
