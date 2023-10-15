@@ -27,8 +27,8 @@ import org.junit.jupiter.params.provider.MethodSource;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static de.linusdev.lutils.math.VMath.uniqueViewVector;
+import static org.junit.jupiter.api.Assertions.*;
 
 class VMathTest {
     @Test
@@ -624,4 +624,20 @@ class VMathTest {
         assertEquals(result, VMath.equals(matrix, other, epsilon));
     }
 
+    @Test
+    void uniqueViewVector() {
+        assertTrue(VMath.uniqueViewVector(new ABFloat4(), new ABFloat4()));
+
+        Float4 a = new ABFloat4();
+        Float4 b = new ABFloat4();
+
+        assertFalse(VMath.uniqueViewVector(a, a.wzyx()));
+        assertFalse(VMath.uniqueViewVector(a.wzyx(), a));
+
+        assertTrue(VMath.uniqueViewVector(b, a.wzyx()));
+        assertTrue(VMath.uniqueViewVector(a.wzyx(), b));
+
+        assertTrue(VMath.uniqueViewVector(a.wzyx(), a.wzyx()));
+
+    }
 }

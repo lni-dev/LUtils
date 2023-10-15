@@ -124,6 +124,7 @@ public interface Vector {
          * or generally speaking: mapping[i]=i.<br>
          * Everything else is a special mapping.
          * @see #getMapping()
+         * @see #isMappingSpecial(int[], Vector) 
          * @param view {@link Vector}, which must be a {@link #isView() view}.
          * @return {@code true} if the mapping of {@code view} is special
          */
@@ -135,6 +136,26 @@ public interface Vector {
             }
 
             return false;
+        }
+
+        /**
+         * Checks if the {@link #getMapping() mapping} of given {@code viewToCheck} is special compared to the given
+         * {@code defaultMapping}.
+         * A non-special mapping is the following: mapping[0]=defaultMapping[0], mapping[1]=defaultMapping[1], ...<br>
+         * or generally speaking: mapping[i]=defaultMapping[i].<br>
+         * Everything else is a special mapping.
+         * @param defaultMapping the defaultMapping
+         * @param viewToCheck {@link Vector}, which must be a {@link #isView() view}.
+         * @return {@code true} if the mapping of {@code viewToCheck} is special
+         */
+        public static boolean isMappingSpecial(int @NotNull [] defaultMapping, @NotNull Vector viewToCheck) {
+            int[] mapping = viewToCheck.getAsView().getMapping();
+            for(int i = 0; i < mapping.length; i++) {
+                if(defaultMapping[i] != mapping[i])
+                    return true;
+            }
+
+            return defaultMapping.length != mapping.length;
         }
 
         protected final @NotNull V original;

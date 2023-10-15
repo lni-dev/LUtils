@@ -199,7 +199,13 @@ public class VMath {
         return dot;
     }
 
+    public static float length(@NotNull FloatN vector) {
+        float length = 0;
+        for(int i = 0; i < vector.getMemberCount(); i++)
+            length += vector.get(i) * vector.get(i);
 
+        return (float) Math.sqrt(length);
+    }
 
     @Contract("_, _, _ -> param3")
     public static @NotNull Float3 cross(@NotNull Float3 left, @NotNull Float3 right, @NotNull Float3 store) {
@@ -218,11 +224,8 @@ public class VMath {
         assert matchingDimensions(toNormalize, store);
         assert uniqueViewVector(store, toNormalize);
 
-        float length = 0;
-        for(int i = 0; i < toNormalize.getMemberCount(); i++)
-            length += toNormalize.get(i) * toNormalize.get(i);
-
-        length = (float) Math.sqrt(length);
+        float length = length(toNormalize);
+        length = length == 0.0f ? 1.f : length;
 
         for(int i = 0; i < toNormalize.getMemberCount(); i++)
             store.put(i, toNormalize.get(i) / length);
@@ -578,16 +581,30 @@ public class VMath {
      * @param unique vector which should be checked if it is unique (view wise)
      * @return {@code true} if no vector in {@code vectors} is a {@link Vector#isView() view} on {@code unique}
      */
-    private static boolean uniqueViewVector(@NotNull Vector unique, @NotNull Vector @NotNull ... vectors) {
-        Vector original = unique.isView() ? unique.getAsView().getOriginal() : unique;
+    protected static boolean uniqueViewVector(@NotNull Vector unique, @NotNull Vector @NotNull ... vectors) {
 
-        boolean uniqueHasSpecialMapping = unique.isView() && isMappingSpecial(unique);
+        if(unique.isView()) {
+            Vector original = unique.getAsView().getOriginal();
+            boolean isUniqueMappingSpecial = isMappingSpecial(unique);
+            int[] defaultMapping = unique.getAsView().getMapping();
 
-        for(int i = 0; i < vectors.length; i++) {
-            if(vectors[i].isView() && original == vectors[i].getAsView().getOriginal()) {
-                return !isMappingSpecial(vectors[i]);
-            } else if(uniqueHasSpecialMapping && unique.isView() && original == vectors[i]) {
-                return false;
+            for(int i = 0; i < vectors.length; i++) {
+                if(
+                        vectors[i].isView()
+                     && original == vectors[i].getAsView().getOriginal()
+                     && isMappingSpecial(defaultMapping, vectors[i])
+                ) {
+                    return false;
+                } else if(!vectors[i].isView() && vectors[i] == original && isUniqueMappingSpecial) {
+                    return false;
+                }
+            }
+
+        } else {
+            for(int i = 0; i < vectors.length; i++) {
+                if(vectors[i].isView() && unique == vectors[i].getAsView().getOriginal() && isMappingSpecial(vectors[i])) {
+                    return false;
+                }
             }
         }
 

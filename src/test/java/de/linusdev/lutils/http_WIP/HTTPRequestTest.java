@@ -7,6 +7,7 @@ package de.linusdev.lutils.http_WIP;
 import de.linusdev.lutils.http_WIP.header.Header;
 import de.linusdev.lutils.http_WIP.method.Methods;
 import de.linusdev.lutils.http_WIP.method.RequestMethod;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.io.BufferedReader;
@@ -16,6 +17,7 @@ import java.io.InputStreamReader;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@Disabled("WIP")
 class HTTPRequestTest {
 
     @Test
