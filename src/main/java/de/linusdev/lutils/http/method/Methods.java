@@ -14,27 +14,35 @@
  * limitations under the License.
  */
 
-package de.linusdev.lutils.http_WIP.header;
+package de.linusdev.lutils.http.method;
 
 import org.jetbrains.annotations.NotNull;
 
-public class HeaderImpl implements Header {
+public enum Methods implements RequestMethod {
+    GET("GET"),
+    HEAD("HEAD"),
+    POST("POST"),
+    PUT("PUT"),
+    DELETE("DELETE"),
+    CONNECT("CONNECT"),
+    OPTIONS("OPTIONS"),
+    TRACE("TRACE"),
+    ;
 
-    private final @NotNull String key;
-    private final @NotNull String value;
+    private final String name;
 
-    public HeaderImpl(@NotNull String key, @NotNull String value) {
-        this.key = key;
-        this.value = value;
+    Methods(String name) {
+        this.name = name;
     }
 
     @Override
-    public @NotNull String getKey() {
-        return key;
+    public @NotNull String getName() {
+        return name;
     }
 
+
     @Override
-    public @NotNull String getValue() {
-        return value;
+    public String toString() {
+        return name;
     }
 }

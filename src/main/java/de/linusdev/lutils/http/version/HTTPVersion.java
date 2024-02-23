@@ -14,24 +14,31 @@
  * limitations under the License.
  */
 
-package de.linusdev.lutils.http_WIP.body;
+package de.linusdev.lutils.http.version;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.io.InputStream;
-
-public interface BodySupplier {
-
-    /**
-     * the length of the body or -1 if the length is unknown.
-     * @return length of this body or -1
-     */
-    int length();
+@SuppressWarnings("unused")
+public interface HTTPVersion {
 
     /**
-     * {@link InputStream} containing the body. The returned stream must be closed by the method caller.
-     * @return {@link InputStream}
+     * The first part of the version. For example in "HTTP/1.1" it would be "HTTP"
+     * @return name as {@link String}
      */
-    @NotNull InputStream stream();
+    @NotNull String getName();
+
+    /**
+     * The first part of the version. For example in "HTTP/1.1" it would be "1.1"
+     * @return version as {@link String}
+     */
+    @NotNull String getVersion();
+
+    /**
+     * This {@link HTTPVersion} as {@link String}. For example "HTTP/1.1"
+     * @return this {@link HTTPVersion} as {@link String}.
+     */
+    default @NotNull String asString() {
+        return getName() + "/" + getVersion();
+    }
 
 }

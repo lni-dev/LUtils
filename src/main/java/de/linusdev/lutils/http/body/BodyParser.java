@@ -14,35 +14,27 @@
  * limitations under the License.
  */
 
-package de.linusdev.lutils.http_WIP.method;
+package de.linusdev.lutils.http.body;
 
+import de.linusdev.lutils.http.header.HeaderMap;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-public enum Methods implements RequestMethod {
-    GET("GET"),
-    HEAD("HEAD"),
-    POST("POST"),
-    PUT("PUT"),
-    DELETE("DELETE"),
-    CONNECT("CONNECT"),
-    OPTIONS("OPTIONS"),
-    TRACE("TRACE"),
-    ;
+import java.io.IOException;
+import java.io.InputStream;
 
-    private final String name;
+/**
+ * Functional interface to parse an {@link InputStream} to custom body.
+ * @param <B> body type
+ */
+@FunctionalInterface
+public interface BodyParser<B> {
 
-    Methods(String name) {
-        this.name = name;
-    }
+    /**
+     * parses the body contained in given {@link InputStream} {@code in} to {@link B}.
+     * @param in {@link InputStream} containing the http body.
+     * @return parsed {@link B body}
+     */
+     @Nullable B parse(@NotNull HeaderMap headers, @NotNull InputStream in) throws IOException;
 
-    @Override
-    public @NotNull String getName() {
-        return name;
-    }
-
-
-    @Override
-    public String toString() {
-        return name;
-    }
 }

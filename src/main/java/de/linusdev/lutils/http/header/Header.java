@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-package de.linusdev.lutils.http_WIP.header;
+package de.linusdev.lutils.http.header;
 
+import de.linusdev.lutils.http.header.value.BasicHeaderValue;
+import de.linusdev.lutils.http.header.value.HeaderValueParser;
 import org.jetbrains.annotations.NotNull;
 
-@SuppressWarnings("unused")
 public interface Header {
 
     /**
@@ -54,10 +55,50 @@ public interface Header {
     @NotNull String getValue();
 
     /**
+     * parse this headers value using given {@code parser}
+     * @param parser {@link HeaderValueParser}
+     * @return parsed header value
+     * @param <T> class to parse to
+     * @see BasicHeaderValue#PARSER
+     */
+    default @NotNull <T> T parseValue(@NotNull HeaderValueParser<T> parser) {
+        return parser.parse(this);
+    }
+
+    /**
      * This header as {@link String}.
      * @return this header
      */
     default @NotNull String asString() {
         return getKey() + ": " + getValue();
+    }
+
+    /**
+     * Checks {@link #getKey()} and {@link #getValue()} of both headers and ignores case.
+     * @param header {@link Header} to compare
+     * @param other object to check if it represents the same {@link Header} as given {@code header}.
+     * @return {@code true} if both headers have the same {@link #getKey() key} and {@link #getValue() value} (ignores case)
+     */
+    static boolean equals(Header header, Object other) {
+        if (header == other)
+            return true;
+        if (!(other instanceof Header))
+            return false;
+
+        Header otherHeader = (Header) other;
+
+        return header.getKey().equalsIgnoreCase(otherHeader.getKey())
+                && header.getValue().equalsIgnoreCase(otherHeader.getValue());
+    }
+
+    /**
+     * Generate the hashcode for a {@link Header} implementation
+     * @param header the {@link Header} to generate the hashcode for
+     * @return hashcode
+     */
+    static int hashCode(Header header) {
+        int result = header.getKey().toLowerCase().hashCode();
+        result = 31 * result + header.getValue().toLowerCase().hashCode();
+        return result;
     }
 }

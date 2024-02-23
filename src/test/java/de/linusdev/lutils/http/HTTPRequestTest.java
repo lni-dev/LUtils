@@ -2,12 +2,11 @@
  * Copyright (c) 2023 Linus Andera all rights reserved
  */
 
-package de.linusdev.lutils.http_WIP;
+package de.linusdev.lutils.http;
 
-import de.linusdev.lutils.http_WIP.header.Header;
-import de.linusdev.lutils.http_WIP.method.Methods;
-import de.linusdev.lutils.http_WIP.method.RequestMethod;
-import org.junit.jupiter.api.Disabled;
+import de.linusdev.lutils.http.header.Header;
+import de.linusdev.lutils.http.method.Methods;
+import de.linusdev.lutils.http.method.RequestMethod;
 import org.junit.jupiter.api.Test;
 
 import java.io.BufferedReader;
@@ -17,7 +16,7 @@ import java.io.InputStreamReader;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@Disabled("WIP")
+//@Disabled("WIP")
 class HTTPRequestTest {
 
     @Test
@@ -47,7 +46,7 @@ class HTTPRequestTest {
                 "\r\n" +
                 "{}";
 
-        HTTPRequest<String> parsed = HTTPRequest.parse(new ByteArrayInputStream(request.getBytes()), in -> {
+        HTTPRequest<String> parsed = HTTPRequest.parse(new ByteArrayInputStream(request.getBytes()), (hs, in) -> {
             InputStreamReader reader = new InputStreamReader(in);
             BufferedReader br = new BufferedReader(reader);
             try {

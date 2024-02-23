@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package de.linusdev.lutils.http_WIP.method;
+package de.linusdev.lutils.http.method;
 
 import org.jetbrains.annotations.NotNull;
 

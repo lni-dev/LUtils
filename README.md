@@ -21,3 +21,4 @@ dependencies {
 - [Async Framework](https://github.com/lni-dev/LUtils/blob/master/src/main/java/de/linusdev/lutils/async/): Async classes
 - [Structure](https://github.com/lni-dev/LUtils/tree/master/src/main/java/de/linusdev/lutils/struct): classes to create C-structures in Java
 - [VMath](https://github.com/lni-dev/LUtils/tree/master/src/main/java/de/linusdev/lutils/math): Vector and matrix math. Buffer backed or array backed.
+- [HTTP](https://github.com/lni-dev/LUtils/tree/master/src/main/java/de/linusdev/lutils/http): HTTPRequest, HTTPResponse, Header and more.

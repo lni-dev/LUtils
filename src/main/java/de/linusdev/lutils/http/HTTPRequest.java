@@ -14,35 +14,32 @@
  * limitations under the License.
  */
 
-package de.linusdev.lutils.http_WIP;
+package de.linusdev.lutils.http;
 
-import de.linusdev.lutils.http_WIP.body.BodyParser;
-import de.linusdev.lutils.http_WIP.header.Header;
-import de.linusdev.lutils.http_WIP.method.RequestMethod;
-import de.linusdev.lutils.http_WIP.version.HTTPVersion;
-import de.linusdev.lutils.http_WIP.version.HTTPVersions;
+import de.linusdev.lutils.http.body.BodyParser;
+import de.linusdev.lutils.http.header.Header;
+import de.linusdev.lutils.http.header.HeaderMap;
+import de.linusdev.lutils.http.method.RequestMethod;
+import de.linusdev.lutils.http.version.HTTPVersion;
+import de.linusdev.lutils.http.version.HTTPVersions;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 
-@SuppressWarnings("unused")
 public class HTTPRequest<B> {
 
     private final @NotNull RequestMethod method;
     private final @Nullable String path;
     private final @NotNull HTTPVersion version;
 
-    private final @NotNull Map<String, Header> headers;
+    private final @NotNull HeaderMap headers;
 
     private final @Nullable B body;
 
     public HTTPRequest(@NotNull RequestMethod method, @Nullable String path, @NotNull HTTPVersion version,
-                       @NotNull Map<String, Header> headers, @Nullable B body) {
+                       @NotNull HeaderMap headers, @Nullable B body) {
         this.method = method;
         this.path = path;
         this.version = version;
@@ -51,44 +48,58 @@ public class HTTPRequest<B> {
     }
 
     public static <B> @NotNull HTTPRequest<B> parse(@NotNull InputStream in, @NotNull BodyParser<B> parser) throws IOException {
-
         HTTPRequestReader reader = new HTTPRequestReader(in);
+        HTTPRequestReader.LineReader lineReader = reader.getLineReader();
 
-        String first = reader.readLine();
-        String[] parts = first.split(" ");
+        final RequestMethod method;
+        final String path;
+        final HTTPVersion version;
+        final HeaderMap headers = new HeaderMap();
+        final B body;
 
-        if(parts.length <= 1)
-            throw new IllegalArgumentException("Malformed HTTP Request: first line: " + first);
+        // Read request method
+        method = RequestMethod.of(lineReader.readUntil(' '));
 
-        RequestMethod method = RequestMethod.of(parts[0]);
-        String path = null;
-        HTTPVersion version;
-        Map<String, Header> headers = new HashMap<>();
-        B body;
+        if(lineReader.eol)
+            throw new IllegalArgumentException("Malformed HTTP request. Missing HTTP version.");
 
-        if(parts.length == 3){
-            path = parts[1];
-            version = HTTPVersions.of(parts[2]);
+        // Read path and version
+        String pathOrVersion = lineReader.readUntil(' ');
+        if(lineReader.eol) {
+            path = null;
+            version = HTTPVersions.of(pathOrVersion);
         } else {
-            version = HTTPVersions.of(parts[1]);
+            path = pathOrVersion;
+            version = HTTPVersions.of(lineReader.readUntilLineFeed());
         }
 
-        String line;
-        while((line = reader.readLine()) != null) {
-            if(line.isEmpty()) { //end of headers
+        String key;
+        String value;
+        while(!lineReader.eof) {
+            key = lineReader.readUntil(':');
+
+            if(key.isEmpty()) //end of headers
                 break;
-            }
-            Header header = Header.of(line);
-            headers.put(header.getKey(), header);
+            if(lineReader.eol)
+                throw new IllegalArgumentException("Malformed HTTP request. Header line: " + key);
+
+            value = lineReader.readUntilLineFeed().stripLeading();
+
+            Header header = Header.of(key, value);
+            headers.put(key, header);
         }
 
-        body = parser.parse(reader.getInputStreamForRemaining());
+        body = parser.parse(headers, reader.getInputStreamForRemaining());
 
         return new HTTPRequest<>(method, path, version, headers, body);
     }
 
     public static @NotNull HTTPRequest<Void> parse(@NotNull InputStream in) throws IOException {
-        return parse(in, in1 -> null);
+        return parse(in, (hs, in1) -> null);
+    }
+
+    public static @NotNull HTTPRequestBuilder builder() {
+        return new HTTPRequestBuilder();
     }
 
 
@@ -120,8 +131,8 @@ public class HTTPRequest<B> {
      * Map of {@link Header headers} of this request.
      * @return Map of {@link Header headers}
      */
-    public @NotNull Map<String, Header> getHeaders() {
-        return Collections.unmodifiableMap(headers);
+    public @NotNull HeaderMap getHeaders() {
+        return headers;
     }
 
     /**
