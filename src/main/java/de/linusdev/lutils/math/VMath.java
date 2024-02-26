@@ -233,6 +233,17 @@ public class VMath {
         return store;
     }
 
+    @Contract("_, _ -> param2")
+    public static <V extends FloatN> @NotNull V absolute(@NotNull V toAbsolute, @UniqueView @NotNull V store) {
+        assert matchingDimensions(toAbsolute, store);
+        assert uniqueViewVector(store, toAbsolute);
+
+        for(int i = 0; i < toAbsolute.getMemberCount(); i++)
+            store.put(i, Math.abs(toAbsolute.get(i)));
+
+        return store;
+    }
+
     @Contract("_, _, _ -> param3")
     public static <M extends FloatMxN> @NotNull M scale(@NotNull M toScale, float factor, @UniqueView @NotNull M store) {
         assert matchingDimensions(toScale, store);

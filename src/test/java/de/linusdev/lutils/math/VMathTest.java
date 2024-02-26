@@ -147,6 +147,18 @@ class VMathTest {
     }
 
     @Test
+    void absolute() {
+        BBFloat3 a = new BBFloat3(true);
+        a.xyz(2f, -2f, -3f);
+
+        VMath.absolute(a, a);
+
+        assertEquals(2f, a.x());
+        assertEquals(2f, a.y());
+        assertEquals(3f, a.z());
+    }
+
+    @Test
     void determinantFloat4x4() {
         ABFloat4x4 mat = new ABFloat4x4();
 
@@ -640,4 +652,6 @@ class VMathTest {
         assertTrue(VMath.uniqueViewVector(a.wzyx(), a.wzyx()));
 
     }
+
+
 }
