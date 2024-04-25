@@ -165,6 +165,11 @@ public class PrimitiveTypeArray<T> extends Structure implements NativeArray<T> {
         byteBuf.put(toByteIndex(index), value);
     }
 
+    /**
+     *
+     * @deprecated replaced by {@link #length()}
+     */
+    @Deprecated(forRemoval = true)
     public int size() {
         return size;
     }
