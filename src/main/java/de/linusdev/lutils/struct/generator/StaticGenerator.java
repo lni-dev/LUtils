@@ -22,8 +22,8 @@ public interface StaticGenerator {
     }
 
     /**
-     * Can be overwritten is struct code can be generated.
-     * @param language {@link org.intellij.lang.annotations.Language}
+     * Can be overwritten if struct code can be generated.
+     * @param language {@link Language}
      * @param selfClazz the class of the {@link Structure} itself
      * @param info The {@link StructureInfo} of this structure
      * @return generated struct code or {@code null} if it cannot be generated.
@@ -39,7 +39,7 @@ public interface StaticGenerator {
 
     /**
      * Must be implemented.
-     * @param language {@link org.intellij.lang.annotations.Language}
+     * @param language {@link Language}
      * @param selfClazz the class of the {@link Structure} itself
      * @param info The {@link StructureInfo} of this structure
      * @return struct type name

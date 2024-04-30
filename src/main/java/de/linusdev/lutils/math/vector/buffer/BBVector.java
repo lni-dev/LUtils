@@ -2,11 +2,13 @@ package de.linusdev.lutils.math.vector.buffer;
 
 import de.linusdev.lutils.math.vector.Vector;
 import de.linusdev.lutils.struct.abstracts.Structure;
+import de.linusdev.lutils.struct.annos.StructureSettings;
 import de.linusdev.lutils.struct.generator.Language;
 import de.linusdev.lutils.struct.generator.StaticGenerator;
 import de.linusdev.lutils.struct.info.StructureInfo;
 import org.jetbrains.annotations.NotNull;
 
+@StructureSettings
 public abstract class BBVector extends Structure implements Vector {
 
     @SuppressWarnings("unused")
