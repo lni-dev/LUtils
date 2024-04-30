@@ -9,7 +9,7 @@ repositories {
 }
 
 dependencies {
-    implementation 'de.linusdev:lutils:1.1.2'
+    implementation 'de.linusdev:lutils:1.1.3'
 }
 ```
 
@@ -22,3 +22,4 @@ dependencies {
 - [Structure](https://github.com/lni-dev/LUtils/tree/master/src/main/java/de/linusdev/lutils/struct): classes to create C-structures in Java
 - [VMath](https://github.com/lni-dev/LUtils/tree/master/src/main/java/de/linusdev/lutils/math): Vector and matrix math. Buffer backed or array backed.
 - [HTTP](https://github.com/lni-dev/LUtils/tree/master/src/main/java/de/linusdev/lutils/http): HTTPRequest, HTTPResponse, Header and more.
+- [Code Generator](https://github.com/lni-dev/LUtils/tree/master/src/main/java/de/linusdev/lutils/codegen): Generate Java Code. WIP!
