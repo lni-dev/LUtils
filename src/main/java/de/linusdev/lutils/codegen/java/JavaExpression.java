@@ -6,12 +6,12 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 
-public interface JavaExpression extends PartGenerator<JavaSourceGenerator> {
+public interface JavaExpression extends PartGenerator<JavaSourceGeneratorHelper> {
 
     static @NotNull JavaExpression ofCode(@NotNull String code) {
         return new JavaExpression() {
             @Override
-            public @NotNull String getExprString(@NotNull JavaSourceGenerator sg) {
+            public @NotNull String getExprString(@NotNull JavaSourceGeneratorHelper sg) {
                 return code;
             }
         };
@@ -20,16 +20,16 @@ public interface JavaExpression extends PartGenerator<JavaSourceGenerator> {
     static @NotNull JavaExpression ofString(@NotNull String string) {
         return new JavaExpression() {
             @Override
-            public @NotNull String getExprString(@NotNull JavaSourceGenerator sg) {
+            public @NotNull String getExprString(@NotNull JavaSourceGeneratorHelper sg) {
                 return "\"" + string.replace("\"", "\\\"") + "\"";
             }
         };
     }
 
-    @NotNull String getExprString(@NotNull JavaSourceGenerator sg);
+    @NotNull String getExprString(@NotNull JavaSourceGeneratorHelper sg);
 
     @Override
-    default void write(@NotNull Appendable writer, @NotNull GeneratorState<JavaSourceGenerator> codeState) throws IOException {
+    default void write(@NotNull Appendable writer, @NotNull GeneratorState<JavaSourceGeneratorHelper> codeState) throws IOException {
         writer.append(codeState.getIndent()).append(getExprString(codeState.getSg()));
     }
 }

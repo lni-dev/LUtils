@@ -11,10 +11,10 @@ public class JavaFileGenerator extends JavaClassGenerator implements FileGenerat
 
     public JavaFileGenerator(
             @NotNull JavaPackage jPackage,
-            @Nullable JavaSourceGenerator sourceGenerator) {
+            @Nullable JavaSourceGeneratorHelper sourceGenerator) {
         super(
                 new JavaFileState(jPackage),
-                sourceGenerator == null ? JavaSourceGenerator.getDefault() : sourceGenerator,
+                sourceGenerator == null ? JavaSourceGeneratorHelper.getDefault() : sourceGenerator,
                 jPackage
         );
     }
@@ -22,7 +22,7 @@ public class JavaFileGenerator extends JavaClassGenerator implements FileGenerat
 
     @Override
     public void write(@NotNull Appendable writer) throws IOException {
-        GeneratorState<JavaSourceGenerator> state = new GeneratorState<>(sg.javaIndent(), sg);
+        GeneratorState<JavaSourceGeneratorHelper> state = new GeneratorState<>(sg.javaIndent(), sg);
 
         // Write Package
         writer

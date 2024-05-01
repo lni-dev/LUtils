@@ -9,7 +9,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class JavaLocalVariable implements JavaAnnotateable, PartGenerator<JavaSourceGenerator> {
+public class JavaLocalVariable implements JavaAnnotateable, PartGenerator<JavaSourceGeneratorHelper> {
 
     protected final @Nullable JavaFileState ft;
 
@@ -89,7 +89,7 @@ public class JavaLocalVariable implements JavaAnnotateable, PartGenerator<JavaSo
     }
 
     @Override
-    public void write(@NotNull Appendable writer, @NotNull GeneratorState<JavaSourceGenerator> codeState) throws IOException {
+    public void write(@NotNull Appendable writer, @NotNull GeneratorState<JavaSourceGeneratorHelper> codeState) throws IOException {
         for(JavaAnnotation annotation : annotations)
             writer.append(codeState.getSg().javaAnnotation(annotation)).append(" ");
 

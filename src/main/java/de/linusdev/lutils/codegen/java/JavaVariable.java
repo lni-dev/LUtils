@@ -12,7 +12,7 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
 
-public class JavaVariable implements JavaAnnotateable, PartGenerator<JavaSourceGenerator> {
+public class JavaVariable implements JavaAnnotateable, PartGenerator<JavaSourceGeneratorHelper> {
 
     protected final @Nullable JavaFileState ft;
 
@@ -145,7 +145,7 @@ public class JavaVariable implements JavaAnnotateable, PartGenerator<JavaSourceG
     }
 
     @Override
-    public void write(@NotNull Appendable writer, @NotNull GeneratorState<JavaSourceGenerator> codeState) throws IOException {
+    public void write(@NotNull Appendable writer, @NotNull GeneratorState<JavaSourceGeneratorHelper> codeState) throws IOException {
         for(JavaAnnotation annotation : annotations)
             writer
                     .append(codeState.getIndent())

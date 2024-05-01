@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
-public class JavaMethodGenerator implements JavaAnnotateable, PartGenerator<JavaSourceGenerator> {
+public class JavaMethodGenerator implements JavaAnnotateable, PartGenerator<JavaSourceGeneratorHelper> {
 
     protected final @NotNull JavaFileState ft;
 
@@ -111,7 +111,7 @@ public class JavaMethodGenerator implements JavaAnnotateable, PartGenerator<Java
     }
 
     @Override
-    public void write(@NotNull Appendable writer, @NotNull GeneratorState<JavaSourceGenerator> state) throws IOException {
+    public void write(@NotNull Appendable writer, @NotNull GeneratorState<JavaSourceGeneratorHelper> state) throws IOException {
         // Annotations
         for (JavaAnnotation annotation : annotations) {
             writer

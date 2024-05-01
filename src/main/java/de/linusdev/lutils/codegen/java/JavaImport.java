@@ -51,7 +51,7 @@ public class JavaImport {
         if(variable == null || other.variable == null)
             return false;
 
-        return this.variable.equals(JavaSourceGenerator.ASTERISK);
+        return this.variable.equals(JavaSourceGeneratorHelper.ASTERISK);
     }
 
     public @NotNull JavaPackage getPackage() {

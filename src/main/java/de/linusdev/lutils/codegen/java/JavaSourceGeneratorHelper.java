@@ -5,9 +5,11 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Map;
 
-public interface JavaSourceGenerator {
+public interface JavaSourceGeneratorHelper {
 
 
     String SEMICOLON = ";";
@@ -40,12 +42,20 @@ public interface JavaSourceGenerator {
     String PRIVATE = "private";
     String PROTECTED = "protected";
 
-    static @NotNull JavaSourceGenerator getDefault() {
-        return new JavaSourceGenerator() {};
+    static @NotNull JavaSourceGeneratorHelper getDefault() {
+        return new JavaSourceGeneratorHelper() {};
     }
 
     default String javaExpressionEnd() {
         return SEMICOLON;
+    }
+
+    default @NotNull Path javaSourcePath() {
+        return Paths.get("src", "main", "java");
+    }
+
+    default @NotNull Path javaResourcesPath() {
+        return Paths.get("src", "main", "resources");
     }
 
     default String javaLineBreak() {

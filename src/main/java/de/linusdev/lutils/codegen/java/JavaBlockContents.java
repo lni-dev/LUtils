@@ -8,7 +8,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class JavaBlockContents implements PartGenerator<JavaSourceGenerator> {
+public class JavaBlockContents implements PartGenerator<JavaSourceGeneratorHelper> {
 
     protected final @NotNull List<JavaExpression> expressions = new ArrayList<>();
 
@@ -17,7 +17,7 @@ public class JavaBlockContents implements PartGenerator<JavaSourceGenerator> {
     }
 
     @Override
-    public void write(@NotNull Appendable writer, @NotNull GeneratorState<JavaSourceGenerator> codeState) throws IOException {
+    public void write(@NotNull Appendable writer, @NotNull GeneratorState<JavaSourceGeneratorHelper> codeState) throws IOException {
         codeState.increaseIndent();
         for (JavaExpression expression : expressions) {
             expression.write(writer, codeState);

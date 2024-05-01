@@ -9,10 +9,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class JavaClassGenerator implements JavaClass, PartGenerator<JavaSourceGenerator>, JavaAnnotateable {
+public class JavaClassGenerator implements JavaClass, PartGenerator<JavaSourceGeneratorHelper>, JavaAnnotateable {
 
     protected final @NotNull JavaFileState ft;
-    protected final @NotNull JavaSourceGenerator sg;
+    protected final @NotNull JavaSourceGeneratorHelper sg;
     protected final @NotNull JavaPackage jPackage;
 
     protected @NotNull JavaVisibility visibility = JavaVisibility.PUBLIC;
@@ -27,7 +27,7 @@ public class JavaClassGenerator implements JavaClass, PartGenerator<JavaSourceGe
 
     public JavaClassGenerator(
             @NotNull JavaFileState ft,
-            @NotNull JavaSourceGenerator sg,
+            @NotNull JavaSourceGeneratorHelper sg,
             @NotNull JavaPackage jPackage
     ) {
         this.ft = ft;
@@ -117,7 +117,7 @@ public class JavaClassGenerator implements JavaClass, PartGenerator<JavaSourceGe
     }
 
     @Override
-    public void write(@NotNull Appendable writer, @NotNull GeneratorState<JavaSourceGenerator> state) throws IOException {
+    public void write(@NotNull Appendable writer, @NotNull GeneratorState<JavaSourceGeneratorHelper> state) throws IOException {
 
         if(name == null)
             throw new IllegalStateException("Class name must not be null.");

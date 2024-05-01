@@ -2,6 +2,8 @@ package de.linusdev.lutils.codegen.java;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Arrays;
 
 public class JavaPackage {
@@ -44,6 +46,10 @@ public class JavaPackage {
     @Override
     public String toString() {
         return getPackageString();
+    }
+
+    public @NotNull Path getPath() {
+        return Paths.get(jPackage[0], Arrays.copyOfRange(jPackage, 1, jPackage.length));
     }
 
     @Override
