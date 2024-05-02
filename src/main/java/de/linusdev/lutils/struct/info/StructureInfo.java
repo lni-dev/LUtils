@@ -4,6 +4,9 @@ import de.linusdev.lutils.struct.abstracts.MemorySizeable;
 import de.linusdev.lutils.struct.abstracts.Structure;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * Class, which holds information like alignment and size of a structure.
+ */
 public class StructureInfo implements MemorySizeable {
 
     protected final int alignment;
@@ -12,7 +15,8 @@ public class StructureInfo implements MemorySizeable {
 
     /**
      * array of item sizes. Always alternating between padding and item.
-     * First and last element are always a padding.<br><br>
+     * First and last element are always a padding. Minimum array length: 3.
+     * <br><br>
      * Layout: <br>
      * [0]: pad, [1]: size, [2]: pad, [3]: size, [4]: pad, [5]: size, ...
      */
@@ -33,6 +37,13 @@ public class StructureInfo implements MemorySizeable {
         this.size = prePadding + size + postPadding;
     }
 
+    /**
+     * Manually create {@link StructureInfo}.
+     * @param alignment alignment of the structure
+     * @param compressed whether the structure is compressed, see {@link #isCompressed()}
+     * @param size size of the actual {@link Structure} (without any padding)
+     * @param sizes array of item sizes. see {@link #sizes}
+     */
     protected StructureInfo(int alignment, boolean compressed, int size, int @NotNull [] sizes) {
         this.alignment = alignment;
         this.compressed = compressed;
@@ -59,6 +70,9 @@ public class StructureInfo implements MemorySizeable {
         return compressed;
     }
 
+    /**
+     * @return {@link #sizes}
+     */
     public int @NotNull [] getSizes() {
         return sizes;
     }

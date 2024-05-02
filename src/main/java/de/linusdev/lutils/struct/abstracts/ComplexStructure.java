@@ -17,10 +17,12 @@
 package de.linusdev.lutils.struct.abstracts;
 
 import de.linusdev.lutils.struct.annos.FixedLength;
+import de.linusdev.lutils.struct.annos.StructureLayoutSettings;
 import de.linusdev.lutils.struct.annos.StructureSettings;
 import de.linusdev.lutils.struct.generator.Language;
 import de.linusdev.lutils.struct.generator.StaticGenerator;
 import de.linusdev.lutils.struct.info.ComplexStructureInfo;
+import de.linusdev.lutils.struct.info.DefaultABIs;
 import de.linusdev.lutils.struct.info.StructVarInfo;
 import de.linusdev.lutils.struct.info.StructureInfo;
 import de.linusdev.lutils.struct.mod.ModTrackingStructure;
@@ -32,6 +34,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.HashMap;
 import java.util.Map;
 
+@StructureLayoutSettings(DefaultABIs.CVG4J)
 @StructureSettings(requiresCalculateInfoMethod = true)
 public abstract class ComplexStructure extends ModTrackingStructure {
 
@@ -44,7 +47,10 @@ public abstract class ComplexStructure extends ModTrackingStructure {
     public static final @NotNull StaticGenerator GENERATOR = new StaticGenerator() {
 
         @Override
-        public @NotNull ComplexStructureInfo calculateInfo(@NotNull Class<?> selfClazz, @Nullable FixedLength fixedLength) {
+        public @NotNull ComplexStructureInfo calculateInfo(
+                @NotNull Class<?> selfClazz,
+                @Nullable FixedLength fixedLength
+        ) {
             synchronized (INFO_MAP_LOCK) {
                 ComplexStructureInfo info = INFO_MAP.get(selfClazz);
                 if(info == null) {
@@ -57,7 +63,11 @@ public abstract class ComplexStructure extends ModTrackingStructure {
         }
 
         @Override
-        public @NotNull String generateStructCode(@NotNull Language language, @NotNull Class<?> selfClazz, @NotNull StructureInfo info) {
+        public @NotNull String generateStructCode(
+                @NotNull Language language,
+                @NotNull Class<?> selfClazz,
+                @NotNull StructureInfo info
+        ) {
             ComplexStructureInfo cInfo = (ComplexStructureInfo) info;
             StringBuilder sb = new StringBuilder();
 
