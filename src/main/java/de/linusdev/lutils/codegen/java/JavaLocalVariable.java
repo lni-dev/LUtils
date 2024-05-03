@@ -9,7 +9,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class JavaLocalVariable implements JavaAnnotateable, PartGenerator<JavaSourceGeneratorHelper> {
+public class JavaLocalVariable implements JavaAssignable, JavaAnnotateable, PartGenerator<JavaSourceGeneratorHelper> {
 
     protected final @Nullable JavaFileState ft;
 
@@ -39,6 +39,7 @@ public class JavaLocalVariable implements JavaAnnotateable, PartGenerator<JavaSo
         return isFinal;
     }
 
+    @Override
     public @NotNull String getName() {
         return name;
     }

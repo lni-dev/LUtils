@@ -7,6 +7,7 @@ import org.jetbrains.annotations.Nullable;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Locale;
 import java.util.Map;
 
 public interface JavaSourceGeneratorHelper {
@@ -30,6 +31,7 @@ public interface JavaSourceGeneratorHelper {
     String IMPLEMENTS = "implements";
     String STATIC = "static";
     String FINAL = "final";
+    String NULL = "null";
 
     // Class Types
     String ENUM = "enum";
@@ -44,6 +46,10 @@ public interface JavaSourceGeneratorHelper {
 
     static @NotNull JavaSourceGeneratorHelper getDefault() {
         return new JavaSourceGeneratorHelper() {};
+    }
+
+    default String javaNull() {
+        return NULL;
     }
 
     default String javaExpressionEnd() {
@@ -283,6 +289,10 @@ public interface JavaSourceGeneratorHelper {
     ) {
         return javaImportStart() + jImport.getPackage().getPackageString() + "." + jImport.getClassName()
                 + (jImport.getVariable() == null ? "" : ("." + jImport.getVariable())) + javaExpressionEnd();
+    }
+
+    default String javaNumberExpression(@NotNull Number number) {
+        return number.toString();
     }
 
 

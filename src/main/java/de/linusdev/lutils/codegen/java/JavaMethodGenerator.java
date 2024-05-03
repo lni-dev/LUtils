@@ -22,9 +22,9 @@ public class JavaMethodGenerator implements JavaAnnotateable, PartGenerator<Java
     protected boolean isConstructor = false;
     protected @NotNull JavaVisibility visibility = JavaVisibility.PACKAGE_PRIVATE;
 
-    protected @NotNull List<JavaAnnotation> annotations = new ArrayList<>();
-    protected @NotNull List<JavaLocalVariable> parameters = new ArrayList<>();
-    protected @NotNull JavaBlockContents body = new JavaBlockContents();
+    protected final @NotNull List<JavaAnnotation> annotations = new ArrayList<>();
+    protected final @NotNull List<JavaLocalVariable> parameters = new ArrayList<>();
+    protected final @NotNull JavaBlockContents body;
 
     public JavaMethodGenerator(
             @NotNull JavaFileState ft,
@@ -36,6 +36,7 @@ public class JavaMethodGenerator implements JavaAnnotateable, PartGenerator<Java
         this.parentClass = parentClass;
         this.returnType = returnType;
         this.name = name;
+        this.body = new JavaBlockContents(ft);
     }
 
     public void setVisibility(@NotNull JavaVisibility visibility) {
@@ -106,7 +107,7 @@ public class JavaMethodGenerator implements JavaAnnotateable, PartGenerator<Java
         ft.addImport(annotation.type.getRequiredImport());
     }
 
-    public void body(@NotNull Consumer<JavaBlockContents> consumer) {
+    public void body(@NotNull JavaBlockContentsConsumer consumer) {
         consumer.accept(body);
     }
 

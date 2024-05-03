@@ -12,7 +12,7 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
 
-public class JavaVariable implements JavaAnnotateable, PartGenerator<JavaSourceGeneratorHelper> {
+public class JavaVariable implements JavaAssignable, JavaAnnotateable, PartGenerator<JavaSourceGeneratorHelper> {
 
     protected final @Nullable JavaFileState ft;
 
@@ -97,6 +97,7 @@ public class JavaVariable implements JavaAnnotateable, PartGenerator<JavaSourceG
         return isFinal;
     }
 
+    @Override
     public @NotNull String getName() {
         return name;
     }

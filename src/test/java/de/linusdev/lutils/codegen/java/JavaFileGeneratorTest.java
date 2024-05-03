@@ -32,6 +32,16 @@ class JavaFileGeneratorTest {
         method.addParameter("firstParam", JavaClass.ofClass(String.class));
         method.addParameter("secondParam", JavaClass.ofClass(String.class)).addAnnotation(JavaClass.ofClass(NotNull.class));
 
+        method = gen.addConstructor();
+        method.setVisibility(JavaVisibility.PUBLIC);
+        var param = method.addParameter("testParam", JavaClass.ofClass(String.class));
+        method.body(body -> {
+            JavaLocalVariable test = JavaUtils.createLocalVariable(JavaClass.ofClass(String.class), "test");
+
+            body.addExpression(JavaExpression.declare(test));
+            body.addExpression(JavaExpression.assign(test, param));
+        });
+
         System.out.println(gen.writeToString());
 
     }

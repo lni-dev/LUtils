@@ -104,6 +104,20 @@ public class JavaClassGenerator implements JavaClass, PartGenerator<JavaSourceGe
         return method;
     }
 
+    public JavaMethodGenerator addConstructor() {
+        JavaMethodGenerator method = new JavaMethodGenerator(
+                ft,
+                this,
+                this,
+                ""
+        );
+
+        method.setConstructor(true);
+
+        methods.add(method);
+        return method;
+    }
+
     @Override
     public @NotNull JavaPackage getPackage() {
         return jPackage;

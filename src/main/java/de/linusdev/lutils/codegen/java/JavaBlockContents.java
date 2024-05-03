@@ -10,7 +10,14 @@ import java.util.List;
 
 public class JavaBlockContents implements PartGenerator<JavaSourceGeneratorHelper> {
 
+    protected final @NotNull JavaFileState ft;
     protected final @NotNull List<JavaExpression> expressions = new ArrayList<>();
+
+    public JavaBlockContents(
+            @NotNull JavaFileState ft
+    ) {
+        this.ft = ft;
+    }
 
     public void addExpression(@NotNull JavaExpression expression) {
         expressions.add(expression);
@@ -21,6 +28,8 @@ public class JavaBlockContents implements PartGenerator<JavaSourceGeneratorHelpe
         codeState.increaseIndent();
         for (JavaExpression expression : expressions) {
             expression.write(writer, codeState);
+            writer.append(codeState.getSg().javaExpressionEnd());
+            writer.append(codeState.getSg().javaLineBreak());
         }
         codeState.decreaseIndent();
     }
