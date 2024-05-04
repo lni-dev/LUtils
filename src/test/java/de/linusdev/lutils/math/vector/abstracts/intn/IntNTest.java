@@ -1,7 +1,5 @@
 package de.linusdev.lutils.math.vector.abstracts.intn;
 
-import de.linusdev.lutils.math.vector.array.floatn.*;
-import de.linusdev.lutils.math.vector.buffer.floatn.*;
 import de.linusdev.lutils.math.vector.buffer.intn.*;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.params.ParameterizedTest;
