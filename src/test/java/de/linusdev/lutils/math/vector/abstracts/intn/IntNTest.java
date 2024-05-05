@@ -2,6 +2,7 @@ package de.linusdev.lutils.math.vector.abstracts.intn;
 
 import de.linusdev.lutils.math.vector.buffer.intn.*;
 import org.jetbrains.annotations.NotNull;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -29,6 +30,7 @@ class IntNTest {
         assertTrue(vector.isBufferBacked());
         assertFalse(vector.isArrayBacked());
         assertFalse(vector.isView());
+        assertFalse(vector.areComponentsUnsigned());
 
         assertEquals(memberCount, vector.getMemberCount());
         assertEquals(size, vector.getRequiredSize());
@@ -39,5 +41,13 @@ class IntNTest {
         }
 
         System.out.println(vector);
+    }
+
+    @Test
+    public void unsignedTest() {
+        BBUInt1 uInt = new BBUInt1();
+        uInt.allocate();
+
+        assertTrue(uInt.areComponentsUnsigned());
     }
 }

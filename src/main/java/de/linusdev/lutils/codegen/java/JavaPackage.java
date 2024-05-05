@@ -1,12 +1,23 @@
 package de.linusdev.lutils.codegen.java;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 
 public class JavaPackage {
+
+    public static @NotNull JavaPackage ofClass(@NotNull Class<?> clazz) {
+        if(clazz.isArray())
+            return ofClass(clazz.getComponentType());
+
+        if(clazz.isPrimitive())
+            throw new UnsupportedOperationException("Primitive types have no package.");
+
+        return new JavaPackage(clazz.getPackageName());
+    }
 
     private final @NotNull String @NotNull [] jPackage;
 
@@ -18,14 +29,16 @@ public class JavaPackage {
         this.jPackage = jPackage.split("\\.");
     }
 
-    public static @NotNull JavaPackage ofClass(@NotNull Class<?> clazz) {
-        if(clazz.isArray())
-            return ofClass(clazz.getComponentType());
+    public @NotNull JavaPackage extend(@NotNull String @NotNull ... jPackage) {
+        String[] newJPackage = new String[this.jPackage.length + jPackage.length];
+        System.arraycopy(this.jPackage, 0, newJPackage, 0, this.jPackage.length);
+        System.arraycopy(jPackage, 0, newJPackage, this.jPackage.length, jPackage.length);
+        return new JavaPackage(newJPackage);
+    }
 
-        if(clazz.isPrimitive())
-            throw new UnsupportedOperationException("Primitive types have no package.");
-
-        return new JavaPackage(clazz.getPackageName());
+    public @NotNull JavaPackage extend(@NotNull String jPackage) {
+        JavaPackage extending = new JavaPackage(jPackage);
+        return extend(extending.getArray());
     }
 
     public @NotNull String @NotNull [] getArray() {

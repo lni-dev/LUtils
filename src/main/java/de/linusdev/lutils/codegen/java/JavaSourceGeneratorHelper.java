@@ -32,6 +32,7 @@ public interface JavaSourceGeneratorHelper {
     String STATIC = "static";
     String FINAL = "final";
     String NULL = "null";
+    String SUPER = "super";
 
     // Class Types
     String ENUM = "enum";
@@ -146,6 +147,23 @@ public interface JavaSourceGeneratorHelper {
 
     default String javaAssign() {
         return EQUALS;
+    }
+
+    default String javaSuper() {
+        return SUPER;
+    }
+
+    default String javaMethodCall(@NotNull String methodName, @NotNull JavaExpression @NotNull ... parameters) {
+        StringBuilder str = new StringBuilder(methodName + BRACKET_OPEN);
+
+        boolean first = true;
+        for(JavaExpression parameter : parameters) {
+            if(first) first = false;
+            else str.append(", ");
+            str.append(parameter.getExprString(this));
+        }
+
+        return str.toString() + BRACKET_CLOSE;
     }
 
     default String javaVariableType(@NotNull JavaClass javaClass) {
@@ -293,6 +311,10 @@ public interface JavaSourceGeneratorHelper {
 
     default String javaNumberExpression(@NotNull Number number) {
         return number.toString();
+    }
+
+    default String javaBooleanExpression(boolean bool) {
+        return Boolean.toString(bool);
     }
 
 

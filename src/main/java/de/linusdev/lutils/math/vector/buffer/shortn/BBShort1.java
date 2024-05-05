@@ -9,6 +9,10 @@ public class BBShort1 extends BBShortN implements Short1 {
 
     public static final BBVectorInfo INFO = BBVectorInfo.create(ELEMENT_TYPE_NAME, MEMBER_COUNT, ELEMENT_SIZE);
 
+    public BBShort1() {
+        this(false);
+    }
+
     public BBShort1(boolean allocateBuffer) {
         super(allocateBuffer);
     }

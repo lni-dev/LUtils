@@ -59,6 +59,14 @@ public interface Vector {
     int getMemberCount();
 
     /**
+     * Whether the component values of this vector should be interpreted as unsigned values.
+     * @return {@code true} if the component values are unsigned.
+     */
+    default boolean areComponentsUnsigned() {
+        return false;
+    }
+
+    /**
      * Whether this vector is array backed.
      * @return {@code true} if this vector is array backed.
      */
@@ -188,6 +196,11 @@ public interface Vector {
          */
         public int @NotNull [] getMapping() {
             return mapping;
+        }
+
+        @Override
+        public boolean areComponentsUnsigned() {
+            return original.areComponentsUnsigned();
         }
 
         @Override

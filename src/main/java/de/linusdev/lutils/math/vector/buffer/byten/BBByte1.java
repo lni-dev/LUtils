@@ -9,6 +9,10 @@ public class BBByte1 extends BBByteN implements Byte1 {
 
     public static final BBVectorInfo INFO = BBVectorInfo.create(ELEMENT_TYPE_NAME, MEMBER_COUNT, ELEMENT_SIZE);
 
+    public BBByte1() {
+        this(false);
+    }
+
     public BBByte1(boolean allocateBuffer) {
         super(allocateBuffer);
     }

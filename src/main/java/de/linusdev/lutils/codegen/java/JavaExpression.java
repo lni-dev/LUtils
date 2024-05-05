@@ -7,7 +7,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.util.*;
-import java.util.function.Consumer;
 
 public interface JavaExpression extends PartGenerator<JavaSourceGeneratorHelper> {
 
@@ -99,6 +98,34 @@ public interface JavaExpression extends PartGenerator<JavaSourceGeneratorHelper>
             @Override
             public @NotNull String getExprString(@NotNull JavaSourceGeneratorHelper sg) {
                 return sg.javaNumberExpression(number);
+            }
+        };
+    }
+
+    static @NotNull JavaExpression booleanPrimitive(boolean bool) {
+        return new JavaExpression() {
+            @Override
+            public @NotNull String getExprString(@NotNull JavaSourceGeneratorHelper sg) {
+                return sg.javaBooleanExpression(bool);
+            }
+        };
+    }
+
+    static @NotNull JavaExpression callSuper(@NotNull JavaExpression @NotNull ... parameters) {
+        return new JavaExpression() {
+            @Override
+            public @NotNull String getExprString(@NotNull JavaSourceGeneratorHelper sg) {
+                return sg.javaMethodCall(sg.javaSuper(), parameters);
+            }
+
+            @Override
+            public @NotNull Collection<JavaImport> getRequiredImports() {
+                ArrayList<JavaImport> imports = new ArrayList<>();
+                for (JavaExpression parameter : parameters) {
+                    if(parameter.getRequiredImports() != null)
+                        imports.addAll(parameter.getRequiredImports());
+                }
+                return imports;
             }
         };
     }

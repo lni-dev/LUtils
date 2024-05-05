@@ -4,6 +4,7 @@ import de.linusdev.lutils.codegen.java.JavaFileGenerator;
 import de.linusdev.lutils.codegen.java.JavaPackage;
 import de.linusdev.lutils.codegen.java.JavaSourceGeneratorHelper;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.io.Writer;
@@ -18,25 +19,37 @@ public class SourceGenerator {
 
     private final @NotNull JavaSourceGeneratorHelper sg = JavaSourceGeneratorHelper.getDefault();
     private final @NotNull Path sourceFolder;
-    private final @NotNull List<JavaFileGenerator> javaFiles;
+
+    private @NotNull JavaPackage javaBasePackage = new JavaPackage(new String[]{});
+    private final @NotNull List<JavaFileGenerator> javaFiles = new ArrayList<>();
 
     public SourceGenerator(@NotNull Path sourceFolder) {
         this.sourceFolder = sourceFolder;
-        this.javaFiles = new ArrayList<>();
+    }
+
+    public void setJavaBasePackage(@NotNull String javaBasePackage) {
+        this.javaBasePackage = new JavaPackage(javaBasePackage);
+    }
+
+    public @NotNull JavaPackage getJavaBasePackage() {
+        return javaBasePackage;
     }
 
     public @NotNull JavaFileGenerator addJavaFile(
             String... javaPackage
     ) {
-        var file = new JavaFileGenerator(new JavaPackage(javaPackage), sg);
+        var file = new JavaFileGenerator(javaBasePackage.extend(javaPackage), sg);
         javaFiles.add(file);
         return file;
     }
 
     public @NotNull JavaFileGenerator addJavaFile(
-            String javaPackage
+            @Nullable String javaPackage
     ) {
-        var file = new JavaFileGenerator(new JavaPackage(javaPackage), sg);
+        if(javaPackage == null)
+            return addJavaFile();
+
+        var file = new JavaFileGenerator(javaBasePackage.extend(javaPackage), sg);
         javaFiles.add(file);
         return file;
     }

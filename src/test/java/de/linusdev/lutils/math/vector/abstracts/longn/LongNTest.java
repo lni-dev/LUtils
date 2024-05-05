@@ -2,6 +2,7 @@ package de.linusdev.lutils.math.vector.abstracts.longn;
 
 import de.linusdev.lutils.math.vector.buffer.longn.*;
 import org.jetbrains.annotations.NotNull;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -28,6 +29,7 @@ class LongNTest {
         assertTrue(vector.isBufferBacked());
         assertFalse(vector.isArrayBacked());
         assertFalse(vector.isView());
+        assertFalse(vector.areComponentsUnsigned());
 
         assertEquals(memberCount, vector.getMemberCount());
         assertEquals(size, vector.getRequiredSize());
@@ -38,5 +40,12 @@ class LongNTest {
         }
 
         System.out.println(vector);
+    }
+
+    @Test
+    public void unsignedTest() {
+        BBULong1 uLong = new BBULong1(true);
+
+        assertTrue(uLong.areComponentsUnsigned());
     }
 }

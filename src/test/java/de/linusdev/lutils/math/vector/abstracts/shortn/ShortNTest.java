@@ -1,9 +1,10 @@
 package de.linusdev.lutils.math.vector.abstracts.shortn;
 
-import de.linusdev.lutils.math.vector.abstracts.doublen.DoubleN;
 import de.linusdev.lutils.math.vector.buffer.shortn.BBShort1;
 import de.linusdev.lutils.math.vector.buffer.shortn.BBShortN;
+import de.linusdev.lutils.math.vector.buffer.shortn.BBUShort1;
 import org.jetbrains.annotations.NotNull;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -28,6 +29,7 @@ class ShortNTest {
         assertTrue(vector.isBufferBacked());
         assertFalse(vector.isArrayBacked());
         assertFalse(vector.isView());
+        assertFalse(vector.areComponentsUnsigned());
 
         assertEquals(memberCount, vector.getMemberCount());
         assertEquals(size, vector.getRequiredSize());
@@ -53,5 +55,13 @@ class ShortNTest {
         for(int i = 0; i < memberCount; i++) {
             assertEquals(i * i + 1, vector.get(i));
         }
+    }
+
+    @Test
+    public void unsignedTest() {
+        BBUShort1 vector = new BBUShort1();
+        vector.allocate();
+
+        assertTrue(vector.areComponentsUnsigned());
     }
 }
