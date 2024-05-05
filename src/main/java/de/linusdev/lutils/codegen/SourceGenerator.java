@@ -17,6 +17,10 @@ import java.util.List;
 
 public class SourceGenerator {
 
+    public static class Test {
+
+    }
+
     private final @NotNull JavaSourceGeneratorHelper sg = JavaSourceGeneratorHelper.getDefault();
     private final @NotNull Path sourceFolder;
 

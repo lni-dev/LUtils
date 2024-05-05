@@ -42,6 +42,17 @@ class JavaFileGeneratorTest {
             body.addExpression(JavaExpression.assign(test, param));
         });
 
+        var subClass = gen.addSubClass(true);
+        subClass.setName("TestSubClass");
+        subClass.addVariable(JavaClass.ofClass(int.class), "testPrimitiveIntInSubClass");
+
+        method = subClass.addMethod(JavaClass.ofClass(void.class), "testSubClassVoid");
+        method.addParameter("firstParam", JavaClass.ofClass(String.class));
+        method.addParameter("secondParam", JavaClass.ofClass(String.class)).addAnnotation(JavaClass.ofClass(NotNull.class));
+
+        var subSubClass = subClass.addSubClass(true);
+        subSubClass.setName("TestSubSubClass");
+
         System.out.println(gen.writeToString());
 
     }

@@ -9,6 +9,10 @@ public class BBLong1 extends BBLongN implements Long1 {
 
     public static final @NotNull BBVectorInfo INFO = BBVectorInfo.create(ELEMENT_TYPE_NAME, MEMBER_COUNT, ELEMENT_SIZE);
 
+    public BBLong1() {
+        this(false);
+    }
+
     public BBLong1(boolean allocateBuffer) {
         super(MEMBER_COUNT, allocateBuffer);
     }

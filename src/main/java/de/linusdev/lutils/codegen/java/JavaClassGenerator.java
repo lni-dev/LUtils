@@ -15,7 +15,9 @@ public class JavaClassGenerator implements JavaClass, PartGenerator<JavaSourceGe
     protected final @NotNull JavaSourceGeneratorHelper sg;
     protected final @NotNull JavaPackage jPackage;
 
+    protected final @Nullable JavaClassGenerator parent;
     protected @NotNull JavaVisibility visibility = JavaVisibility.PUBLIC;
+    protected boolean isStatic = false;
     protected @NotNull JavaClassType type = JavaClassType.CLASS;
     protected @Nullable String name = null;
     protected @Nullable JavaClass extendedClass = null;
@@ -24,15 +26,25 @@ public class JavaClassGenerator implements JavaClass, PartGenerator<JavaSourceGe
     protected @NotNull List<JavaAnnotation> annotations = new ArrayList<>();
     protected @NotNull List<JavaVariable> variables = new ArrayList<>();
     protected @NotNull List<JavaMethodGenerator> methods = new ArrayList<>();
+    protected @NotNull List<JavaClassGenerator> subClasses = new ArrayList<>();
 
     public JavaClassGenerator(
             @NotNull JavaFileState ft,
             @NotNull JavaSourceGeneratorHelper sg,
-            @NotNull JavaPackage jPackage
+            @NotNull JavaPackage jPackage,
+            @Nullable JavaClassGenerator parent
     ) {
         this.ft = ft;
         this.sg = sg;
         this.jPackage = jPackage;
+        this.parent = parent;
+    }
+
+    public @NotNull JavaClassGenerator addSubClass(boolean isStatic) {
+        JavaClassGenerator clazz = new JavaClassGenerator(ft, sg, jPackage, this);
+        clazz.setStatic(isStatic);
+        subClasses.add(clazz);
+        return clazz;
     }
 
     public @NotNull JavaVariable addVariable(
@@ -43,6 +55,14 @@ public class JavaClassGenerator implements JavaClass, PartGenerator<JavaSourceGe
         ft.addImport(type.getRequiredImport());
         variables.add(variable);
         return variable;
+    }
+
+    public boolean isStatic() {
+        return isStatic;
+    }
+
+    public void setStatic(boolean aStatic) {
+        isStatic = aStatic;
     }
 
     public void setType(@NotNull JavaClassType type) {
@@ -127,6 +147,8 @@ public class JavaClassGenerator implements JavaClass, PartGenerator<JavaSourceGe
     public @NotNull String getName() {
         if(name == null)
             throw new IllegalStateException("Class name must be set.");
+        if(parent != null)
+            return parent.getName() + "." + name;
         return name;
     }
 
@@ -147,7 +169,7 @@ public class JavaClassGenerator implements JavaClass, PartGenerator<JavaSourceGe
         // Start Class
         writer
                 .append(state.getIndent())
-                .append(sg.javaClassOpenExpression(visibility, type, name, extendedClass, implementedClasses))
+                .append(sg.javaClassOpenExpression(visibility, isStatic, type, name, extendedClass, implementedClasses))
                 .append(sg.javaLineBreak())
                 .append(sg.javaLineBreak());
         state.increaseIndent();
@@ -164,6 +186,12 @@ public class JavaClassGenerator implements JavaClass, PartGenerator<JavaSourceGe
         // Methods
         for (JavaMethodGenerator method : methods) {
             method.write(writer, state);
+            writer.append(sg.javaLineBreak()).append(sg.javaLineBreak());
+        }
+
+        // Sub Classes
+        for (JavaClassGenerator subClass : subClasses) {
+            subClass.write(writer, state);
             writer.append(sg.javaLineBreak()).append(sg.javaLineBreak());
         }
 

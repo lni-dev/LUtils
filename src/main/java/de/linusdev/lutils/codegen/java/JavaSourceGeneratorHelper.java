@@ -275,6 +275,7 @@ public interface JavaSourceGeneratorHelper {
 
     default String javaClassOpenExpression(
             @NotNull JavaVisibility visibility,
+            boolean isStatic,
             @NotNull JavaClassType type,
             @NotNull String name,
             @Nullable JavaClass extendClass,
@@ -284,6 +285,9 @@ public interface JavaSourceGeneratorHelper {
         StringBuilder str = new StringBuilder(visibility.getName(this));
         if(!str.toString().isBlank())
             str.append(" ");
+
+        if(isStatic)
+            str.append(javaStaticKeyword()).append(" ");
 
         str.append(type.getName(this)).append(" ").append(name);
 

@@ -15,8 +15,8 @@ public class JavaFileGenerator extends JavaClassGenerator implements FileGenerat
         super(
                 new JavaFileState(jPackage),
                 sourceGenerator == null ? JavaSourceGeneratorHelper.getDefault() : sourceGenerator,
-                jPackage
-        );
+                jPackage,
+                null);
     }
 
 
