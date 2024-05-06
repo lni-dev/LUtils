@@ -3,13 +3,18 @@ package de.linusdev.lutils.codegen.java;
 import de.linusdev.lutils.codegen.GeneratorState;
 import de.linusdev.lutils.codegen.PartGenerator;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
-public class JavaMethodGenerator implements JavaAnnotateable, PartGenerator<JavaSourceGeneratorHelper> {
+public class JavaMethodGenerator implements
+        JavaAnnotateable,
+        PartGenerator<JavaSourceGeneratorHelper>,
+        JavaDocable
+{
 
     protected final @NotNull JavaFileState ft;
 
@@ -21,6 +26,7 @@ public class JavaMethodGenerator implements JavaAnnotateable, PartGenerator<Java
     protected boolean isFinal = false;
     protected boolean isConstructor = false;
     protected @NotNull JavaVisibility visibility = JavaVisibility.PACKAGE_PRIVATE;
+    protected @Nullable JavaDocGenerator javaDoc = null;
 
     protected final @NotNull List<JavaAnnotation> annotations = new ArrayList<>();
     protected final @NotNull List<JavaLocalVariable> parameters = new ArrayList<>();
@@ -113,6 +119,10 @@ public class JavaMethodGenerator implements JavaAnnotateable, PartGenerator<Java
 
     @Override
     public void write(@NotNull Appendable writer, @NotNull GeneratorState<JavaSourceGeneratorHelper> state) throws IOException {
+        //JavaDoc
+        if(javaDoc != null)
+            javaDoc.write(writer, state);
+
         // Annotations
         for (JavaAnnotation annotation : annotations) {
             writer
@@ -135,5 +145,12 @@ public class JavaMethodGenerator implements JavaAnnotateable, PartGenerator<Java
                 .append(state.getSg().javaLineBreak())
                 .append(state.getIndent())
                 .append(state.getSg().javaMethodCloseExpression());
+    }
+
+    @Override
+    public @NotNull JavaDocGenerator setJavaDoc() {
+        if(javaDoc == null)
+            javaDoc = new JavaDocGenerator();
+        return javaDoc;
     }
 }

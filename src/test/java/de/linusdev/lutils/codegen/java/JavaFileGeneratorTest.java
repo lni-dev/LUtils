@@ -49,6 +49,7 @@ class JavaFileGeneratorTest {
         method = subClass.addMethod(JavaClass.ofClass(void.class), "testSubClassVoid");
         method.addParameter("firstParam", JavaClass.ofClass(String.class));
         method.addParameter("secondParam", JavaClass.ofClass(String.class)).addAnnotation(JavaClass.ofClass(NotNull.class));
+        method.setJavaDoc("Test Javadoc.\nWOOOW");
 
         var subSubClass = subClass.addSubClass(true);
         subSubClass.setName("TestSubSubClass");

@@ -1,6 +1,6 @@
-package de.linusdev.lutils.struct.array;
+package de.linusdev.lutils.nat.array;
 
-import de.linusdev.lutils.struct.abstracts.NativeParsable;
+import de.linusdev.lutils.nat.NativeParsable;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Range;
 

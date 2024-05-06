@@ -1,6 +1,6 @@
 package de.linusdev.lutils.struct.info;
 
-import de.linusdev.lutils.struct.abstracts.MemorySizeable;
+import de.linusdev.lutils.nat.MemorySizeable;
 import org.jetbrains.annotations.NotNull;
 
 /**

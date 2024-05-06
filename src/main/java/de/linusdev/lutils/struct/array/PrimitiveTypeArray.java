@@ -16,6 +16,7 @@
 
 package de.linusdev.lutils.struct.array;
 
+import de.linusdev.lutils.nat.array.NativeArray;
 import de.linusdev.lutils.struct.abstracts.Structure;
 import de.linusdev.lutils.struct.annos.FixedLength;
 import de.linusdev.lutils.struct.annos.StructureSettings;

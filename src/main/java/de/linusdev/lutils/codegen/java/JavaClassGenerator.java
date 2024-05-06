@@ -9,7 +9,12 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class JavaClassGenerator implements JavaClass, PartGenerator<JavaSourceGeneratorHelper>, JavaAnnotateable {
+public class JavaClassGenerator implements
+        JavaClass,
+        PartGenerator<JavaSourceGeneratorHelper>,
+        JavaAnnotateable,
+        JavaDocable
+{
 
     protected final @NotNull JavaFileState ft;
     protected final @NotNull JavaSourceGeneratorHelper sg;
@@ -22,6 +27,7 @@ public class JavaClassGenerator implements JavaClass, PartGenerator<JavaSourceGe
     protected @Nullable String name = null;
     protected @Nullable JavaClass extendedClass = null;
     protected @NotNull JavaClass @NotNull [] implementedClasses = new JavaClass[0];
+    protected @Nullable JavaDocGenerator javaDoc = null;
 
     protected @NotNull List<JavaAnnotation> annotations = new ArrayList<>();
     protected @NotNull List<JavaVariable> variables = new ArrayList<>();
@@ -152,11 +158,16 @@ public class JavaClassGenerator implements JavaClass, PartGenerator<JavaSourceGe
         return name;
     }
 
+
     @Override
     public void write(@NotNull Appendable writer, @NotNull GeneratorState<JavaSourceGeneratorHelper> state) throws IOException {
 
         if(name == null)
             throw new IllegalStateException("Class name must not be null.");
+
+        //JavaDoc
+        if(javaDoc != null)
+            javaDoc.write(writer, state);
 
         // Annotations
         for (JavaAnnotation annotation : annotations) {
@@ -199,5 +210,12 @@ public class JavaClassGenerator implements JavaClass, PartGenerator<JavaSourceGe
         state.decreaseIndent();
         writer.append(state.getIndent()).append(sg.javaClassEndExpression());
 
+    }
+
+    @Override
+    public @NotNull JavaDocGenerator setJavaDoc() {
+        if(javaDoc == null)
+            javaDoc = new JavaDocGenerator();
+        return javaDoc;
     }
 }

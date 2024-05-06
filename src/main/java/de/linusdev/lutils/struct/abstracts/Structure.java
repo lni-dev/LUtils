@@ -1,5 +1,6 @@
 package de.linusdev.lutils.struct.abstracts;
 
+import de.linusdev.lutils.nat.NativeParsable;
 import de.linusdev.lutils.struct.generator.Language;
 import de.linusdev.lutils.struct.generator.StaticGenerator;
 import de.linusdev.lutils.struct.info.StructureInfo;

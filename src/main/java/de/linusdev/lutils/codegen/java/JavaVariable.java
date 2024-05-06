@@ -12,7 +12,12 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
 
-public class JavaVariable implements JavaAssignable, JavaAnnotateable, PartGenerator<JavaSourceGeneratorHelper> {
+public class JavaVariable implements
+        JavaAssignable,
+        JavaAnnotateable,
+        PartGenerator<JavaSourceGeneratorHelper>,
+        JavaDocable
+{
 
     protected final @Nullable JavaFileState ft;
 
@@ -24,6 +29,7 @@ public class JavaVariable implements JavaAssignable, JavaAnnotateable, PartGener
     protected boolean isFinal = false;
     protected @NotNull JavaVisibility visibility = JavaVisibility.PACKAGE_PRIVATE;
     protected @Nullable JavaExpression defaultValue;
+    protected @Nullable JavaDocGenerator javaDoc = null;
 
     protected @NotNull List<JavaAnnotation> annotations = new ArrayList<>();
 
@@ -146,15 +152,27 @@ public class JavaVariable implements JavaAssignable, JavaAnnotateable, PartGener
     }
 
     @Override
-    public void write(@NotNull Appendable writer, @NotNull GeneratorState<JavaSourceGeneratorHelper> codeState) throws IOException {
+    public void write(@NotNull Appendable writer, @NotNull GeneratorState<JavaSourceGeneratorHelper> state) throws IOException {
+
+        //JavaDoc
+        if(javaDoc != null)
+            javaDoc.write(writer, state);
+
         for(JavaAnnotation annotation : annotations)
             writer
-                    .append(codeState.getIndent())
-                    .append(codeState.getSg().javaAnnotation(annotation))
-                    .append(codeState.getSg().javaLineBreak());
+                    .append(state.getIndent())
+                    .append(state.getSg().javaAnnotation(annotation))
+                    .append(state.getSg().javaLineBreak());
 
         writer
-                .append(codeState.getIndent())
-                .append(codeState.getSg().javaVariableExpression(this));
+                .append(state.getIndent())
+                .append(state.getSg().javaVariableExpression(this));
+    }
+
+    @Override
+    public @NotNull JavaDocGenerator setJavaDoc() {
+        if(javaDoc == null)
+            javaDoc = new JavaDocGenerator();
+        return javaDoc;
     }
 }

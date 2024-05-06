@@ -1,4 +1,4 @@
-package de.linusdev.lutils.struct.abstracts;
+package de.linusdev.lutils.nat;
 
 /**
  * An object that may be stored in the heap memory.

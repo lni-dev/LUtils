@@ -1,4 +1,4 @@
-package de.linusdev.lutils.struct.abstracts;
+package de.linusdev.lutils.nat;
 
 import de.linusdev.lutils.struct.utils.BufferUtils;
 

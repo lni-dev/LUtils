@@ -1,4 +1,4 @@
-package de.linusdev.lutils.struct.pointer;
+package de.linusdev.lutils.nat.pointer;
 
 import de.linusdev.lutils.math.vector.buffer.longn.BBLong1;
 
