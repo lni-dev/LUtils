@@ -23,8 +23,9 @@ class JavaFileGeneratorTest {
         testStringVar.setVisibility(JavaVisibility.PUBLIC);
         testStringVar.addAnnotation(JavaClass.ofClass(Nullable.class));
 
-        gen.addVariable(JavaClass.ofClass(int.class), "testPrimitiveInt");
-        gen.addVariable(JavaClass.ofClass(int[].class), "testPrimitiveIntArray");
+        gen.addVariable(JavaClass.ofClass(int.class), "testPrimitiveInt").setJavaDoc("Test Javadoc of variable");
+        var testVarPIntArray = gen.addVariable(JavaClass.ofClass(int[].class), "testPrimitiveIntArray");
+        gen.addGetter(testVarPIntArray);
         gen.addVariable(JavaClass.ofClass(String[].class), "testStringArray");
         gen.addAnnotation(JavaClass.ofClass(NotNull.class)).setValue(JavaVariable.of(NotNull.class, "value"), JavaExpression.ofString("t\"est"));
 
@@ -53,6 +54,21 @@ class JavaFileGeneratorTest {
 
         var subSubClass = subClass.addSubClass(true);
         subSubClass.setName("TestSubSubClass");
+
+        System.out.println(gen.writeToString());
+
+        System.out.println();
+        System.out.println();
+
+        gen = new JavaFileGenerator(JavaPackage.ofClass(String.class), JavaSourceGeneratorHelper.getDefault());
+        gen.setType(JavaClassType.ENUM);
+        gen.setVisibility(JavaVisibility.PUBLIC);
+        gen.setName("TestEnum");
+        gen.addEnumMember("TEST_1", JavaExpression.ofString("test"), JavaExpression.numberPrimitive(10.0f));
+        gen.addEnumMember("TEST_2", JavaExpression.ofString("test2"), JavaExpression.numberPrimitive(20.0f));
+        var m = gen.addEnumMember("TEST_3", JavaExpression.ofString("test3"), JavaExpression.numberPrimitive(30.0f));
+        m.addAnnotation(JavaClass.ofClass(Deprecated.class));
+        m.setJavaDoc("Test doc");
 
         System.out.println(gen.writeToString());
 

@@ -130,6 +130,20 @@ public interface JavaExpression extends PartGenerator<JavaSourceGeneratorHelper>
         };
     }
 
+    static @NotNull JavaExpression returnExpr(@NotNull JavaExpression toReturn) {
+        return new JavaExpression() {
+            @Override
+            public @NotNull String getExprString(@NotNull JavaSourceGeneratorHelper sg) {
+                return "return " + toReturn.getExprString(sg);
+            }
+
+            @Override
+            public @Nullable Collection<JavaImport> getRequiredImports() {
+                return toReturn.getRequiredImports();
+            }
+        };
+    }
+
 
     @NotNull String getExprString(@NotNull JavaSourceGeneratorHelper sg);
 

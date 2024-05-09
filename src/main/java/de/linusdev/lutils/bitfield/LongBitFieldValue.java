@@ -18,6 +18,15 @@ package de.linusdev.lutils.bitfield;
 
 public interface LongBitFieldValue {
 
+    /**
+     *
+     * @param bitPos position of the bit, which is set. The first bit has the position 0.
+     * @return long with given bit set.
+     */
+    static long bitPosToValue(int bitPos) {
+        return 1L << (bitPos);
+    }
+
     long getValue();
 
 }

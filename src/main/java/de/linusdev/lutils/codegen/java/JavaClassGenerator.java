@@ -8,6 +8,7 @@ import org.jetbrains.annotations.Nullable;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public class JavaClassGenerator implements
         JavaClass,
@@ -33,6 +34,7 @@ public class JavaClassGenerator implements
     protected @NotNull List<JavaVariable> variables = new ArrayList<>();
     protected @NotNull List<JavaMethodGenerator> methods = new ArrayList<>();
     protected @NotNull List<JavaClassGenerator> subClasses = new ArrayList<>();
+    protected @NotNull List<JavaEnumMemberGenerator> enumMembers = new ArrayList<>();
 
     public JavaClassGenerator(
             @NotNull JavaFileState ft,
@@ -44,6 +46,15 @@ public class JavaClassGenerator implements
         this.sg = sg;
         this.jPackage = jPackage;
         this.parent = parent;
+    }
+
+    public @NotNull JavaEnumMemberGenerator addEnumMember(
+            @NotNull String name,
+            @NotNull JavaExpression @NotNull ... parameters
+    ) {
+        var e = new JavaEnumMemberGenerator(ft, name, parameters);
+        enumMembers.add(e);
+        return e;
     }
 
     public @NotNull JavaClassGenerator addSubClass(boolean isStatic) {
@@ -130,6 +141,20 @@ public class JavaClassGenerator implements
         return method;
     }
 
+    public JavaMethodGenerator addGetter(@NotNull JavaVariable variable) {
+        JavaMethodGenerator method = new JavaMethodGenerator(
+                ft,
+                this,
+                variable.type,
+                "get" + variable.name.substring(0, 1).toUpperCase(Locale.ROOT) + variable.name.substring(1)
+        );
+
+        method.body(block -> block.addExpression(JavaExpression.returnExpr(variable)));
+
+        methods.add(method);
+        return method;
+    }
+
     public JavaMethodGenerator addConstructor() {
         JavaMethodGenerator method = new JavaMethodGenerator(
                 ft,
@@ -184,6 +209,20 @@ public class JavaClassGenerator implements
                 .append(sg.javaLineBreak())
                 .append(sg.javaLineBreak());
         state.increaseIndent();
+
+        // Enum Members
+        if(type == JavaClassType.ENUM) {
+            for (JavaEnumMemberGenerator enumMember : enumMembers) {
+                enumMember.write(writer, state);
+                writer.append(",").append(sg.javaLineBreak());
+            }
+
+            writer
+                    .append(state.getIndent())
+                    .append(sg.javaExpressionEnd())
+                    .append(sg.javaLineBreak())
+                    .append(sg.javaLineBreak());
+        }
 
         // Variables
         for (JavaVariable variable : variables) {

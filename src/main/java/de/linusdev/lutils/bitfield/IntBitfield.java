@@ -1,92 +1,26 @@
-/*
- * Copyright (c) 2023 Linus Andera
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package de.linusdev.lutils.bitfield;
 
 import org.jetbrains.annotations.NotNull;
 
-/**
- * Bitfield class using an int. It is not thread safe!
- * @param <V> field value
- */
-@SuppressWarnings("unused")
-public class IntBitfield<V extends IntBitFieldValue> {
-
-    private int value;
-
-    public IntBitfield(@NotNull V flag) {
-        this();
-        set(flag);
-    }
-
-    public IntBitfield(@NotNull V flag1, @NotNull V flag2) {
-        this();
-        set(flag1, flag2);
-    }
-
-    public IntBitfield(@NotNull V flag1, @NotNull V flag2, @NotNull V flag3) {
-        this();
-        set(flag1, flag2, flag3);
-    }
-
-    public IntBitfield(@NotNull V flag1, @NotNull V flag2, @NotNull V flag3, @NotNull V flag4) {
-        this();
-        set(flag1, flag2, flag3, flag4);
-    }
-
-    @SafeVarargs
-    public IntBitfield(@NotNull V @NotNull ... flags) {
-        this();
-        set(flags);
-    }
-
-    public IntBitfield(int value) {
-        this.value = value;
-    }
-
-    public IntBitfield() {
-        this.value = 0;
-    }
+public interface IntBitfield<V extends IntBitFieldValue> {
 
     /**
      * Get the value of this bitfield
      * @return bitfield as int
      */
-    public int getValue() {
-        return value;
-    }
-
-    public void replaceWith(int value) {
-        this.value = value;
-    }
+    int getValue();
 
     /**
-     * reset this bitfield to 0
+     * Replace the current value of this bitfield with given {@code value}.
+     * @param value new value for this bitfield.
      */
-    public void reset() {
-        this.value = 0;
-    }
+    void replaceWith(int value);
 
     /**
-     * checks if given flag is set.
-     * @param flag flag to check
-     * @return {@code true} if given flag is set in this bitfield.
+     * reset this bitfield to 0 (not flags set)
      */
-    public boolean isSet(@NotNull V flag) {
-        return (value & flag.getValue()) == flag.getValue();
+    default void reset() {
+        replaceWith(0);
     }
 
     /**
@@ -94,64 +28,89 @@ public class IntBitfield<V extends IntBitFieldValue> {
      * @param flag flag to check
      * @return {@code true} if given flag is set in this bitfield.
      */
-    public boolean isSet(int flag) {
-        return (value & flag) == flag;
+    default boolean isSet(int flag) {
+        return (getValue() & flag) == flag;
+    }
+
+    /**
+     * checks if given flag is set.
+     * @param flag flag to check
+     * @return {@code true} if given flag is set in this bitfield.
+     */
+    default boolean isSet(@NotNull V flag) {
+        return isSet(flag.getValue());
+    }
+
+    /**
+     * Set all bits/flags in given {@code flag}.
+     * @param flag flag(s) to set
+     */
+    default void set(int flag) {
+        replaceWith(getValue() | flag);
     }
 
     /**
      * Sets given flag(s) to 1.
      * @param flag flag to set
      */
-    public void set(@NotNull V flag) {
-        value |= flag.getValue();
+    default void set(@NotNull V flag) {
+        set(flag.getValue());
     }
 
     /**
      * Sets given flag(s) to 1.
      * @param flag1 flag to set
      */
-    public void set(@NotNull V flag1, @NotNull V flag2) {
-        value |= flag1.getValue() | flag2.getValue();
+    default void set(@NotNull V flag1, @NotNull V flag2) {
+        set(flag1.getValue());
+        set(flag2.getValue());
     }
 
     /**
      * Sets given flag(s) to 1.
      * @param flag1 flag to set
      */
-    public void set(@NotNull V flag1, @NotNull V flag2, @NotNull V flag3) {
-        value |= flag1.getValue() | flag2.getValue() | flag3.getValue();
+    default void set(@NotNull V flag1, @NotNull V flag2, @NotNull V flag3) {
+        set(flag1.getValue());
+        set(flag2.getValue());
+        set(flag3.getValue());
     }
 
     /**
      * Sets given flag(s) to 1.
      * @param flag1 flag to set
      */
-    public void set(@NotNull V flag1, @NotNull V flag2, @NotNull V flag3, @NotNull V flag4) {
-        value |= flag1.getValue() | flag2.getValue() | flag3.getValue() | flag4.getValue();
+    default void set(@NotNull V flag1, @NotNull V flag2, @NotNull V flag3, @NotNull V flag4) {
+        set(flag1.getValue());
+        set(flag2.getValue());
+        set(flag3.getValue());
+        set(flag4.getValue());
     }
 
     /**
      * Sets given flag(s) to 1.
      * @param flags flags to set
      */
-    @SafeVarargs
-    public final void set(@NotNull V @NotNull... flags) {
+    default void set(@NotNull V @NotNull [] flags) {
         for(V flag : flags)
-            value |= flag.getValue();
+            set(flag.getValue());
     }
 
-    public void set(int flag) {
-        value |= flag;
+    /**
+     * Sets given flag to 0.
+     * @param flag flag to set
+     */
+    default void unset(@NotNull V flag) {
+        unset(flag.getValue());
     }
 
-    public void unset(@NotNull V flag) {
-        value &= ~flag.getValue();
+    /**
+     * removes all flags contained in given {@code flag}. This means, all bits that are set in given {@code flag}
+     * will be {@code 0} in {@link #getValue()} directly after this method call.
+     * @param flag flag to remove
+     */
+    default void unset(int flag) {
+        replaceWith(getValue() & ~flag);
     }
-
-    public void unset(int flag) {
-        value &= ~flag;
-    }
-
 
 }
-

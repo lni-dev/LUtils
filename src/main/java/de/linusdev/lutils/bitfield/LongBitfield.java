@@ -1,92 +1,27 @@
-/*
- * Copyright (c) 2023 Linus Andera
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package de.linusdev.lutils.bitfield;
 
 import org.jetbrains.annotations.NotNull;
 
-/**
- * Bitfield class using a long. It is not thread safe!
- * @param <V> field value
- */
 @SuppressWarnings("unused")
-public class LongBitfield<V extends LongBitFieldValue> {
-
-    private long value;
-
-    public LongBitfield(@NotNull V flag) {
-        this();
-        set(flag);
-    }
-
-    public LongBitfield(@NotNull V flag1, @NotNull V flag2) {
-        this();
-        set(flag1, flag2);
-    }
-
-    public LongBitfield(@NotNull V flag1, @NotNull V flag2, @NotNull V flag3) {
-        this();
-        set(flag1, flag2, flag3);
-    }
-
-    public LongBitfield(@NotNull V flag1, @NotNull V flag2, @NotNull V flag3, @NotNull V flag4) {
-        this();
-        set(flag1, flag2, flag3, flag4);
-    }
-
-    @SafeVarargs
-    public LongBitfield(@NotNull V @NotNull ... flags) {
-        this();
-        set(flags);
-    }
-
-    public LongBitfield(long value) {
-        this.value = value;
-    }
-
-    public LongBitfield() {
-        this.value = 0L;
-    }
+public interface LongBitfield<V extends LongBitFieldValue> {
 
     /**
      * Get the value of this bitfield
-     * @return bitfield as int
+     * @return bitfield as long
      */
-    public long getValue() {
-        return value;
-    }
-
-    public void replaceWith(long value) {
-        this.value = value;
-    }
+    long getValue();
 
     /**
-     * reset this bitfield to 0
+     * Replace the current value of this bitfield with given {@code value}.
+     * @param value new value for this bitfield.
      */
-    public void reset() {
-        this.value = 0L;
-    }
+    void replaceWith(long value);
 
     /**
-     * checks if given flag is set.
-     * @param flag flag to check
-     * @return {@code true} if given flag is set in this bitfield.
+     * reset this bitfield to 0 (not flags set)
      */
-    public boolean isSet(@NotNull V flag) {
-        return (value & flag.getValue()) == flag.getValue();
+    default void reset() {
+        replaceWith(0);
     }
 
     /**
@@ -94,63 +29,89 @@ public class LongBitfield<V extends LongBitFieldValue> {
      * @param flag flag to check
      * @return {@code true} if given flag is set in this bitfield.
      */
-    public boolean isSet(long flag) {
-        return (value & flag) == flag;
+    default boolean isSet(long flag) {
+        return (getValue() & flag) == flag;
+    }
+
+    /**
+     * checks if given flag is set.
+     * @param flag flag to check
+     * @return {@code true} if given flag is set in this bitfield.
+     */
+    default boolean isSet(@NotNull V flag) {
+        return isSet(flag.getValue());
+    }
+
+    /**
+     * Set all bits/flags in given {@code flag}.
+     * @param flag flag to set
+     */
+    default void set(long flag) {
+        replaceWith(getValue() | flag);
     }
 
     /**
      * Sets given flag(s) to 1.
      * @param flag flag to set
      */
-    public void set(@NotNull V flag) {
-        value |= flag.getValue();
+    default void set(@NotNull V flag) {
+        set(flag.getValue());
     }
 
     /**
      * Sets given flag(s) to 1.
      * @param flag1 flag to set
      */
-    public void set(@NotNull V flag1, @NotNull V flag2) {
-        value |= flag1.getValue() | flag2.getValue();
+    default void set(@NotNull V flag1, @NotNull V flag2) {
+        set(flag1.getValue());
+        set(flag2.getValue());
     }
 
     /**
      * Sets given flag(s) to 1.
      * @param flag1 flag to set
      */
-    public void set(@NotNull V flag1, @NotNull V flag2, @NotNull V flag3) {
-        value |= flag1.getValue() | flag2.getValue() | flag3.getValue();
+    default void set(@NotNull V flag1, @NotNull V flag2, @NotNull V flag3) {
+        set(flag1.getValue());
+        set(flag2.getValue());
+        set(flag3.getValue());
     }
 
     /**
      * Sets given flag(s) to 1.
      * @param flag1 flag to set
      */
-    public void set(@NotNull V flag1, @NotNull V flag2, @NotNull V flag3, @NotNull V flag4) {
-        value |= flag1.getValue() | flag2.getValue() | flag3.getValue() | flag4.getValue();
+    default void set(@NotNull V flag1, @NotNull V flag2, @NotNull V flag3, @NotNull V flag4) {
+        set(flag1.getValue());
+        set(flag2.getValue());
+        set(flag3.getValue());
+        set(flag4.getValue());
     }
 
     /**
      * Sets given flag(s) to 1.
-     * @param flags flag to set
+     * @param flags flags to set
      */
-    @SafeVarargs
-    public final void set(@NotNull V @NotNull... flags) {
+    default void set(@NotNull V @NotNull [] flags) {
         for(V flag : flags)
-            value |= flag.getValue();
+            set(flag.getValue());
     }
 
-    public void set(long flag) {
-        value |= flag;
+    /**
+     * Sets given flag to 0.
+     * @param flag flag to set
+     */
+    default void unset(@NotNull V flag) {
+        unset(flag.getValue());
     }
 
-    public void unset(@NotNull V flag) {
-        value &= ~flag.getValue();
+    /**
+     * removes all flags contained in given {@code flag}. This means, all bits that are set in given {@code flag}
+     * will be {@code 0} in {@link #getValue()} directly after this method call.
+     * @param flag flag to remove
+     */
+    default void unset(long flag) {
+        replaceWith(getValue() & ~flag);
     }
-
-    public void unset(long flag) {
-        value &= ~flag;
-    }
-
 
 }

@@ -12,7 +12,7 @@ public class BitfieldTest {
 
     @Test
     public void test() {
-        IntBitfield<SomeEnum> field = new IntBitfield<>();
+        IntBitfieldImpl<SomeEnum> field = new IntBitfieldImpl<>();
 
         field.set(SomeEnum.A, SomeEnum.E);
 
@@ -33,6 +33,10 @@ public class BitfieldTest {
         assertTrue(field.isSet(SomeEnum.C));
         assertTrue(field.isSet(SomeEnum.D));
         assertTrue(field.isSet(SomeEnum.E));
+
+        field.unset(SomeEnum.A);
+
+        assertFalse(field.isSet(SomeEnum.A));
     }
 
 }
