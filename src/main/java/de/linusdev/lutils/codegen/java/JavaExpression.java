@@ -146,6 +146,52 @@ public interface JavaExpression extends PartGenerator<JavaSourceGeneratorHelper>
         };
     }
 
+    static @NotNull JavaExpression callConstructorOf(
+            @NotNull JavaClass javaClass,
+            @NotNull JavaExpression @NotNull ... parameters
+    ) {
+        return new JavaExpression() {
+            @Override
+            public @NotNull String getExprString(
+                    @NotNull JavaSourceGeneratorHelper sg
+            ) {
+                return sg.javaMethodCall("new " + javaClass.getTypeName(), parameters);
+            }
+
+            @Override
+            public @Nullable Collection<JavaImport> getRequiredImports() {
+                return javaClass.getRequiredImports();
+            }
+        };
+    }
+
+    static @NotNull JavaExpression callMethod(
+            @NotNull JavaMethod method,
+            @NotNull JavaExpression @NotNull ... parameters
+    ) {
+        return new JavaExpression() {
+            @Override
+            public @NotNull String getExprString(@NotNull JavaSourceGeneratorHelper sg) {
+                return sg.javaMethodCall(method.getName(),parameters);
+            }
+
+            @Override
+            public @Nullable Collection<JavaImport> getRequiredImports() {
+                return collectImports(parameters);
+            }
+        };
+    }
+
+    private static @Nullable Collection<JavaImport> collectImports(
+            @NotNull JavaExpression @NotNull ... expressions
+    ) {
+        ArrayList<JavaImport> imports = new ArrayList<>();
+        for (JavaExpression parameter : expressions) {
+            if(parameter.getRequiredImports() != null)
+                imports.addAll(parameter.getRequiredImports());
+        }
+        return !imports.isEmpty() ? imports : null;
+    }
 
     @NotNull String getExprString(@NotNull JavaSourceGeneratorHelper sg);
 

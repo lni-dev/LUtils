@@ -12,7 +12,8 @@ import java.util.List;
 public class JavaMethodGenerator implements
         JavaAnnotateable,
         PartGenerator<JavaSourceGeneratorHelper>,
-        JavaDocable
+        JavaDocable,
+        JavaMethod
 {
 
     protected final @NotNull JavaFileState ft;
@@ -78,6 +79,11 @@ public class JavaMethodGenerator implements
 
     public @NotNull String getName() {
         return name;
+    }
+
+    @Override
+    public @NotNull JavaClass getParentClass() {
+        return parentClass;
     }
 
     public @NotNull JavaClass getReturnType() {
