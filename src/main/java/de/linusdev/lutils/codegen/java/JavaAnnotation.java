@@ -8,12 +8,17 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class JavaAnnotation {
-
+    protected final @NotNull JavaFileState ft;
     protected final @NotNull JavaClass type;
     protected @Nullable Map<JavaVariable, JavaExpression> values;
 
-    public JavaAnnotation(@NotNull JavaClass type) {
+    public JavaAnnotation(
+            @NotNull JavaFileState ft,
+            @NotNull JavaClass type
+    ) {
+        this.ft = ft;
         this.type = type;
+        ft.addImport(type.getRequiredImports());
     }
 
     public @NotNull JavaClass getType() {
@@ -28,5 +33,6 @@ public class JavaAnnotation {
         if(values == null)
             values = new HashMap<>();
         values.put(variable, expression);
+        ft.addImport(expression.getRequiredImports());
     }
 }

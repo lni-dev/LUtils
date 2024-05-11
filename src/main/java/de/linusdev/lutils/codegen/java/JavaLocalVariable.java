@@ -72,17 +72,11 @@ public class JavaLocalVariable implements JavaAssignable, JavaAnnotateable, Part
 
     @Override
     public @NotNull JavaAnnotation addAnnotation(@NotNull JavaClass annotationClass) {
-        JavaAnnotation annotation = new JavaAnnotation(annotationClass);
-        addAnnotation(annotation);
-        return annotation;
-    }
-
-    @Override
-    public void addAnnotation(@NotNull JavaAnnotation annotation) {
         if(ft == null)
             throw new IllegalStateException("Cannot add an annotation to a non generator variable.");
+        JavaAnnotation annotation = new JavaAnnotation(ft, annotationClass);
         annotations.add(annotation);
-        ft.addImport(annotation.type.getRequiredImports());
+        return annotation;
     }
 
     public @NotNull List<JavaAnnotation> getAnnotations() {

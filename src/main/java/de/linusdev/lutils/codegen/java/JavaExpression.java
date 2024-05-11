@@ -182,6 +182,25 @@ public interface JavaExpression extends PartGenerator<JavaSourceGeneratorHelper>
         };
     }
 
+    /**
+     * Expression example: String.class
+     */
+    static @NotNull JavaExpression classInstanceOfClass(
+            @NotNull JavaClass javaClass
+    ) {
+        return new JavaExpression() {
+            @Override
+            public @NotNull String getExprString(@NotNull JavaSourceGeneratorHelper sg) {
+                return javaClass.getName() + ".class";
+            }
+
+            @Override
+            public @Nullable Collection<JavaImport> getRequiredImports() {
+                return javaClass.getRequiredImports();
+            }
+        };
+    }
+
     private static @Nullable Collection<JavaImport> collectImports(
             @NotNull JavaExpression @NotNull ... expressions
     ) {

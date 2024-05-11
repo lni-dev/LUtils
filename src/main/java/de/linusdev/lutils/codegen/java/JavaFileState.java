@@ -4,6 +4,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 public class JavaFileState {
@@ -37,7 +38,7 @@ public class JavaFileState {
     }
 
     @SuppressWarnings("UnusedReturnValue")
-    public boolean addImport(@Nullable List<JavaImport> toAdd) {
+    public boolean addImport(@Nullable Collection<JavaImport> toAdd) {
         if(toAdd == null)
             return false;
 

@@ -9,6 +9,36 @@ import java.util.List;
 
 public interface JavaClass {
 
+    static @NotNull JavaClass custom(
+            @NotNull String jPackage,
+            @NotNull String name
+    ) {
+        return new JavaClass() {
+            @Override
+            public @NotNull JavaPackage getPackage() {
+                return new JavaPackage(jPackage);
+            }
+
+            @Override
+            public @NotNull String getName() {
+                return name;
+            }
+
+            @Override
+            public boolean equals(Object obj) {
+                if(!(obj instanceof JavaClass))
+                    return false;
+
+                return JavaClass.equals(this, (JavaClass) obj);
+            }
+
+            @Override
+            public int hashCode() {
+                return JavaClass.hashcode(this);
+            }
+        };
+    }
+
     static @NotNull JavaClass ofClass(@NotNull Class<?> clazz) {
         JavaPackage p;
 
@@ -45,7 +75,15 @@ public interface JavaClass {
 
             @Override
             public boolean equals(Object obj) {
-                return super.equals(obj);
+                if(!(obj instanceof JavaClass))
+                    return false;
+
+                return JavaClass.equals(this, (JavaClass) obj);
+            }
+
+            @Override
+            public int hashCode() {
+                return JavaClass.hashcode(this);
             }
         };
     }
