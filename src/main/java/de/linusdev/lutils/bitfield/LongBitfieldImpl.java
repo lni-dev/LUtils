@@ -140,7 +140,7 @@ public class LongBitfieldImpl<V extends LongBitFieldValue> implements LongBitfie
             value |= flag.getValue();
     }
 
-    public void set(long flag) {
+    public void setFlag(long flag) {
         value |= flag;
     }
 
@@ -148,7 +148,7 @@ public class LongBitfieldImpl<V extends LongBitFieldValue> implements LongBitfie
         value &= ~flag.getValue();
     }
 
-    public void unset(long flag) {
+    public void unsetFlag(long flag) {
         value &= ~flag;
     }
 

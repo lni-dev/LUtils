@@ -140,7 +140,7 @@ public class IntBitfieldImpl<V extends IntBitFieldValue> implements IntBitfield<
             value |= flag.getValue();
     }
 
-    public void set(int flag) {
+    public void setFlag(int flag) {
         value |= flag;
     }
 
@@ -148,7 +148,7 @@ public class IntBitfieldImpl<V extends IntBitFieldValue> implements IntBitfield<
         value &= ~flag.getValue();
     }
 
-    public void unset(int flag) {
+    public void unsetFlag(int flag) {
         value &= ~flag;
     }
 

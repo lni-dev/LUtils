@@ -3,6 +3,10 @@ package de.linusdev.lutils.codegen.java;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 public interface JavaClass {
 
     static @NotNull JavaClass ofClass(@NotNull Class<?> clazz) {
@@ -53,7 +57,13 @@ public interface JavaClass {
         if(!that.getName().equals(other.getName()))
             return false;
 
-        return that.isPrimitive() == other.isPrimitive() && that.isArray() == other.isArray();
+        if(!Arrays.equals(that.getGenerics(), other.getGenerics()))
+            return false;
+
+        return
+                that.isPrimitive() == other.isPrimitive()
+                        && that.isArray() == other.isArray()
+                        && that.hasGenerics() == other.hasGenerics();
     }
 
     static int hashcode(@NotNull JavaClass that) {
@@ -61,6 +71,7 @@ public interface JavaClass {
         result = 31 * result + that.getName().hashCode();
         result = 31 * result + Boolean.hashCode(that.isPrimitive());
         result = 31 * result + Boolean.hashCode(that.isArray());
+        result = 31 * result + Boolean.hashCode(that.hasGenerics());
         return result;
     }
 
@@ -76,6 +87,42 @@ public interface JavaClass {
      * @return class name.
      */
     @NotNull String getName();
+
+    default @NotNull String getTypeName() {
+        if(isArray())
+            return getName() + "[]";
+        if(hasGenerics()) {
+            StringBuilder sb = new StringBuilder(getName());
+            sb.append("<");
+
+            boolean first = true;
+            for(JavaClass generic : getGenerics()) {
+                if(first) first = false;
+                else sb.append(", ");
+                sb.append(generic.getTypeName());
+            }
+
+            sb.append(">");
+
+            return sb.toString();
+        }
+
+        return getName();
+    }
+
+    /**
+     * ordered array of generics this class has.
+     */
+    default @NotNull JavaClass @NotNull [] getGenerics() {
+        return new JavaClass[0];
+    }
+
+    /**
+     * Whether this class has a specific generic class. For example {@code List<String>}.
+     */
+    default boolean hasGenerics() {
+        return false;
+    }
 
     /**
      * Whether this represents a primitive type. (int, boolean, ...)
@@ -95,11 +142,49 @@ public interface JavaClass {
      *
      * @return the {@link JavaImport} required to use this {@link JavaClass} in code.
      */
-    default @Nullable JavaImport getRequiredImport() {
+    default @Nullable List<JavaImport> getRequiredImports() {
         if(isPrimitive())
             return null;
 
-        return new JavaImport(getPackage(), getName(), null);
+        List<JavaImport> imports = new ArrayList<>();
+
+        imports.add(new JavaImport(getPackage(), getName(), null));
+
+        for (JavaClass generic : getGenerics()) {
+            if(generic.getRequiredImports() != null)
+                imports.addAll(generic.getRequiredImports());
+        }
+
+        return imports;
+    }
+
+    default @NotNull JavaClass withGenerics(@NotNull JavaClass @NotNull ... generics) {
+        if(hasGenerics())
+            throw new IllegalStateException("This class already has generics set.");
+
+        JavaClass old = this;
+
+        return new JavaClass() {
+            @Override
+            public @NotNull JavaPackage getPackage() {
+                return old.getPackage();
+            }
+
+            @Override
+            public @NotNull String getName() {
+                return old.getName();
+            }
+
+            @Override
+            public boolean hasGenerics() {
+                return true;
+            }
+
+            @Override
+            public @NotNull JavaClass @NotNull [] getGenerics() {
+                return generics;
+            }
+        };
     }
 
 }

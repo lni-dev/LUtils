@@ -82,7 +82,7 @@ public class JavaLocalVariable implements JavaAssignable, JavaAnnotateable, Part
         if(ft == null)
             throw new IllegalStateException("Cannot add an annotation to a non generator variable.");
         annotations.add(annotation);
-        ft.addImport(annotation.type.getRequiredImport());
+        ft.addImport(annotation.type.getRequiredImports());
     }
 
     public @NotNull List<JavaAnnotation> getAnnotations() {

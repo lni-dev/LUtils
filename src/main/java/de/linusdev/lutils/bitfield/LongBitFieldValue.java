@@ -24,6 +24,8 @@ public interface LongBitFieldValue {
      * @return long with given bit set.
      */
     static long bitPosToValue(int bitPos) {
+        if(bitPos > 64)
+            throw new UnsupportedOperationException("Long only has 64 bits. bitPos " + bitPos + " is invalid.");
         return 1L << (bitPos);
     }
 

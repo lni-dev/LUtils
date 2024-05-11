@@ -64,14 +64,14 @@ public class JavaEnumMemberGenerator implements PartGenerator<JavaSourceGenerato
     public @NotNull JavaAnnotation addAnnotation(@NotNull JavaClass annotationClass) {
         JavaAnnotation annotation = new JavaAnnotation(annotationClass);
         annotations.add(annotation);
-        ft.addImport(annotation.type.getRequiredImport());
+        ft.addImport(annotation.type.getRequiredImports());
         return annotation;
     }
 
     @Override
     public void addAnnotation(@NotNull JavaAnnotation annotation) {
         annotations.add(annotation);
-        ft.addImport(annotation.type.getRequiredImport());
+        ft.addImport(annotation.type.getRequiredImports());
     }
 
     @Override

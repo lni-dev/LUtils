@@ -45,7 +45,7 @@ public interface IntBitfield<V extends IntBitFieldValue> {
      * Set all bits/flags in given {@code flag}.
      * @param flag flag(s) to set
      */
-    default void set(int flag) {
+    default void setFlag(int flag) {
         replaceWith(getValue() | flag);
     }
 
@@ -54,7 +54,7 @@ public interface IntBitfield<V extends IntBitFieldValue> {
      * @param flag flag to set
      */
     default void set(@NotNull V flag) {
-        set(flag.getValue());
+        setFlag(flag.getValue());
     }
 
     /**
@@ -62,8 +62,8 @@ public interface IntBitfield<V extends IntBitFieldValue> {
      * @param flag1 flag to set
      */
     default void set(@NotNull V flag1, @NotNull V flag2) {
-        set(flag1.getValue());
-        set(flag2.getValue());
+        setFlag(flag1.getValue());
+        setFlag(flag2.getValue());
     }
 
     /**
@@ -71,9 +71,9 @@ public interface IntBitfield<V extends IntBitFieldValue> {
      * @param flag1 flag to set
      */
     default void set(@NotNull V flag1, @NotNull V flag2, @NotNull V flag3) {
-        set(flag1.getValue());
-        set(flag2.getValue());
-        set(flag3.getValue());
+        setFlag(flag1.getValue());
+        setFlag(flag2.getValue());
+        setFlag(flag3.getValue());
     }
 
     /**
@@ -81,10 +81,10 @@ public interface IntBitfield<V extends IntBitFieldValue> {
      * @param flag1 flag to set
      */
     default void set(@NotNull V flag1, @NotNull V flag2, @NotNull V flag3, @NotNull V flag4) {
-        set(flag1.getValue());
-        set(flag2.getValue());
-        set(flag3.getValue());
-        set(flag4.getValue());
+        setFlag(flag1.getValue());
+        setFlag(flag2.getValue());
+        setFlag(flag3.getValue());
+        setFlag(flag4.getValue());
     }
 
     /**
@@ -93,7 +93,7 @@ public interface IntBitfield<V extends IntBitFieldValue> {
      */
     default void set(@NotNull V @NotNull [] flags) {
         for(V flag : flags)
-            set(flag.getValue());
+            setFlag(flag.getValue());
     }
 
     /**
@@ -101,7 +101,7 @@ public interface IntBitfield<V extends IntBitFieldValue> {
      * @param flag flag to set
      */
     default void unset(@NotNull V flag) {
-        unset(flag.getValue());
+        unsetFlag(flag.getValue());
     }
 
     /**
@@ -109,7 +109,7 @@ public interface IntBitfield<V extends IntBitFieldValue> {
      * will be {@code 0} in {@link #getValue()} directly after this method call.
      * @param flag flag to remove
      */
-    default void unset(int flag) {
+    default void unsetFlag(int flag) {
         replaceWith(getValue() & ~flag);
     }
 

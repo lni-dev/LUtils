@@ -46,7 +46,7 @@ public interface LongBitfield<V extends LongBitFieldValue> {
      * Set all bits/flags in given {@code flag}.
      * @param flag flag to set
      */
-    default void set(long flag) {
+    default void setFlag(long flag) {
         replaceWith(getValue() | flag);
     }
 
@@ -55,7 +55,7 @@ public interface LongBitfield<V extends LongBitFieldValue> {
      * @param flag flag to set
      */
     default void set(@NotNull V flag) {
-        set(flag.getValue());
+        setFlag(flag.getValue());
     }
 
     /**
@@ -63,8 +63,8 @@ public interface LongBitfield<V extends LongBitFieldValue> {
      * @param flag1 flag to set
      */
     default void set(@NotNull V flag1, @NotNull V flag2) {
-        set(flag1.getValue());
-        set(flag2.getValue());
+        setFlag(flag1.getValue());
+        setFlag(flag2.getValue());
     }
 
     /**
@@ -72,9 +72,9 @@ public interface LongBitfield<V extends LongBitFieldValue> {
      * @param flag1 flag to set
      */
     default void set(@NotNull V flag1, @NotNull V flag2, @NotNull V flag3) {
-        set(flag1.getValue());
-        set(flag2.getValue());
-        set(flag3.getValue());
+        setFlag(flag1.getValue());
+        setFlag(flag2.getValue());
+        setFlag(flag3.getValue());
     }
 
     /**
@@ -82,10 +82,10 @@ public interface LongBitfield<V extends LongBitFieldValue> {
      * @param flag1 flag to set
      */
     default void set(@NotNull V flag1, @NotNull V flag2, @NotNull V flag3, @NotNull V flag4) {
-        set(flag1.getValue());
-        set(flag2.getValue());
-        set(flag3.getValue());
-        set(flag4.getValue());
+        setFlag(flag1.getValue());
+        setFlag(flag2.getValue());
+        setFlag(flag3.getValue());
+        setFlag(flag4.getValue());
     }
 
     /**
@@ -94,7 +94,7 @@ public interface LongBitfield<V extends LongBitFieldValue> {
      */
     default void set(@NotNull V @NotNull [] flags) {
         for(V flag : flags)
-            set(flag.getValue());
+            setFlag(flag.getValue());
     }
 
     /**
@@ -102,7 +102,7 @@ public interface LongBitfield<V extends LongBitFieldValue> {
      * @param flag flag to set
      */
     default void unset(@NotNull V flag) {
-        unset(flag.getValue());
+        unsetFlag(flag.getValue());
     }
 
     /**
@@ -110,7 +110,7 @@ public interface LongBitfield<V extends LongBitFieldValue> {
      * will be {@code 0} in {@link #getValue()} directly after this method call.
      * @param flag flag to remove
      */
-    default void unset(long flag) {
+    default void unsetFlag(long flag) {
         replaceWith(getValue() & ~flag);
     }
 

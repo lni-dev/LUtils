@@ -75,7 +75,9 @@ public interface JavaExpression extends PartGenerator<JavaSourceGeneratorHelper>
                     s += variable.getDefaultValue().getRequiredImports().size();
                 ArrayList<JavaImport> imports = new ArrayList<>(s + 1);
 
-                imports.add(variable.getType().getRequiredImport());
+                if(variable.getType().getRequiredImports() != null)
+                    imports.addAll(variable.getType().getRequiredImports());
+
                 if(s != 0)
                     imports.addAll(variable.getDefaultValue().getRequiredImports());
 

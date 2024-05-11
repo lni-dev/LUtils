@@ -8,7 +8,6 @@ import org.jetbrains.annotations.Nullable;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Consumer;
 
 public class JavaMethodGenerator implements
         JavaAnnotateable,
@@ -90,7 +89,7 @@ public class JavaMethodGenerator implements
             @NotNull JavaClass type
     ) {
         JavaLocalVariable variable = new JavaLocalVariable(ft, type, name);
-        ft.addImport(type.getRequiredImport());
+        ft.addImport(type.getRequiredImports());
         parameters.add(variable);
         return variable;
     }
@@ -103,14 +102,14 @@ public class JavaMethodGenerator implements
     public @NotNull JavaAnnotation addAnnotation(@NotNull JavaClass annotationClass) {
         JavaAnnotation annotation = new JavaAnnotation(annotationClass);
         annotations.add(annotation);
-        ft.addImport(annotation.type.getRequiredImport());
+        ft.addImport(annotation.type.getRequiredImports());
         return annotation;
     }
 
     @Override
     public void addAnnotation(@NotNull JavaAnnotation annotation) {
         annotations.add(annotation);
-        ft.addImport(annotation.type.getRequiredImport());
+        ft.addImport(annotation.type.getRequiredImports());
     }
 
     public void body(@NotNull JavaBlockContentsConsumer consumer) {

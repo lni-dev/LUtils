@@ -167,7 +167,7 @@ public interface JavaSourceGeneratorHelper {
     }
 
     default String javaVariableType(@NotNull JavaClass javaClass) {
-        return javaClass.getName() + (javaClass.isArray() ? "[]" : "");
+        return javaClass.getTypeName();
     }
 
     default String javaMethodOpenExpression(
@@ -292,14 +292,14 @@ public interface JavaSourceGeneratorHelper {
         str.append(type.getName(this)).append(" ").append(name);
 
         if(extendClass != null) {
-            str.append(" ").append(javaExtendsKeyword()).append(" ").append(extendClass.getName());
+            str.append(" ").append(javaExtendsKeyword()).append(" ").append(extendClass.getTypeName());
         }
 
         if(implementsClasses.length != 0) {
             str.append(" ").append(javaImplementsKeyword()).append(" ");
-            str.append(implementsClasses[0].getName());
+            str.append(implementsClasses[0].getTypeName());
             for (int i = 1; i < implementsClasses.length; i++) {
-                str.append(", ").append(implementsClasses[i].getName());
+                str.append(", ").append(implementsClasses[i].getTypeName());
             }
         }
 
@@ -314,6 +314,10 @@ public interface JavaSourceGeneratorHelper {
     }
 
     default String javaNumberExpression(@NotNull Number number) {
+
+        if(number instanceof Long)
+            return number + "L";
+
         return number.toString();
     }
 

@@ -15,7 +15,7 @@ class JavaFileGeneratorTest {
         );
 
         gen.setName("GeneratedTestClass");
-        gen.setExtendedClass(JavaClass.ofClass(JavaImport.class));
+        gen.setExtendedClass(JavaClass.ofClass(JavaImport.class).withGenerics(JavaClass.ofClass(Integer.class), JavaClass.ofClass(String.class)));
         gen.setImplementedClasses(new JavaClass[]{gen, gen});
         var testStringVar = gen.addVariable(JavaClass.ofClass(String.class), "testString");
 

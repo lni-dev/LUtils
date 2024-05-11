@@ -69,7 +69,7 @@ public class JavaClassGenerator implements
             @NotNull String name
     ) {
         JavaVariable variable = new JavaVariable(ft, this, type, name);
-        ft.addImport(type.getRequiredImport());
+        ft.addImport(type.getRequiredImports());
         variables.add(variable);
         return variable;
     }
@@ -99,7 +99,7 @@ public class JavaClassGenerator implements
             throw new IllegalStateException("Cannot extend a primitive or array.");
 
         if(extendedClass != null)
-            ft.addImport(extendedClass.getRequiredImport());
+            ft.addImport(extendedClass.getRequiredImports());
 
         this.extendedClass = extendedClass;
     }
@@ -109,7 +109,7 @@ public class JavaClassGenerator implements
             if(implementedClass.isPrimitive() || implementedClass.isArray())
                 throw new IllegalStateException("Cannot implement a primitive or array.");
 
-            ft.addImport(implementedClass.getRequiredImport());
+            ft.addImport(implementedClass.getRequiredImports());
         }
 
         this.implementedClasses = implementedClasses;
@@ -119,14 +119,14 @@ public class JavaClassGenerator implements
     public @NotNull JavaAnnotation addAnnotation(@NotNull JavaClass annotationClass) {
         JavaAnnotation annotation = new JavaAnnotation(annotationClass);
         annotations.add(annotation);
-        ft.addImport(annotation.type.getRequiredImport());
+        ft.addImport(annotation.type.getRequiredImports());
         return annotation;
     }
 
     @Override
     public void addAnnotation(@NotNull JavaAnnotation annotation) {
         annotations.add(annotation);
-        ft.addImport(annotation.type.getRequiredImport());
+        ft.addImport(annotation.type.getRequiredImports());
     }
 
     public JavaMethodGenerator addMethod(@NotNull JavaClass returnType, @NotNull String name) {

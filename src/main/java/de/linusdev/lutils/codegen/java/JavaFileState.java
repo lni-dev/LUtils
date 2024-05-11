@@ -36,6 +36,20 @@ public class JavaFileState {
         return imports.add(toAdd);
     }
 
+    @SuppressWarnings("UnusedReturnValue")
+    public boolean addImport(@Nullable List<JavaImport> toAdd) {
+        if(toAdd == null)
+            return false;
+
+        boolean added = false;
+
+        for (JavaImport javaImport : toAdd) {
+            added |= addImport(javaImport);
+        }
+
+        return added;
+    }
+
     public @NotNull List<JavaImport> getImports() {
         return imports;
     }

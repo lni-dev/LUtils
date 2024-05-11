@@ -24,6 +24,8 @@ public interface IntBitFieldValue {
      * @return int with given bit set.
      */
     static int bitPosToValue(int bitPos) {
+        if(bitPos > 32)
+            throw new UnsupportedOperationException("Integer only has 32 bits. bitPos " + bitPos + " is invalid.");
         return 1 << (bitPos);
     }
 
