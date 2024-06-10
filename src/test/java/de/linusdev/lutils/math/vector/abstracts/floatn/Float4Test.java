@@ -16,9 +16,9 @@ class Float4Test {
 
     private static Stream<Arguments> provideVectors() {
         return Stream.of(
-                Arguments.of(new BBFloat4(true), 1.3f, 4.5f, 22f, 3f),
+                Arguments.of(BBFloat4.newAllocated(null), 1.3f, 4.5f, 22f, 3f),
                 Arguments.of(new ABFloat4(), 6.7f, 7.1f, 10.5f, 34f),
-                Arguments.of(new BBFloat4(true).wzyx(), 6.3f, 1.5f, 1f, 7f)
+                Arguments.of(BBFloat4.newAllocated(null).wzyx(), 6.3f, 1.5f, 1f, 7f)
         );
     }
 

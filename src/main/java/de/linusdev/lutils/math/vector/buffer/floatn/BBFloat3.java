@@ -18,21 +18,40 @@ package de.linusdev.lutils.math.vector.buffer.floatn;
 
 
 import de.linusdev.lutils.math.vector.abstracts.floatn.Float3;
-import de.linusdev.lutils.math.vector.buffer.BBVectorInfo;
-import de.linusdev.lutils.struct.info.StructureInfo;
-import org.jetbrains.annotations.NotNull;
+import de.linusdev.lutils.nat.struct.abstracts.StructureStaticVariables;
+import de.linusdev.lutils.nat.struct.annos.StructValue;
+import org.jetbrains.annotations.Nullable;
 
 @SuppressWarnings("unused")
 public class BBFloat3 extends BBFloatN implements Float3 {
 
-    public static final BBVectorInfo INFO = BBVectorInfo.create(ELEMENT_TYPE_NAME, MEMBER_COUNT, ELEMENT_SIZE);
+    public static final BBVectorGenerator GENERATOR = new BBVectorGenerator(MEMBER_COUNT, ELEMENT_NATIVE_TYPE);
 
-    public BBFloat3(boolean allocateBuffer) {
-        super(allocateBuffer);
+    /**
+     * @see StructureStaticVariables#newUnallocated()
+     */
+    public static BBFloat3 newUnallocated() {
+        return new BBFloat3(false, null);
     }
 
-    @Override
-    public @NotNull StructureInfo getInfo() {
-        return INFO;
+    /**
+     * @see StructureStaticVariables#newAllocatable()
+     */
+    public static BBFloat3 newAllocatable(@Nullable StructValue structValue) {
+        return new BBFloat3(true, structValue);
+    }
+
+    /**
+     * @see StructureStaticVariables#newAllocated()
+     */
+    public static BBFloat3 newAllocated(@Nullable StructValue structValue) {
+        BBFloat3 ret = newAllocatable(structValue);
+        ret.allocate();
+        return ret;
+    }
+
+
+    protected BBFloat3(boolean generateInfo, @Nullable StructValue structValue) {
+        super(GENERATOR, generateInfo, structValue);
     }
 }

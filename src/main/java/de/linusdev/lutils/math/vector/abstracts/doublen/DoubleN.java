@@ -1,10 +1,10 @@
 package de.linusdev.lutils.math.vector.abstracts.doublen;
 
-import de.linusdev.lutils.math.general.DoubleElements;
+import de.linusdev.lutils.math.elements.DoubleElement;
 import de.linusdev.lutils.math.vector.Vector;
 import org.jetbrains.annotations.NotNull;
 
-public interface DoubleN extends Vector, DoubleElements {
+public interface DoubleN extends Vector, DoubleElement {
 
     /**
      * Get component at position {@code index}.

@@ -1,5 +1,7 @@
 package de.linusdev.lutils.struct.info;
 
+import de.linusdev.lutils.nat.abi.DefaultABIs;
+import de.linusdev.lutils.nat.struct.info.StructureInfo;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;

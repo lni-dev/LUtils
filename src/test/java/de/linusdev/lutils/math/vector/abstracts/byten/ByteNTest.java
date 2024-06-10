@@ -17,7 +17,7 @@ class ByteNTest {
 
     private static Stream<Arguments> provideBBVectors() {
         return Stream.of(
-                Arguments.of(new BBByte1(true), 1, 1 )
+                Arguments.of(BBByte1.newAllocated(null), 1, 1 )
         );
     }
 
@@ -59,7 +59,7 @@ class ByteNTest {
 
     @Test
     public void unsignedTest() {
-        BBUByte1 vector = new BBUByte1();
+        BBUByte1 vector = BBUByte1.newAllocatable(null);
         vector.allocate();
 
         assertTrue(vector.areComponentsUnsigned());

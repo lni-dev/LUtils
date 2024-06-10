@@ -16,10 +16,10 @@
 
 package de.linusdev.lutils.math.vector.abstracts.longn;
 
-import de.linusdev.lutils.math.general.LongElements;
+import de.linusdev.lutils.math.elements.LongElement;
 import de.linusdev.lutils.math.vector.Vector;
 
-public interface LongN extends Vector, LongElements {
+public interface LongN extends Vector, LongElement {
 
     /**
      * Get component at position {@code index}.

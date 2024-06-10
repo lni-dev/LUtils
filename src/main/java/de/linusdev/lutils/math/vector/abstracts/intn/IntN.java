@@ -16,10 +16,10 @@
 
 package de.linusdev.lutils.math.vector.abstracts.intn;
 
-import de.linusdev.lutils.math.general.IntElements;
+import de.linusdev.lutils.math.elements.IntElement;
 import de.linusdev.lutils.math.vector.Vector;
 
-public interface IntN extends Vector, IntElements {
+public interface IntN extends Vector, IntElement {
 
     /**
      * Get component at position {@code index}.

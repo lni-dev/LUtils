@@ -3,24 +3,30 @@ package de.linusdev.lutils.math.vector.buffer.doublen;
 import de.linusdev.lutils.math.vector.Vector;
 import de.linusdev.lutils.math.vector.abstracts.doublen.DoubleN;
 import de.linusdev.lutils.math.vector.buffer.BBVector;
-import de.linusdev.lutils.struct.abstracts.Structure;
+import de.linusdev.lutils.nat.struct.abstracts.Structure;
+import de.linusdev.lutils.nat.struct.annos.StructValue;
+import de.linusdev.lutils.nat.struct.info.StructureInfo;
 import org.jetbrains.annotations.NotNull;
-
-import java.nio.DoubleBuffer;
+import org.jetbrains.annotations.Nullable;
 
 public abstract class BBDoubleN extends BBVector implements DoubleN {
 
-    protected DoubleBuffer buf;
-
-    public BBDoubleN(boolean allocateBuffer) {
-        if(allocateBuffer)
-            allocate();
+    public BBDoubleN(
+            @NotNull BBVectorGenerator generator,
+            boolean generateInfo,
+            @Nullable StructValue structValue
+    ) {
+        super(generator, generateInfo, structValue);
     }
 
+
     @Override
-    protected void useBuffer(@NotNull Structure mostParentStructure, int offset) {
-        super.useBuffer(mostParentStructure, offset);
-        buf = byteBuf.asDoubleBuffer();
+    protected void useBuffer(
+            @NotNull Structure mostParentStructure,
+            int offset,
+            @NotNull StructureInfo info
+            ) {
+        super.useBuffer(mostParentStructure, offset, info);
     }
 
     @Override
@@ -33,12 +39,12 @@ public abstract class BBDoubleN extends BBVector implements DoubleN {
 
     @Override
     public double get(int index) {
-        return buf.get(index);
+        return byteBuf.getDouble(posInBuf(index));
     }
 
     @Override
     public void put(int index, double value) {
-        buf.put(index, value);
+        byteBuf.putDouble(posInBuf(index), value);
     }
 
 }

@@ -1,5 +1,6 @@
 package de.linusdev.lutils.struct.utils;
 
+import de.linusdev.lutils.nat.struct.utils.BufferUtils;
 import org.junit.jupiter.api.Test;
 
 import java.nio.ByteBuffer;

@@ -1,6 +1,9 @@
 package de.linusdev.lutils.struct.abstracts;
 
-import de.linusdev.lutils.struct.generator.Language;
+import de.linusdev.lutils.nat.struct.abstracts.Structure;
+import de.linusdev.lutils.nat.struct.generator.Language;
+import de.linusdev.lutils.nat.struct.info.StructureInfo;
+import de.linusdev.lutils.nat.struct.utils.SSMUtils;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -8,9 +11,16 @@ import static org.junit.jupiter.api.Assertions.*;
 class StructureTest {
 
     @Test
-    void generateStructCode() {
-        System.out.println(Structure.generateStructCode(Language.OPEN_CL, ComplexStructureTest.Test2Struct.class));
+    void generateStructCodeOfOpenCLStruct() {
+        String gen = Structure.generateStructCode(Language.OPEN_CL, ComplexStructureTest.TestOpenCLStruct.class);
+        System.out.println(gen);
 
+        StructureInfo info = SSMUtils.getInfo(
+                ComplexStructureTest.TestOpenCLStruct.class,
+                null, null,
+                null, null,
+                null, null
+        );
 
         assertEquals("typedef struct __attribute__((packed)) {\n" +
                 "    float f[16];\n" +
@@ -22,6 +32,22 @@ class StructureTest {
                 "    int2 padding2;\n" +
                 "    float3 e;\n" +
                 "    float4 a;\n" +
-                "} Test2;", Structure.generateStructCode(Language.OPEN_CL, ComplexStructureTest.Test2Struct.class));
+                "    TestOpenCLStruct2 g;\n" +
+                "} TestOpenCL;", gen);
+
+
+        StructureInfo msvcStructInfo = SSMUtils.getInfo( // generated with MSVC
+                ComplexStructureTest.TestOpenCLStruct2.class,
+                null, null,
+                null, null,
+                null, null
+        );
+
+        assertEquals(20, msvcStructInfo.getRequiredSize()); // MSVC Size, but in OPENCL it must be 32
+
+        assertEquals(144 + 32, info.getRequiredSize());
+        assertEquals(16, info.getAlignment());
+
+
     }
 }

@@ -18,84 +18,51 @@ package de.linusdev.lutils.math.matrix.buffer.floatn;
 
 import de.linusdev.lutils.math.matrix.Matrix;
 import de.linusdev.lutils.math.matrix.abstracts.floatn.FloatMxN;
-import de.linusdev.lutils.math.matrix.buffer.BBMatrixInfo;
-import de.linusdev.lutils.struct.abstracts.Structure;
-import de.linusdev.lutils.struct.generator.Language;
-import de.linusdev.lutils.struct.generator.StaticGenerator;
-import de.linusdev.lutils.struct.info.StructureInfo;
+import de.linusdev.lutils.math.matrix.buffer.BBMatrix;
+import de.linusdev.lutils.nat.struct.abstracts.Structure;
+import de.linusdev.lutils.nat.struct.annos.StructValue;
+import de.linusdev.lutils.nat.struct.info.StructureInfo;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import java.nio.FloatBuffer;
+public abstract class BBFloatMxN extends BBMatrix implements FloatMxN {
 
-public abstract class BBFloatMxN extends Structure implements FloatMxN {
-
-    @SuppressWarnings("unused")
-    public static final @NotNull StaticGenerator GENERATOR = new StaticGenerator() {
-        @Override
-        public @NotNull String getStructTypeName(@NotNull Language language, @NotNull Class<?> selfClazz, @NotNull StructureInfo info) {
-            BBMatrixInfo bbInfo = (BBMatrixInfo) info;
-            return bbInfo.getElementTypeName() + bbInfo.getHeight() + "x" + bbInfo.getWidth();
-        }
-
-        @Override
-        public @NotNull String getStructVarDef(
-                @NotNull Language language,
-                @NotNull Class<?> selfClazz,
-                @NotNull StructureInfo info,
-                @NotNull String varName
-        ) {
-            BBMatrixInfo bbInfo = (BBMatrixInfo) info;
-            return bbInfo.getElementTypeName() + " " + varName + "[" + (bbInfo.getHeight() * bbInfo.getWidth()) + "]"
-                    + language.lineEnding;
-        }
-    };
-
-    protected FloatBuffer buf;
-
-    public BBFloatMxN(boolean allocateBuffer) {
-        if(allocateBuffer)
-            allocate();
+    protected BBFloatMxN(
+            @NotNull BBMatrixGenerator generator,
+            boolean generateInfo,
+            @Nullable StructValue structValue
+    ) {
+        super(generator, generateInfo, structValue);
     }
 
+
     @Override
-    public void useBuffer(@NotNull Structure mostParentStructure, int offset) {
-        super.useBuffer(mostParentStructure, offset);
-        buf = byteBuf.asFloatBuffer();
+    public void useBuffer(
+            @NotNull Structure mostParentStructure,
+            int offset,
+            @NotNull StructureInfo info
+    ) {
+        super.useBuffer(mostParentStructure, offset, info);
     }
 
     @Override
     public float get(int y, int x) {
-        return buf.get(positionToIndex(y, x));
+        return byteBuf.getFloat(posInBuf(y, x));
     }
 
     @Override
     public void put(int y, int x, float value) {
-        buf.put(positionToIndex(y, x), value);
+        byteBuf.putFloat(posInBuf(y, x), value);
     }
 
     @Override
     public float get(int index) {
-        return buf.get(index);
+        return byteBuf.getFloat(posInBuf(index));
     }
 
     @Override
     public void put(int index, float value) {
-        buf.put(index, value);
-    }
-
-    @Override
-    public @NotNull Structure getStructure() {
-        return this;
-    }
-
-    @Override
-    public boolean isArrayBacked() {
-        return false;
-    }
-
-    @Override
-    public boolean isBufferBacked() {
-        return true;
+        byteBuf.putFloat(posInBuf(index), value);
     }
 
     @Override

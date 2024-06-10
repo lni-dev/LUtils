@@ -17,7 +17,7 @@ class ShortNTest {
 
     private static Stream<Arguments> provideBBVectors() {
         return Stream.of(
-                Arguments.of(new BBShort1(true), 1, 2 )
+                Arguments.of(BBShort1.newAllocated(null), 1, 2 )
         );
     }
 
@@ -59,7 +59,7 @@ class ShortNTest {
 
     @Test
     public void unsignedTest() {
-        BBUShort1 vector = new BBUShort1();
+        BBUShort1 vector = BBUShort1.newAllocatable(null);
         vector.allocate();
 
         assertTrue(vector.areComponentsUnsigned());

@@ -155,10 +155,12 @@ public class LLinkedList<O> implements List<O> {
     }
 
     void removeEntry(@NotNull LLinkedListEntry<O> entry) {
+        //TODO: test method
         synchronized (lock) {
             LLinkedListIterator<O> iterator = iterator();
 
-            while (iterator().hasNext()){
+            while (iterator.hasNext()){
+                iterator.next();
                 if(iterator.getCurrentEntry() == entry){
                     //noinspection DataFlowIssue: Will not be null, because next() has been called at least once.
                     remove(iterator.getLastEntry(), iterator.getCurrentEntry());

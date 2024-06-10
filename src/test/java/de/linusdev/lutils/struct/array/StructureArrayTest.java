@@ -1,6 +1,8 @@
 package de.linusdev.lutils.struct.array;
 
+import de.linusdev.lutils.nat.struct.array.StructureArray;
 import de.linusdev.lutils.struct.abstracts.ComplexStructureTest;
+import de.linusdev.lutils.nat.struct.annos.SVWrapper;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -9,11 +11,10 @@ class StructureArrayTest {
 
     @Test
     void test() {
-        StructureArray<ComplexStructureTest.TestStruct> array = new StructureArray<>(
+        StructureArray<ComplexStructureTest.TestStruct> array = StructureArray.newAllocated(
                 true,
-                true,
-                ComplexStructureTest.TestStruct.class,
-                10,
+                SVWrapper.of(10, ComplexStructureTest.TestStruct.class),
+                null,
                 () -> new ComplexStructureTest.TestStruct(true, false)
         );
 

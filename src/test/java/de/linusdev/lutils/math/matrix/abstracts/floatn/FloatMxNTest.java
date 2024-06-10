@@ -13,7 +13,7 @@ class FloatMxNTest {
     @Test
     public void test() {
         Float4x4 abFloat = new ABFloat4x4();
-        Float4x4 bbFloat = new BBFloat4x4(true);
+        Float4x4 bbFloat = BBFloat4x4.newAllocated(null);
 
         assertTrue(abFloat.isArrayBacked());
         assertTrue(bbFloat.isBufferBacked());

@@ -16,11 +16,11 @@
 
 package de.linusdev.lutils.math.vector.abstracts.floatn;
 
-import de.linusdev.lutils.math.general.FloatElements;
+import de.linusdev.lutils.math.elements.FloatElement;
 import de.linusdev.lutils.math.vector.Vector;
 import org.jetbrains.annotations.NotNull;
 
-public interface FloatN extends Vector, FloatElements {
+public interface FloatN extends Vector, FloatElement {
 
     /**
      * Get component at position {@code index}.

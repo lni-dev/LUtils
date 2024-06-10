@@ -1,52 +1,47 @@
 package de.linusdev.lutils.math.vector.buffer;
 
-import de.linusdev.lutils.struct.info.StructureInfo;
+import de.linusdev.lutils.nat.NativeType;
+import de.linusdev.lutils.nat.struct.info.ArrayInfo;
+import de.linusdev.lutils.nat.abi.ABI;
 import org.jetbrains.annotations.NotNull;
 
-public class BBVectorInfo extends StructureInfo {
+public class BBVectorInfo extends ArrayInfo {
 
-    private final int elementCount;
-    private final @NotNull String elementTypeName;
+    private final @NotNull NativeType type;
 
     public static @NotNull BBVectorInfo create(
-            @NotNull String elementTypeName,
+            @NotNull ABI abi,
             int elementCount,
-            int elementSize
+            @NotNull NativeType type
     ) {
-
-        int size = elementCount * elementSize;
-        int postPadding = size > 16 ? (16 - (size % 16)) % 16 : (Integer.highestOneBit(size) << 1) % size;
+        ArrayInfo arrayInfo = abi.calculateVectorLayout(
+                type,
+                elementCount
+        );
 
         return new BBVectorInfo(
-                Math.min(size + postPadding, 16),
-                false,
-                0,
-                size,
-                postPadding,
-                elementTypeName,
-                elementCount
+                arrayInfo.getAlignment(),
+                arrayInfo.getRequiredSize(),
+                arrayInfo.getSizes(),
+                arrayInfo.getLength(),
+                arrayInfo.getPositions(),
+                type
         );
     }
 
     public BBVectorInfo(
             int alignment,
-            boolean compressed,
-            int prePadding,
             int size,
-            int postPadding,
-            @NotNull String elementTypeName,
-            int elementCount
+            int @NotNull [] sizes,
+            int length,
+            @NotNull ArrayPositionFunction positions,
+            @NotNull NativeType type
     ) {
-        super(alignment, compressed, prePadding, size, postPadding);
-        this.elementCount = elementCount;
-        this.elementTypeName = elementTypeName;
+        super(alignment, false, size, sizes, length, positions);
+        this.type = type;
     }
 
-    public int getElementCount() {
-        return elementCount;
-    }
-
-    public @NotNull String getElementTypeName() {
-        return elementTypeName;
+    public @NotNull NativeType getType() {
+        return type;
     }
 }

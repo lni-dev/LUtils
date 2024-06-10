@@ -1,20 +1,39 @@
 package de.linusdev.lutils.math.vector.buffer.intn;
 
 import de.linusdev.lutils.math.vector.abstracts.intn.Int3;
-import de.linusdev.lutils.math.vector.buffer.BBVectorInfo;
-import de.linusdev.lutils.struct.info.StructureInfo;
-import org.jetbrains.annotations.NotNull;
+import de.linusdev.lutils.nat.struct.abstracts.StructureStaticVariables;
+import de.linusdev.lutils.nat.struct.annos.StructValue;
+import org.jetbrains.annotations.Nullable;
 
 public class BBInt3 extends BBIntN implements Int3 {
 
-    public static final @NotNull BBVectorInfo INFO = BBVectorInfo.create(ELEMENT_TYPE_NAME, MEMBER_COUNT, ELEMENT_SIZE);
+    public static final BBVectorGenerator GENERATOR = new BBVectorGenerator(MEMBER_COUNT, ELEMENT_NATIVE_TYPE);
 
-    public BBInt3(boolean allocateBuffer) {
-        super(allocateBuffer);
+    /**
+     * @see StructureStaticVariables#newUnallocated()
+     */
+    public static BBInt3 newUnallocated() {
+        return new BBInt3(false, null);
     }
 
-    @Override
-    public @NotNull StructureInfo getInfo() {
-        return INFO;
+    /**
+     * @see StructureStaticVariables#newAllocatable()
+     */
+    public static BBInt3 newAllocatable(@Nullable StructValue structValue) {
+        return new BBInt3(true, structValue);
+    }
+
+    /**
+     * @see StructureStaticVariables#newAllocated()
+     */
+    public static BBInt3 newAllocated(@Nullable StructValue structValue) {
+        BBInt3 ret = newAllocatable(structValue);
+        ret.allocate();
+        return ret;
+    }
+
+
+    protected BBInt3(boolean generateInfo, @Nullable StructValue structValue) {
+        super(GENERATOR, generateInfo, structValue);
     }
 }

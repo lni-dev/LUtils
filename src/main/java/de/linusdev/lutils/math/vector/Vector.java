@@ -19,7 +19,7 @@ package de.linusdev.lutils.math.vector;
 import de.linusdev.lutils.math.vector.abstracts.floatn.FloatN;
 import de.linusdev.lutils.math.vector.abstracts.intn.IntN;
 import de.linusdev.lutils.math.vector.abstracts.longn.LongN;
-import de.linusdev.lutils.struct.abstracts.Structure;
+import de.linusdev.lutils.nat.struct.abstracts.Structure;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.function.BiFunction;

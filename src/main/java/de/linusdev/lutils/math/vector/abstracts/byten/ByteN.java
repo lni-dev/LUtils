@@ -1,10 +1,10 @@
 package de.linusdev.lutils.math.vector.abstracts.byten;
 
-import de.linusdev.lutils.math.general.ByteElements;
+import de.linusdev.lutils.math.elements.ByteElement;
 import de.linusdev.lutils.math.vector.Vector;
 import org.jetbrains.annotations.NotNull;
 
-public interface ByteN extends Vector, ByteElements {
+public interface ByteN extends Vector, ByteElement {
 
     /**
      * Get component at position {@code index}.

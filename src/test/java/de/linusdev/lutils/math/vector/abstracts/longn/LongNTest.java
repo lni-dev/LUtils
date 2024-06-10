@@ -14,10 +14,10 @@ import static org.junit.jupiter.api.Assertions.*;
 class LongNTest {
     private static Stream<Arguments> provideBBVectors() {
         return Stream.of(
-                Arguments.of(new BBLong1(true), 1, 8 ),
-                Arguments.of(new BBLong2(true), 2, 16 ),
-                Arguments.of(new BBLong3(true), 3, 32),
-                Arguments.of(new BBLong4(true), 4, 32)
+                Arguments.of(BBLong1.newAllocated(null), 1, 8 ),
+                Arguments.of(BBLong2.newAllocated(null), 2, 16 ),
+                Arguments.of(BBLong3.newAllocated(null), 3, 24),
+                Arguments.of(BBLong4.newAllocated(null), 4, 32)
         );
     }
 
@@ -44,7 +44,8 @@ class LongNTest {
 
     @Test
     public void unsignedTest() {
-        BBULong1 uLong = new BBULong1(true);
+        BBULong1 uLong = BBULong1.newAllocatable(null);
+        uLong.allocate();
 
         assertTrue(uLong.areComponentsUnsigned());
     }

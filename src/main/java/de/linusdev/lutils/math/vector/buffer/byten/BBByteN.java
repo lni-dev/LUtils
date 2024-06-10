@@ -3,24 +3,30 @@ package de.linusdev.lutils.math.vector.buffer.byten;
 import de.linusdev.lutils.math.vector.Vector;
 import de.linusdev.lutils.math.vector.abstracts.byten.ByteN;
 import de.linusdev.lutils.math.vector.buffer.BBVector;
-import de.linusdev.lutils.struct.abstracts.Structure;
+import de.linusdev.lutils.nat.struct.abstracts.Structure;
+import de.linusdev.lutils.nat.struct.annos.StructValue;
+import de.linusdev.lutils.nat.struct.info.StructureInfo;
 import org.jetbrains.annotations.NotNull;
-
-import java.nio.ByteBuffer;
+import org.jetbrains.annotations.Nullable;
 
 public abstract class BBByteN extends BBVector implements ByteN {
 
-    protected ByteBuffer buf;
-
-    public BBByteN(boolean allocateBuffer) {
-        if(allocateBuffer)
-            allocate();
+    public BBByteN(
+            @NotNull BBVectorGenerator generator,
+            boolean generateInfo,
+            @Nullable StructValue structValue
+    ) {
+        super(generator, generateInfo, structValue);
     }
 
+
     @Override
-    protected void useBuffer(@NotNull Structure mostParentStructure, int offset) {
-        super.useBuffer(mostParentStructure, offset);
-        buf = byteBuf;
+    protected void useBuffer(
+            @NotNull Structure mostParentStructure,
+            int offset,
+            @NotNull StructureInfo info
+    ) {
+        super.useBuffer(mostParentStructure, offset, info);
     }
 
     @Override
@@ -33,12 +39,12 @@ public abstract class BBByteN extends BBVector implements ByteN {
 
     @Override
     public byte get(int index) {
-        return buf.get(index);
+        return byteBuf.get(posInBuf(index));
     }
 
     @Override
     public void put(int index, byte value) {
-        buf.put(index, value);
+        byteBuf.put(posInBuf(index), value);
     }
 
 }

@@ -7,12 +7,16 @@ import de.linusdev.lutils.math.vector.buffer.floatn.BBFloat3;
 import de.linusdev.lutils.math.vector.buffer.floatn.BBFloat4;
 import de.linusdev.lutils.math.vector.buffer.intn.BBInt1;
 import de.linusdev.lutils.math.vector.buffer.longn.BBLong1;
-import de.linusdev.lutils.struct.annos.FixedLength;
-import de.linusdev.lutils.struct.annos.StructValue;
-import de.linusdev.lutils.struct.annos.StructureLayoutSettings;
-import de.linusdev.lutils.struct.array.PrimitiveTypeArray;
-import de.linusdev.lutils.struct.info.ABI;
-import de.linusdev.lutils.struct.info.DefaultABIs;
+import de.linusdev.lutils.nat.abi.OverwriteChildABI;
+import de.linusdev.lutils.nat.array.NativeFloat32Array;
+import de.linusdev.lutils.nat.array.NativeFloat64Array;
+import de.linusdev.lutils.nat.struct.abstracts.ComplexStructure;
+import de.linusdev.lutils.nat.struct.annos.StructValue;
+import de.linusdev.lutils.nat.struct.annos.StructureLayoutSettings;
+import de.linusdev.lutils.nat.abi.ABI;
+import de.linusdev.lutils.nat.abi.DefaultABIs;
+import de.linusdev.lutils.nat.struct.annos.StructureSettings;
+import org.jetbrains.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -21,31 +25,72 @@ public class ComplexStructureTest {
 
     public static class TestStruct extends ComplexStructure {
 
-        public final @StructValue @FixedLength(value = 5, elementTypes = Float.class)
-        PrimitiveTypeArray<Float> pArray = new PrimitiveTypeArray<>(Float.class, 5, false);
+        public final @StructValue(length = 5)
+        NativeFloat32Array pArray = new NativeFloat32Array();
 
-        public final @StructValue @FixedLength(value = 3, elementTypes = Double.class)
-        PrimitiveTypeArray<Double> dArray = new PrimitiveTypeArray<>(Double.class, 3, false);
+        public final @StructValue(length = 3)
+        NativeFloat64Array dArray = new NativeFloat64Array();
 
         public TestStruct(boolean trackModifications, boolean allocateBuffer) {
             super(trackModifications);
-            init(allocateBuffer);
+            init(null, true);
+            if(allocateBuffer)
+                allocate();
         }
     }
 
     public static class Test2Struct extends ComplexStructure {
 
-        public final @StructValue(5) BBFloat4 a = new BBFloat4(false);
-        public final @StructValue(1) BBFloat1 b = new BBFloat1(false);
-        public final @StructValue(2) BBFloat4 c = new BBFloat4(false);
-        public final @StructValue(3) BBFloat2 d = new BBFloat2(false);
-        public final @StructValue(4) BBFloat3 e = new BBFloat3(false);
+        public final @StructValue(5) BBFloat4 a = BBFloat4.newUnallocated();
+        public final @StructValue(1) BBFloat1 b = BBFloat1.newUnallocated();
+        public final @StructValue(2) BBFloat4 c = BBFloat4.newUnallocated();
+        public final @StructValue(3) BBFloat2 d = BBFloat2.newUnallocated();
+        public final @StructValue(4) BBFloat3 e = BBFloat3.newUnallocated();
 
-        public final @StructValue(0) BBFloat4x4 f = new BBFloat4x4(false);
+        public final @StructValue(0) BBFloat4x4 f = BBFloat4x4.newUnallocated();
 
         public Test2Struct(boolean trackModifications, boolean allocateBuffer) {
             super(trackModifications);
-            init(allocateBuffer);
+            init(null, true);
+            if(allocateBuffer)
+                allocate();
+        }
+    }
+
+    @StructureLayoutSettings(
+            value = DefaultABIs.CVG4J_OPEN_CL,
+            overwriteChildrenABI = OverwriteChildABI.FORCE_OVERWRITE
+    )
+    public static class TestOpenCLStruct extends ComplexStructure {
+
+        public final @StructValue(5) BBFloat4 a = BBFloat4.newUnallocated();
+        public final @StructValue(1) BBFloat1 b = BBFloat1.newUnallocated();
+        public final @StructValue(2) BBFloat4 c = BBFloat4.newUnallocated();
+        public final @StructValue(3) BBFloat2 d = BBFloat2.newUnallocated();
+        public final @StructValue(4) BBFloat3 e = BBFloat3.newUnallocated();
+
+        public final @StructValue(0) BBFloat4x4 f = BBFloat4x4.newUnallocated();
+        public final @StructValue(6) TestOpenCLStruct2 g = new TestOpenCLStruct2(false, false);
+
+        public TestOpenCLStruct(boolean trackModifications, boolean allocateBuffer) {
+            super(trackModifications);
+            init(null, true);
+            if(allocateBuffer)
+                allocate();
+        }
+    }
+
+    @StructureLayoutSettings(value = DefaultABIs.MSVC_X64)
+    public static class TestOpenCLStruct2 extends ComplexStructure {
+
+        public final @StructValue(0) BBFloat1 b = BBFloat1.newUnallocated();
+        public final @StructValue(1) BBFloat4 a = BBFloat4.newUnallocated();
+
+        public TestOpenCLStruct2(boolean trackModifications, boolean allocateBuffer) {
+            super(trackModifications);
+            init(null, false);
+            if(allocateBuffer)
+                allocate();
         }
     }
 
@@ -59,13 +104,15 @@ public class ComplexStructureTest {
             return DefaultABIs.MSVC_X64;
         }
 
-        public final @StructValue(0) BBInt1 a = new BBInt1(false);
-        public final @StructValue(1) BBLong1 b = new BBLong1(false);
-        public final @StructValue(2) BBInt1 c = new BBInt1(false);
+        public final @StructValue(0) BBInt1 a = BBInt1.newUnallocated();
+        public final @StructValue(1) BBLong1 b = BBLong1.newUnallocated();
+        public final @StructValue(2) BBInt1 c = BBInt1.newUnallocated();
 
         public Test3Struct(boolean trackModifications, boolean allocateBuffer) {
             super(trackModifications);
-            init(allocateBuffer);
+            init(null, true);
+            if(allocateBuffer)
+                allocate();
         }
     }
 
@@ -106,11 +153,15 @@ public class ComplexStructureTest {
         assertEquals(4, testStruct.b.getRequiredSize());
         assertEquals(16, testStruct.c.getRequiredSize());
         assertEquals(8, testStruct.d.getRequiredSize());
-        assertEquals(16, testStruct.e.getRequiredSize());
+        assertEquals(12, testStruct.e.getRequiredSize());
         assertEquals(64, testStruct.f.getRequiredSize());
 
         assertEquals(0, testStruct.f.getOffset());
-        assertEquals(128, testStruct.a.getOffset());
+        assertEquals(64, testStruct.b.getOffset());
+        assertEquals(68, testStruct.c.getOffset());
+        assertEquals(84, testStruct.d.getOffset());
+        assertEquals(92, testStruct.e.getOffset());
+        assertEquals(104, testStruct.a.getOffset());
 
         System.out.println(testStruct);
     }

@@ -19,24 +19,30 @@ package de.linusdev.lutils.math.vector.buffer.floatn;
 import de.linusdev.lutils.math.vector.Vector;
 import de.linusdev.lutils.math.vector.abstracts.floatn.FloatN;
 import de.linusdev.lutils.math.vector.buffer.BBVector;
-import de.linusdev.lutils.struct.abstracts.Structure;
+import de.linusdev.lutils.nat.struct.abstracts.Structure;
+import de.linusdev.lutils.nat.struct.annos.StructValue;
+import de.linusdev.lutils.nat.struct.info.StructureInfo;
 import org.jetbrains.annotations.NotNull;
-
-import java.nio.FloatBuffer;
+import org.jetbrains.annotations.Nullable;
 
 public abstract class BBFloatN extends BBVector implements FloatN {
 
-    protected FloatBuffer buf;
-
-    public BBFloatN(boolean allocateBuffer) {
-        if(allocateBuffer)
-            allocate();
+    public BBFloatN(
+            @NotNull BBVectorGenerator generator,
+            boolean generateInfo,
+            @Nullable StructValue structValue
+    ) {
+        super(generator, generateInfo, structValue);
     }
 
+
     @Override
-    protected void useBuffer(@NotNull Structure mostParentStructure, int offset) {
-        super.useBuffer(mostParentStructure, offset);
-        buf = byteBuf.asFloatBuffer();
+    protected void useBuffer(
+            @NotNull Structure mostParentStructure,
+            int offset,
+            @NotNull StructureInfo info
+    ) {
+        super.useBuffer(mostParentStructure, offset, info);
     }
 
     @Override
@@ -49,12 +55,12 @@ public abstract class BBFloatN extends BBVector implements FloatN {
 
     @Override
     public float get(int index) {
-        return buf.get(index);
+        return byteBuf.getFloat(posInBuf(index));
     }
 
     @Override
     public void put(int index, float value) {
-        buf.put(index, value);
+        byteBuf.putFloat(posInBuf(index), value);
     }
 
 }

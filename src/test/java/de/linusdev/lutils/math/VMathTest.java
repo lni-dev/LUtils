@@ -33,10 +33,10 @@ import static org.junit.jupiter.api.Assertions.*;
 class VMathTest {
     @Test
     void add() {
-        BBFloat4 a = new BBFloat4(true);
+        BBFloat4 a = BBFloat4.newAllocated(null);
         a.xyzw(1f, 2f, 3f, 4f);
 
-        BBFloat4 b = new BBFloat4(true);
+        BBFloat4 b = BBFloat4.newAllocated(null);
         b.xyzw(1f, 2f, 3f, 4f);
 
         VMath.add(a, b, a);
@@ -49,10 +49,10 @@ class VMathTest {
 
     @Test
     void subtract() {
-        BBFloat4 a = new BBFloat4(true);
+        BBFloat4 a = BBFloat4.newAllocated(null);
         a.xyzw(2f, 2f, 3f, 1f);
 
-        BBFloat4 b = new BBFloat4(true);
+        BBFloat4 b = BBFloat4.newAllocated(null);
         b.xyzw(1f, 2f, 3f, 4f);
 
         VMath.subtract(a, b, a);
@@ -65,10 +65,10 @@ class VMathTest {
 
     @Test
     void multiply() {
-        BBFloat4 a = new BBFloat4(true);
+        BBFloat4 a = BBFloat4.newAllocated(null);
         a.xyzw(2f, 2f, 3f, 1f);
 
-        BBFloat4 b = new BBFloat4(true);
+        BBFloat4 b = BBFloat4.newAllocated(null);
         b.xyzw(1f, 2f, 3f, 4f);
 
         VMath.multiply(a, b, a);
@@ -81,10 +81,10 @@ class VMathTest {
 
     @Test
     void divide() {
-        BBFloat4 a = new BBFloat4(true);
+        BBFloat4 a = BBFloat4.newAllocated(null);
         a.xyzw(2f, 2f, 3f, 1f);
 
-        BBFloat4 b = new BBFloat4(true);
+        BBFloat4 b = BBFloat4.newAllocated(null);
         b.xyzw(1f, 2f, 3f, 4f);
 
         VMath.divide(a, b, a);
@@ -97,7 +97,7 @@ class VMathTest {
 
     @Test
     void scale() {
-        BBFloat4 a = new BBFloat4(true);
+        BBFloat4 a = BBFloat4.newAllocated(null);
         a.xyzw(2f, 2f, 3f, 1f);
 
         VMath.scale(a, 2.f, a);
@@ -110,10 +110,10 @@ class VMathTest {
 
     @Test
     void dot() {
-        BBFloat4 a = new BBFloat4(true);
+        BBFloat4 a = BBFloat4.newAllocated(null);
         a.xyzw(2f, 2f, 3f, 1f);
 
-        BBFloat4 b = new BBFloat4(true);
+        BBFloat4 b = BBFloat4.newAllocated(null);
         b.xyzw(1f, 2f, 3f, 4f);
 
         assertEquals(2f+4f+9f+4f, VMath.dot(a, b));
@@ -121,10 +121,10 @@ class VMathTest {
 
     @Test
     void cross() {
-        BBFloat3 a = new BBFloat3(true);
+        BBFloat3 a = BBFloat3.newAllocated(null);
         a.xyz(2f, 2f, 3f);
 
-        BBFloat3 b = new BBFloat3(true);
+        BBFloat3 b = BBFloat3.newAllocated(null);
         b.xyz(1f, 2f, 3f);
 
         VMath.cross(a, b, a);
@@ -136,7 +136,7 @@ class VMathTest {
 
     @Test
     void normalize() {
-        BBFloat3 a = new BBFloat3(true);
+        BBFloat3 a = BBFloat3.newAllocated(null);
         a.xyz(2f, 2f, 3f);
 
         VMath.normalize(a, a);
@@ -148,7 +148,7 @@ class VMathTest {
 
     @Test
     void absolute() {
-        BBFloat3 a = new BBFloat3(true);
+        BBFloat3 a = BBFloat3.newAllocated(null);
         a.xyz(2f, -2f, -3f);
 
         VMath.absolute(a, a);
@@ -305,13 +305,13 @@ class VMathTest {
 
         Float4x4[] float4x4s = new Float4x4[]{
                 new ABFloat4x4(),
-                new BBFloat4x4(true),
+                BBFloat4x4.newAllocated(null),
                 new ABFloat4x4(),
-                new BBFloat4x4(true),
-                new BBFloat4x4(true),
-                new BBFloat4x4(true),
-                new BBFloat4x4(true),
-                new BBFloat4x4(true),
+                BBFloat4x4.newAllocated(null),
+                BBFloat4x4.newAllocated(null),
+                BBFloat4x4.newAllocated(null),
+                BBFloat4x4.newAllocated(null),
+                BBFloat4x4.newAllocated(null),
                 new ABFloat4x4(),
                 new ABFloat4x4(),
                 new ABFloat4x4(),
@@ -320,26 +320,26 @@ class VMathTest {
 
         Float4[] float4s = new Float4[] {
                 new ABFloat4(),
-                new BBFloat4(true),
+                BBFloat4.newAllocated(null),
                 new ABFloat4().wzyx(),
-                new BBFloat4(true).wzyx(),
+                BBFloat4.newAllocated(null).wzyx(),
                 new ABFloat4(),
-                new BBFloat4(true),
+                BBFloat4.newAllocated(null),
                 new ABFloat4().wzyx(),
-                new BBFloat4(true).wzyx(),
+                BBFloat4.newAllocated(null).wzyx(),
                 new ABFloat4(),
-                new BBFloat4(true),
+                BBFloat4.newAllocated(null),
                 new ABFloat4().wzyx(),
-                new BBFloat4(true).wzyx(),
+                BBFloat4.newAllocated(null).wzyx(),
         };
 
 
 
         Float4[] stores = new Float4[] {
                 new ABFloat4(),
-                new BBFloat4(true),
+                BBFloat4.newAllocated(null),
                 new ABFloat4().wzyx(),
-                new BBFloat4(true).wzyx(),
+                BBFloat4.newAllocated(null).wzyx(),
                 float4s[4],
                 float4s[5],
                 float4s[6],
@@ -392,13 +392,13 @@ class VMathTest {
 
         Float3x3[] float3x3s = new Float3x3[]{
                 new ABFloat3x3(),
-                new BBFloat3x3(true),
+                BBFloat3x3.newAllocated(null),
                 new ABFloat3x3(),
-                new BBFloat3x3(true),
-                new BBFloat3x3(true),
-                new BBFloat3x3(true),
-                new BBFloat3x3(true),
-                new BBFloat3x3(true),
+                BBFloat3x3.newAllocated(null),
+                BBFloat3x3.newAllocated(null),
+                BBFloat3x3.newAllocated(null),
+                BBFloat3x3.newAllocated(null),
+                BBFloat3x3.newAllocated(null),
                 new ABFloat3x3(),
                 new ABFloat3x3(),
                 new ABFloat3x3(),
@@ -407,26 +407,26 @@ class VMathTest {
 
         Float3[] float3s = new Float3[] {
                 new ABFloat3(),
-                new BBFloat3(true),
+                BBFloat3.newAllocated(null),
                 new ABFloat3().zyx(),
-                new BBFloat3(true).zyx(),
+                BBFloat3.newAllocated(null).zyx(),
                 new ABFloat3(),
-                new BBFloat3(true),
+                BBFloat3.newAllocated(null),
                 new ABFloat3().zyx(),
-                new BBFloat3(true).zyx(),
+                BBFloat3.newAllocated(null).zyx(),
                 new ABFloat3(),
-                new BBFloat3(true),
+                BBFloat3.newAllocated(null),
                 new ABFloat3().zyx(),
-                new BBFloat3(true).zyx(),
+                BBFloat3.newAllocated(null).zyx(),
         };
 
 
 
         Float3[] stores = new Float3[] {
                 new ABFloat3(),
-                new BBFloat3(true),
+                BBFloat3.newAllocated(null),
                 new ABFloat3().zyx(),
-                new BBFloat3(true).zyx(),
+                BBFloat3.newAllocated(null).zyx(),
                 float3s[4],
                 float3s[5],
                 float3s[6],
@@ -482,14 +482,14 @@ class VMathTest {
                 new ABFloat2(),
                 new ABFloat3(),
                 new ABFloat4(),
-                new BBFloat1(true),
-                new BBFloat2(true),
-                new BBFloat3(true),
-                new BBFloat4(true),
-                new BBFloat1(true),
-                new BBFloat2(true),
-                new BBFloat3(true),
-                new BBFloat4(true),
+                BBFloat1.newAllocated(null),
+                BBFloat2.newAllocated(null),
+                BBFloat3.newAllocated(null),
+                BBFloat4.newAllocated(null),
+                BBFloat1.newAllocated(null),
+                BBFloat2.newAllocated(null),
+                BBFloat3.newAllocated(null),
+                BBFloat4.newAllocated(null),
         };
 
         FloatN[] vectorsB = new FloatN[] {
@@ -497,18 +497,18 @@ class VMathTest {
                 new ABFloat2(),
                 new ABFloat3(),
                 new ABFloat4(),
-                new BBFloat1(true),
-                new BBFloat2(true),
-                new BBFloat3(true),
-                new BBFloat4(true),
+                BBFloat1.newAllocated(null),
+                BBFloat2.newAllocated(null),
+                BBFloat3.newAllocated(null),
+                BBFloat4.newAllocated(null),
                 new ABFloat1(),
                 new ABFloat2(),
                 new ABFloat3(),
                 new ABFloat4(),
-                new BBFloat1(true),
-                new BBFloat2(true),
-                new BBFloat3(true),
-                new BBFloat4(true),
+                BBFloat1.newAllocated(null),
+                BBFloat2.newAllocated(null),
+                BBFloat3.newAllocated(null),
+                BBFloat4.newAllocated(null),
         };
 
         float[][] datasA = new float[][] {
@@ -586,14 +586,14 @@ class VMathTest {
         FloatMxN[] matricesA = new FloatMxN[]{
                 new ABFloat4x4(),
                 new ABFloat3x3(),
-                new BBFloat4x4(true),
-                new BBFloat3x3(true)
+                BBFloat4x4.newAllocated(null),
+                BBFloat3x3.newAllocated(null)
         };
 
         FloatMxN[] matricesB = new FloatMxN[]{
                 new ABFloat4x4(),
-                new BBFloat3x3(true),
-                new BBFloat4x4(true),
+                BBFloat3x3.newAllocated(null),
+                BBFloat4x4.newAllocated(null),
                 new ABFloat3x3(),
         };
 

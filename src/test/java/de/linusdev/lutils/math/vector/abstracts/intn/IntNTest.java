@@ -15,10 +15,10 @@ class IntNTest {
 
     private static Stream<Arguments> provideBBVectors() {
         return Stream.of(
-                Arguments.of(new BBInt1(true), 1, 4 ),
-                Arguments.of(new BBInt2(true), 2, 8 ),
-                Arguments.of(new BBInt3(true), 3, 16),
-                Arguments.of(new BBInt4(true), 4, 16)
+                Arguments.of(BBInt1.newAllocated(null), 1, 4 ),
+                Arguments.of(BBInt2.newAllocated(null), 2, 8 ),
+                Arguments.of(BBInt3.newAllocated(null), 3, 12),
+                Arguments.of(BBInt4.newAllocated(null), 4, 16)
         );
     }
 
@@ -45,7 +45,7 @@ class IntNTest {
 
     @Test
     public void unsignedTest() {
-        BBUInt1 uInt = new BBUInt1();
+        BBUInt1 uInt = BBUInt1.newAllocatable(null);
         uInt.allocate();
 
         assertTrue(uInt.areComponentsUnsigned());

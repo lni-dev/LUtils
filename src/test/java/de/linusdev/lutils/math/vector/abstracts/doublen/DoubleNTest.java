@@ -16,7 +16,7 @@ class DoubleNTest {
 
     private static Stream<Arguments> provideBBVectors() {
         return Stream.of(
-                Arguments.of(new BBDouble1(true), 1, 8 )
+                Arguments.of(BBDouble1.newAllocated(null), 1, 8 )
         );
     }
 
@@ -57,7 +57,7 @@ class DoubleNTest {
 
     @Test
     public void testView() {
-        Double1 vector = new BBDouble1(true);
+        Double1 vector = BBDouble1.newAllocated(null);
         vector.set(0);
         Double1 factorView = vector.createFactorizedView(2.0);
         Double1 view = Double1.createView(vector, new int[]{0});

@@ -15,10 +15,10 @@ class FloatNTest {
 
     private static Stream<Arguments> provideBBVectors() {
         return Stream.of(
-                Arguments.of(new BBFloat1(true), 1, 4 ),
-                Arguments.of(new BBFloat2(true), 2, 8 ),
-                Arguments.of(new BBFloat3(true), 3, 16),
-                Arguments.of(new BBFloat4(true), 4, 16)
+                Arguments.of(BBFloat1.newAllocated(null), 1, 4 ),
+                Arguments.of(BBFloat2.newAllocated(null), 2, 8 ),
+                Arguments.of(BBFloat3.newAllocated(null), 3, 12),
+                Arguments.of(BBFloat4.newAllocated(null), 4, 16)
         );
     }
 

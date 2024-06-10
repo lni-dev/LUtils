@@ -1,6 +1,6 @@
 package de.linusdev.lutils.nat;
 
-import de.linusdev.lutils.struct.utils.BufferUtils;
+import de.linusdev.lutils.nat.struct.utils.BufferUtils;
 
 import java.nio.ByteBuffer;
 

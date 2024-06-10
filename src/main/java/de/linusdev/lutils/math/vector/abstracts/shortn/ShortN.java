@@ -1,10 +1,10 @@
 package de.linusdev.lutils.math.vector.abstracts.shortn;
 
-import de.linusdev.lutils.math.general.ShortElements;
+import de.linusdev.lutils.math.elements.ShortElement;
 import de.linusdev.lutils.math.vector.Vector;
 import org.jetbrains.annotations.NotNull;
 
-public interface ShortN extends Vector, ShortElements {
+public interface ShortN extends Vector, ShortElement {
 
     /**
      * Get component at position {@code index}.
