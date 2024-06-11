@@ -16,7 +16,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.nio.ByteBuffer;
 
-//TODO: Tests
 @StructureSettings(
         requiresCalculateInfoMethod = true,
         customLengthOption = RequirementType.REQUIRED,
@@ -33,22 +32,22 @@ public abstract class NativePrimitiveTypeArray<T> extends Structure implements N
     protected ArrayInfo.ArrayPositionFunction positions;
 
     protected NativePrimitiveTypeArray(
-            @NotNull StructValue structValue,
+            @Nullable StructValue structValue,
+            boolean generateInfo,
             @NotNull StaticGenerator generator
     ) {
-        setInfo(SSMUtils.getInfo(
-                this.getClass(),
-                structValue,
-                null,
-                null,
-                null,
-                null,
-                generator
-        ));
-        allocate();
+        if(generateInfo) {
+            setInfo(SSMUtils.getInfo(
+                    this.getClass(),
+                    structValue,
+                    null,
+                    null,
+                    null,
+                    null,
+                    generator
+            ));
+        }
     }
-
-    protected NativePrimitiveTypeArray() {}
 
     @Override
     public int length() {

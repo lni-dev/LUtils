@@ -17,14 +17,14 @@ public class BBInt1 extends BBIntN implements Int1 {
     }
 
     /**
-     * @see StructureStaticVariables#newAllocatable()
+     * @see StructureStaticVariables#newAllocatable(StructValue) 
      */
     public static BBInt1 newAllocatable(@Nullable StructValue structValue) {
         return new BBInt1(true, structValue);
     }
 
     /**
-     * @see StructureStaticVariables#newAllocated()
+     * @see StructureStaticVariables#newAllocated(StructValue) 
      */
     public static BBInt1 newAllocated(@Nullable StructValue structValue) {
         BBInt1 ret = newAllocatable(structValue);

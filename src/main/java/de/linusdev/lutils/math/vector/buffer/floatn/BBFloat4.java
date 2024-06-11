@@ -35,14 +35,14 @@ public class BBFloat4 extends BBFloatN implements Float4 {
     }
 
     /**
-     * @see StructureStaticVariables#newAllocatable()
+     * @see StructureStaticVariables#newAllocatable(StructValue) 
      */
     public static BBFloat4 newAllocatable(@Nullable StructValue structValue) {
         return new BBFloat4(true, structValue);
     }
 
     /**
-     * @see StructureStaticVariables#newAllocated()
+     * @see StructureStaticVariables#newAllocated(StructValue) 
      */
     public static BBFloat4 newAllocated(@Nullable StructValue structValue) {
         BBFloat4 ret = newAllocatable(structValue);

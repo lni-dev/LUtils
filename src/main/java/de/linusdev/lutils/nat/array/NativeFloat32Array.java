@@ -1,9 +1,10 @@
 package de.linusdev.lutils.nat.array;
 
 import de.linusdev.lutils.nat.NativeType;
+import de.linusdev.lutils.nat.struct.abstracts.StructureStaticVariables;
 import de.linusdev.lutils.nat.struct.annos.StructValue;
-import de.linusdev.lutils.nat.struct.annos.SVWrapper;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Range;
 
 public class NativeFloat32Array extends NativePrimitiveTypeArray<Float> {
@@ -12,17 +13,33 @@ public class NativeFloat32Array extends NativePrimitiveTypeArray<Float> {
     public static PrimitiveArrayStaticGenerator GENERATOR = new PrimitiveArrayStaticGenerator(NativeType.FLOAT32);
 
     /**
-     * Creates an allocated array.
-     * @param structValue {@link StructValue} with {@link StructValue#length()} set. See {@link SVWrapper}.
+     * @see StructureStaticVariables#newUnallocated()
      */
-    public NativeFloat32Array(@NotNull StructValue structValue) {
-        super(structValue, GENERATOR);
+    public static NativeFloat32Array newUnallocated() {
+        return new NativeFloat32Array(null, false);
     }
 
     /**
-     * Creates an unallocated array.
+     * @see StructureStaticVariables#newAllocatable(StructValue)
      */
-    public NativeFloat32Array() {
+    public static NativeFloat32Array newAllocatable(@NotNull StructValue structValue) {
+        return new NativeFloat32Array(structValue, true);
+    }
+
+    /**
+     * @see StructureStaticVariables#newAllocated(StructValue)
+     */
+    public static NativeFloat32Array newAllocated(@NotNull StructValue structValue) {
+        NativeFloat32Array ret = newAllocatable(structValue);
+        ret.allocate();
+        return ret;
+    }
+
+    protected NativeFloat32Array(
+            @Nullable StructValue structValue,
+            boolean generateInfo
+    ) {
+        super(structValue, generateInfo, GENERATOR);
     }
 
     @Override

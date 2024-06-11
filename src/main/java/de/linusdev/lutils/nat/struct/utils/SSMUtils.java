@@ -307,14 +307,26 @@ public interface SSMUtils {
 
     }
 
+    /**
+     * @param structClass Class containing the static method
+     * @return {@link StructureStaticVariables#newUnallocated() newUnallocated()} method of given {@code structClass}
+     */
     static @NotNull StructCreationMethod getNewUnallocatedMethod(@NotNull Class<?> structClass) {
         return findMethod(structClass, "newUnallocated");
     }
 
+    /**
+     * @param structClass Class containing the static method
+     * @return {@link StructureStaticVariables#newAllocatable(StructValue) newAllocatable(StructValue)} method of given {@code structClass}
+     */
     static @NotNull StructCreationMethod getNewAllocatableMethod(@NotNull Class<?> structClass) {
         return findMethod(structClass, "newAllocatable");
     }
 
+    /**
+     * @param structClass Class containing the static method
+     * @return {@link StructureStaticVariables#newAllocated(StructValue) newAllocated(StructValue)} method of given {@code structClass}
+     */
     static @NotNull StructCreationMethod getNewAllocatedMethod(@NotNull Class<?> structClass) {
         return findMethod(structClass, "newAllocated");
     }

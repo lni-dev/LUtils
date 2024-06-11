@@ -133,7 +133,7 @@ public class StructureArray<T extends Structure> extends ModTrackingStructure im
      * @param creator  see {@link #creator}
      * @return allocated {@link StructureArray} as described above.
      * @param <T> element type
-     * @see StructureStaticVariables#newAllocated()
+     * @see StructureStaticVariables#newAllocated(StructValue) 
      */
     public static <T extends Structure> @NotNull StructureArray<T> newAllocated(
             boolean trackModifications,
@@ -160,7 +160,7 @@ public class StructureArray<T extends Structure> extends ModTrackingStructure im
      * @param creator  see {@link #creator}
      * @return allocatable {@link StructureArray} as described above.
      * @param <T> element type
-     * @see StructureStaticVariables#newAllocatable()
+     * @see StructureStaticVariables#newAllocatable(StructValue) 
      */
     public static <T extends Structure> @NotNull StructureArray<T> newAllocatable(
             boolean trackModifications,

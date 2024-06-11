@@ -15,14 +15,14 @@ public class BBULong1 extends BBLong1 implements UnsignedVector {
     }
 
     /**
-     * @see StructureStaticVariables#newAllocatable()
+     * @see StructureStaticVariables#newAllocatable(StructValue) 
      */
     public static BBULong1 newAllocatable(@Nullable StructValue structValue) {
         return new BBULong1(true, structValue);
     }
 
     /**
-     * @see StructureStaticVariables#newAllocated()
+     * @see StructureStaticVariables#newAllocated(StructValue) 
      */
     public static BBULong1 newAllocated(@Nullable StructValue structValue) {
         BBULong1 ret = newAllocatable(structValue);

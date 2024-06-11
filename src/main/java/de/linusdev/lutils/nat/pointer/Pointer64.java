@@ -18,7 +18,7 @@ public class Pointer64 extends BBLong1 {
     }
 
     /**
-     * @see StructureStaticVariables#newAllocatable()
+     * @see StructureStaticVariables#newAllocatable(StructValue) 
      */
     public static Pointer64 newAllocatable(
             @Nullable StructValue structValue
@@ -27,7 +27,7 @@ public class Pointer64 extends BBLong1 {
     }
 
     /**
-     * @see StructureStaticVariables#newAllocated()
+     * @see StructureStaticVariables#newAllocated(StructValue) 
      */
     public static Pointer64 newAllocated(
             @Nullable StructValue structValue

@@ -17,14 +17,14 @@ public class BBDouble1 extends BBDoubleN implements Double1 {
     }
 
     /**
-     * @see StructureStaticVariables#newAllocatable()
+     * @see StructureStaticVariables#newAllocatable(StructValue) 
      */
     public static BBDouble1 newAllocatable(@Nullable StructValue structValue) {
         return new BBDouble1(true, structValue);
     }
 
     /**
-     * @see StructureStaticVariables#newAllocated()
+     * @see StructureStaticVariables#newAllocated(StructValue) 
      */
     public static BBDouble1 newAllocated(@Nullable StructValue structValue) {
         BBDouble1 ret = newAllocatable(structValue);

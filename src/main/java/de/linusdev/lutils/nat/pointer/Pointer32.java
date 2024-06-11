@@ -19,7 +19,7 @@ public class Pointer32 extends BBInt1 {
     }
 
     /**
-     * @see StructureStaticVariables#newAllocatable()
+     * @see StructureStaticVariables#newAllocatable(StructValue) 
      */
     public static Pointer32 newAllocatable(
             @Nullable StructValue structValue
@@ -28,7 +28,7 @@ public class Pointer32 extends BBInt1 {
     }
 
     /**
-     * @see StructureStaticVariables#newAllocated()
+     * @see StructureStaticVariables#newAllocated(StructValue) 
      */
     public static Pointer32 newAllocated(
             @Nullable StructValue structValue

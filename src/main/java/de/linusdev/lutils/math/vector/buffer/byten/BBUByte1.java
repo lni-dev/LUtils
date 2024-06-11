@@ -15,14 +15,14 @@ public class BBUByte1 extends BBByte1 implements UnsignedVector {
     }
 
     /**
-     * @see StructureStaticVariables#newAllocatable()
+     * @see StructureStaticVariables#newAllocatable(StructValue) 
      */
     public static BBUByte1 newAllocatable(@Nullable StructValue structValue) {
         return new BBUByte1(true, structValue);
     }
 
     /**
-     * @see StructureStaticVariables#newAllocated()
+     * @see StructureStaticVariables#newAllocated(StructValue) 
      */
     public static BBUByte1 newAllocated(@Nullable StructValue structValue) {
         BBUByte1 ret = newAllocatable(structValue);

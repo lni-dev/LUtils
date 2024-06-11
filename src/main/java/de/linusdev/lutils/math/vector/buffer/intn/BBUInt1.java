@@ -15,14 +15,14 @@ public class BBUInt1 extends BBInt1 implements UnsignedVector {
     }
 
     /**
-     * @see StructureStaticVariables#newAllocatable()
+     * @see StructureStaticVariables#newAllocatable(StructValue) 
      */
     public static BBUInt1 newAllocatable(@Nullable StructValue structValue) {
         return new BBUInt1(true, structValue);
     }
 
     /**
-     * @see StructureStaticVariables#newAllocated()
+     * @see StructureStaticVariables#newAllocated(StructValue) 
      */
     public static BBUInt1 newAllocated(@Nullable StructValue structValue) {
         BBUInt1 ret = newAllocatable(structValue);

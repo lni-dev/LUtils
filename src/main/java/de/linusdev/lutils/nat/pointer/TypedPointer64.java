@@ -16,7 +16,7 @@ public class TypedPointer64<T extends NativeParsable> extends Pointer64 {
     }
 
     /**
-     * @see StructureStaticVariables#newAllocatable()
+     * @see StructureStaticVariables#newAllocatable(StructValue) 
      */
     public static <T extends NativeParsable> TypedPointer64<T> newAllocatable1(
             @Nullable StructValue structValue
@@ -25,7 +25,7 @@ public class TypedPointer64<T extends NativeParsable> extends Pointer64 {
     }
 
     /**
-     * @see StructureStaticVariables#newAllocated()
+     * @see StructureStaticVariables#newAllocated(StructValue) 
      */
     public static <T extends NativeParsable> TypedPointer64<T> newAllocated1(
             @Nullable StructValue structValue

@@ -15,14 +15,14 @@ public class BBUShort1 extends BBShort1 implements UnsignedVector {
     }
 
     /**
-     * @see StructureStaticVariables#newAllocatable()
+     * @see StructureStaticVariables#newAllocatable(StructValue) 
      */
     public static BBUShort1 newAllocatable(@Nullable StructValue structValue) {
         return new BBUShort1(true, structValue);
     }
 
     /**
-     * @see StructureStaticVariables#newAllocated()
+     * @see StructureStaticVariables#newAllocated(StructValue) 
      */
     public static BBUShort1 newAllocated(@Nullable StructValue structValue) {
         BBUShort1 ret = newAllocatable(structValue);

@@ -17,14 +17,14 @@ public class BBShort1 extends BBShortN implements Short1 {
     }
 
     /**
-     * @see StructureStaticVariables#newAllocatable()
+     * @see StructureStaticVariables#newAllocatable(StructValue) 
      */
     public static BBShort1 newAllocatable(@Nullable StructValue structValue) {
         return new BBShort1(true, structValue);
     }
 
     /**
-     * @see StructureStaticVariables#newAllocated()
+     * @see StructureStaticVariables#newAllocated(StructValue) 
      */
     public static BBShort1 newAllocated(@Nullable StructValue structValue) {
         BBShort1 ret = newAllocatable(structValue);

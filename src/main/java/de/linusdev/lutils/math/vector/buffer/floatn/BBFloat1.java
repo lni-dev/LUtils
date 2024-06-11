@@ -34,7 +34,7 @@ public class BBFloat1 extends BBFloatN implements Float1 {
     }
 
     /**
-     * @see StructureStaticVariables#newAllocatable()
+     * @see StructureStaticVariables#newAllocatable(StructValue) 
      */
     public static BBFloat1 newAllocatable(
             @Nullable StructValue structValue
@@ -43,7 +43,7 @@ public class BBFloat1 extends BBFloatN implements Float1 {
     }
 
     /**
-     * @see StructureStaticVariables#newAllocated()
+     * @see StructureStaticVariables#newAllocated(StructValue) 
      */
     public static BBFloat1 newAllocated(
             @Nullable StructValue structValue

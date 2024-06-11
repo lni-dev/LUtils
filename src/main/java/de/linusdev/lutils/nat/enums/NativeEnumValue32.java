@@ -21,7 +21,7 @@ public class NativeEnumValue32<M extends NativeEnumMember32> extends BBInt1 {
     }
 
     /**
-     * @see StructureStaticVariables#newAllocatable()
+     * @see StructureStaticVariables#newAllocatable(StructValue) 
      */
     public static <T extends NativeEnumMember32> NativeEnumValue32<T> newAllocatableT(
             @Nullable StructValue structValue
@@ -30,7 +30,7 @@ public class NativeEnumValue32<M extends NativeEnumMember32> extends BBInt1 {
     }
 
     /**
-     * @see StructureStaticVariables#newAllocated()
+     * @see StructureStaticVariables#newAllocated(StructValue) 
      */
     public static <T extends NativeEnumMember32> NativeEnumValue32<T> newAllocatedT(
             @Nullable StructValue structValue

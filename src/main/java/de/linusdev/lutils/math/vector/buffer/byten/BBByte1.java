@@ -17,14 +17,14 @@ public class BBByte1 extends BBByteN implements Byte1 {
     }
 
     /**
-     * @see StructureStaticVariables#newAllocatable()
+     * @see StructureStaticVariables#newAllocatable(StructValue) 
      */
     public static BBByte1 newAllocatable(@Nullable StructValue structValue) {
         return new BBByte1(true, structValue);
     }
 
     /**
-     * @see StructureStaticVariables#newAllocated()
+     * @see StructureStaticVariables#newAllocated(StructValue) 
      */
     public static BBByte1 newAllocated(@Nullable StructValue structValue) {
         BBByte1 ret = newAllocatable(structValue);

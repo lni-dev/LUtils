@@ -1,21 +1,56 @@
 package de.linusdev.lutils.nat.string;
 
 import de.linusdev.lutils.nat.array.NativeInt8Array;
+import de.linusdev.lutils.nat.struct.abstracts.StructureStaticVariables;
 import de.linusdev.lutils.nat.struct.annos.StructValue;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.nio.charset.StandardCharsets;
 
-//TODO: Test + Doc
+/**
+ * A Structure that can contain a null (0-byte) terminated utf-8 string.
+ * @see #get()
+ * @see #set(String)
+ */
 public class NullTerminatedUTF8String extends NativeInt8Array {
 
-    public NullTerminatedUTF8String(@NotNull StructValue structValue) {
-        super(structValue);
+    /**
+     * @see StructureStaticVariables#newUnallocated()
+     */
+    public static NullTerminatedUTF8String newUnallocated() {
+        return new NullTerminatedUTF8String(null, false);
     }
 
-    public NullTerminatedUTF8String() {
+    /**
+     * @see StructureStaticVariables#newAllocatable(StructValue)
+     */
+    public static NullTerminatedUTF8String newAllocatable(@NotNull StructValue structValue) {
+        return new NullTerminatedUTF8String(structValue, true);
     }
 
+    /**
+     * @see StructureStaticVariables#newAllocated(StructValue)
+     */
+    public static NullTerminatedUTF8String newAllocated(@NotNull StructValue structValue) {
+        NullTerminatedUTF8String ret = newAllocatable(structValue);
+        ret.allocate();
+        return ret;
+    }
+
+    protected NullTerminatedUTF8String(
+            @Nullable StructValue structValue,
+            boolean generateInfo
+    ) {
+        super(structValue, generateInfo);
+    }
+
+    /**
+     * Set content of this structure to given {@code value}. A 0-byte will be added
+     * after {@code value} has been added in utf-8 format.
+     * @throws java.nio.BufferOverflowException if given {@code value} (and a 0-byte) does not fit into this structure
+     * @param value {@link String} value
+     */
     public void set(@NotNull String value) {
         byteBuf.clear();
 
@@ -25,6 +60,10 @@ public class NullTerminatedUTF8String extends NativeInt8Array {
         byteBuf.clear();
     }
 
+    /**
+     * Get the content of this structure as {@link String}.
+     * Reads until the first 0-byte.
+     */
     public @NotNull String get() {
         byteBuf.clear();
 
@@ -35,9 +74,10 @@ public class NullTerminatedUTF8String extends NativeInt8Array {
         for(int i = 0; i < bytes.length; i++) {
             if(bytes[i] == 0) {
                 index = i;
+                break;
             }
         }
 
-        return new String(bytes, 0, index);
+        return new String(bytes, 0, index, StandardCharsets.UTF_8);
     }
 }

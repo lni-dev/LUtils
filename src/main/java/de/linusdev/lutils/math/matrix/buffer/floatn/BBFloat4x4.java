@@ -18,14 +18,14 @@ public class BBFloat4x4 extends BBFloatMxN implements Float4x4 {
     }
 
     /**
-     * @see StructureStaticVariables#newAllocatable()
+     * @see StructureStaticVariables#newAllocatable(StructValue) 
      */
     public static BBFloat4x4 newAllocatable(@Nullable StructValue structValue) {
         return new BBFloat4x4(true, structValue);
     }
 
     /**
-     * @see StructureStaticVariables#newAllocated()
+     * @see StructureStaticVariables#newAllocated(StructValue) 
      */
     public static BBFloat4x4 newAllocated(@Nullable StructValue structValue) {
         BBFloat4x4 ret = newAllocatable(structValue);

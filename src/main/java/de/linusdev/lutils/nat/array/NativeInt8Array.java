@@ -1,9 +1,10 @@
 package de.linusdev.lutils.nat.array;
 
 import de.linusdev.lutils.nat.NativeType;
+import de.linusdev.lutils.nat.struct.abstracts.StructureStaticVariables;
 import de.linusdev.lutils.nat.struct.annos.StructValue;
-import de.linusdev.lutils.nat.struct.annos.SVWrapper;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Range;
 
 public class NativeInt8Array extends NativePrimitiveTypeArray<Byte> {
@@ -12,19 +13,34 @@ public class NativeInt8Array extends NativePrimitiveTypeArray<Byte> {
     public static PrimitiveArrayStaticGenerator GENERATOR = new PrimitiveArrayStaticGenerator(NativeType.INT8);
 
     /**
-     * Creates an allocated array.
-     * @param structValue {@link StructValue} with {@link StructValue#length()} set. See {@link SVWrapper}.
+     * @see StructureStaticVariables#newUnallocated()
      */
-    public NativeInt8Array(@NotNull StructValue structValue) {
-        super(structValue, GENERATOR);
+    public static NativeInt8Array newUnallocated() {
+        return new NativeInt8Array(null, false);
     }
 
     /**
-     * Creates an unallocated array.
+     * @see StructureStaticVariables#newAllocatable(StructValue)
      */
-    public NativeInt8Array() {
+    public static NativeInt8Array newAllocatable(@NotNull StructValue structValue) {
+        return new NativeInt8Array(structValue, true);
     }
 
+    /**
+     * @see StructureStaticVariables#newAllocated(StructValue)
+     */
+    public static NativeInt8Array newAllocated(@NotNull StructValue structValue) {
+        NativeInt8Array ret = newAllocatable(structValue);
+        ret.allocate();
+        return ret;
+    }
+
+    protected NativeInt8Array(
+            @Nullable StructValue structValue,
+            boolean generateInfo
+    ) {
+        super(structValue, generateInfo, GENERATOR);
+    }
     @Override
     public Byte get(@Range(from = 0, to = Integer.MAX_VALUE) int index) {
         return getInt8(index);

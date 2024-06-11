@@ -18,14 +18,14 @@ public class BBFloat3x3 extends BBFloatMxN implements Float3x3 {
     }
 
     /**
-     * @see StructureStaticVariables#newAllocatable()
+     * @see StructureStaticVariables#newAllocatable(StructValue) 
      */
     public static BBFloat3x3 newAllocatable(@Nullable StructValue structValue) {
         return new BBFloat3x3(true, structValue);
     }
 
     /**
-     * @see StructureStaticVariables#newAllocated()
+     * @see StructureStaticVariables#newAllocated(StructValue) 
      */
     public static BBFloat3x3 newAllocated(@Nullable StructValue structValue) {
         BBFloat3x3 ret = newAllocatable(structValue);

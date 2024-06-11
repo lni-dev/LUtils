@@ -1,5 +1,6 @@
 package de.linusdev.lutils.nat.struct.abstracts;
 
+import de.linusdev.lutils.nat.struct.annos.StructValue;
 import de.linusdev.lutils.nat.struct.annos.StructureSettings;
 import de.linusdev.lutils.nat.struct.generator.StaticGenerator;
 import de.linusdev.lutils.nat.struct.generator.StructCodeGenerator;
@@ -19,15 +20,15 @@ import java.nio.ByteBuffer;
  * Read more about the methods:
  * <lu>
  *     <li>{@link #newUnallocated()}</li>
- *     <li>{@link #newAllocatable()}</li>
- *     <li>{@link #newAllocated()}</li>
+ *     <li>{@link #newAllocatable(StructValue)}</li>
+ *     <li>{@link #newAllocated(StructValue)}</li>
  * </lu>
  * These methods may also have a slightly different name, because they may contain generics.
  * <br><br>
  * {@link SSMUtils SSMUtils} can help in getting the above fields and functions of
  * a specific structure.
  */
-@SuppressWarnings({"DataFlowIssue", "UnnecessaryModifier", "JavadocReference"})
+@SuppressWarnings({"DataFlowIssue", "UnnecessaryModifier", "JavadocReference", "unused"})
 public interface StructureStaticVariables {
 
     /**
@@ -71,7 +72,7 @@ public interface StructureStaticVariables {
      * using {@link Structure#claimBuffer(ByteBuffer) claimBuffer()}.
      * @return a freshly created allocatable structure.
      */
-    public static @NotNull Structure newAllocatable() {
+    public static @NotNull Structure newAllocatable(StructValue structValue) {
         throw new UnsupportedOperationException("example only");
     }
 
@@ -83,7 +84,7 @@ public interface StructureStaticVariables {
      * required.
      * @return a freshly created allocated structure.
      */
-    public static @NotNull Structure newAllocated() {
+    public static @NotNull Structure newAllocated(StructValue structValue) {
         throw new UnsupportedOperationException("example only");
     }
 

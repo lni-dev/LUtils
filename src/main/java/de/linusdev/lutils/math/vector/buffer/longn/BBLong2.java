@@ -17,14 +17,14 @@ public class BBLong2 extends BBLongN implements Long2 {
     }
 
     /**
-     * @see StructureStaticVariables#newAllocatable()
+     * @see StructureStaticVariables#newAllocatable(StructValue) 
      */
     public static BBLong2 newAllocatable(@Nullable StructValue structValue) {
         return new BBLong2(true, structValue);
     }
 
     /**
-     * @see StructureStaticVariables#newAllocated()
+     * @see StructureStaticVariables#newAllocated(StructValue) 
      */
     public static BBLong2 newAllocated(@Nullable StructValue structValue) {
         BBLong2 ret = newAllocatable(structValue);

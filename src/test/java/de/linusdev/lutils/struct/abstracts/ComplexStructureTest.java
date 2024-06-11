@@ -15,8 +15,6 @@ import de.linusdev.lutils.nat.struct.annos.StructValue;
 import de.linusdev.lutils.nat.struct.annos.StructureLayoutSettings;
 import de.linusdev.lutils.nat.abi.ABI;
 import de.linusdev.lutils.nat.abi.DefaultABIs;
-import de.linusdev.lutils.nat.struct.annos.StructureSettings;
-import org.jetbrains.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -26,10 +24,10 @@ public class ComplexStructureTest {
     public static class TestStruct extends ComplexStructure {
 
         public final @StructValue(length = 5)
-        NativeFloat32Array pArray = new NativeFloat32Array();
+        NativeFloat32Array pArray = NativeFloat32Array.newUnallocated();
 
         public final @StructValue(length = 3)
-        NativeFloat64Array dArray = new NativeFloat64Array();
+        NativeFloat64Array dArray = NativeFloat64Array.newUnallocated();
 
         public TestStruct(boolean trackModifications, boolean allocateBuffer) {
             super(trackModifications);
