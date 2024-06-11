@@ -1,6 +1,7 @@
 package de.linusdev.lutils.nat.struct.abstracts;
 
 import de.linusdev.lutils.nat.NativeParsable;
+import de.linusdev.lutils.nat.struct.annos.StructValue;
 import de.linusdev.lutils.nat.struct.annos.StructureSettings;
 import de.linusdev.lutils.nat.struct.generator.Language;
 import de.linusdev.lutils.nat.struct.generator.StaticGenerator;
@@ -24,23 +25,9 @@ import java.nio.ByteOrder;
  * Many classes extending {@link Structure} follow another pattern. They provide three static methods to
  * create an instance of the structure:
  * <ul>
- *     <li>
- *         <b>newUnallocated()</b>: Creates a new instance of the structure, <b>without</b>
- *         generating its {@link #info}. This is useful, if this structure will be used as an element in another
- *         parent structure. This parent structure, will have to call {@link #useBuffer(Structure, int, StructureInfo)}
- *         on its elements.
- *     </li>
- *     <li>
- *         <b>newAllocatable()</b>: Creates a new instance of the structure, <b>with</b>
- *         generating its {@link #info}. This means {@link #allocate()} or {@link #claimBuffer(ByteBuffer)} must be called
- *         afterwards to use the structure. This is useful, if the buffer for the structure already exist and must be claimed
- *         using {@link #claimBuffer(ByteBuffer)}.
- *     </li>
- *     <li>
- *         <b>newAllocated()</b>: Creates a new instance of the structure, <b>with</b>
- *         generating its {@link #info} and calling {@link #allocate()}. This is useful, if a ready-to-use structure is
- *         required.
- *     </li>
+ *     <li>{@link StructureStaticVariables#newUnallocated() newUnallocated()}</li>
+ *     <li>{@link StructureStaticVariables#newAllocatable(StructValue) newAllocatable(StructValue)}</li>
+ *     <li>{@link StructureStaticVariables#newAllocated(StructValue) newAllocated(StructValue)}</li>
  * </ul>
  **/
 @StructureLayoutSettings
