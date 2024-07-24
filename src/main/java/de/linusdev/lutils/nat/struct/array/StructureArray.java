@@ -185,7 +185,7 @@ public class StructureArray<T extends Structure> extends ModTrackingStructure im
     /**
      * @see #newUnallocated(boolean, ElementCreator) 
      */
-    private StructureArray(
+    protected StructureArray(
             boolean trackModifications,
             @NotNull ElementCreator<T> creator
     ) {
@@ -198,7 +198,7 @@ public class StructureArray<T extends Structure> extends ModTrackingStructure im
      * @see #newAllocated(boolean, StructValue, StructValue, ElementCreator)
      * @see #newAllocatable(boolean, StructValue, StructValue, ElementCreator) 
      */
-    private StructureArray(
+    protected StructureArray(
             boolean trackModifications,
             @NotNull StructValue structValue,
             @Nullable StructValue elementStructValue,
