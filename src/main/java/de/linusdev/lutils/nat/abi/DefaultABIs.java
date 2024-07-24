@@ -11,6 +11,63 @@ import org.jetbrains.annotations.NotNull;
  */
 public enum DefaultABIs implements ABI, Types {
 
+    DEFAULT {
+        @Override
+        public @NotNull ABI getAbi() {
+            return _DEFAULT;
+        }
+
+        @Override
+        public @NotNull MemorySizeable int8() {
+            return _DEFAULT.types().int8();
+        }
+
+        @Override
+        public @NotNull MemorySizeable int16() {
+            return _DEFAULT.types().int16();
+        }
+
+        @Override
+        public @NotNull MemorySizeable int32() {
+            return _DEFAULT.types().int32();
+        }
+
+        @Override
+        public @NotNull MemorySizeable int64() {
+            return _DEFAULT.types().int64();
+        }
+
+        @Override
+        public @NotNull MemorySizeable float32() {
+            return _DEFAULT.types().float32();
+        }
+
+        @Override
+        public @NotNull MemorySizeable float64() {
+            return _DEFAULT.types().float64();
+        }
+
+        @Override
+        public @NotNull MemorySizeable pointer() {
+            return _DEFAULT.types().pointer();
+        }
+
+        @Override
+        public @NotNull StructureInfo calculateStructureLayout(boolean compress, @NotNull MemorySizeable @NotNull ... children) {
+            return _DEFAULT.calculateStructureLayout(compress, children);
+        }
+
+        @Override
+        public @NotNull ArrayInfo calculateArrayLayout(boolean compress, @NotNull MemorySizeable children, int length, int stride) {
+            return _DEFAULT.calculateArrayLayout(compress, children, length, stride);
+        }
+
+        @Override
+        public @NotNull Types types() {
+            return _DEFAULT.types();
+        }
+    },
+
     /**
      * @see <a href="https://learn.microsoft.com/en-us/cpp/build/x64-software-conventions?view=msvc-170">MSVC x64 software conventions</a>
      */
@@ -297,6 +354,12 @@ public enum DefaultABIs implements ABI, Types {
         }
     },
     ;
+
+    private static @NotNull ABI _DEFAULT = MSVC_X64;
+
+    public static void setDefaultAbi(@NotNull ABI _default) {
+        _DEFAULT = _default;
+    }
 
     @Override
     public @NotNull String identifier() {

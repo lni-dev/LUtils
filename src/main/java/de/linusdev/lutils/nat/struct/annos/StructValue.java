@@ -67,6 +67,10 @@ public @interface StructValue {
      * <br><br>
      * The structure must {@link StructureSettings#customLayoutOption() support or require} this field for
      * it to be set to any value different from the default value.
+     * <br><br>
+     * The {@link de.linusdev.lutils.nat.abi.DefaultABIs DefaultABIs} also have
+     * {@link de.linusdev.lutils.nat.abi.DefaultABIOverwrites DefaultABIOverwrites} available, which are annotated with {@link StructureLayoutSettings}
+     * and have the corresponding ABI set.
      * @return {@link Class} which is annotated with {@link StructureLayoutSettings}.
      */
     @NotNull Class<?> overwriteStructureLayout() default Structure.class;

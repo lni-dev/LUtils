@@ -16,7 +16,7 @@ public @interface StructureLayoutSettings {
     /**
      * Use this to set the {@link ABI} to use when generating the layout of the structure.
      */
-    @NotNull DefaultABIs value() default DefaultABIs.MSVC_X64;
+    @NotNull DefaultABIs value() default DefaultABIs.DEFAULT;
 
     /**
      * Class containing the {@link #selectorMethodName()} method. If this is set to anything except {@link Void},
