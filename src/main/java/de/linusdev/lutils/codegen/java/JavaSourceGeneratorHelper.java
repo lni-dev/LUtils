@@ -166,6 +166,19 @@ public interface JavaSourceGeneratorHelper {
         return str.toString() + BRACKET_CLOSE;
     }
 
+    default String javaStaticMethodCall(@NotNull JavaClass parent, @NotNull String methodName, @NotNull JavaExpression @NotNull ... parameters) {
+        StringBuilder str = new StringBuilder(parent.getName() + "." + methodName + BRACKET_OPEN);
+
+        boolean first = true;
+        for(JavaExpression parameter : parameters) {
+            if(first) first = false;
+            else str.append(", ");
+            str.append(parameter.getExprString(this));
+        }
+
+        return str.toString() + BRACKET_CLOSE;
+    }
+
     default String javaVariableType(@NotNull JavaClass javaClass) {
         return javaClass.getTypeName();
     }

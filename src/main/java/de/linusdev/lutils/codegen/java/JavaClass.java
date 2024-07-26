@@ -225,8 +225,12 @@ public interface JavaClass {
         };
     }
 
-    default @NotNull Class<?> resolveActualClass() throws ClassNotFoundException {
-        return Class.forName(getPackage().getPackageString() + "." + getName());
+    default @Nullable Class<?> tryResolveActualClass() {
+        try {
+            return Class.forName(getPackage().getPackageString() + "." + getName());
+        } catch (ClassNotFoundException e) {
+            return null;
+        }
     }
 
 }

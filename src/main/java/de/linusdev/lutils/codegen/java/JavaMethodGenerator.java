@@ -57,6 +57,7 @@ public class JavaMethodGenerator implements
         isStatic = jStatic;
     }
 
+    @Override
     public boolean isStatic() {
         return isStatic;
     }

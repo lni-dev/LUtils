@@ -16,6 +16,7 @@ import org.jetbrains.annotations.Nullable;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
@@ -333,8 +334,8 @@ public interface SSMUtils {
 
     private static @NotNull StructCreationMethod findMethod(@NotNull Class<?> structClass, @NotNull String methodName) {
         for(Method method : structClass.getDeclaredMethods()) {
-            if(method.getName().startsWith(methodName)) {
-                return  new StructCreationMethod(method);
+            if(Modifier.isStatic(method.getModifiers()) && method.getName().startsWith(methodName)) {
+                return new StructCreationMethod(method);
             }
         }
 
@@ -372,6 +373,11 @@ public interface SSMUtils {
         @Override
         public @NotNull String getName() {
             return name;
+        }
+
+        @Override
+        public boolean isStatic() {
+            return true;
         }
     }
 
