@@ -2,7 +2,6 @@ package de.linusdev.lutils.nat.struct.info;
 
 import de.linusdev.lutils.nat.abi.ABI;
 import de.linusdev.lutils.nat.abi.OverwriteChildABI;
-import de.linusdev.lutils.nat.struct.abstracts.ComplexStructure;
 import de.linusdev.lutils.nat.struct.abstracts.Structure;
 import de.linusdev.lutils.nat.struct.annos.ElementsStructValue;
 import de.linusdev.lutils.nat.struct.annos.StructValue;
@@ -66,7 +65,7 @@ public class StructVarInfo {
         return info;
     }
 
-    public Structure get(@NotNull ComplexStructure instance) {
+    public Structure get(@NotNull Structure instance) {
         try {
             return (Structure) field.get(instance);
         } catch (IllegalAccessException e) {

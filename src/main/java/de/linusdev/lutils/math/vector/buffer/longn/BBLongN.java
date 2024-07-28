@@ -47,12 +47,12 @@ public abstract class BBLongN extends BBVector implements LongN {
 
     @Override
     public long get(int index) {
-        return byteBuf.getLong(index);
+        return byteBuf.getLong(posInBuf(index));
     }
 
     @Override
     public void put(int index, long value) {
-        byteBuf.putLong(index, value);
+        byteBuf.putLong(posInBuf(index), value);
     }
 
     @Override

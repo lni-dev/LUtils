@@ -1,27 +1,24 @@
 package de.linusdev.lutils.nat.struct.info;
 
+import de.linusdev.lutils.nat.abi.ABI;
 import de.linusdev.lutils.nat.abi.OverwriteChildABI;
 import de.linusdev.lutils.nat.struct.abstracts.ComplexStructure;
+import de.linusdev.lutils.nat.struct.abstracts.ComplexUnion;
 import de.linusdev.lutils.nat.struct.abstracts.StructVarUtils;
 import de.linusdev.lutils.nat.struct.abstracts.Structure;
 import de.linusdev.lutils.nat.struct.annos.StructValue;
-import de.linusdev.lutils.nat.abi.ABI;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-/**
- * Additional to the information contained in {@link StructureInfo}, this class also contains information about
- * the values inside the structure ({@link #childrenInfo}) and the {@link ABI} used to create this info ({@link #abi}).
- */
-public class ComplexStructureInfo extends StructureInfo {
+public class ComplexUnionInfo extends UnionInfo {
 
     /**
      * Reads all fields of given {@code clazz} annotated with {@link StructValue}
-     * and generates a {@link ComplexStructureInfo} from it.
-     * @param clazz class extending {@link ComplexStructure}
-     * @return {@link ComplexStructureInfo} for this structure
+     * and generates a {@link ComplexUnionInfo} from it.
+     * @param clazz class extending {@link ComplexUnion}
+     * @return {@link ComplexUnionInfo} for this structure
      */
-    public static @NotNull ComplexStructureInfo generateFromStructVars(
+    public static @NotNull ComplexUnionInfo generateFromStructVars(
             @NotNull Class<?> clazz,
             @NotNull ABI abi,
             @Nullable OverwriteChildABI overwriteChildAbi
@@ -29,16 +26,8 @@ public class ComplexStructureInfo extends StructureInfo {
         return StructVarUtils.getStructVars(
                 clazz, abi, overwriteChildAbi,
                 (varInfos, infos) -> {
-                    StructureInfo info = abi.calculateStructureLayout(false, infos);
-
-                    return new ComplexStructureInfo(
-                            info.getAlignment(),
-                            info.isCompressed(),
-                            info.getRequiredSize(),
-                            info.getSizes(),
-                            abi,
-                            varInfos
-                    );
+                    UnionInfo info = abi.calculateUnionLayout(false, infos);
+                    return new ComplexUnionInfo(info, abi, varInfos);
                 }
         );
     }
@@ -53,14 +42,17 @@ public class ComplexStructureInfo extends StructureInfo {
      */
     protected final @NotNull StructVarInfo @NotNull [] childrenInfo;
 
-    private ComplexStructureInfo(
-            int alignment,
-            boolean compress,
-            int size,
-            int[] sizes, @NotNull ABI abi,
+    private ComplexUnionInfo(
+            @NotNull UnionInfo info,
+            @NotNull ABI abi,
             @NotNull StructVarInfo @NotNull [] infos
     ) {
-        super(alignment, compress, size, sizes);
+        super(
+                info.alignment,
+                info.compressed,
+                info.sizes[0], info.sizes[1], info.sizes[2], // pre-padding, size, post-padding
+                info.positions
+        );
         this.abi = abi;
         this.childrenInfo = infos;
     }
@@ -85,7 +77,7 @@ public class ComplexStructureInfo extends StructureInfo {
      * @param instance instance of the {@link ComplexStructure} this info belongs to
      * @return children {@link Structure} array
      */
-    public @NotNull Structure @NotNull [] getChildren(@NotNull ComplexStructure instance) {
+    public @NotNull Structure @NotNull [] getChildren(@NotNull ComplexUnion instance) {
         Structure[] structures = new Structure[childrenInfo.length];
 
         for(int i = 0; i < structures.length; i++) {
@@ -94,4 +86,5 @@ public class ComplexStructureInfo extends StructureInfo {
 
         return structures;
     }
+
 }

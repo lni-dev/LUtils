@@ -46,12 +46,12 @@ public abstract class BBIntN extends BBVector implements IntN {
 
     @Override
     public int get(int index) {
-        return byteBuf.getInt(index);
+        return byteBuf.getInt(posInBuf(index));
     }
 
     @Override
     public void put(int index, int value) {
-        byteBuf.putInt(index, value);
+        byteBuf.putInt(posInBuf(index), value);
     }
 
     @Override

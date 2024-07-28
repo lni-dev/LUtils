@@ -28,6 +28,7 @@ import de.linusdev.lutils.nat.struct.info.StructVarInfo;
 import de.linusdev.lutils.nat.struct.info.StructureInfo;
 import de.linusdev.lutils.nat.abi.ABI;
 import de.linusdev.lutils.nat.struct.mod.ModTrackingStructure;
+import de.linusdev.lutils.nat.struct.utils.ClassAndAbi;
 import de.linusdev.lutils.nat.struct.utils.SSMUtils;
 import de.linusdev.lutils.nat.struct.utils.Utils;
 import org.jetbrains.annotations.NotNull;
@@ -142,32 +143,6 @@ public abstract class ComplexStructure extends ModTrackingStructure {
     private static class ComplexStructureGenerator implements StaticGenerator {
         private final @NotNull Map<ClassAndAbi, ComplexStructureInfo> INFO_MAP = new HashMap<>();
         private final @NotNull Object INFO_MAP_LOCK = new Object();
-
-        private static class ClassAndAbi {
-            private final @NotNull Class<?> clazz;
-            private final @NotNull ABI abi;
-
-            private ClassAndAbi(@NotNull Class<?> clazz, @NotNull ABI abi) {
-                this.clazz = clazz;
-                this.abi = abi;
-            }
-
-            @Override
-            public final boolean equals(Object o) {
-                if (this == o) return true;
-                if (!(o instanceof ClassAndAbi)) return false;
-
-                ClassAndAbi that = (ClassAndAbi) o;
-                return clazz.equals(that.clazz) && abi.identifier().equals(that.abi.identifier());
-            }
-
-            @Override
-            public int hashCode() {
-                int result = clazz.hashCode();
-                result = 31 * result + abi.identifier().hashCode();
-                return result;
-            }
-        }
 
         @Override
         public @NotNull StructureInfo calculateInfo(

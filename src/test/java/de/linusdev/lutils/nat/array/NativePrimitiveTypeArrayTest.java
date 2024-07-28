@@ -92,6 +92,26 @@ class NativePrimitiveTypeArrayTest {
     }
 
     @Test
+    public void testUInt8Array() {
+        NativeUInt8Array array = NativeUInt8Array.newAllocated(SVWrapper.length(10));
+
+        assertEquals(10, array.length());
+        assertEquals(10, array.getRequiredSize());
+
+        array.setInt8(0, (byte) 10);
+        assertEquals(10, array.getInt8(0));
+
+        for (int i = 1; i < array.length(); i++) {
+            array.set(i, (byte) i);
+        }
+
+        assertEquals(10, array.getInt8(0));
+        for (int i = 1; i < array.length(); i++) {
+            assertEquals(i, array.getInt8(i));
+        }
+    }
+
+    @Test
     void getPositions() {
         NativeInt32Array array = NativeInt32Array.newAllocated(SVWrapper.length(10));
 

@@ -39,12 +39,12 @@ public abstract class BBShortN extends BBVector implements ShortN {
 
     @Override
     public short get(int index) {
-        return byteBuf.getShort(index);
+        return byteBuf.getShort(posInBuf(index));
     }
 
     @Override
     public void put(int index, short value) {
-        byteBuf.putShort(index, value);
+        byteBuf.putShort(posInBuf(index), value);
     }
 
 }

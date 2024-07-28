@@ -4,6 +4,7 @@ import de.linusdev.lutils.nat.MemorySizeable;
 import de.linusdev.lutils.nat.NativeType;
 import de.linusdev.lutils.nat.struct.info.ArrayInfo;
 import de.linusdev.lutils.nat.struct.info.StructureInfo;
+import de.linusdev.lutils.nat.struct.info.UnionInfo;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -58,8 +59,18 @@ public enum DefaultABIs implements ABI, Types {
         }
 
         @Override
+        public @NotNull UnionInfo calculateUnionLayout(boolean compress, @NotNull MemorySizeable @NotNull ... children) {
+            return _DEFAULT.calculateUnionLayout(compress, children);
+        }
+
+        @Override
         public @NotNull ArrayInfo calculateArrayLayout(boolean compress, @NotNull MemorySizeable children, int length, int stride) {
             return _DEFAULT.calculateArrayLayout(compress, children, length, stride);
+        }
+
+        @Override
+        public @NotNull ArrayInfo calculateVectorLayout(@NotNull NativeType componentType, int length) {
+            return _DEFAULT.calculateVectorLayout(componentType, length);
         }
 
         @Override
@@ -160,6 +171,38 @@ public enum DefaultABIs implements ABI, Types {
             else sizes[sizes.length - 1] = 0;
 
             return new StructureInfo(alignment, compress, position, sizes);
+        }
+
+        @Override
+        public @NotNull UnionInfo calculateUnionLayout(
+                boolean compress,
+                @NotNull MemorySizeable @NotNull ... children
+        ) {
+
+            int alignment = 1;
+            int[] positions = new int[children.length];
+            int size = 0;
+            int postPadding = 0;
+
+            for(int i = 0; i < children.length; i++) {
+                MemorySizeable child = children[i];
+
+                positions[i] = 0;
+                alignment = Math.max(alignment, child.getAlignment());
+                size = Math.max(size, child.getRequiredSize());
+            }
+
+            if(compress)
+                alignment = 1;
+
+            if(size % alignment != 0)
+                postPadding = (alignment - (size % alignment));
+
+            return new UnionInfo(
+                    alignment, compress,
+                    0, size, postPadding,
+                    positions
+            );
         }
 
         @Override
@@ -309,6 +352,11 @@ public enum DefaultABIs implements ABI, Types {
             else sizes[sizes.length - 1] = 0;
 
             return new StructureInfo(alignment, compress, position, sizes);
+        }
+
+        @Override
+        public @NotNull UnionInfo calculateUnionLayout(boolean compress, @NotNull MemorySizeable @NotNull ... children) {
+            throw new UnsupportedOperationException("Not yet implemented");
         }
 
         @Override

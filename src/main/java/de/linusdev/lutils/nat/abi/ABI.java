@@ -4,6 +4,7 @@ import de.linusdev.lutils.nat.MemorySizeable;
 import de.linusdev.lutils.nat.NativeType;
 import de.linusdev.lutils.nat.struct.info.ArrayInfo;
 import de.linusdev.lutils.nat.struct.info.StructureInfo;
+import de.linusdev.lutils.nat.struct.info.UnionInfo;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -29,6 +30,18 @@ public interface ABI {
      * @return calculated {@link StructureInfo} for a structure with given children
      */
     @NotNull StructureInfo calculateStructureLayout(
+            boolean compress,
+            @NotNull MemorySizeable @NotNull ... children
+    );
+
+    /**
+     *
+     * @param children ordered array of {@link StructureInfo}s of children
+     * @param compress Whether the structure should be compressed (alignment will be ignored).
+     * @return calculated {@link UnionInfo} for a structure with given children
+     */
+    @NotNull
+    UnionInfo calculateUnionLayout(
             boolean compress,
             @NotNull MemorySizeable @NotNull ... children
     );
