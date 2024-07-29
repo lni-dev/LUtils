@@ -19,6 +19,11 @@ public enum DefaultABIs implements ABI, Types {
         }
 
         @Override
+        public @NotNull MemorySizeable integer() {
+            return _DEFAULT.types().integer();
+        }
+
+        @Override
         public @NotNull MemorySizeable int8() {
             return _DEFAULT.types().int8();
         }
@@ -83,13 +88,6 @@ public enum DefaultABIs implements ABI, Types {
      * @see <a href="https://learn.microsoft.com/en-us/cpp/build/x64-software-conventions?view=msvc-170">MSVC x64 software conventions</a>
      */
     MSVC_X64 {
-
-        private final @NotNull MemorySizeable INT8 = MemorySizeable.of(1);
-        private final @NotNull MemorySizeable INT16 = MemorySizeable.of(2);
-        private final @NotNull MemorySizeable INT32 = MemorySizeable.of(4);
-        private final @NotNull MemorySizeable INT64 = MemorySizeable.of(8);
-        private final @NotNull MemorySizeable FLOAT32 = MemorySizeable.of(4);
-        private final @NotNull MemorySizeable FLOAT64 = MemorySizeable.of(8);
         private final @NotNull MemorySizeable POINTER64 = MemorySizeable.of(8);
 
         @Override
@@ -98,33 +96,8 @@ public enum DefaultABIs implements ABI, Types {
         }
 
         @Override
-        public @NotNull MemorySizeable int8() {
-            return INT8;
-        }
-
-        @Override
-        public @NotNull MemorySizeable int16() {
-            return INT16;
-        }
-
-        @Override
-        public @NotNull MemorySizeable int32() {
-            return INT32;
-        }
-
-        @Override
-        public @NotNull MemorySizeable int64() {
-            return INT64;
-        }
-
-        @Override
-        public @NotNull MemorySizeable float32() {
-            return FLOAT32;
-        }
-
-        @Override
-        public @NotNull MemorySizeable float64() {
-            return FLOAT64;
+        public @NotNull MemorySizeable integer() {
+            return int32();
         }
 
         @Override
@@ -246,12 +219,6 @@ public enum DefaultABIs implements ABI, Types {
      * Used for OPEN_CL, but structure code in OpenCL must be generated with {@link de.linusdev.lutils.nat.struct.generator.StructCodeGenerator StructCodeGenerator}.
      */
     CVG4J_OPEN_CL {
-        private final @NotNull MemorySizeable INT8 = MemorySizeable.of(1);
-        private final @NotNull MemorySizeable INT16 = MemorySizeable.of(2);
-        private final @NotNull MemorySizeable INT32 = MemorySizeable.of(4);
-        private final @NotNull MemorySizeable INT64 = MemorySizeable.of(8);
-        private final @NotNull MemorySizeable FLOAT32 = MemorySizeable.of(4);
-        private final @NotNull MemorySizeable FLOAT64 = MemorySizeable.of(8);
         private final @NotNull MemorySizeable POINTER64 = MemorySizeable.of(8);
 
         @Override
@@ -260,33 +227,8 @@ public enum DefaultABIs implements ABI, Types {
         }
 
         @Override
-        public @NotNull MemorySizeable int8() {
-            return INT8;
-        }
-
-        @Override
-        public @NotNull MemorySizeable int16() {
-            return INT16;
-        }
-
-        @Override
-        public @NotNull MemorySizeable int32() {
-            return INT32;
-        }
-
-        @Override
-        public @NotNull MemorySizeable int64() {
-            return INT64;
-        }
-
-        @Override
-        public @NotNull MemorySizeable float32() {
-            return FLOAT32;
-        }
-
-        @Override
-        public @NotNull MemorySizeable float64() {
-            return FLOAT64;
+        public @NotNull MemorySizeable integer() {
+            return int32();
         }
 
         @Override

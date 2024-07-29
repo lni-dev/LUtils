@@ -5,6 +5,13 @@ import org.jetbrains.annotations.NotNull;
 
 public enum NativeType {
 
+    INTEGER {
+        @Override
+        public @NotNull MemorySizeable getMemorySizeable(@NotNull Types types) {
+            return types.integer();
+        }
+    },
+
     INT8 {
         @Override
         @NotNull
