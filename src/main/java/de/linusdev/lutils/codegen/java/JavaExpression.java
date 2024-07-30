@@ -208,6 +208,20 @@ public interface JavaExpression extends PartGenerator<JavaSourceGeneratorHelper>
         };
     }
 
+    static @NotNull JavaExpression publicStaticVariable(JavaVariable variable) {
+        return new JavaExpression() {
+            @Override
+            public @NotNull String getExprString(@NotNull JavaSourceGeneratorHelper sg) {
+                return variable.parentClass.getName() + "." + variable.getExprString(sg);
+            }
+
+            @Override
+            public @Nullable Collection<JavaImport> getRequiredImports() {
+                return variable.parentClass.getRequiredImports();
+            }
+        }
+    }
+
     private static @Nullable Collection<JavaImport> collectImports(
             @NotNull JavaExpression @NotNull ... expressions
     ) {
