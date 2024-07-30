@@ -219,7 +219,7 @@ public interface JavaExpression extends PartGenerator<JavaSourceGeneratorHelper>
             public @Nullable Collection<JavaImport> getRequiredImports() {
                 return variable.parentClass.getRequiredImports();
             }
-        }
+        };
     }
 
     private static @Nullable Collection<JavaImport> collectImports(
