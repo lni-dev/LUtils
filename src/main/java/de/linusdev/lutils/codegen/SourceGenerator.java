@@ -47,6 +47,10 @@ public class SourceGenerator {
         return file;
     }
 
+    public @NotNull JavaSourceGeneratorHelper getSg() {
+        return sg;
+    }
+
     public @NotNull JavaFileGenerator addJavaFile(
             @Nullable String javaPackage
     ) {
