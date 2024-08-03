@@ -23,6 +23,8 @@ public class JavaMethodGenerator implements
     protected final @NotNull String name;
 
     protected boolean isStatic = false;
+    protected boolean isNative = false;
+    protected boolean noBody = false;
     protected boolean isFinal = false;
     protected boolean isConstructor = false;
     protected @NotNull JavaVisibility visibility = JavaVisibility.PACKAGE_PRIVATE;
@@ -43,6 +45,7 @@ public class JavaMethodGenerator implements
         this.returnType = returnType;
         this.name = name;
         this.body = new JavaBlockContents(ft);
+        ft.addImport(returnType.getRequiredImports());
     }
 
     public void setVisibility(@NotNull JavaVisibility visibility) {
@@ -64,6 +67,23 @@ public class JavaMethodGenerator implements
 
     public void setFinal(boolean jFinal) {
         isFinal = jFinal;
+    }
+
+    public void setNative(boolean aNative) {
+        isNative = aNative;
+        setNoBody(true);
+    }
+
+    public void setNoBody(boolean noBody) {
+        this.noBody = noBody;
+    }
+
+    public boolean isNative() {
+        return isNative;
+    }
+
+    public boolean isNoBody() {
+        return noBody;
     }
 
     public boolean isFinal() {
@@ -133,17 +153,19 @@ public class JavaMethodGenerator implements
         // Open Method
         writer
                 .append(state.getIndent())
-                .append(state.getSg().javaMethodOpenExpression(this))
-                .append(state.getSg().javaLineBreak());
+                .append(state.getSg().javaMethodOpenExpression(this));
 
         // Method Body
-        body.write(writer, state);
+        if(!isNoBody()) {
+            writer.append(state.getSg().javaLineBreak());
+            body.write(writer, state);
+            writer
+                    .append(state.getSg().javaLineBreak())
+                    .append(state.getIndent());
+        }
 
         // Close Method
-        writer
-                .append(state.getSg().javaLineBreak())
-                .append(state.getIndent())
-                .append(state.getSg().javaMethodCloseExpression());
+        writer.append(state.getSg().javaMethodCloseExpression(this));
     }
 
     @Override

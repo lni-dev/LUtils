@@ -27,12 +27,14 @@ import de.linusdev.lutils.nat.struct.abstracts.Structure;
 import de.linusdev.lutils.nat.abi.ABI;
 import de.linusdev.lutils.nat.struct.info.StructureInfo;
 import de.linusdev.lutils.nat.struct.mod.ModTrackingStructure;
+import de.linusdev.lutils.nat.struct.utils.BufferUtils;
 import de.linusdev.lutils.nat.struct.utils.SSMUtils;
 import de.linusdev.lutils.nat.struct.utils.Utils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.nio.ByteBuffer;
+import java.util.Iterator;
 
 @StructureSettings(
         requiresCalculateInfoMethod = true,
@@ -176,6 +178,36 @@ public class StructureArray<T extends Structure> extends ModTrackingStructure im
         );
     }
 
+    /**
+     * requires {@link BufferUtils#setByteBufferFromPointerMethod(BufferUtils.ByteBufferFromPointerMethod)} to be set.
+     * @param trackModifications see {@link #trackModifications}
+     * @param elementClazz clazz of array elements
+     * @param length array length
+     * @param pointer pointer to the native array
+     * @param creator see {@link #creator}
+     * @return {@link StructureArray} backed by given pointer
+     * @param <T> array element type
+     */
+    @SuppressWarnings("unused") // Cannot be tested without native library
+    public static <T extends Structure> @NotNull StructureArray<T> ofPointer(
+            boolean trackModifications,
+            @NotNull Class<?> elementClazz,
+            int length,
+            long pointer,
+            @NotNull ElementCreator<T> creator
+    ) {
+        StructureArray<T> sArray = StructureArray.newAllocatable(
+                trackModifications,
+                SVWrapper.of(length, elementClazz),
+                null,
+                creator
+        );
+
+        sArray.claimBuffer(BufferUtils.getByteBufferFromPointer(pointer, sArray.getRequiredSize()));
+
+        return sArray;
+    }
+
     private final @NotNull ElementCreator<T> creator;
 
     private StructureInfo elementInfo;
@@ -280,6 +312,23 @@ public class StructureArray<T extends Structure> extends ModTrackingStructure im
     @Override
     public T get(int index) {
         return (T) items[index];
+    }
+
+    @Override
+    public @NotNull Iterator<T> iterator() {
+        return new Iterator<>() {
+            int index = 0;
+
+            @Override
+            public boolean hasNext() {
+                return index < length();
+            }
+
+            @Override
+            public T next() {
+                return getOrCreate(index++);
+            }
+        };
     }
 
     @FunctionalInterface

@@ -1,7 +1,6 @@
 package de.linusdev.lutils.nat.string;
 
 import de.linusdev.lutils.nat.struct.annos.SVWrapper;
-import de.linusdev.lutils.nat.struct.annos.StructValue;
 import org.junit.jupiter.api.Test;
 
 import java.nio.BufferOverflowException;
@@ -30,5 +29,13 @@ class NullTerminatedUTF8StringTest {
         String test4 = "Test4";
         string.set(test4);
         assertEquals(test4, string.get());
+    }
+
+    @Test
+    void ofString() {
+        NullTerminatedUTF8String string = NullTerminatedUTF8String.ofString("Test");
+
+        assertEquals("Test", string.get());
+
     }
 }

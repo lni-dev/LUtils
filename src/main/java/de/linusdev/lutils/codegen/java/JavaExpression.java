@@ -165,6 +165,16 @@ public interface JavaExpression extends PartGenerator<JavaSourceGeneratorHelper>
         };
     }
 
+    static @NotNull JavaExpression thisExpression() {
+        return new JavaExpression() {
+
+            @Override
+            public @NotNull String getExprString(@NotNull JavaSourceGeneratorHelper sg) {
+                return "this";
+            }
+        };
+    }
+
     static @NotNull JavaExpression callMethod(
             @NotNull JavaMethod method,
             @NotNull JavaExpression @NotNull ... parameters
@@ -222,7 +232,7 @@ public interface JavaExpression extends PartGenerator<JavaSourceGeneratorHelper>
         };
     }
 
-    private static @Nullable Collection<JavaImport> collectImports(
+    private static @NotNull Collection<JavaImport> collectImports(
             @NotNull JavaExpression @NotNull ... expressions
     ) {
         ArrayList<JavaImport> imports = new ArrayList<>();
@@ -230,7 +240,7 @@ public interface JavaExpression extends PartGenerator<JavaSourceGeneratorHelper>
             if(parameter.getRequiredImports() != null)
                 imports.addAll(parameter.getRequiredImports());
         }
-        return !imports.isEmpty() ? imports : null;
+        return imports;
     }
 
     @NotNull String getExprString(@NotNull JavaSourceGeneratorHelper sg);

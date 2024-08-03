@@ -17,6 +17,7 @@
 package de.linusdev.lutils.nat.struct.utils;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.nio.Buffer;
 import java.nio.ByteBuffer;
@@ -101,6 +102,27 @@ public class BufferUtils {
         buffer.limit(ol);
 
         return slice;
+    }
+
+    @FunctionalInterface
+    public interface ByteBufferFromPointerMethod {
+         @NotNull ByteBuffer getByteBufferFromPointer(long pointer, int capacity);
+    }
+
+    private static @Nullable ByteBufferFromPointerMethod byteBufferFromPointerMethod = null;
+
+    public static void setByteBufferFromPointerMethod(@NotNull ByteBufferFromPointerMethod method) {
+        byteBufferFromPointerMethod = method;
+    }
+
+    public static @NotNull ByteBuffer getByteBufferFromPointer(long pointer, int capacity) {
+        if(byteBufferFromPointerMethod == null) {
+            throw new IllegalStateException("BufferUtils.byteBufferFromPointerMethod must be set," +
+                    " before calling this method. Please call " +
+                    "BufferUtils.setByteBufferFromPointerMethod() with an appropriate method.");
+        }
+
+        return byteBufferFromPointerMethod.getByteBufferFromPointer(pointer, capacity);
     }
 
 }

@@ -7,7 +7,6 @@ import org.jetbrains.annotations.Nullable;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Locale;
 import java.util.Map;
 
 public interface JavaSourceGeneratorHelper {
@@ -137,6 +136,10 @@ public interface JavaSourceGeneratorHelper {
         return STATIC;
     }
 
+    default String javaNativeKeyword() {
+        return "native";
+    }
+
     default String javaFinalKeyword() {
         return FINAL;
     }
@@ -194,6 +197,9 @@ public interface JavaSourceGeneratorHelper {
         if(method.isStatic())
             str.append(javaStaticKeyword()).append(" ");
 
+        if(method.isNative())
+            str.append(javaNativeKeyword()).append(" ");
+
         if(method.isFinal())
             str.append(javaFinalKeyword()).append(" ");
 
@@ -211,10 +217,17 @@ public interface JavaSourceGeneratorHelper {
             param.write(str, new GeneratorState<>("", this));
         }
 
-        return str + BRACKET_CLOSE + " " + javaBlockStart();
+        str.append(BRACKET_CLOSE + " ");
+
+        if(!method.isNoBody())
+            str.append(javaBlockStart());
+
+        return str + "";
     }
 
-    default String javaMethodCloseExpression() {
+    default String javaMethodCloseExpression(@NotNull JavaMethodGenerator method) {
+        if(method.isNoBody())
+            return ";";
         return javaBlockEnd();
     }
 

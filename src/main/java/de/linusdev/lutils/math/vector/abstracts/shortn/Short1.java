@@ -4,7 +4,7 @@ import de.linusdev.lutils.math.vector.abstracts.vectorn.Vector1;
 
 public interface Short1 extends ShortN, Vector1 {
 
-    default float get() {
+    default short get() {
         return get(0);
     }
 

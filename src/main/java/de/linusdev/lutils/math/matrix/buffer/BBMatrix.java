@@ -21,6 +21,7 @@ import org.jetbrains.annotations.Nullable;
 @StructureSettings(requiresCalculateInfoMethod = true, customLayoutOption = RequirementType.OPTIONAL)
 public abstract class BBMatrix extends Structure implements Matrix {
 
+    protected final @NotNull BBMatrixGenerator generator;
     protected ArrayInfo.ArrayPositionFunction positions;
 
     protected BBMatrix(
@@ -28,6 +29,7 @@ public abstract class BBMatrix extends Structure implements Matrix {
             boolean generateInfo,
             @Nullable StructValue structValue
     ) {
+        this.generator = generator;
         if(generateInfo) {
             setInfo(SSMUtils.getInfo(
                     this.getClass(),
@@ -53,6 +55,15 @@ public abstract class BBMatrix extends Structure implements Matrix {
      */
     protected int posInBuf(int index) {
         return positions.position(index);
+    }
+
+    @Override
+    protected @Nullable StructureInfo generateInfo() {
+        return SSMUtils.getInfo(
+                this.getClass(),
+                null, null, null, null, null,
+                generator
+        );
     }
 
     @Override

@@ -21,6 +21,7 @@ public class JavaBlockContents implements PartGenerator<JavaSourceGeneratorHelpe
 
     public void addExpression(@NotNull JavaExpression expression) {
         expressions.add(expression);
+        ft.addImport(expression.getRequiredImports());
     }
 
     @Override

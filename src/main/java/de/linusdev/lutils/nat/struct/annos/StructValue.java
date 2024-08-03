@@ -33,7 +33,7 @@ import java.lang.annotation.*;
 public @interface StructValue {
 
     /**
-     * index of this value in the struct or -1 if it does not matter.
+     * index (starting at zero) of this value in the struct or -1 if it does not matter.
      * <br><br>
      * Currently only supported in children fields of {@link ComplexStructure}.
      * @return index or -1

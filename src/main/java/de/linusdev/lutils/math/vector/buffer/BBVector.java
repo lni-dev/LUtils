@@ -20,6 +20,7 @@ import org.jetbrains.annotations.Nullable;
 @StructureSettings(requiresCalculateInfoMethod = true, customLayoutOption = RequirementType.OPTIONAL)
 public abstract class BBVector extends Structure implements Vector {
 
+    protected final @NotNull BBVectorGenerator generator;
     protected ArrayInfo.ArrayPositionFunction positions;
 
     public BBVector(
@@ -27,6 +28,7 @@ public abstract class BBVector extends Structure implements Vector {
             boolean generateInfo,
             @Nullable StructValue structValue
     ) {
+        this.generator = generator;
         if(generateInfo) {
             setInfo(SSMUtils.getInfo(
                     this.getClass(),
@@ -45,6 +47,15 @@ public abstract class BBVector extends Structure implements Vector {
      */
     protected int posInBuf(int index) {
         return positions.position(index);
+    }
+
+    @Override
+    protected @Nullable StructureInfo generateInfo() {
+        return SSMUtils.getInfo(
+                this.getClass(),
+                null, null, null, null, null,
+                generator
+        );
     }
 
     @Override

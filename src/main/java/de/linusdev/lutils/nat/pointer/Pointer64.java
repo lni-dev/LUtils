@@ -1,46 +1,27 @@
 package de.linusdev.lutils.nat.pointer;
 
-import de.linusdev.lutils.math.vector.buffer.longn.BBLong1;
-import de.linusdev.lutils.nat.struct.abstracts.StructureStaticVariables;
-import de.linusdev.lutils.nat.struct.annos.StructValue;
+import de.linusdev.lutils.nat.NativeParsable;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-/**
- * This class can store a 64 bit pointer.
- */
-@SuppressWarnings("unused")
-public class Pointer64 extends BBLong1 {
-    /**
-     * @see StructureStaticVariables#newUnallocated()
-     */
-    public static Pointer64 newUnallocated()  {
-        return new Pointer64(false, null);
+public interface Pointer64 {
+
+    long NULL_POINTER = 0L;
+
+    static @NotNull Pointer64 of(long pointer) {
+        return new Pointer64Impl(pointer);
     }
 
     /**
-     * @see StructureStaticVariables#newAllocatable(StructValue) 
+     * Create a new {@link Pointer64}, whose {@link #get()} method will return the value of {@link NativeParsable#getPointer()}
+     * or {@link #NULL_POINTER} if {@code obj} is {@code null}.
      */
-    public static Pointer64 newAllocatable(
-            @Nullable StructValue structValue
-    )  {
-        return new Pointer64(true, structValue);
+    static @NotNull Pointer64 of(@Nullable NativeParsable obj) {
+        return new Pointer64Impl(obj == null ? NULL_POINTER : obj.getPointer());
     }
 
-    /**
-     * @see StructureStaticVariables#newAllocated(StructValue) 
-     */
-    public static Pointer64 newAllocated(
-            @Nullable StructValue structValue
-    )  {
-        Pointer64 ret = newAllocatable(structValue);
-        ret.allocate();
-        return ret;
-    }
+    long get();
 
-    protected Pointer64(
-            boolean generateInfo,
-            @Nullable StructValue structValue
-    ) {
-        super(generateInfo, structValue);
-    }
+    void set(long pointer);
+
 }

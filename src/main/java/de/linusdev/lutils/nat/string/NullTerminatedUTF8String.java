@@ -2,6 +2,7 @@ package de.linusdev.lutils.nat.string;
 
 import de.linusdev.lutils.nat.array.NativeInt8Array;
 import de.linusdev.lutils.nat.struct.abstracts.StructureStaticVariables;
+import de.linusdev.lutils.nat.struct.annos.SVWrapper;
 import de.linusdev.lutils.nat.struct.annos.StructValue;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -36,6 +37,13 @@ public class NullTerminatedUTF8String extends NativeInt8Array {
         NullTerminatedUTF8String ret = newAllocatable(structValue);
         ret.allocate();
         return ret;
+    }
+
+    public static NullTerminatedUTF8String ofString(@NotNull String string) {
+        byte[] bytes = string.getBytes(StandardCharsets.UTF_8);
+        NullTerminatedUTF8String natString = NullTerminatedUTF8String.newAllocated(SVWrapper.length(bytes.length + 1));
+        natString.set(string);
+        return natString;
     }
 
     protected NullTerminatedUTF8String(

@@ -51,6 +51,18 @@ public class SourceGenerator {
         return sg;
     }
 
+    public @Nullable JavaFileGenerator getJavaFile(
+            @NotNull String javaPackage,
+            @NotNull String name
+    ) {
+        for (JavaFileGenerator javaFile : javaFiles) {
+            if(javaFile.getName().equals(name) && javaFile.getPackage().getPackageString().equals(javaPackage))
+                return javaFile;
+        }
+
+        return null;
+    }
+
     public @NotNull JavaFileGenerator addJavaFile(
             @Nullable String javaPackage
     ) {
