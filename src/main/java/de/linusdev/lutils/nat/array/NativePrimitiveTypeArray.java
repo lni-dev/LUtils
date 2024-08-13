@@ -74,6 +74,22 @@ public abstract class NativePrimitiveTypeArray<T> extends Structure implements N
         return positions;
     }
 
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+
+        sb.append("length=").append(length()).append("\n");
+        sb.append("items={");
+
+        for (T t : this) {
+            sb.append(t.toString()).append(", ");
+        }
+
+        sb.append("}");
+
+        return toString( getClass().getSimpleName(), sb.toString());
+    }
+
     public static class PrimitiveArrayStaticGenerator implements StaticGenerator {
 
         private final NativeType nativeType;

@@ -32,7 +32,7 @@ public class IllegalStructVarException extends RuntimeException {
 
     @Override
     public String getMessage() {
-        return "Field '" + field.getType().getSimpleName() +
+        return "Field '" + field.getType().getSimpleName() + " " +
                 field.getName() + "' in structure " + field.getDeclaringClass().getCanonicalName() + " is not a valid struct value: " + message;
     }
 }

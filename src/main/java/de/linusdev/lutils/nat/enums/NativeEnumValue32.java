@@ -3,6 +3,9 @@ package de.linusdev.lutils.nat.enums;
 import de.linusdev.lutils.math.vector.buffer.intn.BBInt1;
 import de.linusdev.lutils.nat.struct.abstracts.StructureStaticVariables;
 import de.linusdev.lutils.nat.struct.annos.StructValue;
+import de.linusdev.lutils.other.UnknownConstantException;
+import org.jetbrains.annotations.Blocking;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -50,6 +53,24 @@ public class NativeEnumValue32<M extends NativeEnumMember32> extends BBInt1 {
     public void set(@Nullable M value) {
         if(value == null) set(0);
         else set(value.getValue());
+    }
+
+    /**
+     * Iterates through all enum constants of given {@code enumClass} and returns
+     * the one, whose {@link NativeEnumMember32#getValue()} corresponds to the {@link #get() value} of this enum value
+     * @param enumClass The class of the enum {@link M}.
+     * @return {@link M} as described above.
+     * @throws UnknownConstantException if no enum constant of given {@code enumClass} matches the {@link #get() value} of this enum value.
+     */
+    @Blocking
+    public @NotNull M get(@NotNull Class<M> enumClass) {
+        int val = get();
+        for (M c : enumClass.getEnumConstants()) {
+            if(c.getValue() == val)
+                return c;
+        }
+
+        throw new UnknownConstantException(val);
     }
 
 }

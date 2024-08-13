@@ -33,8 +33,19 @@ class NullTerminatedUTF8StringTest {
 
     @Test
     void ofString() {
-        NullTerminatedUTF8String string = NullTerminatedUTF8String.ofString("Test");
+        NullTerminatedUTF8String string = NullTerminatedUTF8String.newAllocated("Test");
 
+        assertEquals("Test", string.get());
+
+    }
+
+    @Test
+    void ofStringAllocatable() {
+        NullTerminatedUTF8String string = NullTerminatedUTF8String.newAllocatable("Test");
+
+        assertFalse(string.isInitialised());
+        string.allocate();
+        assertTrue(string.isInitialised());
         assertEquals("Test", string.get());
 
     }

@@ -62,6 +62,16 @@ public class BufferUtils {
     }
 
     /**
+     * creates an 64 bit (8-byte) aligned direct {@link ByteBuffer}.
+     * Useful on 64 bit host systems.
+     * @param capacity the capacity of the buffer
+     * @return an 8-byte aligned buffer with given capacity
+     */
+    public static @NotNull ByteBuffer create64BitAligned(int capacity) {
+        return createAligned(capacity, 8);
+    }
+
+    /**
      * @param buffer {@link ByteBuffer} to get the address of
      * @return the address of given {@code buffer}
      */

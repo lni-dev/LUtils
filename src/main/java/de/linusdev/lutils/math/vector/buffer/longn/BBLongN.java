@@ -57,7 +57,10 @@ public abstract class BBLongN extends BBVector implements LongN {
 
     @Override
     public String toString() {
-        return Vector.toString(this, ELEMENT_TYPE_NAME, BBLongN::get);
+        return toString(
+                ELEMENT_TYPE_NAME + getMemberCount(),
+                Vector.toString(this, ELEMENT_TYPE_NAME, BBLongN::get)
+        );
     }
 }
 

@@ -6,7 +6,7 @@ import de.linusdev.lutils.nat.struct.annos.StructValue;
 import org.jetbrains.annotations.Nullable;
 
 @SuppressWarnings("unused")
-public class BBTypedPointer64<T extends NativeParsable> extends BBPointer64 {
+public class BBTypedPointer64<T extends NativeParsable> extends BBPointer64 implements TypedPointer64<T> {
 
     /**
      * @see StructureStaticVariables#newUnallocated()
@@ -37,11 +37,6 @@ public class BBTypedPointer64<T extends NativeParsable> extends BBPointer64 {
 
     protected BBTypedPointer64(boolean generateInfo, @Nullable StructValue structValue) {
         super(generateInfo, structValue);
-    }
-
-    public void set(@Nullable T object) {
-        if(object == null) set(0);
-        else set(object.getPointer());
     }
 
 }

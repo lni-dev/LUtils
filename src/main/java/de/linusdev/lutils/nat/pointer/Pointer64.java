@@ -24,4 +24,12 @@ public interface Pointer64 {
 
     void set(long pointer);
 
+    /**
+     *
+     * @return {@code true} if this pointer points to null (0), {@code false} otherwise
+     */
+    default boolean isNullPtr() {
+        return get() == NULL_POINTER;
+    }
+
 }

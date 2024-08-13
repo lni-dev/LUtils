@@ -59,4 +59,10 @@ public class NativeInt8Array extends NativePrimitiveTypeArray<Byte> {
         byteBuf.put(positions.position(index), item);
     }
 
+    public void set(byte @NotNull [] value) {
+        byteBuf.clear();
+        byteBuf.put(value);
+        byteBuf.clear();
+    }
+
 }

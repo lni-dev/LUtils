@@ -109,10 +109,9 @@ public abstract class Structure implements NativeParsable {
      * @throws IllegalStateException if this structure cannot claim a buffer in its current state. For example,
      * because it was created with not enough information to create its {@link #info}.
      */
-    protected void claimBuffer(@NotNull ByteBuffer buffer) {
-        StructureInfo rInfo = isInfoAvailable();
+    public void claimBuffer(@NotNull ByteBuffer buffer) {
         this.byteBuf = buffer.order(ByteOrder.nativeOrder());
-        useBuffer(this,0, rInfo);
+        useBuffer(this,0, isInfoAvailable());
     }
 
     /**
@@ -122,7 +121,7 @@ public abstract class Structure implements NativeParsable {
      */
     public void allocate() {
         setInfo(isInfoAvailable()); // make sure info is stored, if it is generated.
-        claimBuffer(BufferUtils.createAligned(getRequiredSize(), 8));
+        claimBuffer(BufferUtils.create64BitAligned(getRequiredSize()));
     }
 
     /**
@@ -157,6 +156,17 @@ public abstract class Structure implements NativeParsable {
         if(info == null)
             throw new IllegalStateException("Info is not yet available. allocate or useBuffer must be called first.");
         return info;
+    }
+
+    /**
+     * This will return the current {@link #info} of this structure. If that is {@code null},
+     * it will try to {@link #generateInfo() generate} the info and store it inside this structure.
+     * @return {@link #info}
+     * @throws IllegalStateException see {@link #isInfoAvailable()}
+     */
+    public @NotNull StructureInfo getOrGenerateInfo() {
+        setInfo(isInfoAvailable());
+        return getInfo();
     }
 
     /**

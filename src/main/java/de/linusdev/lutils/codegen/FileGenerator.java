@@ -3,7 +3,6 @@ package de.linusdev.lutils.codegen;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
-import java.io.Writer;
 
 public interface FileGenerator {
     void write(@NotNull Appendable writer) throws IOException;

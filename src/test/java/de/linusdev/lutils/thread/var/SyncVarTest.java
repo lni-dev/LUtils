@@ -1,4 +1,4 @@
-package de.linusdev.lutils.thready.var;
+package de.linusdev.lutils.thread.var;
 
 import org.junit.jupiter.api.Test;
 

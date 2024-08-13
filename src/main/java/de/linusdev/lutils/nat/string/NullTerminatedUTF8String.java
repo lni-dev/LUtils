@@ -1,9 +1,11 @@
 package de.linusdev.lutils.nat.string;
 
 import de.linusdev.lutils.nat.array.NativeInt8Array;
+import de.linusdev.lutils.nat.struct.abstracts.Structure;
 import de.linusdev.lutils.nat.struct.abstracts.StructureStaticVariables;
 import de.linusdev.lutils.nat.struct.annos.SVWrapper;
 import de.linusdev.lutils.nat.struct.annos.StructValue;
+import de.linusdev.lutils.nat.struct.info.StructureInfo;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -20,14 +22,14 @@ public class NullTerminatedUTF8String extends NativeInt8Array {
      * @see StructureStaticVariables#newUnallocated()
      */
     public static NullTerminatedUTF8String newUnallocated() {
-        return new NullTerminatedUTF8String(null, false);
+        return new NullTerminatedUTF8String(null, false, null);
     }
 
     /**
      * @see StructureStaticVariables#newAllocatable(StructValue)
      */
     public static NullTerminatedUTF8String newAllocatable(@NotNull StructValue structValue) {
-        return new NullTerminatedUTF8String(structValue, true);
+        return new NullTerminatedUTF8String(structValue, true, null);
     }
 
     /**
@@ -39,18 +41,33 @@ public class NullTerminatedUTF8String extends NativeInt8Array {
         return ret;
     }
 
-    public static NullTerminatedUTF8String ofString(@NotNull String string) {
-        byte[] bytes = string.getBytes(StandardCharsets.UTF_8);
-        NullTerminatedUTF8String natString = NullTerminatedUTF8String.newAllocated(SVWrapper.length(bytes.length + 1));
-        natString.set(string);
+    public static NullTerminatedUTF8String newAllocatable(@NotNull String defaultValue) {
+        byte[] bytes = defaultValue.getBytes(StandardCharsets.UTF_8);
+        return new NullTerminatedUTF8String(SVWrapper.length(bytes.length + 1), true, bytes);
+    }
+
+    public static NullTerminatedUTF8String newAllocated(@NotNull String string) {
+        NullTerminatedUTF8String natString = newAllocatable(string);
+        natString.allocate();
         return natString;
     }
 
+    protected final byte @Nullable [] defaultValue;
+
     protected NullTerminatedUTF8String(
             @Nullable StructValue structValue,
-            boolean generateInfo
+            boolean generateInfo,
+            byte @Nullable [] defaultValue
     ) {
         super(structValue, generateInfo);
+        this.defaultValue = defaultValue;
+    }
+
+    @Override
+    protected void useBuffer(@NotNull Structure mostParentStructure, int offset, @NotNull StructureInfo info) {
+        super.useBuffer(mostParentStructure, offset, info);
+        if(defaultValue != null)
+            set(defaultValue);
     }
 
     /**
@@ -66,6 +83,16 @@ public class NullTerminatedUTF8String extends NativeInt8Array {
         byteBuf.put((byte) 0);
 
         byteBuf.clear();
+    }
+
+    /**
+     * Set content of this structure to given {@code value}. A 0-byte will always be added
+     * @param value string as byte[]
+     */
+    @Override
+    public void set(byte @NotNull [] value) {
+        super.set(value);
+        byteBuf.put(value.length, (byte) 0);
     }
 
     /**
@@ -87,5 +114,10 @@ public class NullTerminatedUTF8String extends NativeInt8Array {
         }
 
         return new String(bytes, 0, index, StandardCharsets.UTF_8);
+    }
+
+    @Override
+    public String toString() {
+        return toString("utf-8-string", get());
     }
 }

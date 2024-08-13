@@ -82,4 +82,9 @@ public class NullTerminatedUTF16String extends NativeInt16Array {
 
         return new String(bytes, 0, index, StandardCharsets.UTF_16);
     }
+
+    @Override
+    public String toString() {
+        return toString("utf-16-string", get());
+    }
 }

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package de.linusdev.lutils.thready.var;
+package de.linusdev.lutils.thread.var;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

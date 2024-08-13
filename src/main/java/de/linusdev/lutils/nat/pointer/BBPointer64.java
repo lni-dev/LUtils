@@ -44,14 +44,6 @@ public class BBPointer64 extends BBLong1 implements Pointer64{
         super(generateInfo, structValue);
     }
 
-    /**
-     *
-     * @return {@code true} if this pointer points to null (0), {@code false} otherwise
-     */
-    public boolean isNullPtr() {
-        return get() == 0L;
-    }
-
     @Override
     public long get() {
         return super.get();

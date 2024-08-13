@@ -1,5 +1,6 @@
 package de.linusdev.lutils.codegen;
 
+import de.linusdev.lutils.codegen.c.CPPFileGenerator;
 import de.linusdev.lutils.codegen.java.JavaFileGenerator;
 import de.linusdev.lutils.codegen.java.JavaPackage;
 import de.linusdev.lutils.codegen.java.JavaSourceGeneratorHelper;
@@ -26,6 +27,7 @@ public class SourceGenerator {
 
     private @NotNull JavaPackage javaBasePackage = new JavaPackage(new String[]{});
     private final @NotNull List<JavaFileGenerator> javaFiles = new ArrayList<>();
+    private final @NotNull List<CPPFileGenerator> cppFiles = new ArrayList<>();
 
     public SourceGenerator(@NotNull Path sourceFolder) {
         this.sourceFolder = sourceFolder;
@@ -39,6 +41,12 @@ public class SourceGenerator {
         return javaBasePackage;
     }
 
+    public @NotNull CPPFileGenerator addCFile() {
+        var file = new CPPFileGenerator();
+        cppFiles.add(file);
+        return file;
+    }
+    
     public @NotNull JavaFileGenerator addJavaFile(
             String... javaPackage
     ) {
@@ -78,6 +86,10 @@ public class SourceGenerator {
         return sourceFolder.resolve(sg.javaSourcePath());
     }
 
+    public @NotNull Path getCppSourcePath() {
+        return sourceFolder.resolve("src/main/cpp");
+    }
+
     public void write() throws IOException {
         if(!javaFiles.isEmpty()) {
             Path javaSourcePath = getJavaSourcePath();
@@ -97,6 +109,28 @@ public class SourceGenerator {
                     file.write(writer);
                 }
             }
+
+        }
+        
+        if(!cppFiles.isEmpty()) {
+            Path cppSourcePath = getCppSourcePath();
+            Files.createDirectories(cppSourcePath);
+
+            for (CPPFileGenerator file : cppFiles) {
+                Path cppFilePackagePath = cppSourcePath.resolve(file.getPath());
+                Path cppFilePath = cppFilePackagePath.resolve(file.getName() + "." + file.getType().getFileEnding());
+
+                Files.createDirectories(cppFilePackagePath);
+                try(Writer writer = Files.newBufferedWriter(
+                        cppFilePath,
+                        StandardCharsets.UTF_8,
+                        StandardOpenOption.TRUNCATE_EXISTING,
+                        StandardOpenOption.CREATE
+                )) {
+                    file.write(writer);
+                }
+            }
+
 
         }
     }

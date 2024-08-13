@@ -46,7 +46,7 @@ public abstract class ModTrackingStructure extends Structure {
     }
 
     @Override
-    protected void claimBuffer(@NotNull ByteBuffer buffer) {
+    public void claimBuffer(@NotNull ByteBuffer buffer) {
         super.claimBuffer(buffer);
         this.modificationLock = new ReentrantLock();
     }
