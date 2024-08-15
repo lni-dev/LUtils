@@ -154,6 +154,27 @@ public class StructureArray<T extends Structure> extends ModTrackingStructure im
     }
 
     /**
+     * Creates an allocated {@link StructureArray}. Calls {@link #newAllocated(boolean, StructValue, StructValue, ElementCreator)}
+     * with {@code trackModifications = false} and {@code elementStructValue = null}
+     * @param creator  see {@link #creator}
+     * @return allocated {@link StructureArray} as described above.
+     * @param <T> element type
+     * @see StructureStaticVariables#newAllocated(StructValue)
+     */
+    public static <T extends Structure> @NotNull StructureArray<T> newAllocated(
+            int length,
+            Class<T> elementClass,
+            @NotNull ElementCreator<T> creator
+    ) {
+        return newAllocated(
+                false,
+                SVWrapper.of(length, elementClass),
+                null,
+                creator
+        );
+    }
+
+    /**
      * Creates an allocatable {@link StructureArray}.
      * It can be allocated using {@link #allocate()} or {@link #claimBuffer(ByteBuffer)}
      * @param trackModifications see {@link #trackModifications}
