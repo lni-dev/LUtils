@@ -75,8 +75,9 @@ public class DirectMemoryStack64 extends Structure implements Stack {
     /**
      * @see StackPointerQueue#createSafePoint()
      */
-    public void createSafePoint() {
+    public boolean createSafePoint() {
         stackPointers.createSafePoint();
+        return true;
     }
 
     /**

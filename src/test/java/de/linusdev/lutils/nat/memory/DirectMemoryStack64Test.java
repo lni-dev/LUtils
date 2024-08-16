@@ -10,7 +10,7 @@ class DirectMemoryStack64Test {
     @Test
     void test() {
         DirectMemoryStack64 stack = new DirectMemoryStack64();
-        stack.createSafePoint();
+        assertTrue(stack.createSafePoint());
 
         assertEquals(DirectMemoryStack64.DEFAULT_MEMORY_SIZE, stack.memorySize());
         assertEquals(DirectMemoryStack64.ALIGNMENT, stack.getAlignment());
