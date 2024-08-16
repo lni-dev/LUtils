@@ -8,6 +8,8 @@ import org.jetbrains.annotations.Nullable;
 
 public enum ReleaseType {
 
+    DEVELOPMENT_BUILD("dev"),
+
     EARLY_ACCESS("early-access"),
 
     RELEASE(null),

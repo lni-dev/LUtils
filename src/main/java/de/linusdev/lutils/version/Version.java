@@ -32,6 +32,17 @@ public interface Version {
 
     static @NotNull Version of(
             @NotNull ReleaseType type,
+            @NotNull String simpleVersion
+    ) {
+        return of(
+                type,
+                SimpleVersion.of(simpleVersion),
+                null, null
+        );
+    }
+
+    static @NotNull Version of(
+            @NotNull ReleaseType type,
             @NotNull SimpleVersion simpleVersion,
             @Nullable String prefix,
             @Nullable String postfix

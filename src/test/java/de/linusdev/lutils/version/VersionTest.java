@@ -37,5 +37,15 @@ class VersionTest {
         assertEquals("pre-1.2.3-post:beta", v3.getAsUserFriendlyString());
 
         assertEquals(v2, v3);
+
+        Version v4 = Version.of(ReleaseType.DEVELOPMENT_BUILD, "1.2.3");
+
+        assertEquals(ReleaseType.DEVELOPMENT_BUILD, v4.type());
+        assertEquals(1, v4.version().major());
+        assertEquals(2, v4.version().minor());
+        assertEquals(3, v4.version().patch());
+        assertNull(v4.prefix());
+        assertNull(v4.postfix());
+        assertEquals("1.2.3:dev", v4.getAsUserFriendlyString());
     }
 }
