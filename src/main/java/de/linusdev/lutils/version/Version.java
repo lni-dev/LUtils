@@ -17,7 +17,7 @@ import java.util.regex.Pattern;
  *     <li>{@code 1.0.0:beta}</li>
  * </ul>
  */
-public interface Version {
+public interface Version extends Comparable<Version> {
 
     static @NotNull Version of(
             @NotNull ReleaseType type,
@@ -97,4 +97,16 @@ public interface Version {
         return that.getAsUserFriendlyString().equals(otherVersion.getAsUserFriendlyString());
     }
 
+    @Override
+    default int compareTo(@NotNull Version other) {
+        int v = this.version().compareTo(other.version()) * 2;
+        if(v == 0) {
+            if(this.type() == ReleaseType.RELEASE && other.type() != ReleaseType.RELEASE)
+                return 1;
+            if(this.type() != ReleaseType.RELEASE && other.type() == ReleaseType.RELEASE)
+                return -1;
+        }
+
+        return v;
+    }
 }

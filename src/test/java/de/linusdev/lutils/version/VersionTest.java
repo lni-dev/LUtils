@@ -2,6 +2,8 @@ package de.linusdev.lutils.version;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.stream.Stream;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class VersionTest {
@@ -47,5 +49,16 @@ class VersionTest {
         assertNull(v4.prefix());
         assertNull(v4.postfix());
         assertEquals("1.2.3:dev", v4.getAsUserFriendlyString());
+
+        Version a = Version.of(ReleaseType.RELEASE, 3, 0, 0);
+        Version b = Version.of(ReleaseType.RELEASE, 1, 2, 3);
+        Version c = Version.of(ReleaseType.RELEASE, 2, 2, 3);
+        Version d = Version.of(ReleaseType.RELEASE, 1, 2, 4);
+        Version e = Version.of(ReleaseType.DEVELOPMENT_BUILD, 1, 2, 4);
+
+        Version[] versions = Stream.of(a, b, c, d, e).sorted().toArray(Version[]::new);
+        assertArrayEquals(new Version[] {b, e, d, c, a}, versions);
+
+
     }
 }

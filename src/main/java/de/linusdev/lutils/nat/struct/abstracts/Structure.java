@@ -35,6 +35,19 @@ import java.nio.ByteOrder;
 public abstract class Structure implements NativeParsable {
 
     /**
+     * Same as {@link #allocate()}, but this makes code a bit cleaner as it can be written in a single line.
+     * (Please add receiver functions to Java!)
+     * @param structure {@link Structure} to allocate
+     * @return allocated structure
+     * @throws IllegalStateException see {@link #allocate()}
+     * @param <S> structure type
+     */
+    public static <S extends Structure> @NotNull S allocate(@NotNull S structure) {
+        structure.allocate();
+        return structure;
+    }
+
+    /**
      * Generate struct code for given {@code structClass}
      * @param language {@link Language} to generate the struct code in
      * @param structClass Class of the structure to generate code for

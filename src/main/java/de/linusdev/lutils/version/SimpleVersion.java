@@ -7,7 +7,7 @@ import org.jetbrains.annotations.NotNull;
 /**
  * Represents a version of the form {@code major.minor.patch}
  */
-public interface SimpleVersion {
+public interface SimpleVersion extends Comparable<SimpleVersion> {
 
     static @NotNull SimpleVersion of(int major, int minor, int patch) {
         return new SimpleVersionImpl(major, minor, patch);
@@ -39,4 +39,32 @@ public interface SimpleVersion {
         return major() + "." + minor() + "." + patch();
     }
 
+    @Override
+    default int compareTo(@NotNull SimpleVersion other) {
+        if(this.major() > other.major())
+            return 3;
+        else if (this.major() < other.major()) {
+            return -3;
+        }
+
+        // this.major() == other.major()
+
+        if(this.minor() > other.minor())
+            return 2;
+        else if (this.minor() < other.minor()) {
+            return -2;
+        }
+
+        // this.minor() == other.minor()
+
+        if(this.patch() > other.patch())
+            return 1;
+        else if (this.patch() < other.patch()) {
+            return -1;
+        }
+
+        // this.patch() == other.patch()
+
+        return 0;
+    }
 }
