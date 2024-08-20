@@ -93,6 +93,16 @@ public class DirectMemoryStack64 extends Structure implements Stack {
     }
 
     @Override
+    public long usedByteCount() {
+        return stackPointer- address;
+    }
+
+    @Override
+    public int currentStructCount() {
+        return stackPointers.size();
+    }
+
+    @Override
     public int getAlignment() {
         return ALIGNMENT;
     }
@@ -104,6 +114,11 @@ public class DirectMemoryStack64 extends Structure implements Stack {
 
     public long getAddress() {
         return address;
+    }
+
+    @Override
+    public String toString() {
+        return info();
     }
 
     // Only for completion's Sake. Cannot actually be called, as no unallocated Stack can be created.

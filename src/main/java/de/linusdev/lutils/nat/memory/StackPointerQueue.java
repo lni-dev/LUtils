@@ -65,4 +65,8 @@ public class StackPointerQueue {
         return false;
     }
 
+    public int size() {
+        return index;
+    }
+
 }
