@@ -3,6 +3,7 @@ package de.linusdev.lutils.nat.memory;
 import de.linusdev.lutils.math.vector.buffer.intn.BBInt1;
 import de.linusdev.lutils.math.vector.buffer.intn.BBUInt1;
 import de.linusdev.lutils.nat.string.NullTerminatedUTF8String;
+import de.linusdev.lutils.nat.struct.array.StructureArray;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -38,6 +39,9 @@ class DirectMemoryStack64Test {
         BBUInt1 bbuInt1 = stack.pushUnsignedInt();
         BBInt1 bbInt1 = stack.pushInt();
         NullTerminatedUTF8String str = stack.pushString("Some crazy string!");
+        StructureArray<BBInt1> array = stack.pushArray(1000, BBInt1.class, () -> BBInt1.newAllocatable(null));
+
+        System.out.println(array.getRequiredSize());
 
         bbuInt1.set(11);
         assertEquals(11, bbuInt1.get());
@@ -47,9 +51,14 @@ class DirectMemoryStack64Test {
 
         assertEquals("Some crazy string!", str.get());
 
-        assertEquals(3, stack.currentStructCount());
-        assertEquals(8 + "Some crazy string!".length() + 1, stack.usedByteCount());
+        assertEquals(1000, array.length());
 
+        assertEquals(4, stack.currentStructCount());
+        assertEquals(8 + "Some crazy string!".length() + 1 + 4000 + 1 /*alignment*/, stack.usedByteCount());
+
+        System.out.println(stack);
+
+        stack.pop();
         stack.pop();
         stack.pop();
         stack.pop();

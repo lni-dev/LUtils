@@ -4,7 +4,9 @@ import de.linusdev.lutils.math.vector.buffer.intn.BBInt1;
 import de.linusdev.lutils.math.vector.buffer.intn.BBUInt1;
 import de.linusdev.lutils.nat.string.NullTerminatedUTF8String;
 import de.linusdev.lutils.nat.struct.abstracts.Structure;
+import de.linusdev.lutils.nat.struct.annos.SVWrapper;
 import de.linusdev.lutils.nat.struct.annos.StructValue;
+import de.linusdev.lutils.nat.struct.array.StructureArray;
 import org.jetbrains.annotations.NotNull;
 
 import java.nio.ByteBuffer;
@@ -54,6 +56,28 @@ public interface Stack extends DirectMemoryManager {
      */
     default @NotNull NullTerminatedUTF8String pushString(@NotNull String string) {
         return push(NullTerminatedUTF8String.newAllocatable(string));
+    }
+
+    /**
+     * Creates a new {@link StructureArray} using
+     * {@link StructureArray#newAllocatable(boolean, StructValue, StructValue, StructureArray.ElementCreator)
+     * StructureArray.newAllocatable(false, SVWrapper.of(size, elementClazz), null, creator)} and
+     * {@link #push(Structure) pushes} it onto this stack.
+     * @return pushed {@link StructureArray}
+     */
+    default <T extends Structure> @NotNull StructureArray<T> pushArray(
+            int size,
+            @NotNull Class<T> elementClazz,
+            @NotNull StructureArray.ElementCreator<T> creator
+    ) {
+        StructureArray<T> array = StructureArray.newAllocatable(
+                false, 
+                SVWrapper.of(size, elementClazz), 
+                null, 
+                creator
+        );
+
+        return push(array);
     }
 
 }
