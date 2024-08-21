@@ -93,6 +93,12 @@ public class BufferUtils {
         return StandardCharsets.UTF_8.decode(str).toString();
     }
 
+
+    public static @NotNull String readNullTerminatedUtf8String(long pointer) {
+        ByteBuffer strBuffer = getByteBufferFromPointer(pointer, 0);
+        return StandardCharsets.UTF_8.decode(strBuffer).clear().toString();
+    }
+
     /**
      * Works the same as the java 13 {@link Buffer#slice(int, int)} method.
      * @param buffer {@link ByteBuffer} to slice
@@ -114,6 +120,9 @@ public class BufferUtils {
         return slice;
     }
 
+    /**
+     * Method matching the description of {@link #getByteBufferFromPointer(long, int)}
+     */
     @FunctionalInterface
     public interface ByteBufferFromPointerMethod {
          @NotNull ByteBuffer getByteBufferFromPointer(long pointer, int capacity);
@@ -121,10 +130,19 @@ public class BufferUtils {
 
     private static @Nullable ByteBufferFromPointerMethod byteBufferFromPointerMethod = null;
 
+    /**
+     * @param method {@link ByteBufferFromPointerMethod} matching the description of {@link #getByteBufferFromPointer(long, int)}
+     */
     public static void setByteBufferFromPointerMethod(@NotNull ByteBufferFromPointerMethod method) {
         byteBufferFromPointerMethod = method;
     }
 
+    /**
+     * If {@code capacity} is 0, the {@code \0} will not be contained in the returned buffer
+     * @param pointer address of the heap data
+     * @param capacity size of the heap data or 0 if the heap data ends with {@code \0}
+     * @return byte buffer as described above.
+     */
     public static @NotNull ByteBuffer getByteBufferFromPointer(long pointer, int capacity) {
         if(byteBufferFromPointerMethod == null) {
             throw new IllegalStateException("BufferUtils.byteBufferFromPointerMethod must be set," +
