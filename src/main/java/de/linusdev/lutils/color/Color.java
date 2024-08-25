@@ -35,6 +35,10 @@ public interface Color {
     RGBAColor CYAN = ofRGB(17, 168, 205);
     RGBAColor ORANGE = ofRGB(250, 138, 10);
 
+    RGBAColor DARK_GRAY = ofRGB(0x808080);
+    RGBAColor LIGHT_GRAY = ofRGB(0xD3D3D3);
+    RGBAColor GRAY = ofRGB(0xA9A9A9);
+
     @Contract(value = "_, _, _ -> new", pure = true)
     static @NotNull RGBAColor ofRGB(@Range(from = RGBAColor.RGB_INT_MIN, to = RGBAColor.RGB_INT_MAX) int r,
                                     @Range(from = RGBAColor.RGB_INT_MIN, to = RGBAColor.RGB_INT_MAX) int g,

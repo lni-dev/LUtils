@@ -3,6 +3,11 @@ package de.linusdev.lutils.nat.memory;
 import de.linusdev.lutils.nat.NativeParsable;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * Instances of this interface manage directly allocated memory.
+ * @see DirectMemoryStack64
+ * @see Stack
+ */
 public interface DirectMemoryManager extends NativeParsable {
 
     /**
