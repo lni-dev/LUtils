@@ -46,6 +46,13 @@ class RGBAColorTest {
 
         assertEquals(0xde6432ff, color.toRGBAHex());
         assertEquals(0xde6432, color.toRGBHex());
+
+        color = Color.ofRGBA(0x01020304);
+
+        assertEquals(1, color.getRed());
+        assertEquals(2, color.getGreen() );
+        assertEquals(3, color.getBlue());
+        assertEquals(4, color.getAlpha());
     }
 
 

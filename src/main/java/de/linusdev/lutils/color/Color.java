@@ -56,12 +56,12 @@ public interface Color {
 
     @Contract(value = "_, -> new", pure = true)
     static @NotNull RGBAColor ofRGBA(int hex) {
-        return new RGBAColorIntImpl(hex & 0xff000000, hex & 0x00ff0000, hex & 0x0000ff00, hex & 0x000000ff);
+        return new RGBAColorIntImpl((hex & 0xff000000) >>> 24, (hex & 0x00ff0000) >>> 16, (hex & 0x0000ff00) >>> 8, hex & 0x000000ff);
     }
 
     @Contract(value = "_, -> new", pure = true)
     static @NotNull RGBAColor ofRGB(int hex) {
-        return new RGBAColorIntImpl(hex & 0x00ff0000, hex & 0x0000ff00, hex & 0x000000ff, 255);
+        return new RGBAColorIntImpl((hex & 0x00ff0000) >>> 16, (hex & 0x0000ff00) >>> 8, hex & 0x000000ff, 255);
     }
 
     @Contract(value = "_, _, _ -> new", pure = true)
