@@ -156,6 +156,8 @@ public class StructureArray<T extends Structure> extends ModTrackingStructure im
     /**
      * Creates an allocated {@link StructureArray}. Calls {@link #newAllocated(boolean, StructValue, StructValue, ElementCreator)}
      * with {@code trackModifications = false} and {@code elementStructValue = null}
+     * @param length array length
+     * @param elementClass class of {@link T}
      * @param creator  see {@link #creator}
      * @return allocated {@link StructureArray} as described above.
      * @param <T> element type
@@ -163,7 +165,7 @@ public class StructureArray<T extends Structure> extends ModTrackingStructure im
      */
     public static <T extends Structure> @NotNull StructureArray<T> newAllocated(
             int length,
-            Class<T> elementClass,
+            Class<?> elementClass,
             @NotNull ElementCreator<T> creator
     ) {
         return newAllocated(

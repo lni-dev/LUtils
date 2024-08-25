@@ -63,11 +63,15 @@ public interface Stack extends DirectMemoryManager {
      * {@link StructureArray#newAllocatable(boolean, StructValue, StructValue, StructureArray.ElementCreator)
      * StructureArray.newAllocatable(false, SVWrapper.of(size, elementClazz), null, creator)} and
      * {@link #push(Structure) pushes} it onto this stack.
+     *
+     * @param size array length
+     * @param elementClazz class of {@link T}
+     * @param creator see {@link StructureArray#newAllocated(int, Class, StructureArray.ElementCreator) newAllocated()}
      * @return pushed {@link StructureArray}
      */
     default <T extends Structure> @NotNull StructureArray<T> pushArray(
             int size,
-            @NotNull Class<T> elementClazz,
+            @NotNull Class<?> elementClazz,
             @NotNull StructureArray.ElementCreator<T> creator
     ) {
         StructureArray<T> array = StructureArray.newAllocatable(
