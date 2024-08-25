@@ -13,11 +13,13 @@ class Pointer64Test {
     void test() {
         Pointer64 pointer64 = Pointer64.of(null);
         assertTrue(pointer64.isNullPtr());
+        assertEquals(Pointer64.NULL_POINTER, Pointer64.refL(null));
 
         NullTerminatedUTF8String str = NullTerminatedUTF8String.newAllocated("Test");
         pointer64.set(str.getPointer());
         assertFalse(pointer64.isNullPtr());
         assertEquals(str.getPointer(), pointer64.get());
+        assertEquals(str.getPointer(), Pointer64.refL(str));
 
 
         str = NullTerminatedUTF8String.newAllocated("Test2");

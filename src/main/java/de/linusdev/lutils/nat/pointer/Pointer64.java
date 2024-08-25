@@ -20,6 +20,10 @@ public interface Pointer64 {
         return new Pointer64Impl(obj == null ? NULL_POINTER : obj.getPointer());
     }
 
+    static long refL(@Nullable NativeParsable obj) {
+        return obj == null ? NULL_POINTER : obj.getPointer();
+    }
+
     long get();
 
     void set(long pointer);
