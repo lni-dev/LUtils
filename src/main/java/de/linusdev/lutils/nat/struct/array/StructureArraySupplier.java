@@ -6,7 +6,7 @@ import org.jetbrains.annotations.NotNull;
 
 @SuppressWarnings("unused")
 @FunctionalInterface
-interface StructureArraySupplier<T extends Structure> {
+public interface StructureArraySupplier<T extends Structure> {
 
         /**
          * May be used by methods, that require a native array. Enables the method caller to define
