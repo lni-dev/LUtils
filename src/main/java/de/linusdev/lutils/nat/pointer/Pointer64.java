@@ -17,9 +17,14 @@ public interface Pointer64 {
      * or {@link #NULL_POINTER} if {@code obj} is {@code null}.
      */
     static @NotNull Pointer64 of(@Nullable NativeParsable obj) {
-        return new Pointer64Impl(obj == null ? NULL_POINTER : obj.getPointer());
+        return new Pointer64Impl(refL(obj));
     }
 
+    /**
+     * This method will return the value of {@link NativeParsable#getPointer()}
+     * or {@link #NULL_POINTER} if {@code obj} is {@code null}.
+     * @return pointer to {@code obj} as long.
+     */
     static long refL(@Nullable NativeParsable obj) {
         return obj == null ? NULL_POINTER : obj.getPointer();
     }
