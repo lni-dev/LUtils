@@ -20,10 +20,12 @@ import de.linusdev.lutils.math.matrix.Matrix;
 import de.linusdev.lutils.math.matrix.abstracts.floatn.Float3x3;
 import de.linusdev.lutils.math.matrix.abstracts.floatn.Float4x4;
 import de.linusdev.lutils.math.matrix.abstracts.floatn.FloatMxN;
+import de.linusdev.lutils.math.vector.UnsignedVector;
 import de.linusdev.lutils.math.vector.Vector;
 import de.linusdev.lutils.math.vector.abstracts.floatn.Float3;
 import de.linusdev.lutils.math.vector.abstracts.floatn.Float4;
 import de.linusdev.lutils.math.vector.abstracts.floatn.FloatN;
+import de.linusdev.lutils.math.vector.abstracts.intn.IntN;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
@@ -244,14 +246,135 @@ public class VMath {
         return store;
     }
 
-    @Contract("_, _, _ -> param3")
-    public static <M extends FloatMxN> @NotNull M scale(@NotNull M toScale, float factor, @UniqueView @NotNull M store) {
-        assert matchingDimensions(toScale, store);
+    /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+     *                                                               *
+     *                                                               *
+     *               Vector Min / Max / Clamp Functions              *
+     *                                                               *
+     *                                                               *
+     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-        for(int x = 0; x < toScale.getWidth(); x++) {
-            for(int y = 0; y < toScale.getHeight(); y++) {
-                store.put(y, x, toScale.get(y, x) * factor);
-            }
+    /**
+     * Component wise {@link Math#min(int, int)}.
+     */
+    public static <V extends IntN> @NotNull V min(@NotNull V first, @NotNull V second, @UniqueView @NotNull V store) {
+        assert matchingDimensions(first, second, store);
+        assert uniqueViewVector(store, first, second);
+
+        for (int i = 0; i < first.getMemberCount(); i++) {
+            store.put(i, Math.min(first.get(i), second.get(i)));
+        }
+
+        return store;
+    }
+
+    /**
+     * Component wise {@link Math#max(int, int)}.
+     */
+    public static <V extends IntN> @NotNull V max(@NotNull V first, @NotNull V second, @UniqueView @NotNull V store) {
+        assert matchingDimensions(first, second, store);
+        assert uniqueViewVector(store, first, second);
+
+        for (int i = 0; i < first.getMemberCount(); i++) {
+            store.put(i, Math.max(first.get(i), second.get(i)));
+        }
+
+        return store;
+    }
+
+    /**
+     * Component wise {@link LMath#clamp(int, int, int)}}.
+     */
+    public static <V extends IntN> @NotNull V clamp(@NotNull V value, @NotNull V min, @NotNull V max, @UniqueView @NotNull V store) {
+        assert matchingDimensions(value, min, max, store);
+        assert uniqueViewVector(store, value, min, max);
+
+        for (int i = 0; i < value.getMemberCount(); i++) {
+            store.put(i, LMath.clamp(value.get(i), min.get(i), max.get(i)));
+        }
+
+        return store;
+    }
+
+    /**
+     * Component wise {@link Math#min(int, int)}.
+     */
+    public static <V extends FloatN> @NotNull V min(@NotNull V first, @NotNull V second, @UniqueView @NotNull V store) {
+        assert matchingDimensions(first, second, store);
+        assert uniqueViewVector(store, first, second);
+
+        for (int i = 0; i < first.getMemberCount(); i++) {
+            store.put(i, Math.min(first.get(i), second.get(i)));
+        }
+
+        return store;
+    }
+
+    /**
+     * Component wise {@link Math#max(int, int)}.
+     */
+    public static <V extends FloatN> @NotNull V max(@NotNull V first, @NotNull V second, @UniqueView @NotNull V store) {
+        assert matchingDimensions(first, second, store);
+        assert uniqueViewVector(store, first, second);
+
+        for (int i = 0; i < first.getMemberCount(); i++) {
+            store.put(i, Math.max(first.get(i), second.get(i)));
+        }
+
+        return store;
+    }
+
+    /**
+     * Component wise {@link LMath#clamp(int, int, int)}}.
+     */
+    public static <V extends FloatN> @NotNull V clamp(@NotNull V value, @NotNull V min, @NotNull V max, @UniqueView @NotNull V store) {
+        assert matchingDimensions(value, min, max, store);
+        assert uniqueViewVector(store, value, min, max);
+
+        for (int i = 0; i < value.getMemberCount(); i++) {
+            store.put(i, LMath.clamp(value.get(i), min.get(i), max.get(i)));
+        }
+
+        return store;
+    }
+
+    /**
+     * Component wise {@link LMath#minUnsigned(int, int)}.
+     */
+    public static <V extends IntN & UnsignedVector> @NotNull V minUnsigned(@NotNull V first, @NotNull V second, @UniqueView @NotNull V store) {
+        assert matchingDimensions(first, second, store);
+        assert uniqueViewVector(store, first, second);
+
+        for (int i = 0; i < first.getMemberCount(); i++) {
+            store.put(i, LMath.minUnsigned(first.get(i), second.get(i)));
+        }
+
+        return store;
+    }
+
+    /**
+     * Component wise {@link LMath#maxUnsigned(int, int)}.
+     */
+    public static <V extends IntN & UnsignedVector> @NotNull V maxUnsigned(@NotNull V first, @NotNull V second, @UniqueView @NotNull V store) {
+        assert matchingDimensions(first, second, store);
+        assert uniqueViewVector(store, first, second);
+
+        for (int i = 0; i < first.getMemberCount(); i++) {
+            store.put(i, LMath.maxUnsigned(first.get(i), second.get(i)));
+        }
+
+        return store;
+    }
+
+    /**
+     * Component wise {@link LMath#clampUnsigned(int, int, int)}.
+     */
+    public static <V extends IntN & UnsignedVector> @NotNull V clampUnsigned(@NotNull V value, @NotNull V min, @NotNull V max, @UniqueView @NotNull V store) {
+        assert matchingDimensions(value, min, max, store);
+        assert uniqueViewVector(store, value, min, max);
+
+        for (int i = 0; i < value.getMemberCount(); i++) {
+            store.put(i, LMath.clampUnsigned(value.get(i), min.get(i), max.get(i)));
         }
 
         return store;
@@ -264,6 +387,19 @@ public class VMath {
      *                                                               *
      *                                                               *
      * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+    @Contract("_, _, _ -> param3")
+    public static <M extends FloatMxN> @NotNull M scale(@NotNull M toScale, float factor, @UniqueView @NotNull M store) {
+        assert matchingDimensions(toScale, store);
+
+        for(int x = 0; x < toScale.getWidth(); x++) {
+            for(int y = 0; y < toScale.getHeight(); y++) {
+                store.put(y, x, toScale.get(y, x) * factor);
+            }
+        }
+
+        return store;
+    }
 
     public static float determinant(@NotNull Float4x4 mat) {
         return 0

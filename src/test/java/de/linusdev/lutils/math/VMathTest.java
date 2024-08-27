@@ -7,9 +7,11 @@ import de.linusdev.lutils.math.matrix.array.floatn.ABFloat3x3;
 import de.linusdev.lutils.math.matrix.array.floatn.ABFloat4x4;
 import de.linusdev.lutils.math.matrix.buffer.floatn.BBFloat3x3;
 import de.linusdev.lutils.math.matrix.buffer.floatn.BBFloat4x4;
+import de.linusdev.lutils.math.vector.abstracts.floatn.Float2;
 import de.linusdev.lutils.math.vector.abstracts.floatn.Float3;
 import de.linusdev.lutils.math.vector.abstracts.floatn.Float4;
 import de.linusdev.lutils.math.vector.abstracts.floatn.FloatN;
+import de.linusdev.lutils.math.vector.abstracts.intn.Int2;
 import de.linusdev.lutils.math.vector.array.floatn.ABFloat1;
 import de.linusdev.lutils.math.vector.array.floatn.ABFloat2;
 import de.linusdev.lutils.math.vector.array.floatn.ABFloat3;
@@ -18,6 +20,8 @@ import de.linusdev.lutils.math.vector.buffer.floatn.BBFloat1;
 import de.linusdev.lutils.math.vector.buffer.floatn.BBFloat2;
 import de.linusdev.lutils.math.vector.buffer.floatn.BBFloat3;
 import de.linusdev.lutils.math.vector.buffer.floatn.BBFloat4;
+import de.linusdev.lutils.math.vector.buffer.intn.BBInt2;
+import de.linusdev.lutils.math.vector.buffer.intn.BBUInt2;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -27,7 +31,6 @@ import org.junit.jupiter.params.provider.MethodSource;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import static de.linusdev.lutils.math.VMath.uniqueViewVector;
 import static org.junit.jupiter.api.Assertions.*;
 
 class VMathTest {
@@ -651,6 +654,138 @@ class VMathTest {
 
         assertTrue(VMath.uniqueViewVector(a.wzyx(), a.wzyx()));
 
+    }
+
+    @Test
+    public void minInt() {
+        Int2 a = BBInt2.newAllocated(null);
+        Int2 b = BBInt2.newAllocated(null);
+
+        a.xy(1, 5);
+        b.xy(3, 4);
+
+        VMath.min(a, b, a);
+
+        assertEquals(1, a.x());
+        assertEquals(4, a.y());
+    }
+
+    @Test
+    public void minFloat() {
+        Float2 a = BBFloat2.newAllocated(null);
+        Float2 b = BBFloat2.newAllocated(null);
+
+        a.xy(1, 5);
+        b.xy(3, 4);
+
+        VMath.min(a, b, a);
+
+        assertEquals(1, a.x());
+        assertEquals(4, a.y());
+    }
+
+    @Test
+    public void maxInt() {
+        Int2 a = BBInt2.newAllocated(null);
+        Int2 b = BBInt2.newAllocated(null);
+
+        a.xy(1, 5);
+        b.xy(3, 4);
+
+        VMath.max(a, b, a);
+
+        assertEquals(3, a.x());
+        assertEquals(5, a.y());
+    }
+
+    @Test
+    public void maxFloat() {
+        Float2 a = BBFloat2.newAllocated(null);
+        Float2 b = BBFloat2.newAllocated(null);
+
+        a.xy(1, 5);
+        b.xy(3, 4);
+
+        VMath.max(a, b, a);
+
+        assertEquals(3, a.x());
+        assertEquals(5, a.y());
+    }
+
+    @Test
+    public void clampInt() {
+        Int2 a = BBInt2.newAllocated(null);
+        Int2 min = BBInt2.newAllocated(null);
+        Int2 max = BBInt2.newAllocated(null);
+
+        a.xy(1, 5);
+        min.xy(-1, 6);
+        max.xy(0, 10);
+
+        VMath.clamp(a, min, max, a);
+
+        assertEquals(0, a.x());
+        assertEquals(6, a.y());
+    }
+
+    @Test
+    public void clampFloat() {
+        Float2 a = BBFloat2.newAllocated(null);
+        Float2 min = BBFloat2.newAllocated(null);
+        Float2 max = BBFloat2.newAllocated(null);
+
+        a.xy(1, 5);
+        min.xy(-1, 6);
+        max.xy(0, 10);
+
+        VMath.clamp(a, min, max, a);
+
+        assertEquals(0, a.x());
+        assertEquals(6, a.y());
+    }
+
+    @Test
+    public void minUnsigned() {
+        BBUInt2 a = BBUInt2.newAllocated(null);
+        BBUInt2 b = BBUInt2.newAllocated(null);
+
+        a.xy(1, 5);
+        b.xy(-3, 4);
+
+        VMath.minUnsigned(a, b, a);
+
+        assertEquals(1, a.x());
+        assertEquals(4, a.y());
+    }
+
+    @Test
+    public void maxUnsigned() {
+        BBUInt2 a = BBUInt2.newAllocated(null);
+        BBUInt2 b = BBUInt2.newAllocated(null);
+
+        a.xy(1, 5);
+        b.xy(3, 4);
+
+        VMath.maxUnsigned(a, b, a);
+
+        assertEquals(3, a.x());
+        assertEquals(5, a.y());
+    }
+
+    @Test
+    public void clampUnsigned() {
+        BBUInt2 a = BBUInt2.newAllocated(null);
+        BBUInt2 min = BBUInt2.newAllocated(null);
+        BBUInt2 max = BBUInt2.newAllocated(null);
+
+        a.xy(1, 5);
+        min.xy(-1, 6);
+        max.xy(0, 10);
+
+        VMath.clampUnsigned(a, min, max, a);
+
+        assertEquals(0, a.x());
+        assertEquals(6, a.y());
     }
 
 
