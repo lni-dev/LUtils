@@ -48,6 +48,22 @@ public abstract class Structure implements NativeParsable {
     }
 
     /**
+     * Creates a union with given structure {@code actual}.
+     * The structure {@code view} will start at the same location in {@code actual}'s byte buffer.
+     * Thus changes to {@code view} will also change {@code actual} and wise versa.
+     * Modifications to {@code view} will also mark the most parental structure of {@code actual} as modified
+     * if track modifications is enabled.
+     * @param view {@link S} that can be allocated. Must not already be allocated.
+     * @param actual allocated {@link Structure}.
+     * @return {@code view} now backed by the {@link #getByteBuffer() byte buffer} of {@code actual}
+     * @param <S> your struct type (required for return type only)
+     */
+    public static <S extends Structure>  @NotNull S unionWith(@NotNull S view, @NotNull Structure actual) {
+        view.useBuffer(actual.getMostParentStructure(), actual.getOffset(), view.isInfoAvailable());
+        return view;
+    }
+
+    /**
      * Generate struct code for given {@code structClass}
      * @param language {@link Language} to generate the struct code in
      * @param structClass Class of the structure to generate code for
