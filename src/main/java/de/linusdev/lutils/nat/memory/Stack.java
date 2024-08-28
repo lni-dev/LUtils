@@ -15,7 +15,9 @@ public interface Stack extends DirectMemoryManager {
 
     /**
      * Pushes given {@code structure}) onto this stack and allocates it (calls {@link Structure#claimBuffer(ByteBuffer) claimBuffer}). The stack
-     * must respect the alignment requirements of given {@code structure}.
+     * must respect the alignment requirements of given {@code structure}. The stack must also ensure, that all bytes, the structure will use are set to
+     * zero before {@link Structure#claimBuffer(ByteBuffer) claimBuffer} is called.
+     * <br><br>
      * For each push call should exist a {@link #pop()} call later.
      * @param structure unallocated {@link Structure}, which should use a part of this stack as its {@link Structure#getByteBuffer() buffer}.
      * @return allocated {@link Structure}
@@ -86,7 +88,8 @@ public interface Stack extends DirectMemoryManager {
     }
 
     /**
-     * Creates a new byte buffer as described below and pushes it onto this stack.
+     * Creates a new byte buffer as described below and pushes it onto this stack. The returned byte buffers
+     * content will not be set to zero and may contain garbage.
      * @param size size of the required byte buffer
      * @param alignment alignment of the required byte buffer
      * @return {@link ByteBuffer} with given {@code size} and aligned to given {@code alignment}

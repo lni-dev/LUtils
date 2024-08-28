@@ -18,6 +18,7 @@ package de.linusdev.lutils.nat.struct.utils;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import sun.misc.Unsafe;
 
 import java.nio.Buffer;
 import java.nio.ByteBuffer;
@@ -153,6 +154,19 @@ public class BufferUtils {
         }
 
         return byteBufferFromPointerMethod.getByteBufferFromPointer(pointer, capacity);
+    }
+
+    /**
+     * Fills given direct {@code byteBuffer} with given {@code value}. After this method returns every byte
+     * in given {@code byteBuffer} will be {@code value}. uses {@link Unsafe#setMemory(long, long, byte)}.
+     * <br><br>
+     * <b>The caller must ensure that the supplied byte buffer is a direct buffer!</b>
+     * @param byteBuffer direct {@link ByteBuffer} to fill
+     * @param value value to fill with
+     */
+    public static void fill(@NotNull ByteBuffer byteBuffer, byte value) {
+        assert byteBuffer.isDirect();
+        Utils.UNSAFE.setMemory(getHeapAddress(byteBuffer), byteBuffer.capacity(), value);
     }
 
 }

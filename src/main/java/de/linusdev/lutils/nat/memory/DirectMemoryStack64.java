@@ -8,6 +8,7 @@ import de.linusdev.lutils.nat.struct.annos.StructValue;
 import de.linusdev.lutils.nat.struct.annos.StructureSettings;
 import de.linusdev.lutils.nat.struct.generator.StaticGenerator;
 import de.linusdev.lutils.nat.struct.info.StructureInfo;
+import de.linusdev.lutils.nat.struct.utils.BufferUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -47,7 +48,10 @@ public class DirectMemoryStack64 extends Structure implements Stack {
         int size = info.getRequiredSize();
         int alignment = info.getAlignment();
         int alignmentFix = stackPointer % alignment == 0 ? 0 : (int) (alignment - (stackPointer % alignment));
-        structure.claimBuffer(byteBuf.slice((int) ((stackPointer - address) + alignmentFix), size));
+
+        ByteBuffer subBuf = byteBuf.slice((int) ((stackPointer - address) + alignmentFix), size);
+        BufferUtils.fill(subBuf, (byte) 0);
+        structure.claimBuffer(subBuf);
 
         stackPointer += size + alignmentFix;
 
