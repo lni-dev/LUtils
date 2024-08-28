@@ -105,7 +105,9 @@ public class BufferUtils {
      * @param start start pos
      * @param length index
      * @return slice of given buffer
+     * @deprecated since the java version was increased to 17, the java 13 method can be used instead.
      */
+    @Deprecated()
     public static @NotNull ByteBuffer slice(@NotNull ByteBuffer buffer, int start, int length) {
         int op = buffer.position();
         int ol = buffer.limit();

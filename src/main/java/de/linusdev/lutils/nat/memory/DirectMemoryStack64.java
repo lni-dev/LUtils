@@ -8,11 +8,11 @@ import de.linusdev.lutils.nat.struct.annos.StructValue;
 import de.linusdev.lutils.nat.struct.annos.StructureSettings;
 import de.linusdev.lutils.nat.struct.generator.StaticGenerator;
 import de.linusdev.lutils.nat.struct.info.StructureInfo;
-import de.linusdev.lutils.nat.struct.utils.BufferUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 
 @StructureSettings(
         requiresCalculateInfoMethod = true,
@@ -39,12 +39,6 @@ public class DirectMemoryStack64 extends Structure implements Stack {
         this(DEFAULT_MEMORY_SIZE);
     }
 
-    /**
-     * Pushes given {@code structure}) onto this stack and allocates (calls {@link Structure#claimBuffer(ByteBuffer) claimBuffer}).
-     * @param structure unallocated {@link Structure}, which should use a part of this stack as its {@link Structure#byteBuf buffer}.
-     * @return allocated {@link Structure}
-     * @param <T> structure type
-     */
     @Override
     public <T extends Structure> T push(@NotNull T structure) {
         stackPointers.push(stackPointer);
@@ -53,19 +47,25 @@ public class DirectMemoryStack64 extends Structure implements Stack {
         int size = info.getRequiredSize();
         int alignment = info.getAlignment();
         int alignmentFix = stackPointer % alignment == 0 ? 0 : (int) (alignment - (stackPointer % alignment));
-        structure.claimBuffer(BufferUtils.slice(byteBuf, (int) ((stackPointer - address) + alignmentFix), size));
+        structure.claimBuffer(byteBuf.slice((int) ((stackPointer - address) + alignmentFix), size));
 
         stackPointer += size + alignmentFix;
 
         return structure;
     }
 
-    /**
-     * Pops the last {@link #push(Structure) pushed} structure from this stack. This means, that
-     * the stack pointer will be decreased to the state, before the {@link #push(Structure) push} operation.
-     * <br><br>
-     * The {@link Structure} will still be backed by this stack and may not be used anymore.
-     */
+    @Override
+    public @NotNull ByteBuffer pushByteBuffer(int size, int alignment) {
+        stackPointers.push(stackPointer);
+
+        int alignmentFix = stackPointer % alignment == 0 ? 0 : (int) (alignment - (stackPointer % alignment));
+        ByteBuffer newBuf = byteBuf.slice((int) ((stackPointer - address) + alignmentFix), size).order(ByteOrder.nativeOrder());
+
+        stackPointer += size + alignmentFix;
+
+        return newBuf;
+    }
+
     @Override
     public void pop() {
         stackPointer = stackPointers.pop();

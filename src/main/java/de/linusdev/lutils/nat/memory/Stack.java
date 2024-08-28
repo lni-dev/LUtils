@@ -14,7 +14,8 @@ import java.nio.ByteBuffer;
 public interface Stack extends DirectMemoryManager {
 
     /**
-     * Pushes given {@code structure}) onto this stack and allocates (calls {@link Structure#claimBuffer(ByteBuffer) claimBuffer}).
+     * Pushes given {@code structure}) onto this stack and allocates it (calls {@link Structure#claimBuffer(ByteBuffer) claimBuffer}). The stack
+     * must respect the alignment requirements of given {@code structure}.
      * For each push call should exist a {@link #pop()} call later.
      * @param structure unallocated {@link Structure}, which should use a part of this stack as its {@link Structure#getByteBuffer() buffer}.
      * @return allocated {@link Structure}
@@ -83,5 +84,13 @@ public interface Stack extends DirectMemoryManager {
 
         return push(array);
     }
+
+    /**
+     * Creates a new byte buffer as described below and pushes it onto this stack.
+     * @param size size of the required byte buffer
+     * @param alignment alignment of the required byte buffer
+     * @return {@link ByteBuffer} with given {@code size} and aligned to given {@code alignment}
+     */
+    @NotNull ByteBuffer pushByteBuffer(int size, int alignment);
 
 }

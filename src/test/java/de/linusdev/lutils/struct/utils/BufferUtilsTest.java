@@ -61,19 +61,4 @@ class BufferUtilsTest {
         assertEquals("hallo", BufferUtils.readString(buffer, false));
 
     }
-
-    @Test
-    void slice() {
-
-        ByteBuffer buffer = BufferUtils.createAligned(100, 8);
-
-        ByteBuffer slice = BufferUtils.slice(buffer, 10, 15);
-        assertEquals(BufferUtils.getHeapAddress(buffer) + 10, BufferUtils.getHeapAddress(slice));
-        assertEquals(15, slice.capacity());
-
-        slice = BufferUtils.slice(buffer, 0, 15);
-        assertEquals(BufferUtils.getHeapAddress(buffer), BufferUtils.getHeapAddress(slice));
-        assertEquals(15, slice.capacity());
-
-    }
 }

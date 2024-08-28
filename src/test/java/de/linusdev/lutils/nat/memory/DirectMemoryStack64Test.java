@@ -4,7 +4,11 @@ import de.linusdev.lutils.math.vector.buffer.intn.BBInt1;
 import de.linusdev.lutils.math.vector.buffer.intn.BBUInt1;
 import de.linusdev.lutils.nat.string.NullTerminatedUTF8String;
 import de.linusdev.lutils.nat.struct.array.StructureArray;
+import de.linusdev.lutils.nat.struct.utils.BufferUtils;
 import org.junit.jupiter.api.Test;
+
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -61,6 +65,13 @@ class DirectMemoryStack64Test {
         stack.pop();
         stack.pop();
         stack.pop();
+        stack.pop();
+
+        ByteBuffer buf = stack.pushByteBuffer(100, 8);
+        assertEquals(0, BufferUtils.getHeapAddress(buf) % 8);
+        assertEquals(100, buf.capacity());
+        assertEquals(ByteOrder.nativeOrder(), buf.order());
+
         stack.pop();
 
     }

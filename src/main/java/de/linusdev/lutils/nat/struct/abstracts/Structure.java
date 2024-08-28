@@ -116,7 +116,7 @@ public abstract class Structure implements NativeParsable {
         this.offset = offset;
         this.byteBuf = offset == 0 ?
                 mostParentStructure.getByteBuffer().order(ByteOrder.nativeOrder()) :
-                BufferUtils.slice(mostParentStructure.getByteBuffer(), offset, getRequiredSize()).order(ByteOrder.nativeOrder());
+                mostParentStructure.getByteBuffer().slice(offset, getRequiredSize()).order(ByteOrder.nativeOrder());
     }
 
     /**
