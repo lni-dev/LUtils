@@ -55,6 +55,10 @@ public class NativeEnumValue32<M extends NativeEnumMember32> extends BBInt1 {
         else set(value.getValue());
     }
 
+    public void set(@NotNull NativeEnumValue32<M> value) {
+        set(value.get());
+    }
+
     /**
      * Iterates through all enum constants of given {@code enumClass} and returns
      * the one, whose {@link NativeEnumMember32#getValue()} corresponds to the {@link #get() value} of this enum value
