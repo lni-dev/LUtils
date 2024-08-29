@@ -7,7 +7,6 @@ package de.linusdev.lutils.nat.enums;
  * This interface should be implemented by Java enums, that correspond to native 32 bit enums.
  * Variables that hold a value of this enum should be of type {@link NativeEnumValue32}.
  */
-@SuppressWarnings("unused")
 public interface NativeEnumMember32 {
 
     /**
