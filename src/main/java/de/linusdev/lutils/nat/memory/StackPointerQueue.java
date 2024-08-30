@@ -47,7 +47,7 @@ public class StackPointerQueue {
     }
 
     public void createSafePoint() {
-        safePoints.push(index);
+        safePoints.addLast(index);
     }
 
     /**

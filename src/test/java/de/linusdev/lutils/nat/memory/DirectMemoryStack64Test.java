@@ -26,14 +26,22 @@ class DirectMemoryStack64Test {
 
 
         NullTerminatedUTF8String testStr = stack.push(NullTerminatedUTF8String.newAllocatable("Test"));
-
         assertFalse(stack.checkSafePoint());
+        assertTrue(stack.createSafePoint()); // create a second safe point
+
         assertTrue(testStr.isInitialised());
         assertEquals("Test", testStr.get());
         assertEquals(stack.getAddress() + testStr.getRequiredSize(), stack.stackPointer);
         assertEquals(1, stack.currentStructCount());
         assertEquals("Test".length() + 1, stack.usedByteCount());
-        stack.pop();
+
+        stack.pushString("second");
+        assertFalse(stack.checkSafePoint());
+        stack.pop(); // second
+        assertTrue(stack.checkSafePoint());
+
+
+        stack.pop(); // testStr
 
         assertEquals(0, stack.currentStructCount());
         assertEquals(0, stack.usedByteCount());
@@ -74,5 +82,17 @@ class DirectMemoryStack64Test {
 
         stack.pop();
 
+    }
+
+    @Test
+    void testEmptyCheckPoint() {
+        DirectMemoryStack64 stack = new DirectMemoryStack64();
+        assertTrue(stack.createSafePoint());
+        assertTrue(stack.checkSafePoint());
+
+        assertTrue(stack.createSafePoint());
+        assertTrue(stack.createSafePoint());
+        assertTrue(stack.checkSafePoint());
+        assertTrue(stack.checkSafePoint());
     }
 }
