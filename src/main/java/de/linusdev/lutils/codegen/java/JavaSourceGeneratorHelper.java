@@ -318,7 +318,9 @@ public interface JavaSourceGeneratorHelper {
         str.append(type.getName(this)).append(" ").append(name);
 
         if(extendClass != null) {
-            str.append(" ").append(javaExtendsKeyword()).append(" ").append(extendClass.getTypeName());
+            str.append(" ")
+                    .append(javaExtendsKeyword()).append(" ")
+                    .append(extendClass.getTypeName());
         }
 
         if(implementsClasses.length != 0) {

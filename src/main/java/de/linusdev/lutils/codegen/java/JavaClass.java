@@ -126,6 +126,29 @@ public interface JavaClass {
      */
     @NotNull String getName();
 
+    /**
+     * @return "&lt;Class1, Class2, ...&gt;" or an empty string if {@link #hasGenerics()} is {@code false}
+     */
+    default @NotNull String getGenericsString() {
+        if(hasGenerics()) {
+            StringBuilder sb = new StringBuilder(getName());
+            sb.append("<");
+
+            boolean first = true;
+            for(JavaClass generic : getGenerics()) {
+                if(first) first = false;
+                else sb.append(", ");
+                sb.append(generic.getTypeName());
+            }
+
+            sb.append(">");
+
+            return sb.toString();
+        }
+
+        return "";
+    }
+
     default @NotNull String getTypeName() {
         if(isArray())
             return getName() + "[]";
