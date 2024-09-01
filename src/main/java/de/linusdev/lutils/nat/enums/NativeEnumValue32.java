@@ -56,4 +56,10 @@ public class NativeEnumValue32<M extends NativeEnumMember32> extends BBInt1 impl
     public void set(int value) {
         super.set(value);
     }
+
+    @SuppressWarnings("EqualsWhichDoesntCheckParameterClass")
+    @Override
+    public boolean equals(Object obj) {
+        return EnumValue32.equals(this, obj);
+    }
 }

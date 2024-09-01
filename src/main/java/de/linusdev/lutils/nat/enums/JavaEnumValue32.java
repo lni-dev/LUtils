@@ -17,4 +17,10 @@ public class JavaEnumValue32 <M extends NativeEnumMember32> implements EnumValue
     public int get() {
         return value;
     }
+
+    @SuppressWarnings("EqualsWhichDoesntCheckParameterClass")
+    @Override
+    public boolean equals(Object obj) {
+        return EnumValue32.equals(this, obj);
+    }
 }

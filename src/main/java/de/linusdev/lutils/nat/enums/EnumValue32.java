@@ -10,6 +10,30 @@ public interface EnumValue32<M extends NativeEnumMember32> {
     int DEFAULT_VALUE = 0;
 
     /**
+     * Checks if both enum values are equal.
+     * @return {@code true} if other is an instance of {@link EnumValue32} and not {@code null} and {@code that.get() == other.get()}.
+     */
+    static boolean equals(
+            @NotNull EnumValue32<?> that,
+            @Nullable Object other
+    ) {
+        if(other instanceof EnumValue32<?> otherEnumValue)
+            return equals(that, otherEnumValue);
+        return false;
+    }
+
+    /**
+     * Checks if both enum values are equal.
+     * @return {@code true} if other is not {@code null} and {@code that.get() == other.get()}.
+     */
+    static boolean equals(
+            @NotNull EnumValue32<?> that,
+            @Nullable EnumValue32<?> other
+    ) {
+        return other != null && that.get() == other.get();
+    }
+
+    /**
      * Set this enum value to given {@code value}.
      * @param value value to set
      */
