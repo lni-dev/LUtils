@@ -17,7 +17,6 @@
 package de.linusdev.lutils.thread.var;
 
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -29,8 +28,7 @@ import java.util.function.Supplier;
 @SuppressWarnings("unused")
 public interface SyncVar<T> {
 
-
-    static <T> @NotNull SyncVar<T> createSyncVar(@Nullable T value) {
+    static <T> @NotNull SyncVar<T> createSyncVar(T value) {
         return new SyncVarImpl<>(value);
     }
 
@@ -42,7 +40,7 @@ public interface SyncVar<T> {
      * Synchronised get.
      * @return value of this variable
      */
-    @Nullable T get();
+    T get();
 
     /**
      * Execute given {@code consumer} synchronised on this variable.
@@ -56,14 +54,14 @@ public interface SyncVar<T> {
      * @param consumer to consume the variable
      * @return {@code true} if given {@code consumer} was executed. {@code false} otherwise.
      */
-    boolean consumeIfNotNull(@NotNull Consumer<@NotNull T> consumer);
+    boolean consumeIfNotNull(@NotNull Consumer<T> consumer);
 
     /**
      * Sets the variables value if it is {@code null}. thread safe.
      * @param value the value to set
      * @return {@code true} if this variables value was {@code null}
      */
-    boolean setIfNull(@Nullable T value);
+    boolean setIfNull(T value);
 
     /**
      * Same as {@link #setIfNull(Object)} but with a {@link Supplier}.
@@ -74,6 +72,6 @@ public interface SyncVar<T> {
      * Synchronised set.
      * @param value the variables value
      */
-    void set(@Nullable T value);
+    void set(T value);
 
 }
