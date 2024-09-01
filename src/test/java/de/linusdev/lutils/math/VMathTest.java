@@ -7,6 +7,7 @@ import de.linusdev.lutils.math.matrix.array.floatn.ABFloat3x3;
 import de.linusdev.lutils.math.matrix.array.floatn.ABFloat4x4;
 import de.linusdev.lutils.math.matrix.buffer.floatn.BBFloat3x3;
 import de.linusdev.lutils.math.matrix.buffer.floatn.BBFloat4x4;
+import de.linusdev.lutils.math.vector.Vector;
 import de.linusdev.lutils.math.vector.abstracts.floatn.Float2;
 import de.linusdev.lutils.math.vector.abstracts.floatn.Float3;
 import de.linusdev.lutils.math.vector.abstracts.floatn.Float4;
@@ -380,7 +381,7 @@ class VMathTest {
 
         VMath.multiply(left, right, store);
 
-        assertTrue(VMath.equals(store, new float[]{resX, resY, resZ, resW}, 0.0001f));
+        assertTrue(Vector.equals(store, new float[]{resX, resY, resZ, resW}, 0.0001f));
     }
 
     private static Collection<Arguments> provideMultiplyFloat3TimesFloat3x3() {
@@ -469,7 +470,7 @@ class VMathTest {
 
         System.out.println("result: " + store);
 
-        assertTrue(VMath.equals(store, new float[]{resX, resY, resZ}, 0.0001f));
+        assertTrue(Vector.equals(store, new float[]{resX, resY, resZ}, 0.0001f));
     }
 
 
@@ -579,8 +580,25 @@ class VMathTest {
     @ParameterizedTest
     @MethodSource("provideVectorEqualsArgs")
     void testEqualsVector(@NotNull FloatN vector, @NotNull FloatN other, float @NotNull [] data, float epsilon, boolean result) {
-        assertEquals(result, VMath.equals(vector, data, epsilon));
-        assertEquals(result, VMath.equals(vector, other, epsilon));
+        assertEquals(result, Vector.equals(vector, data, epsilon));
+        assertEquals(result, Vector.equals(vector, other, epsilon));
+    }
+
+    @Test
+    void testEqualsIntVector() {
+
+        BBInt2 int2 = BBInt2.newAllocated(null);
+        BBInt2 other = BBInt2.newAllocated(null);
+
+        int2.xy(10, 12);
+        other.xy(10, 12);
+
+        assertTrue(Vector.equals(int2, other));
+
+        int2.xy(123, 231);
+        other.xy(123, 12);
+
+        assertFalse(Vector.equals(int2, other));
     }
 
     private static @NotNull Collection<Arguments> provideMatrixEqualsArgs() {
@@ -635,8 +653,8 @@ class VMathTest {
     @ParameterizedTest
     @MethodSource("provideMatrixEqualsArgs")
     void testEqualsMatrix(@NotNull FloatMxN matrix, @NotNull FloatMxN other, float @NotNull [] data, float epsilon, boolean result) {
-        assertEquals(result, VMath.equals(matrix, data, epsilon));
-        assertEquals(result, VMath.equals(matrix, other, epsilon));
+        assertEquals(result, Vector.equals(matrix, data, epsilon));
+        assertEquals(result, Vector.equals(matrix, other, epsilon));
     }
 
     @Test

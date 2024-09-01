@@ -3,6 +3,7 @@ package de.linusdev.lutils.math.matrix.abstracts.floatn;
 import de.linusdev.lutils.math.VMath;
 import de.linusdev.lutils.math.matrix.array.floatn.ABFloat4x4;
 import de.linusdev.lutils.math.matrix.buffer.floatn.BBFloat4x4;
+import de.linusdev.lutils.math.vector.Vector;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -20,7 +21,7 @@ class FloatMxNTest {
         assertFalse(abFloat.isBufferBacked());
         assertFalse(bbFloat.isArrayBacked());
 
-        assertTrue(VMath.equals(abFloat, bbFloat, 0.f));
+        assertTrue(Vector.equals(abFloat, bbFloat, 0.f));
     }
 
 }

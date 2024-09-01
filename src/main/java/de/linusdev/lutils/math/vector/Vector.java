@@ -16,6 +16,7 @@
 
 package de.linusdev.lutils.math.vector;
 
+import de.linusdev.lutils.math.matrix.abstracts.floatn.FloatMxN;
 import de.linusdev.lutils.math.vector.abstracts.floatn.FloatN;
 import de.linusdev.lutils.math.vector.abstracts.intn.IntN;
 import de.linusdev.lutils.math.vector.abstracts.longn.LongN;
@@ -25,6 +26,14 @@ import org.jetbrains.annotations.NotNull;
 import java.util.function.BiFunction;
 
 public interface Vector {
+
+    /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+     *                                                               *
+     *                                                               *
+     *                        To-String-Methods                      *
+     *                                                               *
+     *                                                               *
+     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
     /**
      * {@link Object#toString() toString()} method for {@link Vector} subclasses.
@@ -51,6 +60,136 @@ public interface Vector {
 
         return sb.append(")").toString();
     }
+
+    /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+     *                                                               *
+     *                                                               *
+     *                         Equals-Methods                        *
+     *                                                               *
+     *                                                               *
+     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+    /**
+     *
+     * @param vector {@link FloatN}
+     * @param data a vector as float array
+     * @param epsilon the maximum difference between each component. 0.0 for true equality
+     * @return {@code true} if the difference of each component of {@code vector} and {@code data} is equal or smaller than
+     * epsilon.
+     */
+    static boolean equals(@NotNull FloatN vector, float @NotNull [] data, float epsilon) {
+        if(vector.getMemberCount() != data.length) return false;
+
+        for(int i = 0; i < data.length; i++) {
+            if(Math.abs(vector.get(i) - data[i]) > epsilon) {
+                return false;
+            }
+
+        }
+
+        return true;
+    }
+
+    /**
+     *
+     * @param vector {@link FloatN}
+     * @param other {@link FloatN} to compare
+     * @param epsilon the maximum difference between each component. 0.0 for true equality
+     * @return {@code true} if the difference of each component of {@code vector} and {@code data} is equal or smaller than
+     * epsilon.
+     */
+    static boolean equals(@NotNull FloatN vector, @NotNull FloatN other, float epsilon) {
+        if(vector.getMemberCount() != other.getMemberCount()) return false;
+
+        for(int i = 0; i < vector.getMemberCount(); i++) {
+            if(Math.abs(vector.get(i) - other.get(i)) > epsilon)
+                return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * @param vector {@link IntN}
+     * @param other {@link IntN} to compare
+     * @return {@code true} if each component of {@code vector} and {@code data} is equal.
+     */
+    static boolean equals(@NotNull IntN vector, @NotNull IntN other) {
+        if(vector.getMemberCount() != other.getMemberCount()) return false;
+
+        for(int i = 0; i < vector.getMemberCount(); i++) {
+            if(vector.get(i) != other.get(i))
+                return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * @param vector {@link LongN}
+     * @param other {@link LongN} to compare
+     * @return {@code true} if each component of {@code vector} and {@code data} is equal.
+     */
+    static boolean equals(@NotNull LongN vector, @NotNull LongN other) {
+        if(vector.getMemberCount() != other.getMemberCount()) return false;
+
+        for(int i = 0; i < vector.getMemberCount(); i++) {
+            if(vector.get(i) != other.get(i))
+                return false;
+        }
+
+        return true;
+    }
+
+    /**
+     *
+     * @param matrix {@link FloatMxN}
+     * @param data a matrix as float array
+     * @param epsilon the maximum difference between each component. 0.0 for true equality
+     * @return {@code true} if the difference of each component of {@code matrix} and {@code data} is equal or smaller than
+     * epsilon.
+     */
+    static boolean equals(@NotNull FloatMxN matrix, float @NotNull [] data, float epsilon) {
+        if((matrix.getWidth() * matrix.getHeight()) != data.length) return false;
+
+        for(int y = 0; y < matrix.getHeight(); y++) {
+            for(int x = 0; x < matrix.getWidth(); x++) {
+                if(Math.abs(matrix.get(y, x) - data[(y * matrix.getWidth()) + x]) > epsilon)
+                    return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     *
+     * @param matrix {@link FloatMxN}
+     * @param other {@link FloatMxN} to compare
+     * @param epsilon the maximum difference between each component. 0.0 for true equality
+     * @return {@code true} if the difference of each component of {@code matrix} and {@code data} is equal or smaller than
+     * epsilon.
+     */
+    static boolean equals(@NotNull FloatMxN matrix, @NotNull FloatMxN other, float epsilon) {
+        if(matrix.getWidth() != other.getWidth() || matrix.getHeight() != other.getHeight()) return false;
+
+        for(int y = 0; y < matrix.getHeight(); y++) {
+            for(int x = 0; x < matrix.getWidth(); x++) {
+                if(Math.abs(matrix.get(y, x) - other.get(y, x)) > epsilon)
+                    return false;
+            }
+        }
+
+        return true;
+    }
+
+    /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+     *                                                               *
+     *                                                               *
+     *                         Vector-Methods                        *
+     *                                                               *
+     *                                                               *
+     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
     /**
      * Count of components in this vector.

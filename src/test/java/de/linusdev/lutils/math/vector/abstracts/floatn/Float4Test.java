@@ -1,6 +1,7 @@
 package de.linusdev.lutils.math.vector.abstracts.floatn;
 
 import de.linusdev.lutils.math.VMath;
+import de.linusdev.lutils.math.vector.Vector;
 import de.linusdev.lutils.math.vector.array.floatn.ABFloat4;
 import de.linusdev.lutils.math.vector.buffer.floatn.BBFloat4;
 import org.jetbrains.annotations.NotNull;
@@ -87,7 +88,7 @@ class Float4Test {
 
         System.out.println("vector: " + vector);
         System.out.println(" vector.factorized_xyzw(-1f, 2f, .5f, -2f): " + factorised);
-        assertTrue(VMath.equals(factorised, new float[] {x * -1f, y * 2f, z * .5f, w * -2f}, 0.0f));
+        assertTrue(Vector.equals(factorised, new float[] {x * -1f, y * 2f, z * .5f, w * -2f}, 0.0f));
 
 
     }
