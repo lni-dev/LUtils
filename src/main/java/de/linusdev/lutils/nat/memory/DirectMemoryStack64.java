@@ -111,11 +111,6 @@ public class DirectMemoryStack64 extends Structure implements Stack {
         return ALIGNMENT;
     }
 
-    @Override
-    public long getPointer() {
-        return address;
-    }
-
     public long getAddress() {
         return address;
     }

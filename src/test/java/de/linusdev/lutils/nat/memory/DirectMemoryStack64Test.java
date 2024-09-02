@@ -114,4 +114,11 @@ class DirectMemoryStack64Test {
         stack.pop(); // pointer64
 
     }
+
+    @Test
+    void testGetPointer() {
+        DirectMemoryStack64 stack64 = new DirectMemoryStack64();
+
+        assertNotEquals(0, stack64.getPointer());
+    }
 }
