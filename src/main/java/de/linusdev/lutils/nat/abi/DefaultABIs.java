@@ -205,6 +205,7 @@ public enum DefaultABIs implements ABI, Types {
                     stride * length,
                     new int[]{0, stride * length, 0},
                     length,
+                    stride,
                     index -> index * finalStride
             );
         }
@@ -334,6 +335,7 @@ public enum DefaultABIs implements ABI, Types {
                     size,
                     new int[]{0, originalSize, size-originalSize},
                     length,
+                    componentSize,
                     index -> index * componentSize
             );
         }

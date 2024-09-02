@@ -10,6 +10,12 @@ public class ArrayInfo extends StructureInfo {
     protected final int length;
 
     /**
+     * The stride (size of one element including padding) of the array or {@code -1}
+     * if stride varies for different positions.
+     */
+    protected final int stride;
+
+    /**
      * The position in bytes of each array element.
      * @see ArrayPositionFunction#position(int) position function
      */
@@ -30,10 +36,12 @@ public class ArrayInfo extends StructureInfo {
             int size,
             int @NotNull [] sizes,
             int length,
+            int stride,
             @NotNull ArrayPositionFunction positions
     ) {
         super(alignment, compressed, size, sizes);
         this.length = length;
+        this.stride = stride;
         this.positions = positions;
     }
 
