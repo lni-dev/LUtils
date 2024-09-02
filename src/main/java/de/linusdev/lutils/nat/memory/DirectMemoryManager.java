@@ -46,4 +46,12 @@ public interface DirectMemoryManager extends NativeParsable {
         );
     }
 
+    /**
+     * @return {@code true} if given {@code address} is inside the address space of this memory manager.
+     */
+    default boolean isAddressInside(long address) {
+        if((address -= getPointer()) < 0L) return false; // too small
+        return address < memorySize(); // too big
+    }
+
 }

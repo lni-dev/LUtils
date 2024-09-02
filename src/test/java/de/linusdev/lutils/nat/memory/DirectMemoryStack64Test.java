@@ -1,6 +1,7 @@
 package de.linusdev.lutils.nat.memory;
 
 import de.linusdev.lutils.math.vector.buffer.intn.BBInt1;
+import de.linusdev.lutils.math.vector.buffer.intn.BBInt2;
 import de.linusdev.lutils.math.vector.buffer.intn.BBUInt1;
 import de.linusdev.lutils.nat.pointer.BBPointer64;
 import de.linusdev.lutils.nat.pointer.BBTypedPointer64;
@@ -12,6 +13,7 @@ import org.junit.jupiter.api.Test;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
+import static de.linusdev.lutils.nat.pointer.Pointer64.refL;
 import static org.junit.jupiter.api.Assertions.*;
 
 class DirectMemoryStack64Test {
@@ -120,5 +122,13 @@ class DirectMemoryStack64Test {
         DirectMemoryStack64 stack64 = new DirectMemoryStack64();
 
         assertNotEquals(0, stack64.getPointer());
+    }
+
+    @Test
+    void isAddressInside() {
+        DirectMemoryStack64 stack = new DirectMemoryStack64();
+
+        assertTrue(stack.isAddressInside(refL(stack.pushString("Test!"))));
+        assertFalse(stack.isAddressInside(refL(BBInt2.newAllocated(null))));
     }
 }
