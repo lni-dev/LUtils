@@ -27,6 +27,7 @@ public class BBMatrixInfo extends BBVectorInfo {
                 arrayInfo.getRequiredSize(),
                 arrayInfo.getSizes(),
                 arrayInfo.getLength(),
+                arrayInfo.getStride(),
                 arrayInfo.getPositions(),
                 type,
                 width,
@@ -42,12 +43,13 @@ public class BBMatrixInfo extends BBVectorInfo {
             int size,
             int @NotNull [] sizes,
             int length,
+            int stride,
             @NotNull ArrayPositionFunction positions,
             @NotNull NativeType type,
             int width,
             int height
     ) {
-        super(alignment, size, sizes, length, positions, type);
+        super(alignment, size, sizes, length, stride, positions, type);
         this.width = width;
         this.height = height;
     }

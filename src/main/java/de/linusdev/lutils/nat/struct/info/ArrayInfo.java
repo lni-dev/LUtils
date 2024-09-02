@@ -60,6 +60,13 @@ public class ArrayInfo extends StructureInfo {
     }
 
     /**
+     * @see #stride
+     */
+    public int getStride() {
+        return stride;
+    }
+
+    /**
      * Functional interface with the function {@link #position(int)}.
      * @see #position(int)
      */

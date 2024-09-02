@@ -24,6 +24,7 @@ public class BBVectorInfo extends ArrayInfo {
                 arrayInfo.getRequiredSize(),
                 arrayInfo.getSizes(),
                 arrayInfo.getLength(),
+                arrayInfo.getStride(),
                 arrayInfo.getPositions(),
                 type
         );
@@ -34,10 +35,11 @@ public class BBVectorInfo extends ArrayInfo {
             int size,
             int @NotNull [] sizes,
             int length,
+            int stride,
             @NotNull ArrayPositionFunction positions,
             @NotNull NativeType type
     ) {
-        super(alignment, false, size, sizes, length, positions);
+        super(alignment, false, size, sizes, length, stride, positions);
         this.type = type;
     }
 
