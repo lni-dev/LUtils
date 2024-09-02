@@ -42,6 +42,15 @@ public interface IntBitfield<V extends IntBitFieldValue> {
     }
 
     /**
+     * Checks if all of given {@code flags} are set.
+     * @param flags flags to check if they are set
+     * @return {@code true} if all flags set in {@code flags} are set in this bitfield.
+     */
+    default boolean isSet(@NotNull IntBitfield<V> flags) {
+        return isSet(flags.getValue());
+    }
+
+    /**
      * Set all bits/flags in given {@code flag}.
      * @param flag flag(s) to set
      */

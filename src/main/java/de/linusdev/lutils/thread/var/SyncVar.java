@@ -19,6 +19,7 @@ package de.linusdev.lutils.thread.var;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 /**
@@ -47,6 +48,8 @@ public interface SyncVar<T> {
      * @param consumer {@link Consumer}
      */
     void doSynchronised(@NotNull Consumer<@NotNull SyncVar<T>> consumer);
+
+    <S> S computeSynchronised(@NotNull Function<@NotNull SyncVar<T>, S> computer);
 
     /**
      * locks on this variable and checks if its value is not {@code null}.

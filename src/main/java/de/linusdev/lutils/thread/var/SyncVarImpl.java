@@ -20,6 +20,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 public class SyncVarImpl<T> implements SyncVar<T>{
@@ -41,6 +42,13 @@ public class SyncVarImpl<T> implements SyncVar<T>{
     public void doSynchronised(@NotNull Consumer<@NotNull SyncVar<T>> consumer) {
         synchronized (lock) {
             consumer.accept(this);
+        }
+    }
+
+    @Override
+    public <S> S computeSynchronised(@NotNull Function<@NotNull SyncVar<T>, S> computer) {
+        synchronized (lock) {
+            return computer.apply(this);
         }
     }
 

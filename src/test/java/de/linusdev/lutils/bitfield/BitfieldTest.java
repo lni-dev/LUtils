@@ -39,4 +39,15 @@ public class BitfieldTest {
         assertFalse(field.isSet(SomeEnum.A));
     }
 
+    @Test
+    public void testSetBitField() {
+        IntBitfieldImpl<SomeEnum> bitfield = new IntBitfieldImpl<>(SomeEnum.D, SomeEnum.B, SomeEnum.A);
+
+        IntBitfieldImpl<SomeEnum> bitfield2 = new IntBitfieldImpl<>(SomeEnum.D, SomeEnum.B);
+        IntBitfieldImpl<SomeEnum> bitfield3 = new IntBitfieldImpl<>(SomeEnum.D, SomeEnum.B, SomeEnum.C);
+
+        assertTrue(bitfield.isSet(bitfield2));
+        assertFalse(bitfield.isSet(bitfield3));
+    }
+
 }
