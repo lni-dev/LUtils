@@ -25,6 +25,7 @@ import de.linusdev.lutils.nat.struct.generator.StaticGenerator;
 import de.linusdev.lutils.nat.struct.generator.StructCodeGenerator;
 import de.linusdev.lutils.nat.struct.abstracts.Structure;
 import de.linusdev.lutils.nat.abi.ABI;
+import de.linusdev.lutils.nat.struct.info.ArrayInfo;
 import de.linusdev.lutils.nat.struct.info.StructureInfo;
 import de.linusdev.lutils.nat.struct.mod.ModTrackingStructure;
 import de.linusdev.lutils.nat.struct.utils.BufferUtils;
@@ -67,20 +68,23 @@ public class StructureArray<T extends Structure> extends ModTrackingStructure im
                     null
             );
 
-            StructureInfo info = abi.calculateArrayLayout(
+            ArrayInfo info = abi.calculateArrayLayout(
                     false,
                     elementInfo,
                     structValue.length()[0],
                     -1
             );
 
-            return new ArrayStructureInfo(
+            return new StructureArrayInfo(
                     info.getAlignment(),
                     info.isCompressed(),
                     info.getRequiredSize(),
+                    info.getSizes(),
+                    info.getLength(),
+                    info.getStride(),
+                    info.getPositions(),
                     structValue.elementType()[0],
-                    elementInfo,
-                    structValue.length()[0]
+                    elementInfo
             );
         }
 
@@ -89,7 +93,7 @@ public class StructureArray<T extends Structure> extends ModTrackingStructure im
             return new StructCodeGenerator() {
                 @Override
                 public @NotNull String getStructTypeName(@NotNull Language language, @NotNull Class<?> selfClazz, @NotNull StructureInfo info) {
-                    ArrayStructureInfo arrayInfo = (ArrayStructureInfo) info;
+                    StructureArrayInfo arrayInfo = (StructureArrayInfo) info;
                     StructureInfo elementInfo = arrayInfo.elementInfo;
                     StaticGenerator elementGenerator = SSMUtils.getGenerator(arrayInfo.elementClass, null);
                     //noinspection DataFlowIssue
@@ -98,13 +102,13 @@ public class StructureArray<T extends Structure> extends ModTrackingStructure im
 
                 @Override
                 public @NotNull String getStructVarDef(@NotNull Language language, @NotNull Class<?> selfClazz, @NotNull StructureInfo info, @NotNull String varName) {
-                    ArrayStructureInfo arrayInfo = (ArrayStructureInfo) info;
+                    StructureArrayInfo arrayInfo = (StructureArrayInfo) info;
                     StructureInfo elementInfo = arrayInfo.elementInfo;
                     StaticGenerator elementGenerator = SSMUtils.getGenerator(arrayInfo.elementClass, null);
 
                     //noinspection DataFlowIssue
                     return elementGenerator.codeGenerator().getStructTypeName(language, arrayInfo.elementClass, elementInfo) + " " + varName
-                            + "[" + arrayInfo.length + "]" + language.lineEnding;
+                            + "[" + arrayInfo.getLength() + "]" + language.lineEnding;
                 }
             };
         }
@@ -232,6 +236,7 @@ public class StructureArray<T extends Structure> extends ModTrackingStructure im
     }
 
     private final @NotNull ElementCreator<T> creator;
+    private ArrayInfo.ArrayPositionFunction positions;
 
     private StructureInfo elementInfo;
     private Structure [] items;
@@ -270,7 +275,7 @@ public class StructureArray<T extends Structure> extends ModTrackingStructure im
                 GENERATOR
         ));
         this.elementInfo = getInfo().elementInfo;
-        this.size = getInfo().length;
+        this.size = getInfo().getLength();
         this.items = new Structure[size];
         this.creator = creator;
     }
@@ -280,7 +285,7 @@ public class StructureArray<T extends Structure> extends ModTrackingStructure im
         callUseBufferOf(
                 struct,
                 this.mostParentStructure,
-                this.offset + (elementInfo.getRequiredSize() * index),
+                this.offset + positions.position(index),
                 elementInfo
         );
     }
@@ -292,17 +297,24 @@ public class StructureArray<T extends Structure> extends ModTrackingStructure im
             @NotNull StructureInfo info
     ) {
         super.useBuffer(mostParentStructure, offset, info);
-        ArrayStructureInfo aInfo = getInfo();
+        StructureArrayInfo aInfo = getInfo();
 
         this.elementInfo = aInfo.elementInfo;
-        this.size = aInfo.length;
+        this.size = aInfo.getLength();
         this.items = new Structure[size];
 
     }
 
     @Override
-    public @NotNull ArrayStructureInfo getInfo() {
-        return (ArrayStructureInfo) super.getInfo();
+    public @NotNull StructureArrayInfo getInfo() {
+        return (StructureArrayInfo) super.getInfo();
+    }
+
+    @Override
+    protected void onSetInfo(@NotNull StructureInfo info) {
+        super.onSetInfo(info);
+
+        positions = ((ArrayInfo) info).getPositions();
     }
 
     @Override
@@ -322,7 +334,7 @@ public class StructureArray<T extends Structure> extends ModTrackingStructure im
             callUseBufferOf(
                     item,
                     this.mostParentStructure,
-                    this.offset + (elementInfo.getRequiredSize() * index),
+                    this.offset + positions.position(index),
                     elementInfo
             );
             return (T) item;
