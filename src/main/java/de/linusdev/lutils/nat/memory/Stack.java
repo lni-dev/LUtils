@@ -2,6 +2,8 @@ package de.linusdev.lutils.nat.memory;
 
 import de.linusdev.lutils.math.vector.buffer.intn.BBInt1;
 import de.linusdev.lutils.math.vector.buffer.intn.BBUInt1;
+import de.linusdev.lutils.nat.pointer.BBPointer64;
+import de.linusdev.lutils.nat.pointer.BBTypedPointer64;
 import de.linusdev.lutils.nat.string.NullTerminatedUTF8String;
 import de.linusdev.lutils.nat.struct.abstracts.Structure;
 import de.linusdev.lutils.nat.struct.annos.SVWrapper;
@@ -85,6 +87,24 @@ public interface Stack extends DirectMemoryManager {
         );
 
         return push(array);
+    }
+
+    /**
+     * Creates a new {@link BBPointer64} using {@link BBPointer64#newAllocatable(StructValue) BBPointer64.newAllocatable(null)} and
+     * {@link #push(Structure) pushes} it onto this stack.
+     * @return pushed {@link BBPointer64}
+     */
+    default @NotNull BBPointer64 pushPointer() {
+        return push(BBPointer64.newAllocatable(null));
+    }
+
+    /**
+     * Creates a new {@link BBTypedPointer64} using {@link BBTypedPointer64#newAllocatable1(StructValue) BBPointer64.newAllocatable1(null)} and
+     * {@link #push(Structure) pushes} it onto this stack.
+     * @return pushed {@link BBTypedPointer64}
+     */
+    default <T extends Structure> BBTypedPointer64<T> pushTypedPointer() {
+        return push(BBTypedPointer64.newAllocatable1(null));
     }
 
     /**

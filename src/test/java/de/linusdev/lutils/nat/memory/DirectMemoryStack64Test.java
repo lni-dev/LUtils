@@ -2,6 +2,8 @@ package de.linusdev.lutils.nat.memory;
 
 import de.linusdev.lutils.math.vector.buffer.intn.BBInt1;
 import de.linusdev.lutils.math.vector.buffer.intn.BBUInt1;
+import de.linusdev.lutils.nat.pointer.BBPointer64;
+import de.linusdev.lutils.nat.pointer.BBTypedPointer64;
 import de.linusdev.lutils.nat.string.NullTerminatedUTF8String;
 import de.linusdev.lutils.nat.struct.array.StructureArray;
 import de.linusdev.lutils.nat.struct.utils.BufferUtils;
@@ -94,5 +96,22 @@ class DirectMemoryStack64Test {
         assertTrue(stack.createSafePoint());
         assertTrue(stack.checkSafePoint());
         assertTrue(stack.checkSafePoint());
+    }
+
+    @Test
+    void testPointer() {
+        DirectMemoryStack64 stack = new DirectMemoryStack64();
+
+        BBPointer64 pointer64 = stack.pushPointer();
+        pointer64.set(10L);
+        assertEquals(10L, pointer64.get());
+
+        BBTypedPointer64<BBInt1> typedPointer = stack.pushTypedPointer();
+        typedPointer.set(11L);
+        assertEquals(11L, typedPointer.get());
+
+        stack.pop(); // typedPointer
+        stack.pop(); // pointer64
+
     }
 }
