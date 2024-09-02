@@ -106,6 +106,15 @@ public interface IntBitfield<V extends IntBitFieldValue> {
     }
 
     /**
+     * Replace the current value of this bitfield with given {@code flags.getValue()}. So that
+     * the flags in this bitfield match the flags of given {@code flags}.
+     * @param flags flags to replace current flags with.
+     */
+    default void replaceWith(@NotNull IntBitfield<V> flags) {
+        replaceWith(flags.getValue());
+    }
+
+    /**
      * Sets given flag to 0.
      * @param flag flag to set
      */

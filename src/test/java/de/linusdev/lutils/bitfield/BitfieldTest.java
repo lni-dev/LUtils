@@ -40,7 +40,7 @@ public class BitfieldTest {
     }
 
     @Test
-    public void testSetBitField() {
+    public void testIsSetBitField() {
         IntBitfieldImpl<SomeEnum> bitfield = new IntBitfieldImpl<>(SomeEnum.D, SomeEnum.B, SomeEnum.A);
 
         IntBitfieldImpl<SomeEnum> bitfield2 = new IntBitfieldImpl<>(SomeEnum.D, SomeEnum.B);
@@ -48,6 +48,22 @@ public class BitfieldTest {
 
         assertTrue(bitfield.isSet(bitfield2));
         assertFalse(bitfield.isSet(bitfield3));
+    }
+
+    @Test
+    public void testReplaceWithBitField() {
+        IntBitfieldImpl<SomeEnum> bitfield = new IntBitfieldImpl<>(SomeEnum.D, SomeEnum.B, SomeEnum.A, SomeEnum.E);
+
+        IntBitfieldImpl<SomeEnum> bitfield2 = new IntBitfieldImpl<>(SomeEnum.D, SomeEnum.B, SomeEnum.E);
+        IntBitfieldImpl<SomeEnum> bitfield3 = new IntBitfieldImpl<>(SomeEnum.D, SomeEnum.B, SomeEnum.C);
+
+        assertTrue(bitfield.isSet(bitfield2));
+        assertFalse(bitfield.isSet(bitfield3));
+
+        bitfield.replaceWith(bitfield3);
+
+        assertFalse(bitfield.isSet(bitfield2));
+        assertTrue(bitfield.isSet(bitfield3));
     }
 
 }
