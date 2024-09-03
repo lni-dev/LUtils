@@ -65,8 +65,7 @@ public interface ABI {
      * Get Layout for a vector type.
      * @param componentType The vector component type
      * @param length The component count
-     * @return {@link ArrayInfo} with information about the layout of the vector or {@code null}, if the vector layout
-     * is the same as an {@link ABI#calculateArrayLayout(boolean, MemorySizeable, int, int) array layout}
+     * @return {@link ArrayInfo} with information about the layout of the vector.
      */
     default @NotNull ArrayInfo calculateVectorLayout(
             @NotNull NativeType componentType,
@@ -76,6 +75,26 @@ public interface ABI {
                 false,
                 componentType.getMemorySizeable(types()),
                 length,
+                -1
+        );
+    }
+
+    /**
+     * Get layout for a matrix type
+     * @param componentType the matrix component type
+     * @param width the width of the matrix
+     * @param height the height of the matrix
+     * @return {@link ArrayInfo} with information about the layout of the vector.
+     */
+    default @NotNull ArrayInfo calculateMatrixLayout(
+            @NotNull NativeType componentType,
+            int width,
+            int height
+    ) {
+        return calculateArrayLayout(
+                false,
+                componentType.getMemorySizeable(types()),
+                width*height,
                 -1
         );
     }

@@ -15,11 +15,10 @@ public class BBMatrixInfo extends BBVectorInfo {
             int width, int height,
             @NotNull NativeType type
     ) {
-        ArrayInfo arrayInfo = abi.calculateArrayLayout(
-                false,
-                type.getMemorySizeable(abi.types()),
-                width*height,
-                -1
+        ArrayInfo arrayInfo = abi.calculateMatrixLayout(
+                type,
+                width,
+                height
         );
 
         return new BBMatrixInfo(
