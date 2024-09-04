@@ -1,6 +1,7 @@
 package de.linusdev.lutils.math.matrix.buffer;
 
 import de.linusdev.lutils.math.matrix.Matrix;
+import de.linusdev.lutils.math.matrix.MatrixMemoryLayout;
 import de.linusdev.lutils.math.vector.buffer.BBVectorInfo;
 import de.linusdev.lutils.nat.NativeType;
 import de.linusdev.lutils.nat.abi.OverwriteChildABI;
@@ -23,6 +24,7 @@ public abstract class BBMatrix extends Structure implements Matrix {
 
     protected final @NotNull BBMatrixGenerator generator;
     protected ArrayInfo.ArrayPositionFunction positions;
+    protected @NotNull MatrixMemoryLayout memoryLayout = MatrixMemoryLayout.ROW_MAJOR;
 
     protected BBMatrix(
             @NotNull BBMatrixGenerator generator,
@@ -101,6 +103,16 @@ public abstract class BBMatrix extends Structure implements Matrix {
     @Override
     public boolean isBufferBacked() {
         return true;
+    }
+
+    @Override
+    public @NotNull MatrixMemoryLayout getMemoryLayout() {
+        return memoryLayout;
+    }
+
+    @Override
+    public void setMemoryLayout(@NotNull MatrixMemoryLayout memoryLayout) {
+        this.memoryLayout = memoryLayout;
     }
 
     public static class BBMatrixGenerator implements StaticGenerator {

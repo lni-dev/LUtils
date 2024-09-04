@@ -16,12 +16,21 @@
 
 package de.linusdev.lutils.math.matrix.abstracts.floatn;
 
-public interface Float3x3 extends Float3xN {
+import de.linusdev.lutils.math.matrix.abstracts.floatn.min.MinFloat3x3;
+import org.jetbrains.annotations.NotNull;
+
+public interface Float3x3 extends Float3xN, MinFloat3x3 {
 
     int HEIGHT = 3;
 
     @Override
     default int getHeight() {
         return HEIGHT;
+    }
+
+    class View extends FloatMxN.View implements Float3x3 {
+        protected View(@NotNull FloatMxN original, int @NotNull [] mapping, boolean matrixPosMapping) {
+            super(original, mapping, matrixPosMapping);
+        }
     }
 }

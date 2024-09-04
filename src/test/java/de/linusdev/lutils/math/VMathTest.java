@@ -1,5 +1,6 @@
 package de.linusdev.lutils.math;
 
+import de.linusdev.lutils.math.matrix.Matrix;
 import de.linusdev.lutils.math.matrix.abstracts.floatn.Float3x3;
 import de.linusdev.lutils.math.matrix.abstracts.floatn.Float4x4;
 import de.linusdev.lutils.math.matrix.abstracts.floatn.FloatMxN;
@@ -653,8 +654,25 @@ class VMathTest {
     @ParameterizedTest
     @MethodSource("provideMatrixEqualsArgs")
     void testEqualsMatrix(@NotNull FloatMxN matrix, @NotNull FloatMxN other, float @NotNull [] data, float epsilon, boolean result) {
-        assertEquals(result, Vector.equals(matrix, data, epsilon));
-        assertEquals(result, Vector.equals(matrix, other, epsilon));
+        assertEquals(result, Matrix.equals(matrix, data, epsilon));
+        assertEquals(result, Matrix.equals(matrix, other, epsilon));
+    }
+
+    @Test
+    void testIdentityMatrix() {
+        ABFloat3x3 mat = new ABFloat3x3();
+        VMath.diagonalMatrix(1f, false, mat);
+        System.out.println(mat);
+        assertTrue(Matrix.isIdentity(mat, 0.0f));
+
+        mat.put(0,0,1.2f);
+        assertFalse(Matrix.isIdentity(mat, 0.0f));
+
+        VMath.diagonalMatrix(1f, false, mat);
+        assertTrue(Matrix.isIdentity(mat, 0.0f));
+
+        mat.put(0,1,1f);
+        assertFalse(Matrix.isIdentity(mat, 0.0f));
     }
 
     @Test
@@ -807,4 +825,117 @@ class VMathTest {
     }
 
 
+    @Test
+    void rotationMatrix() {
+
+        ABFloat3x3 mat = new ABFloat3x3();
+
+        VMath.rotationMatrix(3.141592653589793238462643383279502884197f, new ABFloat3(0, 0, 1), mat);
+        assertTrue(Matrix.equals(mat, new float[] {-1f, 0f, 0f, 0f, -1f, 0f, 0f, 0f, 1f}, 0.00001f));
+
+        VMath.rotationMatrix(1.334f, VMath.normalize(new ABFloat3(0.2f, 0.9f, 0.4f), new ABFloat3()) , mat);
+        assertTrue(Matrix.equals(mat, new float[] {0.2649029f, -0.2504983f, 0.9311697f, 0.5233179f, 0.8484336f, 0.0793655f, -0.8099166f, 0.4662736f, 0.3558427f}, 0.00001f));
+
+    }
+
+    @Test
+    void translationMatrix() {
+        ABFloat4x4 mat = new ABFloat4x4();
+        mat.fillFromArray(new float[] {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16});
+
+        VMath.translationMatrix(new ABFloat3(30,40, 50), mat);
+
+        assertTrue(Matrix.equals(mat, new float[] {1,2,3,30,5,6,7,40,9,10,11,50,13,14,15,16}, 0.0f));
+
+    }
+
+    @Test
+    void diagonalMatrix() {
+        ABFloat4x4 mat = new ABFloat4x4();
+        mat.fillFromArray(new float[] {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16});
+
+        VMath.diagonalMatrix(50f, false, mat);
+
+        assertTrue(Matrix.equals(mat, new float[] {
+                50,2 ,3 ,4 ,
+                5 ,50,7 ,8 ,
+                9 ,10,50,12,
+                13,14,15,50
+        }, 0.0f));
+
+        mat.fillFromArray(new float[] {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16});
+
+        VMath.diagonalMatrix(50f, true, mat);
+
+        assertTrue(Matrix.equals(mat, new float[] {
+                50,0 ,0 ,0 ,
+                0 ,50,0 ,0 ,
+                0 ,0 ,50,0 ,
+                0 ,0 ,0 ,50
+        }, 0.0f));
+    }
+
+    @Test
+    void testRotationMatrix() {
+
+        ABFloat3x3 mat = new ABFloat3x3();
+
+        VMath.rotationMatrix(0.34f, 2.23f, 4.33f, mat);
+        assertTrue(Matrix.equals(mat, new float[] {-0.577426f, -0.566969f, -0.587474f, -0.204257f, -0.596353f, 0.7763f, -0.79048f, 0.568251f, 0.228542f}, 0.00001f));
+
+    }
+
+    @Test
+    void transpose3x33X3() {
+
+        ABFloat3x3 mat = new ABFloat3x3();
+        mat.fillFromArray(new float[] {
+                1,2,3,
+                4,5,6,
+                7,8,9
+        });
+
+        VMath.transpose3x3(mat, mat);
+        assertTrue(Matrix.equals(mat, new float[] {
+                1,4,7,
+                2,5,8,
+                3,6,9
+        }, 0f));
+
+        ABFloat4x4 mat4x4 = new ABFloat4x4();
+        mat4x4.fillFromArray(new float[] {
+                1 ,2 ,3 ,4 ,
+                5 ,6 ,7 ,8 ,
+                9 ,10,11,12,
+                13,14,15,16,
+        });
+        var mat2 = VMath.transpose3x3(mat4x4, new ABFloat4x4());
+        System.out.println(mat2);
+        assertTrue(Matrix.equals(mat2, new float[] {
+                1 ,5 ,9 ,0 ,
+                2 ,6 ,10,0 ,
+                3 ,7 ,11,0 ,
+                0 ,0 ,0 ,0 ,
+        }, 0.01f));
+
+    }
+
+    @Test
+    void projectionMatrix() {
+
+        var mat = VMath.projectionMatrix(16f/9f, 2f, 2f, 1f, 10f, true, 1.01f, new ABFloat4x4());
+
+        System.out.println(mat);
+
+    }
+
+    @Test
+    void projectionMatrixExplained() {
+        var mat = VMath.projectionMatrix(16f/9f, 2.3f, 2.1f, 1f, 10f, true, 1.01f, new ABFloat4x4());
+        var mat2 = VMath.projectionMatrixExplained(16f/9f, 2.3f, 2.1f, 1f, 10f, true, 1.01f);
+
+
+
+        assertTrue(Matrix.equals(mat, mat2, 0.0001f));
+    }
 }

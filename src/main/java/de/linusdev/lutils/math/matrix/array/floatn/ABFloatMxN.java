@@ -17,11 +17,14 @@
 package de.linusdev.lutils.math.matrix.array.floatn;
 
 import de.linusdev.lutils.math.matrix.Matrix;
+import de.linusdev.lutils.math.matrix.MatrixMemoryLayout;
 import de.linusdev.lutils.math.matrix.abstracts.floatn.FloatMxN;
+import org.jetbrains.annotations.NotNull;
 
 public abstract class ABFloatMxN implements FloatMxN {
 
     protected final float[] array;
+    protected @NotNull MatrixMemoryLayout memoryLayout = MatrixMemoryLayout.ROW_MAJOR;
 
     public ABFloatMxN() {
         this.array = new float[getWidth() * getHeight()];
@@ -50,6 +53,21 @@ public abstract class ABFloatMxN implements FloatMxN {
     @Override
     public boolean isArrayBacked() {
         return true;
+    }
+
+    @Override
+    public float @NotNull [] getArray() {
+        return array;
+    }
+
+    @Override
+    public @NotNull MatrixMemoryLayout getMemoryLayout() {
+        return memoryLayout;
+    }
+
+    @Override
+    public void setMemoryLayout(@NotNull MatrixMemoryLayout memoryLayout) {
+        this.memoryLayout = memoryLayout;
     }
 
     @Override

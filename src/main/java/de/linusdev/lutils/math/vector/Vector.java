@@ -16,7 +16,6 @@
 
 package de.linusdev.lutils.math.vector;
 
-import de.linusdev.lutils.math.matrix.abstracts.floatn.FloatMxN;
 import de.linusdev.lutils.math.vector.abstracts.floatn.FloatN;
 import de.linusdev.lutils.math.vector.abstracts.intn.IntN;
 import de.linusdev.lutils.math.vector.abstracts.longn.LongN;
@@ -141,48 +140,6 @@ public interface Vector {
         return true;
     }
 
-    /**
-     *
-     * @param matrix {@link FloatMxN}
-     * @param data a matrix as float array
-     * @param epsilon the maximum difference between each component. 0.0 for true equality
-     * @return {@code true} if the difference of each component of {@code matrix} and {@code data} is equal or smaller than
-     * epsilon.
-     */
-    static boolean equals(@NotNull FloatMxN matrix, float @NotNull [] data, float epsilon) {
-        if((matrix.getWidth() * matrix.getHeight()) != data.length) return false;
-
-        for(int y = 0; y < matrix.getHeight(); y++) {
-            for(int x = 0; x < matrix.getWidth(); x++) {
-                if(Math.abs(matrix.get(y, x) - data[(y * matrix.getWidth()) + x]) > epsilon)
-                    return false;
-            }
-        }
-
-        return true;
-    }
-
-    /**
-     *
-     * @param matrix {@link FloatMxN}
-     * @param other {@link FloatMxN} to compare
-     * @param epsilon the maximum difference between each component. 0.0 for true equality
-     * @return {@code true} if the difference of each component of {@code matrix} and {@code data} is equal or smaller than
-     * epsilon.
-     */
-    static boolean equals(@NotNull FloatMxN matrix, @NotNull FloatMxN other, float epsilon) {
-        if(matrix.getWidth() != other.getWidth() || matrix.getHeight() != other.getHeight()) return false;
-
-        for(int y = 0; y < matrix.getHeight(); y++) {
-            for(int x = 0; x < matrix.getWidth(); x++) {
-                if(Math.abs(matrix.get(y, x) - other.get(y, x)) > epsilon)
-                    return false;
-            }
-        }
-
-        return true;
-    }
-
     /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
      *                                                               *
      *                                                               *
@@ -225,6 +182,15 @@ public interface Vector {
      */
     default @NotNull Structure getStructure() {
         throw new UnsupportedOperationException("This vector is not buffer backed.");
+    }
+
+    /**
+     *
+     * @return this vector as array. This vector is backed by the returned array.
+     * @throws UnsupportedOperationException if this vector is not {@link #isArrayBacked() array backed}.
+     */
+    default @NotNull Object getArray() {
+        throw new UnsupportedOperationException("This vector is not array backed.");
     }
 
     /**
@@ -305,9 +271,43 @@ public interface Vector {
             return defaultMapping.length != mapping.length;
         }
 
+        /**
+         * Checks if {@code mappingA} and {@code mappingB} have at least one index they map to, which
+         * is contained in both mappings.
+         * @param mappingA mapping A
+         * @param mappingB mapping B
+         * @return {@code true} if any element in A is also in B.
+         */
+        public static boolean doesMappingCollide(int @NotNull [] mappingA, int @NotNull [] mappingB) {
+            for (int a : mappingA) {
+                for (int b : mappingB) {
+                    if (a == b) return true;
+                }
+            }
+
+            return false;
+        }
+
+        /**
+         * The vector to map too. Never a view vector.
+         */
         protected final @NotNull V original;
+        /**
+         * The mapping, which specifies how to map to the original vector.
+         * When {@code view.get(index)} is requested for the view vector it will actually
+         * return {@code original.get(mapping[index])}. The set methods operates in the same way:<br>
+         * {@code view.set(index, value)} -&gt; {@code original.set(mapping[index], value)}.
+         * <br><br>
+         * This means the {@code i}th element in {@code mapping} contains the index, which
+         * is used on the original vector, when the index {@code i} is used on the view vector.
+         */
         protected final int @NotNull [] mapping;
 
+        /**
+         *
+         * @param original original vector.
+         * @param mapping see {@link #mapping}.
+         */
         protected View(@NotNull V original, int @NotNull [] mapping) {
             if(original.isView()) {
                 mapping = recalculateMappingToOriginal(original.getAsView(), mapping);
@@ -332,6 +332,7 @@ public interface Vector {
          * The returned mapping must always map to a non view vector.
          * @return the mapping to the original vector
          * @throws UnsupportedOperationException if this vector is not {@link #isView() a view on another vector}.
+         * @see #mapping
          */
         public int @NotNull [] getMapping() {
             return mapping;

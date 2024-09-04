@@ -20,6 +20,9 @@ import de.linusdev.lutils.math.matrix.Matrix;
 import de.linusdev.lutils.math.matrix.abstracts.floatn.Float3x3;
 import de.linusdev.lutils.math.matrix.abstracts.floatn.Float4x4;
 import de.linusdev.lutils.math.matrix.abstracts.floatn.FloatMxN;
+import de.linusdev.lutils.math.matrix.abstracts.floatn.min.MinFloat3x3;
+import de.linusdev.lutils.math.matrix.abstracts.floatn.min.MinFloat4x4;
+import de.linusdev.lutils.math.matrix.array.floatn.ABFloat4x4;
 import de.linusdev.lutils.math.vector.UnsignedVector;
 import de.linusdev.lutils.math.vector.Vector;
 import de.linusdev.lutils.math.vector.abstracts.floatn.Float3;
@@ -33,6 +36,7 @@ import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
+import static de.linusdev.lutils.math.vector.Vector.View.doesMappingCollide;
 import static de.linusdev.lutils.math.vector.Vector.View.isMappingSpecial;
 
 @SuppressWarnings({"UnusedReturnValue", "ForLoopReplaceableByForEach"})
@@ -343,7 +347,7 @@ public class VMath {
     }
 
     @Contract("_, _ -> param2")
-    public static @NotNull Float4x4 adjugate(@NotNull Float4x4 mat, @Unique @NotNull Float4x4 store) {
+    public static <M extends Float4x4> @NotNull M adjugate(@NotNull M mat, @Unique @NotNull M store) {
         assert uniqueMatrix(store, mat);
         // x = 0:
 
@@ -501,9 +505,255 @@ public class VMath {
     }
 
     @Contract("_, _ -> param2")
-    public static @NotNull Float4x4 inverse(@NotNull Float4x4 mat, @Unique @NotNull Float4x4 store) {
+    public static <M extends Float4x4> @NotNull M inverse(@NotNull M mat, @Unique @NotNull M store) {
         assert uniqueMatrix(store, mat);
         return VMath.scale(VMath.adjugate(mat, store), 1f / VMath.determinant(mat), store);
+    }
+
+    @Contract("_, _ -> param2")
+    public static <M extends MinFloat3x3> @NotNull M transpose3x3(@NotNull M mat, @UniqueView @NotNull M store) {
+        assert uniqueViewVector(store, mat);
+
+        if(store != mat) {
+            store.put(0,0, mat.get(0, 0));
+            store.put(1,1, mat.get(1, 1));
+            store.put(2,2, mat.get(2, 2));
+        }
+
+        swapWithBuf(mat, store, 0, 1, 1, 0);
+        swapWithBuf(mat, store, 0, 2, 2, 0);
+        swapWithBuf(mat, store, 1, 2, 2, 1);
+
+        return store;
+    }
+
+    /**
+     * stores read(ya, xa) at store(yb, xb) and <br>
+     * stores read(yb, xb) at store(ya, xa) <br>
+     * This functions uses a buffer value, to ensure that it works even if read and store are the same matrix.
+     */
+    private static void swapWithBuf(@NotNull FloatMxN read, @NotNull FloatMxN store, int ya, int xa, int yb, int xb) {
+        float buf = read.get(ya, xa);
+        store.put(ya, xa, read.get(yb, xb));
+        store.put(yb, xb, buf);
+    }
+
+    /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+     *                                                               *
+     *                                                               *
+     *               Special Matrix Creation Functions               *
+     *                                                               *
+     *                                                               *
+     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+    /**
+     * Creates a rotation matrix, which can rotate a 3D vector around given {@code axis}
+     * @param angle angle in radians. Describes, how much to rotate. (reminder: PI = 180°)
+     * @param axis axis to rotate around
+     * @param store matrix to store the result
+     * @return {@code store}
+     * @see <a href="https://en.wikipedia.org/wiki/Rotation_matrix#Rotation_matrix_from_axis_and_angle">Formula</a>
+     */
+    @Contract("_, _, _ -> param3")
+    public static <M extends MinFloat3x3> @NotNull M rotationMatrix(float angle, @NotNull Float3 axis, @NotNull M store) {
+        store.put(0,0, (float) (
+                ((double) (axis.x() * axis.x())) * (1d - Math.cos(angle)) + (Math.cos(angle))
+        ));
+
+        store.put(0,1, (float) (
+                ((double) (axis.x() * axis.y())) * (1d - Math.cos(angle)) - (axis.z() * Math.sin(angle))
+        ));
+
+        store.put(0,2, (float) (
+                ((double) (axis.x() * axis.z())) * (1d - Math.cos(angle)) + (axis.y() * Math.sin(angle))
+        ));
+
+        store.put(1,0, (float) (
+                ((double) (axis.x() * axis.y())) * (1d - Math.cos(angle)) + (axis.z() * Math.sin(angle))
+        ));
+
+        store.put(1,1, (float) (
+                ((double) (axis.y() * axis.y())) * (1d - Math.cos(angle)) + (Math.cos(angle))
+        ));
+
+        store.put(1,2, (float) (
+                ((double) (axis.y() * axis.z())) * (1d - Math.cos(angle)) - (axis.x() * Math.sin(angle))
+        ));
+
+        store.put(2,0, (float) (
+                ((double) (axis.x() * axis.z())) * (1d - Math.cos(angle)) - (axis.y() * Math.sin(angle))
+        ));
+
+        store.put(2,1, (float) (
+                ((double) (axis.y() * axis.z())) * (1d - Math.cos(angle)) + (axis.x() * Math.sin(angle))
+        ));
+
+        store.put(2,2, (float) (
+                ((double) (axis.z() * axis.z())) * (1d - Math.cos(angle)) + (Math.cos(angle))
+        ));
+
+        return store;
+    }
+
+    /**
+     * Creates a rotation matrix, which can rotate a 3D vector.
+     * @param yaw angle in radians. Describes, how much to rotate. (reminder: PI = 180°)
+     * @param pitch angle in radians. Describes, how much to rotate. (reminder: PI = 180°)
+     * @param roll angle in radians. Describes, how much to rotate. (reminder: PI = 180°)
+     * @param store matrix to store the result
+     * @return {@code store}
+     * @see <a href="https://en.wikipedia.org/wiki/Rotation_matrix#General_3D_rotations">Formula</a>
+     */
+    @Contract("_, _, _, _ -> param4")
+    public static <M extends MinFloat3x3> @NotNull M rotationMatrix(float yaw, float pitch, float roll, @NotNull M store) {
+        store.put(0,0, (float) (Math.cos(yaw) * Math.cos(pitch)));
+        store.put(0,1, (float) (Math.cos(yaw) * Math.sin(pitch) * Math.sin(roll) - (Math.sin(yaw) * Math.cos(roll))));
+        store.put(0,2, (float) (Math.cos(yaw) * Math.sin(pitch) * Math.cos(roll) + (Math.sin(yaw) * Math.sin(roll))));
+
+        store.put(1,0, (float) (Math.sin(yaw) * Math.cos(pitch)));
+        store.put(1,1, (float) (Math.sin(yaw) * Math.sin(pitch) * Math.sin(roll) + (Math.cos(yaw) * Math.cos(roll))));
+        store.put(1,2, (float) (Math.sin(yaw) * Math.sin(pitch) * Math.cos(roll) - (Math.cos(yaw) * Math.sin(roll))));
+
+        store.put(2,0, (float) (-Math.sin(pitch)));
+        store.put(2,1, (float) (Math.cos(pitch) * Math.sin(roll)));
+        store.put(2,2, (float) (Math.cos(pitch) * Math.cos(roll)));
+
+        return store;
+    }
+
+    /**
+     * Puts given {@code translation} into the first three fields of the last column of given matrix {@code store}.
+     * All other fields will not be changed.
+     * @param translation the translation vector
+     * @param store the matrix to store the translation
+     * @return {@code store}
+     */
+    public static <M extends Float4x4> @NotNull M translationMatrix(@NotNull Float3 translation, @NotNull M store) {
+        store.put(0, 3, translation.x());
+        store.put(1, 3, translation.y());
+        store.put(2, 3, translation.z());
+
+        return store;
+    }
+
+    /**
+     * Create a diagonal matrix with given {@code value}.
+     * @param value the value to set on the diagonals
+     * @param fillZeros whether to put zeros in all fields, that a diagonal matrix requires to be zero. This is useful
+     *                  if a new matrix was created which is initialized with zeros anyway.
+     * @param store the matrix to store in
+     * @return {@code store}
+     */
+    public static <M extends FloatMxN> @NotNull M diagonalMatrix(float value, boolean fillZeros, @NotNull M store) {
+        for (int i = 0; i < store.getHeight() && i < store.getWidth(); i++)
+            store.put(i, i, value);
+
+        if(fillZeros) {
+            for (int i = 0; i < store.getHeight(); i++) {
+                for (int j = 0; j < store.getWidth(); j++) {
+                    if(i == j) continue;
+                    store.put(i, j, 0f);
+                }
+            }
+        }
+
+        return store;
+    }
+
+    /**
+     * Projection matrix
+     */
+    static Float4x4 projectionMatrixExplained(
+            float aspect,
+            float width,
+            float height,
+            float near,
+            float far,
+            boolean perspective,
+            float fudgeFactor
+    ) {
+        ABFloat4x4 mat = new ABFloat4x4();
+
+        // map x from [-width/2, +width/2] to [-1, 1]. E.G divide by width/2,
+        // but also ensure, that all aspect ratios work -> multiply width with aspect or divide height by aspect
+        // -> the factor for x is: 1f/((aspect*width)/2), which is the same as 2f/(aspect*width)
+        mat.put(0,0, 2f/(aspect * width));
+        // map y from [-height/2,+height/2] to [-1, 1] -> divide by height/2. Aspect is already done in the x coordinate
+        mat.put(1,1, 2f/height);
+
+        // Map z from [near,far] to [-1,1] -> subtract near, so that z goes from [0,far-near]
+        // then divide by (far-near)/2, so that z goes from [0, 2]
+        // then subtract 1, so that z foes from [-1,1]
+        // This means: ((z-near) / ((far-near)/2)) - 1
+        // But we need it in the form of z*someConst1 + someConst2
+        // Luckily we can rewrite this equation to be:
+        // z* (2/(far-near)) - (near+far)/(far-near)
+        mat.put(2, 2, 2f/(far-near));
+        mat.put(2, 3, -(near+far)/(far-near));
+
+        if(perspective) {
+            // It is common practise (for example in OpenGL), that the xy-coordinate will be
+            // divided by the w(index=3) component of the vector after the projection matrix
+            // was applied.
+            // We can introduce a perspective by dividing x and y by (1.0+z*someFactor) after(!)
+            // the matrix should set the w component of the vector to:
+            // someFactor * (z* (2/(far-near)) - (near+far)/(far-near)) + 1.0
+            // which is the same as:
+            // z * ( (someFactor*2) / (far-near) )   -   someFactor * ( (near+far) / (far-near) ) + 1.0
+            mat.put(3, 2, (2f*fudgeFactor) / (far-near));
+            mat.put(3, 3, -fudgeFactor * ((near+far)/(far-near)) + 1f);
+        } else {
+            // keep the w comp of the vector
+            mat.put(3, 3, 1f);
+        }
+
+        return mat;
+    }
+
+    /**
+     * Creates a projection matrix, which maps from {@code [-width,width]}, {@code [-height,height]} and {@code [near,far]}
+     * to {@code [-1,1]}, {@code [-1,1]} and {@code [-1,1]}.<br>
+     * The matrix can optionally also store perspective data in the last component of the vector.
+     * <br><br>
+     * For a code explanation see comments in {@link #projectionMatrixExplained(float, float, float, float, float, boolean, float)}.
+     * @param aspect aspect ratio to extend width by.
+     * @param width width of screen (2f for 45°)
+     * @param height height of screen (2f for 45°)
+     * @param near near clipping
+     * @param far far clipping
+     * @param perspective whether to store perspective in w
+     * @param fudgeFactor fudge factor for perspective
+     * @return projection matrix
+     */
+    public static <M extends MinFloat4x4> M projectionMatrix(
+            float aspect,
+            float width,
+            float height,
+            float near,
+            float far,
+            boolean perspective,
+            float fudgeFactor,
+            @NotNull M store
+    ) {
+
+        float dfn = 1f/(far-near); // replace /(far-near) with *dfn
+        float nf = -near-far; // replace -(near+far) with nf
+
+        store.put(0,0, 2f/(aspect * width));
+        store.put(1,1, 2f/height);
+
+        store.put(2, 2, 2f*dfn);
+        store.put(2, 3, nf*dfn);
+
+        if(perspective) {
+            store.put(3, 2, 2f * fudgeFactor * dfn);
+            store.put(3, 3, fudgeFactor * nf * dfn + 1f);
+        } else {
+            store.put(3, 3, 1f);
+        }
+
+
+        return store;
     }
 
     /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -634,8 +884,10 @@ public class VMath {
 
     /**
      * Checks if no {@link Vector} in {@code vectors} is a {@link Vector#isView() view} on {@code unique}. Or if {@code unique}
-     * itself is a view, that {@code unique} is not a view on any vector in {@code vectors}.
-     * Views with a non-{@link Vector.View#isMappingSpecial(Vector) special} {@link Vector.View#getMapping() mapping} are allowed.
+     * itself is a view, that {@code unique} is not a view on any vector in {@code vectors}.<br>
+     * Views with a non-{@link Vector.View#isMappingSpecial(Vector) special} {@link Vector.View#getMapping() mapping} are allowed.<br>
+     * If {@code unique} is a view, views whose mapping do not {@link Vector.View#doesMappingCollide(int[], int[]) collide}
+     * with the mapping of {@code unique} are allowed.
      * @param vectors array of {@link Vector vectors}
      * @param unique vector which should be checked if it is unique (view wise)
      * @return {@code true} if no vector in {@code vectors} is a {@link Vector#isView() view} on {@code unique}
@@ -652,6 +904,7 @@ public class VMath {
                         vectors[i].isView()
                      && original == vectors[i].getAsView().getOriginal()
                      && isMappingSpecial(defaultMapping, vectors[i])
+                     && doesMappingCollide(defaultMapping, vectors[i].getAsView().getMapping())
                 ) {
                     return false;
                 } else if(!vectors[i].isView() && vectors[i] == original && isUniqueMappingSpecial) {

@@ -16,6 +16,7 @@
 
 package de.linusdev.lutils.math.matrix;
 
+import de.linusdev.lutils.math.matrix.abstracts.floatn.FloatMxN;
 import de.linusdev.lutils.math.vector.Vector;
 import org.jetbrains.annotations.NotNull;
 
@@ -28,8 +29,72 @@ import org.jetbrains.annotations.NotNull;
  * parameters of get and put methods:<br>
  * x: from 0 (inclusive) to N (exclusive)<br>
  * y: from 0 (inclusive) to M (exclusive)<br>
+ * Note: Parameters of get and put methods are in reverse order (y first, x second). This is so
+ * that it matches the mathematical description of a matrix (it still starts at 0 though).
  */
 public interface Matrix extends Vector {
+
+    /**
+     *
+     * @param matrix {@link FloatMxN}
+     * @param data a matrix as float array
+     * @param epsilon the maximum difference between each component. 0.0 for true equality
+     * @return {@code true} if the difference of each component of {@code matrix} and {@code data} is equal or smaller than
+     * epsilon.
+     */
+    static boolean equals(@NotNull FloatMxN matrix, float @NotNull [] data, float epsilon) {
+        if((matrix.getWidth() * matrix.getHeight()) != data.length) {
+            return false;
+        }
+
+        for(int y = 0; y < matrix.getHeight(); y++) {
+            for(int x = 0; x < matrix.getWidth(); x++) {
+                if(Math.abs(matrix.get(y, x) - data[(y * matrix.getWidth()) + x]) > epsilon)
+                    return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     *
+     * @param matrix {@link FloatMxN}
+     * @param other {@link FloatMxN} to compare
+     * @param epsilon the maximum difference between each component. 0.0 for true equality
+     * @return {@code true} if the difference of each component of {@code matrix} and {@code data} is equal or smaller than
+     * epsilon.
+     */
+    static boolean equals(@NotNull FloatMxN matrix, @NotNull FloatMxN other, float epsilon) {
+        if(matrix.getWidth() != other.getWidth() || matrix.getHeight() != other.getHeight()) return false;
+
+        for(int y = 0; y < matrix.getHeight(); y++) {
+            for(int x = 0; x < matrix.getWidth(); x++) {
+                if(Math.abs(matrix.get(y, x) - other.get(y, x)) > epsilon)
+                    return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * Checks if given {@code matrix} is an identity matrix. An identity matrix is a diagonal
+     * matrix with every diagonal component being {@code 1.0}.
+     * @param matrix matrix to check
+     * @param epsilon the maximum difference between each component. 0.0 for a true identity
+     * @return {@code true} if given {@code matrix} is an identity matrix.
+     */
+    static boolean isIdentity(@NotNull FloatMxN matrix, float epsilon) {
+        for (int i = 0; i < matrix.getWidth(); i++) {
+            for (int j = 0; j < matrix.getHeight(); j++) {
+                if(i == j && Math.abs(matrix.get(i, j) - 1f) > epsilon) return false;
+                if(i != j && Math.abs(matrix.get(i, j) - 0f) > epsilon) return false;
+            }
+        }
+
+        return true;
+    }
 
     @FunctionalInterface
     interface MatrixGetter<M extends Matrix> {
@@ -74,7 +139,7 @@ public interface Matrix extends Vector {
      * @return index of given position in this {@link Matrix}
      */
     default int positionToIndex(int y, int x) {
-        return y * getWidth() + x;
+        return getMemoryLayout().positionToIndex(getWidth(), getHeight(), y, x);
     }
 
     /**
@@ -103,8 +168,60 @@ public interface Matrix extends Vector {
     @Override
     boolean isBufferBacked();
 
+    /**
+     * Current {@link MatrixMemoryLayout}.
+     * @throws UnsupportedOperationException if this matrix is a {@link View}.
+     */
+    @NotNull MatrixMemoryLayout getMemoryLayout();
+
+    /**
+     * Set the {@link MatrixMemoryLayout memory layout}. This method will not move
+     * the actual data of the matrix. That means, that {@code get(y, x)} before this method call
+     * may not equal to {@code get(y, x)} after this method call.
+     */
+    void setMemoryLayout(@NotNull MatrixMemoryLayout layout);
+
     @Override
     default boolean isView() {
         return false;
+    }
+
+    interface View extends Matrix {
+
+        /**
+         * Converts a matrix-position-based mapping to an index-based mapping (which is used by all views).
+         * A matrix-position-based mapping is a mapping with the following layout:<br>
+         * <pre>{@code
+         * mapping = new int[]{
+         *                      y0,x0  ,  y0,x1,
+         *                      y1,x0  ,  y1,x1
+         *                    }
+         * }</pre>
+         * which maps <br>
+         * {@code view.get(0,0)} to {@code original.get(y0,x0)},<br>
+         * {@code view.get(0,1)} to {@code original.get(y0,x1)},<br>
+         * {@code view.get(1,0)} to {@code original.get(y1,x0)}, ...<br>
+         * for a 2x2 matrix.
+         *
+         * @param original original matrix
+         * @param mapping matrix pos mapping
+         * @return index based mapping
+         */
+        static int @NotNull [] matrixPosMappingToIndexMapping(
+                @NotNull Matrix original, int @NotNull [] mapping
+        ) {
+            int[] indexMapping = new int[mapping.length / 2];
+
+            for (int i = 0; i < indexMapping.length; i++) {
+                indexMapping[i] = original.positionToIndex(mapping[i * 2], mapping[i * 2 + 1]);
+            }
+
+            return indexMapping;
+        }
+
+        @Override
+        default int positionToIndex(int y, int x) {
+            return MatrixMemoryLayout.ROW_MAJOR.positionToIndex(getWidth(), getHeight(), y, x);
+        }
     }
 }

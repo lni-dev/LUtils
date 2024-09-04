@@ -4,10 +4,10 @@ import de.linusdev.lutils.math.VMath;
 import de.linusdev.lutils.math.matrix.array.floatn.ABFloat4x4;
 import de.linusdev.lutils.math.matrix.buffer.floatn.BBFloat4x4;
 import de.linusdev.lutils.math.vector.Vector;
+import de.linusdev.lutils.math.vector.abstracts.floatn.Float2;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 class FloatMxNTest {
 
@@ -24,4 +24,33 @@ class FloatMxNTest {
         assertTrue(Vector.equals(abFloat, bbFloat, 0.f));
     }
 
+    @Test
+    void createFloat2View() {
+
+        Float4x4 mat = new ABFloat4x4();
+        Float2 view = mat.createFloat2View(1, 1, 2,3);
+
+        mat.put(1, 1, 10f);
+        assertEquals(10f, mat.get(1, 1));
+        assertEquals(10f, view.get(0));
+
+        view.put(1, 35f);
+
+        assertEquals(35f, mat.get(2, 3));
+        assertEquals(35f, view.get(1));
+
+    }
+
+    @Test
+    void createFloat3x3View() {
+        Float4x4 mat = new ABFloat4x4();
+        Float3x3 view = mat.createFloat3x3View(
+                0,0,  0,1, 0,2,
+                1,0, 1,1, 1,2,
+                2,0, 2,1, 2,2
+        );
+
+        mat.put(2, 2, 10f);
+        assertEquals(10f, view.get(2, 2));
+    }
 }

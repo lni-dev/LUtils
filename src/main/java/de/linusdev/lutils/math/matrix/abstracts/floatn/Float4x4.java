@@ -16,11 +16,41 @@
 
 package de.linusdev.lutils.math.matrix.abstracts.floatn;
 
-public interface Float4x4 extends Float4xN {
+import de.linusdev.lutils.math.matrix.Matrix;
+import de.linusdev.lutils.math.matrix.abstracts.floatn.min.MinFloat3x3;
+import de.linusdev.lutils.math.matrix.abstracts.floatn.min.MinFloat4x4;
+import org.jetbrains.annotations.NotNull;
+
+/**
+ * @see Matrix
+ */
+public interface Float4x4 extends Float4xN, MinFloat3x3, MinFloat4x4 {
     int HEIGHT = 4;
 
     @Override
     default int getHeight() {
         return HEIGHT;
+    }
+
+    default @NotNull Float3x3 createFloat3x3View(
+            int y00, int x00,    int y01, int x01,    int y02, int x02,
+
+            int y10, int x10,    int y11, int x11,    int y12, int x12,
+
+            int y20, int x20,    int y21, int x21,    int y22, int x22
+    ) {
+        return new Float3x3.View(this, new int[] {
+                y00,x00,    y01,x01,    y02,x02,
+
+                y10,x10,    y11,x11,    y12,x12,
+
+                y20,x20,    y21,x21,    y22,x22
+        }, true);
+    }
+
+    class View extends FloatMxN.View implements Float4x4 {
+        protected View(@NotNull FloatMxN original, int @NotNull [] mapping, boolean matrixPosMapping) {
+            super(original, mapping, matrixPosMapping);
+        }
     }
 }

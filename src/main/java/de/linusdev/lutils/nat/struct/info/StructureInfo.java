@@ -87,4 +87,24 @@ public class StructureInfo implements MemorySizeable {
     public int @NotNull [] getSizes() {
         return sizes;
     }
+
+    @Override
+    public String toString() {
+        StringBuilder ret = new StringBuilder(
+                this.getClass().getSimpleName() + "("
+                        + "alignment= " + alignment
+                        + ", size=" + size
+                        + ", compressed=" + compressed
+                + ") {\n");
+
+        for (int i = 0; i < sizes.length; i++) {
+            if(i % 2 == 0 && sizes[i]  != 0) {
+                ret.append("\tpadding: ").append(sizes[i]).append(" bytes\n");
+            } else if(i % 2 == 1) {
+                ret.append("\titem: ").append(sizes[i]).append(" bytes\n");
+            }
+        }
+
+        return ret + "}";
+    }
 }

@@ -18,6 +18,7 @@ package de.linusdev.lutils.math.vector.array.floatn;
 
 import de.linusdev.lutils.math.vector.Vector;
 import de.linusdev.lutils.math.vector.abstracts.floatn.FloatN;
+import org.jetbrains.annotations.NotNull;
 
 public abstract class ABFloatN implements FloatN {
 
@@ -43,6 +44,11 @@ public abstract class ABFloatN implements FloatN {
     @Override
     public boolean isBufferBacked() {
         return false;
+    }
+
+    @Override
+    public float @NotNull [] getArray() {
+        return array;
     }
 
     @Override

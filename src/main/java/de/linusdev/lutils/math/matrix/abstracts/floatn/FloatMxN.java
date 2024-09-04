@@ -17,6 +17,7 @@
 package de.linusdev.lutils.math.matrix.abstracts.floatn;
 
 import de.linusdev.lutils.math.matrix.Matrix;
+import de.linusdev.lutils.math.matrix.MatrixMemoryLayout;
 import de.linusdev.lutils.math.vector.abstracts.floatn.Float2;
 import de.linusdev.lutils.math.vector.abstracts.floatn.Float3;
 import de.linusdev.lutils.math.vector.abstracts.floatn.Float4;
@@ -63,6 +64,53 @@ public interface FloatMxN extends Matrix, FloatN {
                 positionToIndex(y3, x3),
                 positionToIndex(y4, x4)
         });
+    }
+
+    /**
+     * Fills this matrix with given {@code data}. The given array must be a matrix in {@link MatrixMemoryLayout#ROW_MAJOR ROW_MAJOR}
+     * format.
+     * @param data {@link MatrixMemoryLayout#ROW_MAJOR ROW_MAJOR} array
+     * @return this
+     */
+    @Override
+    default @NotNull FloatMxN fillFromArray(float @NotNull [] data) {
+        getMemoryLayout().fillOfRowMajorArray(this, data);
+        return this;
+    }
+
+    abstract class View extends FloatN.View implements FloatMxN, Matrix.View {
+
+        protected final FloatMxN original;
+
+        protected View(@NotNull FloatMxN original, int @NotNull [] mapping, boolean matrixPosMapping) {
+            super(original, matrixPosMapping ? Matrix.View.matrixPosMappingToIndexMapping(original, mapping) : mapping);
+            this.original = original;
+        }
+
+        @Override
+        public String toString() {
+            return Matrix.toString(this, ELEMENT_TYPE_NAME, FloatMxN::get);
+        }
+
+        @Override
+        public float get(int y, int x) {
+            return original.get(mapping[positionToIndex(y, x)]);
+        }
+
+        @Override
+        public void put(int y, int x, float value) {
+            original.put(mapping[positionToIndex(y, x)], value);
+        }
+
+        @Override
+        public @NotNull MatrixMemoryLayout getMemoryLayout() {
+            throw new UnsupportedOperationException("A view has no memory layout");
+        }
+
+        @Override
+        public void setMemoryLayout(@NotNull MatrixMemoryLayout layout) {
+            throw new UnsupportedOperationException("A view has no memory layout");
+        }
     }
 
 }

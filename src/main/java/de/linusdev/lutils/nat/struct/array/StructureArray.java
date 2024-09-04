@@ -376,11 +376,12 @@ public class StructureArray<T extends Structure> extends ModTrackingStructure im
         StringBuilder sb = new StringBuilder();
 
         sb.append("length=").append(length()).append("\n");
+        sb.append("stride=").append(getInfo().getStride()).append("\n");
         sb.append("items={\n");
 
         int index = 0;
         for (Structure item : items) {
-            sb.append(Utils.indent(index++ + ": " + item, "    ")).append(",\n");
+            sb.append(Utils.indent(index + " (offsetStart=" + (offset + positions.position(index++)) + "): " + item, "    ")).append(",\n");
         }
 
         sb.append("}");
