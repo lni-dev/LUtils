@@ -56,7 +56,6 @@ public class HTTPRequestReader implements AutoCloseable {
     private void readToBuffer() throws IOException {
         position = 0;
         limit = in.read(buffer);
-        System.out.println("readToBuffer: limit: " + limit);
     }
 
     /**
@@ -88,11 +87,9 @@ public class HTTPRequestReader implements AutoCloseable {
         charBufferObject.clear();
         decodeCharBufferObject.clear();
 
-        System.out.println("Start decoding");
         CoderResult result;
         do {
             // decode
-            System.out.println("decode: endOFInput: " + (limit != buffer.length) + ", limit: " + limit + ", buffer.length: " + buffer.length);
             result = decoder.decode(bufferObject, decodeCharBufferObject, limit != buffer.length);
 
             // Check result
@@ -141,18 +138,14 @@ public class HTTPRequestReader implements AutoCloseable {
 
     @SuppressWarnings("UnusedReturnValue")
     public @NotNull CharRet readChar() throws IOException {
-        System.out.println("charBufferObject.remaining(): " + charBufferObject.remaining());
         if(charBufferObject.remaining() == 0) {
             var a = readToCharBuffer();
-
-            System.out.println("readToCharBuffer(): " + a);
 
             if(!a) {
                 return charRet.eof();
             }
         }
 
-        System.out.println("before charBufferObject.get():  cbo.pos:" + charBufferObject.position() + ", cbo.limit: " + charBufferObject.limit());
         charRet.character = charBufferObject.get();
 
         // Move position of byte buffer according to the amount of bytes this utf-16 char would represent in utf-8
