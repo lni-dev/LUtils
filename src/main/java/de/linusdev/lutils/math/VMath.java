@@ -681,15 +681,14 @@ public class VMath {
         // map y from [-height/2,+height/2] to [-1, 1] -> divide by height/2. Aspect is already done in the x coordinate
         mat.put(1,1, 2f/height);
 
-        // Map z from [near,far] to [-1,1] -> subtract near, so that z goes from [0,far-near]
-        // then divide by (far-near)/2, so that z goes from [0, 2]
-        // then subtract 1, so that z foes from [-1,1]
-        // This means: ((z-near) / ((far-near)/2)) - 1
+        // Map z from [near,far] to [0,1] -> subtract near, so that z goes from [0,far-near]
+        // then divide by (far-near), so that z goes from [0, 1]
+        // This means: (z-near) / (far-near)
         // But we need it in the form of z*someConst1 + someConst2
         // Luckily we can rewrite this equation to be:
-        // z* (2/(far-near)) - (near+far)/(far-near)
-        mat.put(2, 2, 2f/(far-near));
-        mat.put(2, 3, -(near+far)/(far-near));
+        // z* (1/(far-near)) - (near)/(far-near)
+        mat.put(2, 2, 1f/(far-near));
+        mat.put(2, 3, -(near)/(far-near));
 
         if(perspective) {
             // It is common practise (for example in OpenGL), that the xy-coordinate will be
@@ -697,11 +696,11 @@ public class VMath {
             // was applied.
             // We can introduce a perspective by dividing x and y by (1.0+z*someFactor) after(!)
             // the matrix should set the w component of the vector to:
-            // someFactor * (z* (2/(far-near)) - (near+far)/(far-near)) + 1.0
+            // someFactor * (z*/(far-near) - (near)/(far-near)) + 1.0
             // which is the same as:
-            // z * ( (someFactor*2) / (far-near) )   -   someFactor * ( (near+far) / (far-near) ) + 1.0
-            mat.put(3, 2, (2f*fudgeFactor) / (far-near));
-            mat.put(3, 3, -fudgeFactor * ((near+far)/(far-near)) + 1f);
+            // z * ( someFactor / (far-near))  -  (someFactor * near ) / (far-near) + 1.0
+            mat.put(3, 2, fudgeFactor / (far-near));
+            mat.put(3, 3,  (-fudgeFactor * near) / (far-near) + 1f);
         } else {
             // keep the w comp of the vector
             mat.put(3, 3, 1f);
@@ -712,7 +711,7 @@ public class VMath {
 
     /**
      * Creates a projection matrix, which maps from {@code [-width,width]}, {@code [-height,height]} and {@code [near,far]}
-     * to {@code [-1,1]}, {@code [-1,1]} and {@code [-1,1]}.<br>
+     * to {@code [-1,1]}, {@code [-1,1]} and {@code [0,1]}.<br>
      * The matrix can optionally also store perspective data in the last component of the vector.
      * <br><br>
      * For a code explanation see comments in {@link #projectionMatrixExplained(float, float, float, float, float, boolean, float)}.
@@ -737,17 +736,17 @@ public class VMath {
     ) {
 
         float dfn = 1f/(far-near); // replace /(far-near) with *dfn
-        float nf = -near-far; // replace -(near+far) with nf
+        float nDfn = -near * dfn;
 
         store.put(0,0, 2f/(aspect * width));
         store.put(1,1, 2f/height);
 
-        store.put(2, 2, 2f*dfn);
-        store.put(2, 3, nf*dfn);
+        store.put(2, 2, dfn);
+        store.put(2, 3, nDfn);
 
         if(perspective) {
-            store.put(3, 2, 2f * fudgeFactor * dfn);
-            store.put(3, 3, fudgeFactor * nf * dfn + 1f);
+            store.put(3, 2, fudgeFactor * dfn);
+            store.put(3, 3, fudgeFactor * nDfn + 1f);
         } else {
             store.put(3, 3, 1f);
         }

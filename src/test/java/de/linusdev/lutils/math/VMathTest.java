@@ -923,9 +923,19 @@ class VMathTest {
     @Test
     void projectionMatrix() {
 
-        var mat = VMath.projectionMatrix(16f/9f, 2f, 2f, 1f, 10f, true, 1.01f, new ABFloat4x4());
+        float width = 2f;
+        float height = 2f;
+        float near = 1f;
+        float far = 10f;
 
-        System.out.println(mat);
+        var mat = VMath.projectionMatrix(2f, width, height, near, far, false, 1.01f, new ABFloat4x4());
+
+
+
+        ABFloat4 vector = new ABFloat4(width, height/4f, far, 1f);
+        VMath.multiply(mat, vector, vector);
+
+        System.out.println(vector);
 
     }
 
