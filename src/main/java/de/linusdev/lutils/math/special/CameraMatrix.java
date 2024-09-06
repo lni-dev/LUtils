@@ -2,13 +2,18 @@ package de.linusdev.lutils.math.special;
 
 import de.linusdev.lutils.math.VMath;
 import de.linusdev.lutils.math.matrix.abstracts.floatn.Float4x4;
+import de.linusdev.lutils.math.vector.Vector;
 import de.linusdev.lutils.math.vector.abstracts.floatn.Float3;
+import de.linusdev.lutils.math.vector.abstracts.floatn.FloatN;
 import org.jetbrains.annotations.NotNull;
 
 public class CameraMatrix extends TransRotMatrix {
 
     protected final @NotNull Float4x4 backingViewMatrix;
 
+    /**
+     * {@link VMath#normalize(FloatN, FloatN) normalized} world up vector
+     */
     protected @NotNull Float3 worldUp = DEFAULT_UP;
 
     protected final @NotNull Float3 viewDirectionBacked;
@@ -40,7 +45,13 @@ public class CameraMatrix extends TransRotMatrix {
         );
     }
 
+    /**
+     *
+     * @param worldUp must be {@link VMath#normalize(FloatN, FloatN) normalized}
+     * @see #worldUp
+     */
     public void setWorldUp(@NotNull Float3 worldUp) {
+        assert Vector.isNormalized(worldUp, 0.00001f);
         this.worldUp = worldUp;
     }
 

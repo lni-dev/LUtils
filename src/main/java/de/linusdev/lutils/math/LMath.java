@@ -6,6 +6,11 @@ package de.linusdev.lutils.math;
 public class LMath {
 
     /**
+     * {@link Math#PI PI} as float.
+     */
+    public static final float PIf = (float) Math.PI;
+
+    /**
      * Clamp {@code value} between {@code min} and {@code max}.
      * @param value input value
      * @param min minimum

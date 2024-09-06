@@ -16,6 +16,7 @@
 
 package de.linusdev.lutils.math.vector;
 
+import de.linusdev.lutils.math.VMath;
 import de.linusdev.lutils.math.vector.abstracts.floatn.FloatN;
 import de.linusdev.lutils.math.vector.abstracts.intn.IntN;
 import de.linusdev.lutils.math.vector.abstracts.longn.LongN;
@@ -138,6 +139,32 @@ public interface Vector {
         }
 
         return true;
+    }
+
+    /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+     *                                                               *
+     *                                                               *
+     *                Other-Vector-Checking-Methods                  *
+     *                                                               *
+     *                                                               *
+     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+    /**
+     * Checks if given {@code vector} is normalized by comparing the squared length of the vector to {@code 1.0}.
+     * @param vector {@link FloatN} vector to check if it is normalized
+     * @param epsilon the maximum difference between {@code 1.0} and the squared length of given {@code vector}. 0.0 for true equality
+     * @return {@code true} if given {@code vector} can be considered normalized for given {@code epsilon}
+     * @see VMath#normalize(FloatN, FloatN)
+     */
+    static boolean isNormalized(@NotNull FloatN vector, float epsilon) {
+        float res = 0;
+        float comp;
+        for (int i = 0; i < vector.getMemberCount(); i++) {
+            comp = vector.get(i);
+            res += comp*comp;
+        }
+
+        return Math.abs(res - 1.0f) < epsilon;
     }
 
     /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *

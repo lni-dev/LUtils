@@ -67,6 +67,7 @@ public class TransRotMatrix {
     /**
      * Sets the rotation using {@link VMath#rotationMatrix(float, Float3, MinFloat3x3)}. Note:
      * {@link #yaw}, {@link #pitch} and {@link #roll} will not be updated and will contain wrong values.
+     * @param axis normalized rotation axis.
      */
     public void setRotation(float angle, @NotNull Float3 axis) {
         VMath.rotationMatrix(angle, axis, backingMatrix);

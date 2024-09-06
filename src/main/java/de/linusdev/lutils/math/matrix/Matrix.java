@@ -37,7 +37,7 @@ public interface Matrix extends Vector {
     /**
      *
      * @param matrix {@link FloatMxN}
-     * @param data a matrix as float array
+     * @param data a {@link MatrixMemoryLayout#ROW_MAJOR row major} matrix as float array
      * @param epsilon the maximum difference between each component. 0.0 for true equality
      * @return {@code true} if the difference of each component of {@code matrix} and {@code data} is equal or smaller than
      * epsilon.
@@ -106,6 +106,15 @@ public interface Matrix extends Vector {
             @NotNull String name,
             @NotNull MatrixGetter<M> getter
     ) {
+        return Matrix.toString(matrix, name, getter, 2);
+    }
+
+    static <M extends Matrix> @NotNull String toString(
+            @NotNull M matrix,
+            @NotNull String name,
+            @NotNull MatrixGetter<M> getter,
+            int visibleDigits
+    ) {
         StringBuilder sb = new StringBuilder();
 
         sb
@@ -117,7 +126,8 @@ public interface Matrix extends Vector {
 
         for(int y = 0; y < matrix.getHeight(); y++) {
             for(int x = 0; x < matrix.getWidth(); x++) {
-                sb.append(String.format(" % 10.2f ", ((Number) getter.get(matrix, y, x)).doubleValue()));
+                //noinspection MalformedFormatString
+                sb.append(String.format(" % 10." + visibleDigits + "f ", ((Number) getter.get(matrix, y, x)).doubleValue()));
             }
             if(y != matrix.getHeight()-1)
                 sb.append("\n");

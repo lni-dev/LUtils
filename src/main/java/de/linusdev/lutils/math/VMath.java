@@ -42,8 +42,6 @@ import static de.linusdev.lutils.math.vector.Vector.View.isMappingSpecial;
 @SuppressWarnings({"UnusedReturnValue", "ForLoopReplaceableByForEach"})
 public class VMath {
 
-
-
     /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
      *                                                               *
      *                                                               *
@@ -137,13 +135,26 @@ public class VMath {
         return store;
     }
 
+    /**
+     * Normalizes given vector {@code toNormalize} so that the vector has a {@link VMath#length(FloatN) length}  of {@code 1.0f}.
+     * This is archived by dividing each component by the length of the vector. If the vector has a length of {@code 0.0}, the
+     * returned vector will also have a length of {@code 0.0}.
+     * @param toNormalize vector to normalize
+     * @param store vector to store the result in
+     * @return {@code store}
+     * @see Vector#isNormalized(FloatN, float)
+     */
     @Contract("_, _ -> param2")
     public static <V extends FloatN> @NotNull V normalize(@NotNull V toNormalize, @UniqueView @NotNull V store) {
         assert matchingDimensions(toNormalize, store);
         assert uniqueViewVector(store, toNormalize);
 
         float length = length(toNormalize);
-        length = length == 0.0f ? 1.f : length;
+        if(length == 0f || length == 1f) {
+            for(int i = 0; i < toNormalize.getMemberCount(); i++)
+                store.put(i, toNormalize.get(i));
+            return store;
+        }
 
         for(int i = 0; i < toNormalize.getMemberCount(); i++)
             store.put(i, toNormalize.get(i) / length);
@@ -549,13 +560,15 @@ public class VMath {
     /**
      * Creates a rotation matrix, which can rotate a 3D vector around given {@code axis}
      * @param angle angle in radians. Describes, how much to rotate. (reminder: PI = 180°)
-     * @param axis axis to rotate around
+     * @param axis axis to rotate around. Must be {@link #normalize(FloatN, FloatN) normalized}.
      * @param store matrix to store the result
      * @return {@code store}
      * @see <a href="https://en.wikipedia.org/wiki/Rotation_matrix#Rotation_matrix_from_axis_and_angle">Formula</a>
      */
     @Contract("_, _, _ -> param3")
     public static <M extends MinFloat3x3> @NotNull M rotationMatrix(float angle, @NotNull Float3 axis, @NotNull M store) {
+        assert Vector.isNormalized(axis, 0.0001f);
+
         store.put(0,0, (float) (
                 ((double) (axis.x() * axis.x())) * (1d - Math.cos(angle)) + (Math.cos(angle))
         ));
