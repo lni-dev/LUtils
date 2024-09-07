@@ -14,12 +14,20 @@
  * limitations under the License.
  */
 
-package de.linusdev.lutils.wip_image;
+package de.linusdev.lutils.image.wip_webp.reader.simple.lossless.transforms;
 
-public interface Image {
+import de.linusdev.lutils.image.wip_webp.reader.BitReader;
+import de.linusdev.lutils.image.wip_webp.reader.WebPImageInfo;
+import org.jetbrains.annotations.NotNull;
 
-    int getWidth();
+public class PredictorTypeTransform {
 
-    int getHeight();
+    public static void read(@NotNull BitReader reader, @NotNull WebPImageInfo info) {
+        int sizeBits = reader.readBitsToInt(3) + 2;
+        int blockWidth = 1 << sizeBits;
+        int blockHeight = 1 << sizeBits;
+        int transformWidth = (info.imageWidth() + (1 << sizeBits) - 1) / (1 << sizeBits);
+
+    }
 
 }

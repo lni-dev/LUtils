@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package de.linusdev.lutils.wip_image.webp.reader.simple.lossless;
+package de.linusdev.lutils.image.wip_webp.reader.simple.lossless;
 
 import de.linusdev.lutils.nat.enums.NativeEnumMember32;
 import de.linusdev.lutils.other.UnknownConstantException;

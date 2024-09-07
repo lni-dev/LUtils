@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-package de.linusdev.lutils.wip_image.webp.reader;
+package de.linusdev.lutils.image.wip_webp.reader;
 
 import org.jetbrains.annotations.NotNull;
 
-import static de.linusdev.lutils.wip_image.webp.reader.WebReaderUtils.*;
+import static de.linusdev.lutils.image.wip_webp.reader.WebReaderUtils.*;
 
 public enum WebPImageType {
     SIMPLE_LOSSY((byte) 0x20),

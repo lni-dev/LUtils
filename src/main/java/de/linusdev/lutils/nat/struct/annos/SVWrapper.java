@@ -22,12 +22,16 @@ import org.jetbrains.annotations.Nullable;
 
 import java.lang.annotation.Annotation;
 
-@SuppressWarnings("ClassExplicitlyAnnotation")
-public class SVWrapper implements StructValue {
+@SuppressWarnings({"ClassExplicitlyAnnotation", "unused"})
+public record SVWrapper(
+        int @NotNull [] length,
+        @NotNull Class<?> @NotNull [] elementType,
+        @NotNull Class<?> overwriteStructureLayout
+) implements StructValue {
 
     /**
-     * @param length {@link StructValue#length()}
-     * @param elementType {@link StructValue#elementType()}
+     * @param length                   {@link StructValue#length()}
+     * @param elementType              {@link StructValue#elementType()}
      * @param overwriteStructureLayout {@link StructValue#overwriteStructureLayout()}
      * @see StructValue
      */
@@ -40,7 +44,7 @@ public class SVWrapper implements StructValue {
     }
 
     /**
-     * @param length {@link StructValue#length()}
+     * @param length      {@link StructValue#length()}
      * @param elementType {@link StructValue#elementType()}
      * @see StructValue
      */
@@ -62,6 +66,18 @@ public class SVWrapper implements StructValue {
     }
 
     /**
+     * @param width  {@link StructValue#length()}
+     * @param height {@link StructValue#length()}
+     * @see StructValue
+     */
+    public static @NotNull SVWrapper imageSize(
+            int width,
+            int height
+    ) {
+        return new SVWrapper(new int[]{width, height}, null, null);
+    }
+
+    /**
      * @param elementType {@link StructValue#elementType()}
      * @see StructValue
      */
@@ -76,12 +92,8 @@ public class SVWrapper implements StructValue {
      * @see StructValue
      */
     public static @NotNull SVWrapper overwriteLayout(@Nullable Class<?> overwriteStructureLayout) {
-        return new SVWrapper( null, null, overwriteStructureLayout);
+        return new SVWrapper(null, null, overwriteStructureLayout);
     }
-
-    private final int @NotNull [] length;
-    private final @NotNull Class<?> @NotNull [] elementType;
-    private final @NotNull Class<?> overwriteStructureLayout;
 
     public SVWrapper(
             int @Nullable [] length,
@@ -96,21 +108,6 @@ public class SVWrapper implements StructValue {
     @Override
     public int value() {
         return -1;
-    }
-
-    @Override
-    public int @NotNull [] length() {
-        return length;
-    }
-
-    @Override
-    public @NotNull Class<?> @NotNull [] elementType() {
-        return elementType;
-    }
-
-    @Override
-    public @NotNull Class<?> overwriteStructureLayout() {
-        return overwriteStructureLayout;
     }
 
     @Override

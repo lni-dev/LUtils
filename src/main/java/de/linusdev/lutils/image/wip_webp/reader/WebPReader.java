@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
-package de.linusdev.lutils.wip_image.webp.reader;
+package de.linusdev.lutils.image.wip_webp.reader;
 
+import de.linusdev.lutils.image.wip_webp.reader.simple.lossless.SimpleLosslessWebP;
 import de.linusdev.lutils.io.InputStreamUtils;
 import de.linusdev.lutils.nat.EndianUtils;
-import de.linusdev.lutils.wip_image.webp.reader.simple.lossless.SimpleLosslessWebP;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.io.InputStream;
 
-import static de.linusdev.lutils.wip_image.webp.reader.WebReaderUtils.*;
+import static de.linusdev.lutils.image.wip_webp.reader.WebReaderUtils.*;
 
 public class WebPReader {
 

@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package de.linusdev.lutils.wip_image.webp.reader.simple.lossless;
+package de.linusdev.lutils.image.wip_webp.reader.simple.lossless;
 
-import de.linusdev.lutils.wip_image.webp.reader.BitReader;
-import de.linusdev.lutils.wip_image.webp.reader.WebPImageInfo;
-import de.linusdev.lutils.wip_image.webp.reader.WebPReaderException;
-import de.linusdev.lutils.wip_image.webp.reader.simple.lossless.transforms.PredictorTypeTransform;
+import de.linusdev.lutils.image.wip_webp.reader.BitReader;
+import de.linusdev.lutils.image.wip_webp.reader.WebPImageInfo;
+import de.linusdev.lutils.image.wip_webp.reader.WebPReaderException;
+import de.linusdev.lutils.image.wip_webp.reader.simple.lossless.transforms.PredictorTypeTransform;
 import org.jetbrains.annotations.NotNull;
 
 public class SimpleLosslessWebP {

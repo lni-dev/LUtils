@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-package de.linusdev.lutils.wip_image;
+package de.linusdev.lutils.image.wip_webp.reader;
 
-public enum PixelFormat {
+public class WebPReaderException extends Exception {
+    public WebPReaderException(String message) {
+        super(message);
+    }
 
-    R8G8B8A8_SRGB {}
-
-    ;
-
-
-
+    public WebPReaderException(Throwable cause) {
+        super(cause);
+    }
 }

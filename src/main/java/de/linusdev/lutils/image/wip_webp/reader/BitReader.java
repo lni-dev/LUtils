@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package de.linusdev.lutils.wip_image.webp.reader;
+package de.linusdev.lutils.image.wip_webp.reader;
 
 import org.jetbrains.annotations.NotNull;
 

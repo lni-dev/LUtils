@@ -14,14 +14,11 @@
  * limitations under the License.
  */
 
-package de.linusdev.lutils.wip_image.webp.reader;
+package de.linusdev.lutils.image.wip_webp.reader;
 
-public class WebPReaderException extends Exception {
-    public WebPReaderException(String message) {
-        super(message);
-    }
-
-    public WebPReaderException(Throwable cause) {
-        super(cause);
-    }
-}
+public record WebPImageInfo(
+        int imageWidth,
+        int imageHeight,
+        boolean alphaIsUsed,
+        int versionNumber
+) { }
