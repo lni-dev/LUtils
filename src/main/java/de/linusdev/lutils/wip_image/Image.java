@@ -17,4 +17,9 @@
 package de.linusdev.lutils.wip_image;
 
 public interface Image {
+
+    int getWidth();
+
+    int getHeight();
+
 }

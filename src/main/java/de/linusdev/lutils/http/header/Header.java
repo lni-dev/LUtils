@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Linus Andera
+ * Copyright (c) 2023-2024 Linus Andera
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -82,10 +82,8 @@ public interface Header {
     static boolean equals(Header header, Object other) {
         if (header == other)
             return true;
-        if (!(other instanceof Header))
+        if (!(other instanceof Header otherHeader))
             return false;
-
-        Header otherHeader = (Header) other;
 
         return header.getKey().equalsIgnoreCase(otherHeader.getKey())
                 && header.getValue().equalsIgnoreCase(otherHeader.getValue());

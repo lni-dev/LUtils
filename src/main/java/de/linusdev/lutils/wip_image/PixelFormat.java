@@ -16,7 +16,7 @@
 
 package de.linusdev.lutils.wip_image;
 
-public enum ImageMemoryFormat {
+public enum PixelFormat {
 
     R8G8B8A8_SRGB {}
 

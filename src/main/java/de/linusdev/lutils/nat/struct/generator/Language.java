@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2024 Linus Andera
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package de.linusdev.lutils.nat.struct.generator;
 
 import de.linusdev.lutils.nat.NativeType;
@@ -45,24 +61,16 @@ public enum Language {
 
         @Override
         public @NotNull String getNativeTypeName(@NotNull NativeType type) {
-            switch (type) {
-                case INT8:
-                    return "char";
-                case INT16:
-                    return "short";
-                case INT32:
-                    return "int";
-                case INT64:
-                    return "long";
-                case FLOAT32:
-                    return "float";
-                case FLOAT64:
-                    return "double";
-                case POINTER:
-                    return "void*";
-                default:
-                    throw new IllegalArgumentException();
-            }
+            return switch (type) {
+                case INT8 -> "char";
+                case INT16 -> "short";
+                case INT32 -> "int";
+                case INT64 -> "long";
+                case FLOAT32 -> "float";
+                case FLOAT64 -> "double";
+                case POINTER -> "void*";
+                default -> throw new IllegalArgumentException();
+            };
         }
     },
     ;
