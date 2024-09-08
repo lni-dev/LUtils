@@ -6,6 +6,8 @@ package de.linusdev.lutils.bitfield;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.stream.Stream;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 public class BitfieldTest {
@@ -64,6 +66,20 @@ public class BitfieldTest {
 
         assertFalse(bitfield.isSet(bitfield2));
         assertTrue(bitfield.isSet(bitfield3));
+    }
+
+    @Test
+    public void testToList() {
+
+        IntBitfieldImpl<SomeEnum> bitfield = new IntBitfieldImpl<>(SomeEnum.D, SomeEnum.B, SomeEnum.A, SomeEnum.E);
+
+        System.out.println(bitfield.toList(SomeEnum.class));
+
+        assertIterableEquals(
+                Stream.of(SomeEnum.D, SomeEnum.B, SomeEnum.A, SomeEnum.E).sorted().toList(),
+                bitfield.toList(SomeEnum.class).stream().sorted().toList()
+        );
+
     }
 
 }

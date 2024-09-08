@@ -17,10 +17,14 @@
 package de.linusdev.lutils.image.buffer;
 
 import de.linusdev.lutils.image.Image;
+import de.linusdev.lutils.image.ImageSize;
+import de.linusdev.lutils.image.PixelFormat;
 import de.linusdev.lutils.nat.abi.ABI;
 import de.linusdev.lutils.nat.abi.OverwriteChildABI;
 import de.linusdev.lutils.nat.struct.abstracts.Structure;
+import de.linusdev.lutils.nat.struct.abstracts.StructureStaticVariables;
 import de.linusdev.lutils.nat.struct.annos.RequirementType;
+import de.linusdev.lutils.nat.struct.annos.SVWrapper;
 import de.linusdev.lutils.nat.struct.annos.StructValue;
 import de.linusdev.lutils.nat.struct.annos.StructureSettings;
 import de.linusdev.lutils.nat.struct.generator.StaticGenerator;
@@ -29,11 +33,14 @@ import de.linusdev.lutils.nat.struct.utils.SSMUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+/**
+ * Buffer backed RGBA image. Stores pixel data row major in the {@link PixelFormat#R8G8B8A8_SRGB R8G8B8A8_SRGB} format.
+ */
 @StructureSettings(
         requiresCalculateInfoMethod = true,
         customLengthOption = RequirementType.REQUIRED
 )
-public class BufferBackedImage extends Structure implements Image {
+public class BufferBackedRGBAImage extends Structure implements Image {
 
     public final static @NotNull StaticGenerator GENERATOR = new StaticGenerator() {
         @Override
@@ -53,11 +60,39 @@ public class BufferBackedImage extends Structure implements Image {
         }
     };
 
+    /**
+     * @see StructureStaticVariables#newUnallocated()
+     */
+    public static @NotNull BufferBackedRGBAImage newUnallocated() {
+        return new BufferBackedRGBAImage(null, false);
+    }
+
+    /**
+     * @see StructureStaticVariables#newAllocatable(StructValue)
+     */
+    public static @NotNull BufferBackedRGBAImage newAllocatable(@NotNull StructValue structValue) {
+        return new BufferBackedRGBAImage(structValue, true);
+    }
+
+    /**
+     * @see StructureStaticVariables#newAllocatable(StructValue)
+     */
+    public static @NotNull BufferBackedRGBAImage newAllocatable(@NotNull ImageSize size) {
+        return new BufferBackedRGBAImage(SVWrapper.imageSize(size), true);
+    }
+
+    /**
+     * @see StructureStaticVariables#newAllocated(StructValue)
+     */
+    public static @NotNull BufferBackedRGBAImage newAllocated(@NotNull StructValue structValue) {
+        return allocate(new BufferBackedRGBAImage(structValue, true));
+    }
+
     private int width = 0;
     private int height = 0;
     private int pixelSize = 0;
 
-    public BufferBackedImage(
+    protected BufferBackedRGBAImage(
             @Nullable StructValue structValue,
             boolean generateInfo
     ) {

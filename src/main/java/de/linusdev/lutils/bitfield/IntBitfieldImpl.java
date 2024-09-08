@@ -80,22 +80,9 @@ public class IntBitfieldImpl<V extends IntBitFieldValue> implements IntBitfield<
         this.value = 0;
     }
 
-    /**
-     * checks if given flag is set.
-     * @param flag flag to check
-     * @return {@code true} if given flag is set in this bitfield.
-     */
-    public boolean isSet(@NotNull V flag) {
-        return (value & flag.getValue()) == flag.getValue();
-    }
-
-    /**
-     * checks if given flag is set.
-     * @param flag flag to check
-     * @return {@code true} if given flag is set in this bitfield.
-     */
+    @Override
     public boolean isSet(int flag) {
-        return (value & flag) == flag;
+        return flag != 0 && (value & flag) == flag;
     }
 
     /**

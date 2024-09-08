@@ -26,7 +26,7 @@ import org.jetbrains.annotations.NotNull;
  * for x and y respectively. If positions outside of this range are passed, it may result in unexpected
  * behavior.
  */
-public interface Image {
+public interface Image extends ImageSize{
 
     static void copy(@NotNull Image src, @NotNull Image dst) {
         if(dst.isReadOnly())
@@ -75,10 +75,6 @@ public interface Image {
 
         return ret.toString();
     }
-
-    int getWidth();
-
-    int getHeight();
 
     /**
      * Get pixel as int in {@link PixelFormat#R8G8B8A8_SRGB R8G8B8A8_SRGB} format.

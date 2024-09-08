@@ -16,6 +16,7 @@
 
 package de.linusdev.lutils.nat.struct.annos;
 
+import de.linusdev.lutils.image.ImageSize;
 import de.linusdev.lutils.nat.struct.abstracts.Structure;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -48,10 +49,7 @@ public record SVWrapper(
      * @param elementType {@link StructValue#elementType()}
      * @see StructValue
      */
-    public static @NotNull SVWrapper of(
-            int length,
-            @NotNull Class<?> elementType
-    ) {
+    public static @NotNull SVWrapper of(int length, @NotNull Class<?> elementType) {
         return new SVWrapper(new int[]{length}, new Class[]{elementType}, null);
     }
 
@@ -59,9 +57,7 @@ public record SVWrapper(
      * @param length {@link StructValue#length()}
      * @see StructValue
      */
-    public static @NotNull SVWrapper length(
-            int length
-    ) {
+    public static @NotNull SVWrapper length(int length) {
         return new SVWrapper(new int[]{length}, null, null);
     }
 
@@ -70,20 +66,22 @@ public record SVWrapper(
      * @param height {@link StructValue#length()}
      * @see StructValue
      */
-    public static @NotNull SVWrapper imageSize(
-            int width,
-            int height
-    ) {
+    public static @NotNull SVWrapper imageSize(int width, int height) {
         return new SVWrapper(new int[]{width, height}, null, null);
+    }
+
+    /**
+     * @see StructValue
+     */
+    public static @NotNull SVWrapper imageSize(@NotNull ImageSize size) {
+        return imageSize(size.getWidth(), size.getHeight());
     }
 
     /**
      * @param elementType {@link StructValue#elementType()}
      * @see StructValue
      */
-    public static @NotNull SVWrapper elementType(
-            @NotNull Class<?> elementType
-    ) {
+    public static @NotNull SVWrapper elementType(@NotNull Class<?> elementType) {
         return new SVWrapper(null, new Class[]{elementType}, null);
     }
 

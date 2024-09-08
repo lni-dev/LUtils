@@ -18,6 +18,9 @@ package de.linusdev.lutils.bitfield;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public interface IntBitfield<V extends IntBitFieldValue> {
 
     /**
@@ -42,10 +45,11 @@ public interface IntBitfield<V extends IntBitFieldValue> {
     /**
      * checks if given flag is set.
      * @param flag flag to check
-     * @return {@code true} if given flag is set in this bitfield.
+     * @return {@code true} if given flag is set in this bitfield. If {@code flag} is {@code 0} or not set in this
+     * bitfield, {@code false} is returned.
      */
     default boolean isSet(int flag) {
-        return (getValue() & flag) == flag;
+        return flag != 0 && (getValue() & flag) == flag;
     }
 
     /**
@@ -145,6 +149,20 @@ public interface IntBitfield<V extends IntBitFieldValue> {
      */
     default void unsetFlag(int flag) {
         replaceWith(getValue() & ~flag);
+    }
+
+    /**
+     *
+     * @param enumClass enum class to supply {@code values} array.
+     * @return {@link List} of flags set.
+     */
+    default @NotNull List<@NotNull V> toList(@NotNull Class<V> enumClass) {
+        ArrayList<V> list = new ArrayList<>(Integer.bitCount(getValue()));
+
+        for (V c : enumClass.getEnumConstants())
+            if(isSet(c)) list.add(c);
+
+        return list;
     }
 
 }

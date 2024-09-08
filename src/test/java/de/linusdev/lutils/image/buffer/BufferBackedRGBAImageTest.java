@@ -12,7 +12,7 @@ import java.io.IOException;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class BufferBackedImageTest {
+class BufferBackedRGBAImageTest {
 
     @Test
     void test() throws IOException {
@@ -22,8 +22,8 @@ class BufferBackedImageTest {
         System.out.println("Original:");
         System.out.println(Image.printable(read));
 
-        @NotNull BufferBackedImage bufferBackedImage = Structure.allocate(
-                new BufferBackedImage(SVWrapper.imageSize(read.getWidth(), read.getHeight()), true)
+        @NotNull BufferBackedRGBAImage bufferBackedImage = Structure.allocate(
+                new BufferBackedRGBAImage(SVWrapper.imageSize(read.getWidth(), read.getHeight()), true)
         );
 
         assertEquals(read.getHeight(), bufferBackedImage.getHeight());
