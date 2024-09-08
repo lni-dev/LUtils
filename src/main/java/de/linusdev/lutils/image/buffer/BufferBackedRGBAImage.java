@@ -63,39 +63,42 @@ public class BufferBackedRGBAImage extends Structure implements Image {
     /**
      * @see StructureStaticVariables#newUnallocated()
      */
-    public static @NotNull BufferBackedRGBAImage newUnallocated() {
-        return new BufferBackedRGBAImage(null, false);
+    public static @NotNull BufferBackedRGBAImage newUnallocated(@NotNull PixelFormat<Integer> pixelFormat) {
+        return new BufferBackedRGBAImage(null, false, pixelFormat);
     }
 
     /**
      * @see StructureStaticVariables#newAllocatable(StructValue)
      */
-    public static @NotNull BufferBackedRGBAImage newAllocatable(@NotNull StructValue structValue) {
-        return new BufferBackedRGBAImage(structValue, true);
+    public static @NotNull BufferBackedRGBAImage newAllocatable(@NotNull StructValue structValue, @NotNull PixelFormat<Integer> pixelFormat) {
+        return new BufferBackedRGBAImage(structValue, true, pixelFormat);
     }
 
     /**
      * @see StructureStaticVariables#newAllocatable(StructValue)
      */
-    public static @NotNull BufferBackedRGBAImage newAllocatable(@NotNull ImageSize size) {
-        return new BufferBackedRGBAImage(SVWrapper.imageSize(size), true);
+    public static @NotNull BufferBackedRGBAImage newAllocatable(@NotNull ImageSize size, @NotNull PixelFormat<Integer> pixelFormat) {
+        return new BufferBackedRGBAImage(SVWrapper.imageSize(size), true, pixelFormat);
     }
 
     /**
      * @see StructureStaticVariables#newAllocated(StructValue)
      */
-    public static @NotNull BufferBackedRGBAImage newAllocated(@NotNull StructValue structValue) {
-        return allocate(new BufferBackedRGBAImage(structValue, true));
+    public static @NotNull BufferBackedRGBAImage newAllocated(@NotNull StructValue structValue, @NotNull PixelFormat<Integer> pixelFormat) {
+        return allocate(new BufferBackedRGBAImage(structValue, true, pixelFormat));
     }
 
     private int width = 0;
     private int height = 0;
     private int pixelSize = 0;
+    private final @NotNull PixelFormat<Integer> pixelFormat;
 
     protected BufferBackedRGBAImage(
             @Nullable StructValue structValue,
-            boolean generateInfo
+            boolean generateInfo,
+            @NotNull PixelFormat<Integer> pixelFormat
     ) {
+        this.pixelFormat = pixelFormat;
         assert !generateInfo || structValue != null;
 
         if(generateInfo) {
@@ -135,14 +138,18 @@ public class BufferBackedRGBAImage extends Structure implements Image {
     public int getPixelAsRGBA(int x, int y) {
         assert x < width;
         assert y < height;
-        return byteBuf.getInt((y * width + x) * pixelSize);
+        return pixelFormat.toR8G8B8A8_SRGB(fixEndianess(byteBuf.getInt((y * width + x) * pixelSize)));
+    }
+
+    public int fixEndianess(int rgba) {
+        return Integer.reverseBytes(rgba);
     }
 
     @Override
     public void setPixelAsRGBA(int x, int y, int rgba) {
         assert x < width;
         assert y < height;
-        byteBuf.putInt((y * getWidth() + x) * pixelSize, rgba);
+        byteBuf.putInt((y * getWidth() + x) * pixelSize, fixEndianess(pixelFormat.from(PixelFormat.R8G8B8A8_SRGB, rgba)));
     }
 
     @Override

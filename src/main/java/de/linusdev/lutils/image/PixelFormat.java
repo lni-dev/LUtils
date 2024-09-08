@@ -16,30 +16,67 @@
 
 package de.linusdev.lutils.image;
 
+import org.jetbrains.annotations.NotNull;
+
 public abstract class PixelFormat<V> {
 
-    public static final PixelFormat<Integer> R8G8B8A8_SRGB = new PixelFormat<>() {
+    public static final PixelFormat<Integer> R8G8B8A8_SRGB = new PixelFormat<>("R8G8B8A8_SRGB") {
+
+        @Override
+        public <U> Integer from(@NotNull PixelFormat<U> other, U value) {
+            return other.toR8G8B8A8_SRGB(value);
+        }
 
         @Override
         public int toR8G8B8A8_SRGB(Integer value) {
             return value;
         }
+
+        @Override
+        public int toA8R8G8B8_SRGB(Integer value) {
+            int alpha = (value & 0x000000FF) << 24;
+            return (value >>> 8) | alpha;
+        }
+
     };
 
-    public static final PixelFormat<Integer> A8R8G8B8_SRGB = new PixelFormat<>() {
+    public static final PixelFormat<Integer> A8R8G8B8_SRGB = new PixelFormat<>("A8R8G8B8_SRGB") {
+
+        @Override
+        public <U> Integer from(@NotNull PixelFormat<U> other, U value) {
+            return other.toA8R8G8B8_SRGB(value);
+        }
 
         @Override
         public int toR8G8B8A8_SRGB(Integer value) {
             int alpha = (value & 0xFF000000) >>> 24;
             return (value << 8) | alpha;
         }
+
+        @Override
+        public int toA8R8G8B8_SRGB(Integer value) {
+            return value;
+        }
     };
 
+    protected final @NotNull String name;
 
-    protected PixelFormat() {
-
+    protected PixelFormat(@NotNull String name) {
+        this.name = name;
     }
 
-   public abstract int toR8G8B8A8_SRGB(V value);
+    public abstract  <U> V from(@NotNull PixelFormat<U> other, U value);
 
+    public int toR8G8B8A8_SRGB(V value) {
+        throw new UnsupportedOperationException();
+    }
+
+    public int toA8R8G8B8_SRGB(V value) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public String toString() {
+        return name;
+    }
 }

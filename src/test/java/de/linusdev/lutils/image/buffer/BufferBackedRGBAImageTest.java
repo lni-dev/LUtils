@@ -1,6 +1,7 @@
 package de.linusdev.lutils.image.buffer;
 
 import de.linusdev.lutils.image.Image;
+import de.linusdev.lutils.image.PixelFormat;
 import de.linusdev.lutils.image.png.reader.PNGReader;
 import de.linusdev.lutils.nat.struct.abstracts.Structure;
 import de.linusdev.lutils.nat.struct.annos.SVWrapper;
@@ -23,7 +24,7 @@ class BufferBackedRGBAImageTest {
         System.out.println(Image.printable(read));
 
         @NotNull BufferBackedRGBAImage bufferBackedImage = Structure.allocate(
-                new BufferBackedRGBAImage(SVWrapper.imageSize(read.getWidth(), read.getHeight()), true)
+                new BufferBackedRGBAImage(SVWrapper.imageSize(read.getWidth(), read.getHeight()), true, PixelFormat.A8R8G8B8_SRGB)
         );
 
         assertEquals(read.getHeight(), bufferBackedImage.getHeight());
@@ -33,10 +34,10 @@ class BufferBackedRGBAImageTest {
 
         Image.copy(read, bufferBackedImage);
 
-        assertTrue(Image.equalsRGBA(read, bufferBackedImage));
-
         System.out.println("Copied: ");
         System.out.println(Image.printable(bufferBackedImage));
+
+        assertTrue(Image.equalsRGBA(read, bufferBackedImage));
 
     }
 }

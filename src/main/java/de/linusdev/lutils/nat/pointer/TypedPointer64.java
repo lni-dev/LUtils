@@ -17,6 +17,7 @@
 package de.linusdev.lutils.nat.pointer;
 
 import de.linusdev.lutils.nat.NativeParsable;
+import de.linusdev.lutils.nat.array.NativeArray;
 import de.linusdev.lutils.nat.struct.abstracts.Structure;
 import de.linusdev.lutils.nat.struct.array.StructureArray;
 import org.jetbrains.annotations.NotNull;
@@ -52,7 +53,7 @@ public interface TypedPointer64<T extends NativeParsable> extends Pointer64 {
      * Create a new {@link TypedPointer64}, whose {@link #get()} method will return the value of {@link StructureArray#getPointer()}.
      * Thus, a {@link TypedPointer64} pointing to the first array element is returned. Which corresponds to a c-style array.
      */
-    static <T extends Structure> @NotNull TypedPointer64<T> ofArray(@NotNull StructureArray<T> array) {
+    static <T extends Structure> @NotNull TypedPointer64<T> ofArray(@NotNull NativeArray<T> array) {
         return new TypedPointer64Impl<>(array.getPointer());
     }
 
