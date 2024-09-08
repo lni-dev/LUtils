@@ -1,11 +1,12 @@
 package de.linusdev.lutils.struct.array;
 
+import de.linusdev.lutils.nat.struct.annos.SVWrapper;
 import de.linusdev.lutils.nat.struct.array.StructureArray;
 import de.linusdev.lutils.struct.abstracts.ComplexStructureTest;
-import de.linusdev.lutils.nat.struct.annos.SVWrapper;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class StructureArrayTest {
 
@@ -18,7 +19,7 @@ class StructureArrayTest {
                 () -> new ComplexStructureTest.TestStruct(true, false)
         );
 
-        ComplexStructureTest.TestStruct element = array.getOrCreate(0);
+        ComplexStructureTest.TestStruct element = array.get(0);
         assertTrue(element.isInitialised());
 
         assertEquals(0, element.getOffset());

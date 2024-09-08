@@ -21,6 +21,7 @@ import de.linusdev.lutils.math.vector.buffer.intn.BBUInt1;
 import de.linusdev.lutils.nat.pointer.BBPointer64;
 import de.linusdev.lutils.nat.pointer.BBTypedPointer64;
 import de.linusdev.lutils.nat.string.NullTerminatedUTF8String;
+import de.linusdev.lutils.nat.struct.UStructSupplier;
 import de.linusdev.lutils.nat.struct.abstracts.Structure;
 import de.linusdev.lutils.nat.struct.annos.SVWrapper;
 import de.linusdev.lutils.nat.struct.annos.StructValue;
@@ -81,19 +82,19 @@ public interface Stack extends DirectMemoryManager {
 
     /**
      * Creates a new {@link StructureArray} using
-     * {@link StructureArray#newAllocatable(boolean, StructValue, StructValue, StructureArray.ElementCreator)
+     * {@link StructureArray#newAllocatable(boolean, StructValue, StructValue, UStructSupplier)
      * StructureArray.newAllocatable(false, SVWrapper.of(size, elementClazz), null, creator)} and
      * {@link #push(Structure) pushes} it onto this stack.
      *
      * @param size array length
      * @param elementClazz class of {@link T}
-     * @param creator see {@link StructureArray#newAllocated(int, Class, StructureArray.ElementCreator) newAllocated()}
+     * @param creator see {@link StructureArray#newAllocated(int, Class, UStructSupplier) newAllocated()}
      * @return pushed {@link StructureArray}
      */
     default <T extends Structure> @NotNull StructureArray<T> pushArray(
             int size,
             @NotNull Class<?> elementClazz,
-            @NotNull StructureArray.ElementCreator<T> creator
+            @NotNull UStructSupplier<T> creator
     ) {
         StructureArray<T> array = StructureArray.newAllocatable(
                 false, 

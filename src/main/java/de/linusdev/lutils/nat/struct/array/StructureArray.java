@@ -16,15 +16,16 @@
 
 package de.linusdev.lutils.nat.struct.array;
 
+import de.linusdev.lutils.nat.abi.ABI;
 import de.linusdev.lutils.nat.abi.OverwriteChildABI;
 import de.linusdev.lutils.nat.array.NativeArray;
+import de.linusdev.lutils.nat.struct.UStructSupplier;
+import de.linusdev.lutils.nat.struct.abstracts.Structure;
 import de.linusdev.lutils.nat.struct.abstracts.StructureStaticVariables;
 import de.linusdev.lutils.nat.struct.annos.*;
 import de.linusdev.lutils.nat.struct.generator.Language;
 import de.linusdev.lutils.nat.struct.generator.StaticGenerator;
 import de.linusdev.lutils.nat.struct.generator.StructCodeGenerator;
-import de.linusdev.lutils.nat.struct.abstracts.Structure;
-import de.linusdev.lutils.nat.abi.ABI;
 import de.linusdev.lutils.nat.struct.info.ArrayInfo;
 import de.linusdev.lutils.nat.struct.info.StructureInfo;
 import de.linusdev.lutils.nat.struct.mod.ModTrackingStructure;
@@ -126,7 +127,7 @@ public class StructureArray<T extends Structure> extends ModTrackingStructure im
     @SuppressWarnings("JavadocReference")
     public static <T extends Structure> @NotNull StructureArray<T> newUnallocated(
             boolean trackModifications,
-            @NotNull ElementCreator<T> creator
+            @NotNull UStructSupplier<T> creator
     ) {
         return new StructureArray<>(trackModifications, creator);
     }
@@ -145,7 +146,7 @@ public class StructureArray<T extends Structure> extends ModTrackingStructure im
             boolean trackModifications,
             @NotNull StructValue structValue,
             @Nullable StructValue elementStructValue,
-            @NotNull ElementCreator<T> creator
+            @NotNull UStructSupplier<T> creator
     ) {
         StructureArray<T> struct = new StructureArray<>(
                 trackModifications,
@@ -158,7 +159,7 @@ public class StructureArray<T extends Structure> extends ModTrackingStructure im
     }
 
     /**
-     * Creates an allocated {@link StructureArray}. Calls {@link #newAllocated(boolean, StructValue, StructValue, ElementCreator)}
+     * Creates an allocated {@link StructureArray}. Calls {@link #newAllocated(boolean, StructValue, StructValue, UStructSupplier)}
      * with {@code trackModifications = false} and {@code elementStructValue = null}
      * @param length array length
      * @param elementClass class of {@link T}
@@ -170,7 +171,7 @@ public class StructureArray<T extends Structure> extends ModTrackingStructure im
     public static <T extends Structure> @NotNull StructureArray<T> newAllocated(
             int length,
             Class<?> elementClass,
-            @NotNull ElementCreator<T> creator
+            @NotNull UStructSupplier<T> creator
     ) {
         return newAllocated(
                 false,
@@ -195,7 +196,7 @@ public class StructureArray<T extends Structure> extends ModTrackingStructure im
             boolean trackModifications,
             @NotNull StructValue structValue,
             @Nullable StructValue elementStructValue,
-            @NotNull ElementCreator<T> creator
+            @NotNull UStructSupplier<T> creator
     ) {
         return new StructureArray<>(
                 trackModifications,
@@ -221,7 +222,7 @@ public class StructureArray<T extends Structure> extends ModTrackingStructure im
             @NotNull Class<?> elementClazz,
             int length,
             long pointer,
-            @NotNull ElementCreator<T> creator
+            @NotNull UStructSupplier<T> creator
     ) {
         StructureArray<T> sArray = StructureArray.newAllocatable(
                 trackModifications,
@@ -235,7 +236,7 @@ public class StructureArray<T extends Structure> extends ModTrackingStructure im
         return sArray;
     }
 
-    private final @NotNull ElementCreator<T> creator;
+    private final @NotNull UStructSupplier<T> creator;
     private ArrayInfo.ArrayPositionFunction positions;
 
     private StructureInfo elementInfo;
@@ -243,11 +244,11 @@ public class StructureArray<T extends Structure> extends ModTrackingStructure im
     private int size;
 
     /**
-     * @see #newUnallocated(boolean, ElementCreator) 
+     * @see #newUnallocated(boolean, UStructSupplier)
      */
     protected StructureArray(
             boolean trackModifications,
-            @NotNull ElementCreator<T> creator
+            @NotNull UStructSupplier<T> creator
     ) {
         super(trackModifications);
         this.creator = creator;
@@ -255,14 +256,14 @@ public class StructureArray<T extends Structure> extends ModTrackingStructure im
 
     /**
      * Creates an allocatable struct-array
-     * @see #newAllocated(boolean, StructValue, StructValue, ElementCreator)
-     * @see #newAllocatable(boolean, StructValue, StructValue, ElementCreator) 
+     * @see #newAllocated(boolean, StructValue, StructValue, UStructSupplier)
+     * @see #newAllocatable(boolean, StructValue, StructValue, UStructSupplier)
      */
     protected StructureArray(
             boolean trackModifications,
             @NotNull StructValue structValue,
             @Nullable StructValue elementStructValue,
-            @NotNull ElementCreator<T> creator
+            @NotNull UStructSupplier<T> creator
     ) {
         super(trackModifications);
         setInfo(SSMUtils.getInfo(
@@ -323,14 +324,15 @@ public class StructureArray<T extends Structure> extends ModTrackingStructure im
     }
 
     /**
-     * Similar to {@link #get(int)}, but if the item at {@code index} is still {@code null},
-     * a new item will be {@link ElementCreator#create() created}.
-     * @see #get(int)
+     * Similar to {@link #getOrNull(int)}, but if the item at {@code index} is still {@code null},
+     * a new item will be {@link UStructSupplier#supply() created}.
+     * @see #getOrNull(int)
      */
+    @Override
     @SuppressWarnings("unchecked")
-    public @NotNull T getOrCreate(int index) {
+    public @NotNull T get(int index) {
         if(items[index] == null) {
-            Structure item = (items[index] = creator.create());
+            Structure item = (items[index] = creator.supply());
             callUseBufferOf(
                     item,
                     this.mostParentStructure,
@@ -343,10 +345,27 @@ public class StructureArray<T extends Structure> extends ModTrackingStructure im
         return (T) items[index];
     }
 
+    /**
+     * Returns the item at given {@code index} or {@code null} if no item has been {@link #set(int, Structure)}
+     * or {@link #get(int)} at given {@code index} before.
+     */
     @SuppressWarnings("unchecked")
-    @Override
-    public T get(int index) {
+    public T getOrNull(int index) {
         return (T) items[index];
+    }
+
+    /**
+     * Create a view on this structure array.
+     * @param startIndex index the view starts
+     * @param length length of the view
+     * @return {@link NativeArrayView}
+     */
+    public @NotNull NativeArrayView<T> getView(int startIndex, int length) {
+        int byteIndex = positions.position(startIndex);
+        return new NativeArrayView<>(this,
+                byteBuf.slice(byteIndex, positions.position(startIndex + length) - byteIndex),
+                startIndex, length
+        );
     }
 
     @Override
@@ -361,14 +380,9 @@ public class StructureArray<T extends Structure> extends ModTrackingStructure im
 
             @Override
             public T next() {
-                return getOrCreate(index++);
+                return get(index++);
             }
         };
-    }
-
-    @FunctionalInterface
-    public interface ElementCreator<T extends Structure> {
-        @NotNull T create();
     }
 
     @Override
@@ -388,4 +402,7 @@ public class StructureArray<T extends Structure> extends ModTrackingStructure im
 
         return toString("StructureArray<" + getInfo().elementClass.getSimpleName() + ">", sb.toString());
     }
+
+
+
 }
