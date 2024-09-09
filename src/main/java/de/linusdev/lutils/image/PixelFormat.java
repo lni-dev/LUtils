@@ -65,14 +65,28 @@ public abstract class PixelFormat<V> {
         this.name = name;
     }
 
-    public abstract  <U> V from(@NotNull PixelFormat<U> other, U value);
+    /**
+     * Must be implemented.
+     * @param other other {@link PixelFormat} to convert from
+     * @param value value in pixel format {@code other}
+     * @return {@code value} converted from {@code other} to this pixel format. That means: {@code other.toTHIS_FORMAT(value)}
+     */
+    public abstract <U> V from(@NotNull PixelFormat<U> other, U value);
 
-    public int toR8G8B8A8_SRGB(V value) {
-        throw new UnsupportedOperationException();
-    }
+    /**
+     * Must be implemented.
+     * @param value value in this pixel format
+     * @return {@code value} converted from this pixel format to {@link #R8G8B8A8_SRGB}.
+     */
+    public abstract int toR8G8B8A8_SRGB(V value);
 
+    /**
+     * Can optionally be implemented for better performance.
+     * @param value value in this pixel format
+     * @return {@code value} converted from this pixel format to {@link #A8R8G8B8_SRGB}.
+     */
     public int toA8R8G8B8_SRGB(V value) {
-        throw new UnsupportedOperationException();
+        return R8G8B8A8_SRGB.toA8R8G8B8_SRGB(toR8G8B8A8_SRGB(value));
     }
 
     @Override

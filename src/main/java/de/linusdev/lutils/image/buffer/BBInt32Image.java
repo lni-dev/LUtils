@@ -33,14 +33,17 @@ import de.linusdev.lutils.nat.struct.utils.SSMUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.nio.ByteOrder;
+
 /**
- * Buffer backed RGBA image. Stores pixel data row major in the {@link PixelFormat#R8G8B8A8_SRGB R8G8B8A8_SRGB} format.
+ * Buffer backed int32 image. Stores pixel data row major in given {@link #pixelFormat} format
+ * in little endian byte order.
  */
 @StructureSettings(
         requiresCalculateInfoMethod = true,
         customLengthOption = RequirementType.REQUIRED
 )
-public class BufferBackedRGBAImage extends Structure implements Image {
+public class BBInt32Image extends Structure implements Image {
 
     public final static @NotNull StaticGenerator GENERATOR = new StaticGenerator() {
         @Override
@@ -62,38 +65,46 @@ public class BufferBackedRGBAImage extends Structure implements Image {
 
     /**
      * @see StructureStaticVariables#newUnallocated()
+     * @see #pixelFormat
      */
-    public static @NotNull BufferBackedRGBAImage newUnallocated(@NotNull PixelFormat<Integer> pixelFormat) {
-        return new BufferBackedRGBAImage(null, false, pixelFormat);
+    public static @NotNull BBInt32Image newUnallocated(@NotNull PixelFormat<Integer> pixelFormat) {
+        return new BBInt32Image(null, false, pixelFormat);
     }
 
     /**
      * @see StructureStaticVariables#newAllocatable(StructValue)
+     * @see #pixelFormat
      */
-    public static @NotNull BufferBackedRGBAImage newAllocatable(@NotNull StructValue structValue, @NotNull PixelFormat<Integer> pixelFormat) {
-        return new BufferBackedRGBAImage(structValue, true, pixelFormat);
+    public static @NotNull BBInt32Image newAllocatable(@NotNull StructValue structValue, @NotNull PixelFormat<Integer> pixelFormat) {
+        return new BBInt32Image(structValue, true, pixelFormat);
     }
 
     /**
      * @see StructureStaticVariables#newAllocatable(StructValue)
+     * @see #pixelFormat
      */
-    public static @NotNull BufferBackedRGBAImage newAllocatable(@NotNull ImageSize size, @NotNull PixelFormat<Integer> pixelFormat) {
-        return new BufferBackedRGBAImage(SVWrapper.imageSize(size), true, pixelFormat);
+    public static @NotNull BBInt32Image newAllocatable(@NotNull ImageSize size, @NotNull PixelFormat<Integer> pixelFormat) {
+        return new BBInt32Image(SVWrapper.imageSize(size), true, pixelFormat);
     }
 
     /**
      * @see StructureStaticVariables#newAllocated(StructValue)
+     * @see #pixelFormat
      */
-    public static @NotNull BufferBackedRGBAImage newAllocated(@NotNull StructValue structValue, @NotNull PixelFormat<Integer> pixelFormat) {
-        return allocate(new BufferBackedRGBAImage(structValue, true, pixelFormat));
+    public static @NotNull BBInt32Image newAllocated(@NotNull StructValue structValue, @NotNull PixelFormat<Integer> pixelFormat) {
+        return allocate(new BBInt32Image(structValue, true, pixelFormat));
     }
 
     private int width = 0;
     private int height = 0;
     private int pixelSize = 0;
+
+    /**
+     * {@link PixelFormat} to store the pixels in.
+     */
     private final @NotNull PixelFormat<Integer> pixelFormat;
 
-    protected BufferBackedRGBAImage(
+    protected BBInt32Image(
             @Nullable StructValue structValue,
             boolean generateInfo,
             @NotNull PixelFormat<Integer> pixelFormat
@@ -109,6 +120,12 @@ public class BufferBackedRGBAImage extends Structure implements Image {
                     GENERATOR
             ));
         }
+    }
+
+    @Override
+    protected void useBuffer(@NotNull Structure mostParentStructure, int offset, @NotNull StructureInfo info) {
+        super.useBuffer(mostParentStructure, offset, info);
+        byteBuf.order(ByteOrder.LITTLE_ENDIAN); // Byte order for this class is always little endian
     }
 
     @Override
@@ -138,10 +155,10 @@ public class BufferBackedRGBAImage extends Structure implements Image {
     public int getPixelAsRGBA(int x, int y) {
         assert x < width;
         assert y < height;
-        return pixelFormat.toR8G8B8A8_SRGB(fixEndianess(byteBuf.getInt((y * width + x) * pixelSize)));
+        return pixelFormat.toR8G8B8A8_SRGB(fixEndianness(byteBuf.getInt((y * width + x) * pixelSize)));
     }
 
-    public int fixEndianess(int rgba) {
+    public int fixEndianness(int rgba) {
         return Integer.reverseBytes(rgba);
     }
 
@@ -149,7 +166,7 @@ public class BufferBackedRGBAImage extends Structure implements Image {
     public void setPixelAsRGBA(int x, int y, int rgba) {
         assert x < width;
         assert y < height;
-        byteBuf.putInt((y * getWidth() + x) * pixelSize, fixEndianess(pixelFormat.from(PixelFormat.R8G8B8A8_SRGB, rgba)));
+        byteBuf.putInt((y * getWidth() + x) * pixelSize, fixEndianness(pixelFormat.from(PixelFormat.R8G8B8A8_SRGB, rgba)));
     }
 
     @Override
