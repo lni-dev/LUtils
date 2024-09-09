@@ -34,6 +34,12 @@ public class BodyParsers {
 
     }
 
+    @SuppressWarnings("unused")
+    @Contract(value = " -> new", pure = true)
+    public static @NotNull BodyParser<UnparsedBody> newUnparsedBodyParser() {
+        return UnparsedBody::new;
+    }
+
     @Contract(value = " -> new", pure = true)
     public static @NotNull BodyParser<String> newStringBodyParser() {
         return new BodyParser<>() {

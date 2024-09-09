@@ -29,6 +29,8 @@ import java.nio.charset.StandardCharsets;
 
 public class HTTPMessageReader implements AutoCloseable {
 
+    public static final int BUFFER_SIZE = 2048;
+
     private final @NotNull InputStream in;
 
     private int position;
@@ -55,7 +57,7 @@ public class HTTPMessageReader implements AutoCloseable {
 
     public HTTPMessageReader(@NotNull InputStream in) {
         this.in = in;
-        this.buffer = new byte[2048];
+        this.buffer = new byte[BUFFER_SIZE];
         this.bufferObject = ByteBuffer.wrap(buffer);
 
         this.decoder = StandardCharsets.UTF_8
@@ -133,6 +135,9 @@ public class HTTPMessageReader implements AutoCloseable {
             charBufferObject.limit(charBufferObject.capacity());
             if(decoder.flush(charBufferObject).isOverflow())
                 throw new InternalError("Decoder.flush() is trying to write more than 1 char!");
+
+            // Reset the decoder, so it is not in the FLUSHED state anymore.
+            decoder.reset();
         }
 
         // flip to be able to read the buffer
