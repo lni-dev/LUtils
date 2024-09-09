@@ -27,7 +27,7 @@ import java.nio.charset.CoderResult;
 import java.nio.charset.CodingErrorAction;
 import java.nio.charset.StandardCharsets;
 
-public class HTTPRequestReader implements AutoCloseable {
+public class HTTPMessageReader implements AutoCloseable {
 
     private final @NotNull InputStream in;
 
@@ -53,7 +53,7 @@ public class HTTPRequestReader implements AutoCloseable {
     private final @NotNull CharRet charRet = new CharRet();
     private final @NotNull LineReader lineReader = new LineReader();
 
-    public HTTPRequestReader(@NotNull InputStream in) {
+    public HTTPMessageReader(@NotNull InputStream in) {
         this.in = in;
         this.buffer = new byte[2048];
         this.bufferObject = ByteBuffer.wrap(buffer);
@@ -250,7 +250,7 @@ public class HTTPRequestReader implements AutoCloseable {
 
     public @NotNull InputStream getInputStreamForRemaining() {
 
-        HTTPRequestReader this_ = this;
+        HTTPMessageReader this_ = this;
 
         return new InputStream() {
             @Override

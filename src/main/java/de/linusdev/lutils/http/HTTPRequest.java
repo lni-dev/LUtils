@@ -17,7 +17,6 @@
 package de.linusdev.lutils.http;
 
 import de.linusdev.lutils.http.body.BodyParser;
-import de.linusdev.lutils.http.header.Header;
 import de.linusdev.lutils.http.header.HeaderMap;
 import de.linusdev.lutils.http.method.RequestMethod;
 import de.linusdev.lutils.http.version.HTTPVersion;
@@ -28,33 +27,28 @@ import org.jetbrains.annotations.Nullable;
 import java.io.IOException;
 import java.io.InputStream;
 
-public class HTTPRequest<B> {
+public class HTTPRequest<B> extends HTTPMessage<B> {
 
     private final @NotNull RequestMethod method;
     private final @Nullable String path;
-    private final @NotNull HTTPVersion version;
 
-    private final @NotNull HeaderMap headers;
-
-    private final @Nullable B body;
-
-    public HTTPRequest(@NotNull RequestMethod method, @Nullable String path, @NotNull HTTPVersion version,
-                       @NotNull HeaderMap headers, @Nullable B body) {
+    public HTTPRequest(
+            @NotNull RequestMethod method, @Nullable String path, @NotNull HTTPVersion version,
+            @NotNull HeaderMap headers, @Nullable B body
+    ) {
+        super(version, headers, body);
         this.method = method;
         this.path = path;
-        this.version = version;
-        this.headers = headers;
-        this.body = body;
     }
 
     public static <B> @NotNull HTTPRequest<B> parse(@NotNull InputStream in, @NotNull BodyParser<B> parser) throws IOException {
-        HTTPRequestReader reader = new HTTPRequestReader(in);
-        HTTPRequestReader.LineReader lineReader = reader.getLineReader();
+        HTTPMessageReader reader = new HTTPMessageReader(in);
+        HTTPMessageReader.LineReader lineReader = reader.getLineReader();
 
         final RequestMethod method;
         final String path;
         final HTTPVersion version;
-        final HeaderMap headers = new HeaderMap();
+        final HeaderMap headers;
         final B body;
 
         // Read request method
@@ -73,33 +67,18 @@ public class HTTPRequest<B> {
             version = HTTPVersions.of(lineReader.readUntilLineFeed());
         }
 
-        String key;
-        String value;
-        while(!lineReader.eof) {
-            key = lineReader.readUntil(':');
-
-            if(key.isEmpty()) //end of headers
-                break;
-            if(lineReader.eol)
-                throw new IllegalArgumentException("Malformed HTTP request. Header line: " + key);
-
-            value = lineReader.readUntilLineFeed().stripLeading();
-
-            Header header = Header.of(key, value);
-            headers.put(key, header);
-        }
-
+        headers = parseHeaders(reader);
         body = parser.parse(headers, reader.getInputStreamForRemaining());
 
         return new HTTPRequest<>(method, path, version, headers, body);
     }
 
-    public static @NotNull HTTPRequest<Void> parse(@NotNull InputStream in) throws IOException {
-        return parse(in, (hs, in1) -> null);
+    public static @NotNull HTTPRequest<InputStream> parse(@NotNull InputStream in) throws IOException {
+        return parse(in, (hs, in1) -> in1);
     }
 
-    public static @NotNull HTTPRequestBuilder builder() {
-        return new HTTPRequestBuilder();
+    public static @NotNull HTTPMessageBuilder builder() {
+        return new HTTPMessageBuilder();
     }
 
 
@@ -119,27 +98,4 @@ public class HTTPRequest<B> {
         return path;
     }
 
-    /**
-     * {@link HTTPVersion} of this request.
-     * @return {@link HTTPVersion}
-     */
-    public @NotNull HTTPVersion getVersion() {
-        return version;
-    }
-
-    /**
-     * Map of {@link Header headers} of this request.
-     * @return Map of {@link Header headers}
-     */
-    public @NotNull HeaderMap getHeaders() {
-        return headers;
-    }
-
-    /**
-     * {@link B Body} of this request.
-     * @return {@link B Body} or {@code null}, if the {@link BodyParser} returned {@code null}.
-     */
-    public @Nullable B getBody() {
-        return body;
-    }
 }

@@ -1,7 +1,7 @@
 package de.linusdev.lutils.http.header.value;
 
+import de.linusdev.lutils.http.HTTPMessageBuilder;
 import de.linusdev.lutils.http.HTTPRequest;
-import de.linusdev.lutils.http.HTTPRequestBuilder;
 import de.linusdev.lutils.http.body.Body;
 import de.linusdev.lutils.http.body.BodyParsers;
 import de.linusdev.lutils.http.header.HeaderNames;
@@ -10,7 +10,9 @@ import de.linusdev.lutils.http.header.contenttype.ContentTypes;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -19,7 +21,7 @@ class BasicHeaderValueTest {
 
     @Test
     void test() throws IOException {
-        HTTPRequestBuilder builder = HTTPRequest
+        HTTPMessageBuilder builder = HTTPRequest
                 .builder()
                 .POST("/abc", new Body() {
                     @Override
@@ -43,7 +45,7 @@ class BasicHeaderValueTest {
                 });
 
         HTTPRequest<String> request = HTTPRequest.parse(
-                new ByteArrayInputStream(builder.build().getBytes(StandardCharsets.UTF_8)),
+                new ByteArrayInputStream(builder.buildRequest().getBytes(StandardCharsets.UTF_8)),
                 BodyParsers.newStringBodyParser()
         );
 

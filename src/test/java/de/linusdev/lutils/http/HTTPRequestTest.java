@@ -9,14 +9,10 @@ import de.linusdev.lutils.http.method.Methods;
 import de.linusdev.lutils.http.method.RequestMethod;
 import org.junit.jupiter.api.Test;
 
-import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-//@Disabled("WIP")
 class HTTPRequestTest {
 
     @Test
@@ -26,7 +22,7 @@ class HTTPRequestTest {
                 "GET /test.html HTTP/1.1\r\n" +
                 "content-type: application/json\r\n";
 
-        HTTPRequest<Void> parsed = HTTPRequest.parse(new ByteArrayInputStream(request.getBytes()));
+        HTTPRequest<InputStream> parsed = HTTPRequest.parse(new ByteArrayInputStream(request.getBytes()));
 
         assertTrue(RequestMethod.equals(Methods.GET, parsed.getMethod()));
         assertEquals("/test.html", parsed.getPath());
@@ -36,7 +32,7 @@ class HTTPRequestTest {
         Header contentType = parsed.getHeaders().get("content-type");
 
         assertEquals("application/json", contentType.getValue());
-        assertNull(parsed.getBody());
+        assertNotNull(parsed.getBody());
     }
 
     @Test

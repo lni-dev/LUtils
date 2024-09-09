@@ -23,6 +23,8 @@ import de.linusdev.lutils.http.header.HeaderName;
 import de.linusdev.lutils.http.header.value.HeaderValue;
 import de.linusdev.lutils.http.method.Methods;
 import de.linusdev.lutils.http.method.RequestMethod;
+import de.linusdev.lutils.http.status.ResponseStatusCode;
+import de.linusdev.lutils.http.status.StatusCodes;
 import de.linusdev.lutils.http.version.HTTPVersion;
 import de.linusdev.lutils.http.version.HTTPVersions;
 import org.jetbrains.annotations.NotNull;
@@ -34,10 +36,11 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.util.Objects;
 
 
 @SuppressWarnings("UnusedReturnValue")
-public class HTTPRequestBuilder {
+public class HTTPMessageBuilder {
 
     public static final Charset CHARSET = StandardCharsets.UTF_8;
 
@@ -47,31 +50,37 @@ public class HTTPRequestBuilder {
     private @NotNull RequestMethod method;
     private @Nullable String path;
     private @NotNull HTTPVersion version;
+    private @NotNull ResponseStatusCode statusCode;
     private @NotNull HeaderMap headers;
     private @Nullable Body body;
 
-    public HTTPRequestBuilder() {
+    public HTTPMessageBuilder() {
         this.headers = new HeaderMap();
         this.version = HTTPVersions.HTTP_1_1;
         this.method = Methods.GET;
+        this.statusCode = StatusCodes.OK;
     }
 
-    public HTTPRequestBuilder setMethod(@NotNull RequestMethod method) {
+    public HTTPMessageBuilder setMethod(@NotNull RequestMethod method) {
         this.method = method;
         return this;
     }
 
-    public HTTPRequestBuilder setPath(@Nullable String path) {
+    public HTTPMessageBuilder setPath(@Nullable String path) {
         this.path = path;
         return this;
     }
 
-    public HTTPRequestBuilder setVersion(@NotNull HTTPVersion version) {
+    public HTTPMessageBuilder setVersion(@NotNull HTTPVersion version) {
         this.version = version;
         return this;
     }
 
-    public HTTPRequestBuilder setBody(@Nullable Body body) {
+    public void setStatusCode(@NotNull ResponseStatusCode statusCode) {
+        this.statusCode = statusCode;
+    }
+
+    public HTTPMessageBuilder setBody(@Nullable Body body) {
         if(this.body != null)
             this.body.removeHeaders(headers);
 
@@ -83,7 +92,7 @@ public class HTTPRequestBuilder {
         return this;
     }
 
-    public HTTPRequestBuilder setHeader(@NotNull String key, @Nullable String value) {
+    public HTTPMessageBuilder setHeader(@NotNull String key, @Nullable String value) {
         if(value == null)
             headers.remove(key);
         else
@@ -92,12 +101,12 @@ public class HTTPRequestBuilder {
         return this;
     }
 
-    public HTTPRequestBuilder setHeader(@NotNull Header header) {
+    public HTTPMessageBuilder setHeader(@NotNull Header header) {
         headers.put(header);
         return this;
     }
 
-    public HTTPRequestBuilder setHeader(@NotNull HeaderName name, @Nullable String value) {
+    public HTTPMessageBuilder setHeader(@NotNull HeaderName name, @Nullable String value) {
         if(value == null)
             headers.remove(name.getName());
         else
@@ -106,7 +115,7 @@ public class HTTPRequestBuilder {
         return this;
     }
 
-    public HTTPRequestBuilder setHeader(@NotNull HeaderName name, @Nullable HeaderValue value) {
+    public HTTPMessageBuilder setHeader(@NotNull HeaderName name, @Nullable HeaderValue value) {
         if(value == null)
             headers.remove(name.getName());
         else
@@ -115,18 +124,18 @@ public class HTTPRequestBuilder {
         return this;
     }
 
-    public HTTPRequestBuilder setHeaders(@NotNull HeaderMap headers) {
+    public HTTPMessageBuilder setHeaders(@NotNull HeaderMap headers) {
         this.headers = headers;
         return this;
     }
 
-    public HTTPRequestBuilder GET(@Nullable String path) {
+    public HTTPMessageBuilder GET(@Nullable String path) {
         setMethod(Methods.GET);
         setPath(path);
         return this;
     }
 
-    public HTTPRequestBuilder POST(@Nullable String path, @NotNull Body body) {
+    public HTTPMessageBuilder POST(@Nullable String path, @NotNull Body body) {
         setMethod(Methods.POST);
         setPath(path);
         setBody(body);
@@ -135,23 +144,42 @@ public class HTTPRequestBuilder {
 
     /**
      * build as string.
-     * @see #build()
+     * @see #buildRequest()
      */
-    public String build() throws IOException {
+    public String buildRequest() throws IOException {
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        build(stream);
+        buildRequest(stream);
         return stream.toString(StandardCharsets.UTF_8);
     }
 
     /**
-     * {@link #build(OutputStream, int)} with {@code maxBufferSize} set to {@code 2048}
-     * @see #build()
+     * build as string.
+     * @see #buildResponse(OutputStream, int)
      */
-    public void build(@NotNull OutputStream stream) throws IOException {
-        build(stream, 2048);
+    @SuppressWarnings("unused")
+    public String buildResponse() throws IOException {
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        buildResponse(stream);
+        return stream.toString(StandardCharsets.UTF_8);
     }
 
-    public void build(@NotNull OutputStream stream, int maxBufferSize) throws IOException {
+    /**
+     * {@link #buildRequest(OutputStream, int)} with {@code maxBufferSize} set to {@code 2048}
+     * @see #buildRequest()
+     */
+    public void buildRequest(@NotNull OutputStream stream) throws IOException {
+        buildRequest(stream, 2048);
+    }
+
+    /**
+     * {@link #buildResponse(OutputStream, int)} with {@code maxBufferSize} set to {@code 2048}
+     * @see #buildResponse()
+     */
+    public void buildResponse(@NotNull OutputStream stream) throws IOException {
+        buildResponse(stream, 2048);
+    }
+
+    public void buildRequest(@NotNull OutputStream stream, int maxBufferSize) throws IOException {
         stream.write(method.getName().getBytes(CHARSET));
         stream.write(SPACE);
         if(path != null) {
@@ -161,6 +189,21 @@ public class HTTPRequestBuilder {
         stream.write(version.asString().getBytes(CHARSET));
         stream.write(LINE_SEPARATOR);
 
+       appendHeaderAndBody(stream, maxBufferSize);
+    }
+
+    public void buildResponse(@NotNull OutputStream stream, int maxBufferSize) throws IOException {
+        stream.write(version.asString().getBytes(CHARSET));
+        stream.write(SPACE);
+        stream.write(Objects.toString(statusCode.getStatusCode()).getBytes(CHARSET));
+        stream.write(SPACE);
+        stream.write(statusCode.getName().getBytes(CHARSET));
+        stream.write(LINE_SEPARATOR);
+
+        appendHeaderAndBody(stream, maxBufferSize);
+    }
+
+    private void appendHeaderAndBody(@NotNull OutputStream stream, int maxBufferSize) throws IOException {
         for(Header header : headers.values()) {
             stream.write(header.asString().getBytes(CHARSET));
             stream.write(LINE_SEPARATOR);
