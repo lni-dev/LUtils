@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-package de.linusdev.lutils.nat.memory;
+package de.linusdev.lutils.nat.memory.stack;
 
 import de.linusdev.lutils.math.vector.buffer.intn.BBInt1;
 import de.linusdev.lutils.math.vector.buffer.intn.BBUInt1;
+import de.linusdev.lutils.nat.memory.DirectMemoryManager;
 import de.linusdev.lutils.nat.pointer.BBPointer64;
 import de.linusdev.lutils.nat.pointer.BBTypedPointer64;
 import de.linusdev.lutils.nat.string.NullTerminatedUTF8String;
@@ -51,6 +52,8 @@ public interface Stack extends DirectMemoryManager {
      * The {@link Structure} will still be backed by this stack and may not be used anymore.
      */
     void pop();
+
+    @NotNull SafePoint safePoint();
 
     /**
      * Creates a new {@link BBUInt1} using {@link BBUInt1#newAllocatable(StructValue) BBUInt1.newAllocatable(null)} and

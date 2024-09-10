@@ -17,6 +17,8 @@
 package de.linusdev.lutils.nat.memory;
 
 import de.linusdev.lutils.nat.NativeParsable;
+import de.linusdev.lutils.nat.memory.stack.Stack;
+import de.linusdev.lutils.nat.memory.stack.impl.DirectMemoryStack64;
 import org.jetbrains.annotations.NotNull;
 
 /**

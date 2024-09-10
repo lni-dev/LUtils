@@ -14,28 +14,51 @@
  * limitations under the License.
  */
 
-package de.linusdev.lutils.nat.memory;
+package de.linusdev.lutils.nat.memory.stack.impl;
 
+import de.linusdev.lutils.nat.memory.stack.SafePoint;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayDeque;
 import java.util.Arrays;
 
 public class StackPointerQueue {
 
+    public static class SPQSafePoint implements SafePoint {
+
+        final int index;
+        final @NotNull StackPointerQueue spq;
+
+        public SPQSafePoint(int index, @NotNull StackPointerQueue spq) {
+            this.index = index;
+            this.spq = spq;
+        }
+
+        @Override
+        public void close() {
+
+        }
+    }
+
     public final int DEFAULT_CAP = 100;
     public final int DEFAULT_GROW_SIZE = 100;
+
+    public final int DEFAULT_SAFE_POINT_CAP = 100;
+    public final int DEFAULT_SAFE_POINT_CAP_GROW_SIZE = 100;
 
     /**
      * Array this queue is backed by
      */
     protected long[] pointers = new long[DEFAULT_CAP];
-    protected @NotNull ArrayDeque<Integer> safePoints = new ArrayDeque<>();
+    protected SPQSafePoint[] safePoints = new SPQSafePoint[DEFAULT_SAFE_POINT_CAP];
 
     /**
      * index where the next pointer will be added
      */
     protected int index = 0;
+    /**
+     * Index where the next safe point will be added.
+     */
+    protected int safePointsIndex = 0;
 
     public void push(long pointer) {
         growIfRequired();
@@ -54,12 +77,38 @@ public class StackPointerQueue {
         pointers = Arrays.copyOf(pointers, newCap);
     }
 
+    /**
+     * Calls {@link #growSafePointers(int)} if {@link #safePointsIndex} is the same as the length of {@link #safePoints}.
+     */
+    protected void growSafePointsIfRequired() {
+        if(safePointsIndex >= safePoints.length)
+            growSafePointers(safePoints.length + DEFAULT_SAFE_POINT_CAP_GROW_SIZE);
+    }
+
+    protected void growSafePointers(int newCap) {
+        safePoints = Arrays.copyOf(safePoints, newCap);
+    }
+
     public long pop() {
         if(index <= 0) {
             throw new IllegalStateException("Cannot pop as no items are in this stack pointer queue");
         }
+        if(index == safePoints[safePointsIndex-1].index) {
+            throw new IllegalStateException("");
+        }
 
         return pointers[--index];
+    }
+
+    public @NotNull SPQSafePoint safePoint() {
+        growSafePointsIfRequired();
+        safePoints[safePointsIndex] = new SPQSafePoint(index, this);
+
+        return safePoints[safePointsIndex++];
+    }
+
+    protected void checkSafePoint(@NotNull SPQSafePoint safePoint) {
+
     }
 
     public void createSafePoint() {
@@ -73,7 +122,7 @@ public class StackPointerQueue {
     public boolean checkSafePoint() {
         Integer safePoint = safePoints.peekLast();
         if(safePoint == null)
-            throw new IllegalStateException("No more safe-points store.");
+            throw new IllegalStateException("No more safe-points stored.");
         if(index == safePoint) {
             safePoints.pollLast();
             return true;

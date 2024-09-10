@@ -1,4 +1,4 @@
-package de.linusdev.lutils.nat.memory;
+package de.linusdev.lutils.nat.memory.stack.impl;
 
 import de.linusdev.lutils.math.vector.buffer.intn.BBInt1;
 import de.linusdev.lutils.math.vector.buffer.intn.BBInt2;

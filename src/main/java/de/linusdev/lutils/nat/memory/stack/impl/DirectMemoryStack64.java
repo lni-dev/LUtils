@@ -14,10 +14,12 @@
  * limitations under the License.
  */
 
-package de.linusdev.lutils.nat.memory;
+package de.linusdev.lutils.nat.memory.stack.impl;
 
 import de.linusdev.lutils.nat.abi.ABI;
 import de.linusdev.lutils.nat.abi.OverwriteChildABI;
+import de.linusdev.lutils.nat.memory.stack.SafePoint;
+import de.linusdev.lutils.nat.memory.stack.Stack;
 import de.linusdev.lutils.nat.struct.abstracts.Structure;
 import de.linusdev.lutils.nat.struct.annos.RequirementType;
 import de.linusdev.lutils.nat.struct.annos.StructValue;
@@ -39,6 +41,7 @@ public class DirectMemoryStack64 extends Structure implements Stack {
 
     public static final int DEFAULT_MEMORY_SIZE = 1024 * 1024; // 1 MiB
     public static final int ALIGNMENT = 8;
+
 
     private final long address;
 
@@ -92,6 +95,11 @@ public class DirectMemoryStack64 extends Structure implements Stack {
 
     }
 
+    @Override
+    public @NotNull SafePoint safePoint() {
+        return null;
+    }
+
     /**
      * @see StackPointerQueue#createSafePoint()
      */
@@ -135,6 +143,8 @@ public class DirectMemoryStack64 extends Structure implements Stack {
     public String toString() {
         return info();
     }
+
+
 
     // Only for completion's Sake. Cannot actually be called, as no unallocated Stack can be created.
     public static final StaticGenerator GENERATOR = new StaticGenerator() {
