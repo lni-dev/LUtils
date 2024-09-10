@@ -34,7 +34,7 @@ class BasicHeaderValueTest {
                     }
 
                     @Override
-                    public int length() {
+                    public long length() {
                         return -1;
                     }
 

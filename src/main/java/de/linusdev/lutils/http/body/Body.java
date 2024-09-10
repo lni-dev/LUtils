@@ -36,16 +36,16 @@ public interface Body {
      * the length of the body or -1 if the length is unknown.
      * @return length of this body or -1
      */
-    int length();
+    long length();
 
-    default int definitiveLength(){
+    default long definitiveLength(){
         if(length() != -1) return length();
 
         // read the stream to get the length
         try(InputStream stream = stream()) {
 
             byte[] buffer = new byte[2048];
-            int actualLength = 0;
+            long actualLength = 0;
             int len;
             while((len = stream.read(buffer)) != -1)
                 actualLength += len;
@@ -53,7 +53,7 @@ public interface Body {
             return actualLength;
 
         } catch (IOException e) {
-            throw new IllegalStateException("Cannot calculate length of this body.");
+            throw new IllegalStateException("Cannot calculate length of this body.", e);
         }
     }
 
@@ -84,8 +84,9 @@ public interface Body {
 
     /**
      * {@link InputStream} containing the body. The returned stream must be closed by the method caller.
+     * If this method is called multiple times, it must supply a new stream each time.
      * @return {@link InputStream}
      */
-    @NotNull InputStream stream();
+    @NotNull InputStream stream() throws IOException;
 
 }

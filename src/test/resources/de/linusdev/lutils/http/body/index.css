@@ -1,0 +1,28 @@
+:root {
+    --text-color: rgb(230, 237, 243);
+    --background-color: rgb(0,0,0);
+}
+
+* {
+    font-family: 'Roboto M', sans-serif;
+    font-size: 1.05rem;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    color: var(--text-color);
+    background: var(--background-color);
+}
+
+#container {
+    display: flex;
+    flex-direction: column;
+}
+
+#log {
+    display: flex;
+    flex-direction: column;
+}
+
+.log-element {
+    padding: 10px;
+}

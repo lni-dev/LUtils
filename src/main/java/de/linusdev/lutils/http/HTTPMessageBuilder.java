@@ -76,8 +76,9 @@ public class HTTPMessageBuilder {
         return this;
     }
 
-    public void setStatusCode(@NotNull ResponseStatusCode statusCode) {
+    public HTTPMessageBuilder setStatusCode(@NotNull ResponseStatusCode statusCode) {
         this.statusCode = statusCode;
+        return this;
     }
 
     public HTTPMessageBuilder setBody(@Nullable Body body) {
@@ -212,7 +213,7 @@ public class HTTPMessageBuilder {
         stream.write(LINE_SEPARATOR);
 
         if(body != null) {
-            byte[] buffer = body.length() == -1 ? new byte[maxBufferSize] : new byte[Math.min(body.length(), maxBufferSize)];
+            byte[] buffer = body.length() == -1 ? new byte[maxBufferSize] : new byte[(int) Math.min(body.length(), maxBufferSize)];
             try (InputStream bodyStream = body.stream()) {
 
                 int len;

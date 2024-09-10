@@ -30,6 +30,7 @@ public class ContentTypes extends BasicHeaderValueImpl implements ContentType {
         public static @NotNull Text html() {
             return new Text("html");
         }
+
         @Contract(" -> new")
         public static @NotNull Text plain() {
             return new Text("plain");
@@ -38,6 +39,11 @@ public class ContentTypes extends BasicHeaderValueImpl implements ContentType {
         @Contract(" -> new")
         public static @NotNull Text csv() {
             return new Text("csv");
+        }
+
+        @Contract(" -> new")
+        public static @NotNull Text css() {
+            return new Text("css");
         }
 
         protected Text(@NotNull String name) {

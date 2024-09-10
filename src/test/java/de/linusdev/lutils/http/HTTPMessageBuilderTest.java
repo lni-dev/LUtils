@@ -49,7 +49,7 @@ class HTTPMessageBuilderTest {
             }
 
             @Override
-            public int length() {
+            public long length() {
                 return "test body".getBytes(StandardCharsets.UTF_8).length;
             }
 
@@ -83,7 +83,7 @@ class HTTPMessageBuilderTest {
             }
 
             @Override
-            public int length() {
+            public long length() {
                 return -1;
             }
 
@@ -115,7 +115,7 @@ class HTTPMessageBuilderTest {
             }
 
             @Override
-            public int length() {
+            public long length() {
                 return -1;
             }
 
