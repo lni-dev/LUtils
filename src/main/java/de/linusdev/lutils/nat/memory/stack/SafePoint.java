@@ -16,11 +16,82 @@
 
 package de.linusdev.lutils.nat.memory.stack;
 
-public interface SafePoint extends AutoCloseable {
+import de.linusdev.lutils.nat.struct.abstracts.Structure;
+import org.jetbrains.annotations.NotNull;
+
+import java.nio.ByteBuffer;
+
+/**
+ * @see Stack#safePoint()
+ */
+public interface SafePoint extends Stack, AutoCloseable {
+
+    @NotNull Stack getStack();
 
     /**
      * Check and discard this safe point. May only be called once.
      */
     @Override
     void close();
+
+    @Override
+    default <T extends Structure> T push(@NotNull T structure) {
+        return getStack().push(structure);
+    }
+
+    @Override
+    default void pop() {
+        getStack().pop();
+    }
+
+    @Override
+    @NotNull
+    default SafePoint safePoint() {
+        return getStack().safePoint();
+    }
+
+    @Override
+    default @NotNull PopPoint popPoint() {
+        return getStack().popPoint();
+    }
+
+    @Override
+    default @NotNull ByteBuffer pushByteBuffer(int size, int alignment) {
+        return getStack().pushByteBuffer(size, alignment);
+    }
+
+    @Override
+    default long memorySize() {
+        return getStack().memorySize();
+    }
+
+    @Override
+    default long usedByteCount() {
+        return getStack().usedByteCount();
+    }
+
+    @Override
+    default int currentStructCount() {
+        return getStack().currentStructCount();
+    }
+
+    @Override
+    default boolean isInitialised() {
+        return getStack().isInitialised();
+    }
+
+    @Override
+    default ByteBuffer getByteBuffer() {
+        return getStack().getByteBuffer();
+    }
+
+    @Override
+    default int getRequiredSize() {
+        return getStack().getRequiredSize();
+    }
+
+    @Override
+    default int getAlignment() {
+        return getStack().getAlignment();
+    }
 }

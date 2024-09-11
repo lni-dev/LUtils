@@ -3,6 +3,8 @@ package de.linusdev.lutils.nat.memory.stack.impl;
 import de.linusdev.lutils.math.vector.buffer.intn.BBInt1;
 import de.linusdev.lutils.math.vector.buffer.intn.BBInt2;
 import de.linusdev.lutils.math.vector.buffer.intn.BBUInt1;
+import de.linusdev.lutils.nat.memory.stack.PopPoint;
+import de.linusdev.lutils.nat.memory.stack.SafePointError;
 import de.linusdev.lutils.nat.pointer.BBPointer64;
 import de.linusdev.lutils.nat.pointer.BBTypedPointer64;
 import de.linusdev.lutils.nat.string.NullTerminatedUTF8String;
@@ -21,36 +23,33 @@ class DirectMemoryStack64Test {
     @Test
     void test() {
         DirectMemoryStack64 stack = new DirectMemoryStack64();
-        assertTrue(stack.createSafePoint());
 
         assertEquals(DirectMemoryStack64.DEFAULT_MEMORY_SIZE, stack.memorySize());
         assertEquals(DirectMemoryStack64.ALIGNMENT, stack.getAlignment());
         assertTrue(stack.isInitialised());
-        assertEquals(stack.getAddress(), stack.stackPointer);
+        assertEquals(stack.getAddress(), stack.stackPointers.stackPointer);
 
+        try(var ignored = stack.safePoint()) {
+            NullTerminatedUTF8String testStr = stack.push(NullTerminatedUTF8String.newAllocatable("Test"));
+            assertTrue(testStr.isInitialised());
+            assertEquals("Test", testStr.get());
+            assertEquals(stack.getAddress() + testStr.getRequiredSize(), stack.stackPointers.stackPointer);
+            assertEquals(1, stack.currentStructCount());
+            assertEquals("Test".length() + 1, stack.usedByteCount());
 
-        NullTerminatedUTF8String testStr = stack.push(NullTerminatedUTF8String.newAllocatable("Test"));
-        assertFalse(stack.checkSafePoint());
-        assertTrue(stack.createSafePoint()); // create a second safe point
+            try(var ignored2 = stack.safePoint()) {
+                stack.pushString("second");
+                stack.pop(); // second
+            }
 
-        assertTrue(testStr.isInitialised());
-        assertEquals("Test", testStr.get());
-        assertEquals(stack.getAddress() + testStr.getRequiredSize(), stack.stackPointer);
-        assertEquals(1, stack.currentStructCount());
-        assertEquals("Test".length() + 1, stack.usedByteCount());
-
-        stack.pushString("second");
-        assertFalse(stack.checkSafePoint());
-        stack.pop(); // second
-        assertTrue(stack.checkSafePoint());
-
-
-        stack.pop(); // testStr
+            stack.pop(); // testStr
+        }
 
         assertEquals(0, stack.currentStructCount());
         assertEquals(0, stack.usedByteCount());
-        assertEquals(stack.getAddress(), stack.stackPointer);
-        assertTrue(stack.checkSafePoint());
+        assertEquals(stack.getAddress(), stack.stackPointers.stackPointer);
+
+
 
         BBUInt1 bbuInt1 = stack.pushUnsignedInt();
         BBInt1 bbInt1 = stack.pushInt();
@@ -89,15 +88,69 @@ class DirectMemoryStack64Test {
     }
 
     @Test
+    void testPopPoint() {
+        DirectMemoryStack64 stack = new DirectMemoryStack64();
+        assertEquals(stack.getAddress(), stack.stackPointers.stackPointer);
+        try (var ignored = stack.safePoint()){
+            try(PopPoint point = stack.popPoint()) {
+                point.pushString("Test String");
+                stack.pushString("Test String 1");
+                System.out.println(stack.pushString("Test String 2"));
+                stack.pop(); // pop one but not the others
+            }
+        }
+        assertEquals(stack.getAddress(), stack.stackPointers.stackPointer);
+
+    }
+
+    @Test
+    void failPopPoint() {
+        DirectMemoryStack64 stack = new DirectMemoryStack64();
+        assertEquals(stack.getAddress(), stack.stackPointers.stackPointer);
+        stack.pushString("some string");
+
+        assertThrows(SafePointError.class, () -> {
+            try(PopPoint point = stack.popPoint()) {
+                point.pushString("Test String");
+                point.pushString("Test String 1");
+                System.out.println(stack.pushString("Test String 2"));
+                point.pop(); // Test String
+                point.pop(); // Test String 1
+                point.pop(); // Test String 2
+                point.pop(); // pop one too many
+            }
+        });
+    }
+
+    @Test
+    void failSafePoint() {
+        DirectMemoryStack64 stack = new DirectMemoryStack64();
+        assertThrows(SafePointError.class, () -> {
+            try (var ignored = stack.safePoint()) {
+                stack.pushString("Test!");
+            }
+        });
+
+        assertThrows(SafePointError.class, () -> {
+            try (var ignored = stack.safePoint()) {
+                stack.pop();
+            }
+        });
+
+    }
+
+    @Test
     void testEmptyCheckPoint() {
         DirectMemoryStack64 stack = new DirectMemoryStack64();
-        assertTrue(stack.createSafePoint());
-        assertTrue(stack.checkSafePoint());
+        try (var ignored = stack.safePoint()) {
 
-        assertTrue(stack.createSafePoint());
-        assertTrue(stack.createSafePoint());
-        assertTrue(stack.checkSafePoint());
-        assertTrue(stack.checkSafePoint());
+        }
+
+        try (var ignored = stack.safePoint()) {
+            try (var ignored2 = stack.safePoint()) {
+
+            }
+        }
     }
 
     @Test

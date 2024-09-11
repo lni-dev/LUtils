@@ -18,6 +18,7 @@ package de.linusdev.lutils.nat.memory.stack.impl;
 
 import de.linusdev.lutils.nat.abi.ABI;
 import de.linusdev.lutils.nat.abi.OverwriteChildABI;
+import de.linusdev.lutils.nat.memory.stack.PopPoint;
 import de.linusdev.lutils.nat.memory.stack.SafePoint;
 import de.linusdev.lutils.nat.memory.stack.Stack;
 import de.linusdev.lutils.nat.struct.abstracts.Structure;
@@ -42,17 +43,14 @@ public class DirectMemoryStack64 extends Structure implements Stack {
     public static final int DEFAULT_MEMORY_SIZE = 1024 * 1024; // 1 MiB
     public static final int ALIGNMENT = 8;
 
-
     private final long address;
-
-    protected long stackPointer;
-    private final StackPointerQueue stackPointers = new StackPointerQueue();
+    protected final @NotNull StackPointerQueue stackPointers;
 
     public DirectMemoryStack64(int size) {
         setInfo(new StructureInfo(ALIGNMENT, false, 0, size, 0));
         allocate();
         this.address = getPointer();
-        this.stackPointer = address;
+        this.stackPointers = new StackPointerQueue(address);
     }
 
     public DirectMemoryStack64() {
@@ -61,7 +59,7 @@ public class DirectMemoryStack64 extends Structure implements Stack {
 
     @Override
     public <T extends Structure> T push(@NotNull T structure) {
-        stackPointers.push(stackPointer);
+        long stackPointer = stackPointers.getStackPointer();
 
         StructureInfo info = structure.getOrGenerateInfo();
         int size = info.getRequiredSize();
@@ -72,47 +70,36 @@ public class DirectMemoryStack64 extends Structure implements Stack {
         BufferUtils.fill(subBuf, (byte) 0);
         structure.claimBuffer(subBuf);
 
-        stackPointer += size + alignmentFix;
+        stackPointers.push(size + alignmentFix);
 
         return structure;
     }
 
     @Override
     public @NotNull ByteBuffer pushByteBuffer(int size, int alignment) {
-        stackPointers.push(stackPointer);
+        long stackPointer = stackPointers.getStackPointer();
 
         int alignmentFix = stackPointer % alignment == 0 ? 0 : (int) (alignment - (stackPointer % alignment));
         ByteBuffer newBuf = byteBuf.slice((int) ((stackPointer - address) + alignmentFix), size).order(ByteOrder.nativeOrder());
 
-        stackPointer += size + alignmentFix;
+        stackPointers.push(size + alignmentFix);
 
         return newBuf;
     }
 
     @Override
     public void pop() {
-        stackPointer = stackPointers.pop();
-
+        stackPointers.pop();
     }
 
     @Override
     public @NotNull SafePoint safePoint() {
-        return null;
+        return stackPointers.safePoint(this);
     }
 
-    /**
-     * @see StackPointerQueue#createSafePoint()
-     */
-    public boolean createSafePoint() {
-        stackPointers.createSafePoint();
-        return true;
-    }
-
-    /**
-     * @see StackPointerQueue#checkSafePoint()
-     */
-    public boolean checkSafePoint() {
-        return stackPointers.checkSafePoint();
+    @Override
+    public @NotNull PopPoint popPoint() {
+        return stackPointers.popPoint(this);
     }
 
     @Override
@@ -122,7 +109,7 @@ public class DirectMemoryStack64 extends Structure implements Stack {
 
     @Override
     public long usedByteCount() {
-        return stackPointer- address;
+        return stackPointers.getStackPointer() - address;
     }
 
     @Override
@@ -143,8 +130,6 @@ public class DirectMemoryStack64 extends Structure implements Stack {
     public String toString() {
         return info();
     }
-
-
 
     // Only for completion's Sake. Cannot actually be called, as no unallocated Stack can be created.
     public static final StaticGenerator GENERATOR = new StaticGenerator() {

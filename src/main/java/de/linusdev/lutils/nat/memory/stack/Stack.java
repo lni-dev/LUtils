@@ -53,7 +53,55 @@ public interface Stack extends DirectMemoryManager {
      */
     void pop();
 
+    /**
+     * Creates an {@link SafePoint} on the current stack. When this safe point is {@link SafePoint#close() closed},
+     * it is checked if the {@link Stack} is in the same state as when the safe point was created. This means, the same
+     * number of structures are on the stack. If the same state has not been reached a {@link SafePointError} will
+     * be thrown. Additionally {@link #pop()} will throw a {@link SafePointError}, when the pop operation
+     * would pop past the last {@link SafePoint#close() unclosed} safe point (if assertions are enabled).<br><br>
+     * Safe points implement {@link AutoCloseable} and can be used in combination with try statements:
+     * <pre>{@code
+     * try(var ignored2 = stack.safePoint()) {
+     *     var string = stack.pushString("some string");
+     *     // Do something ...
+     *     stack.pop(); // string
+     * }
+     * }</pre>
+     * Safe points can also be used as the stack itself:
+     * <pre>{@code
+     * try(var safePoint = stack.safePoint()) {
+     *     var string = safePoint.pushString("some string");
+     *     // Do something ...
+     *     safePoint.pop(); // string
+     * }
+     * }</pre>
+     */
     @NotNull SafePoint safePoint();
+
+    /**
+     * Creates a {@link PopPoint} on the current stack. When this pop point is {@link PopPoint#close() closed},
+     * the stack is reverted to the state as when the pop point was created. Additionally {@link #pop()}
+     * will throw a {@link SafePointError}, when the pop operation would pop past the last
+     * {@link PopPoint#close() unclosed} pop point (if assertions are enabled).<br><br>
+     * Pop points implement {@link AutoCloseable} and can be used in combination with try statements:
+     * <pre>{@code
+     * try(var ignored2 = stack.popPoint()) {
+     *     var string = stack.pushString("some string");
+     *     // Do something ...
+     *
+     * }  // string will automatically be popped.
+     * }</pre>
+     * Pop points differ from {@link #safePoint() safe points} only in the {@link PopPoint#close() close} operation.<br>
+     * Pop points can also be used as the stack itself:
+     * <pre>{@code
+     * try(var popPoint = stack.popPoint()) {
+     *     var string = popPoint.pushString("some string");
+     *     // Do something ...
+     *
+     * } // string will automatically be popped.
+     * }</pre>
+     */
+    @NotNull PopPoint popPoint();
 
     /**
      * Creates a new {@link BBUInt1} using {@link BBUInt1#newAllocatable(StructValue) BBUInt1.newAllocatable(null)} and
