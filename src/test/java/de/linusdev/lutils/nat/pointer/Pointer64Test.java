@@ -49,4 +49,13 @@ class Pointer64Test {
 
     }
 
+    @Test
+    void testOfArray() {
+        var array = StructureArray.newAllocated(4, BBUInt1.class, BBUInt1::newUnallocated);
+        TypedPointer64<BBUInt1> pointer = BBTypedPointer64.newAllocated1(null);
+        pointer.setOfArray(array);
+
+        assertEquals(array.getPointer(), array.get(0).getPointer());
+    }
+
 }

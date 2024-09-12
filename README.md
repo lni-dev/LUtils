@@ -23,3 +23,9 @@ dependencies {
 - [VMath](https://github.com/lni-dev/LUtils/tree/master/src/main/java/de/linusdev/lutils/math): Vector and matrix math. Buffer backed or array backed.
 - [HTTP](https://github.com/lni-dev/LUtils/tree/master/src/main/java/de/linusdev/lutils/http): HTTPRequest, HTTPResponse, Header and more.
 - [Code Generator](https://github.com/lni-dev/LUtils/tree/master/src/main/java/de/linusdev/lutils/codegen): Generate Java Code. WIP!
+
+## Todo
+- Replacement for nio.DirectByteBuffer:
+  - DirectByteBuffer.allocatedDirect() is slow and bad for GC: see https://blog.lwjgl.org/memory-management-in-lwjgl-3/
+  - Replace it with a custom buffer, which uses Unsafe for allocation
+  - Middleware interface between the buffer and Unsafe, so Unsafe could be easily replaced with native functions, that call malloc and free.

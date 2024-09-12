@@ -73,6 +73,16 @@ public interface TypedPointer64<T extends NativeParsable> extends Pointer64 {
     }
 
     /**
+     * Sets this pointer value, so that the {@link #get()} method will return the value of
+     * {@link NativeArray#getPointer()} or {@link #NULL_POINTER} if {@code array} is {@code null}.
+     * This means, this pointer will point to the first element in given {@code array}.<br>
+     * This method is useful, if this pointer should point to an array of {@link T}.
+     */
+    default void setOfArray(@Nullable NativeArray<T> array) {
+        set(Pointer64.refL(array));
+    }
+
+    /**
      * Cast {@link T} to {@link U}.
      * @return a new {@link TypedPointer64}, whose type is {@link U}.
      * @param <U> new pointer type
