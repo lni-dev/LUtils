@@ -22,8 +22,10 @@ import de.linusdev.lutils.interfaces.TSupplier;
 import de.linusdev.lutils.io.ResourceUtils;
 import org.jetbrains.annotations.NotNull;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.LinkOption;
 import java.nio.file.Path;
@@ -45,6 +47,14 @@ public class Bodies {
      */
     public static @NotNull Creator css() {
         return new Creator(ContentTypes.Text.css());
+    }
+
+    /**
+     * Create a string body
+     * @see Creator
+     */
+    public static @NotNull Creator textUtf8() {
+        return new Creator(ContentTypes.Text.plain().setCharset(StandardCharsets.UTF_8.name()));
     }
 
     /**
@@ -88,6 +98,10 @@ public class Bodies {
                throw new IllegalStateException("Cannot read file size of file'" + pathToFile + "'", e);
             }
         }
+
+        public @NotNull Body ofStringUtf8(@NotNull String string) {
+            return new ByteArrayBody(string.getBytes(StandardCharsets.UTF_8), contentType);
+        }
     }
 
     private record InputStreamSupplierBody(
@@ -130,6 +144,26 @@ public class Bodies {
         @Override
         public @NotNull InputStream stream() throws IOException {
             return connection.openInputStream();
+        }
+    }
+
+    private record ByteArrayBody(
+            byte @NotNull [] bytes,
+            @NotNull ContentType contentType
+    ) implements Body {
+        @Override
+        public @NotNull ContentType contentType() {
+            return contentType;
+        }
+
+        @Override
+        public long length() {
+            return bytes.length;
+        }
+
+        @Override
+        public @NotNull InputStream stream() {
+            return new ByteArrayInputStream(bytes);
         }
     }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2024 Linus Andera
+ * Copyright (c) 2024 Linus Andera
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,34 +14,16 @@
  * limitations under the License.
  */
 
-package de.linusdev.lutils.http.method;
+package de.linusdev.lutils.routing;
 
+import de.linusdev.lutils.http.HTTPMessageBuilder;
+import de.linusdev.lutils.http.HTTPRequest;
+import de.linusdev.lutils.http.body.UnparsedBody;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-public enum Methods implements RequestMethod {
-    GET("GET"),
-    HEAD("HEAD"),
-    POST("POST"),
-    PUT("PUT"),
-    DELETE("DELETE"),
-    CONNECT("CONNECT"),
-    OPTIONS("OPTIONS"),
-    TRACE("TRACE"),
-    ;
+public interface RequestHandler {
 
-    private final String name;
+    @Nullable HTTPMessageBuilder handle(@NotNull HTTPRequest<UnparsedBody> request);
 
-    Methods(String name) {
-        this.name = name;
-    }
-
-    @Override
-    public @NotNull String getName() {
-        return name;
-    }
-
-    @Override
-    public String toString() {
-        return name;
-    }
 }
