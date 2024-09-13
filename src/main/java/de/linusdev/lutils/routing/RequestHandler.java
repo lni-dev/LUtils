@@ -18,11 +18,22 @@ package de.linusdev.lutils.routing;
 
 import de.linusdev.lutils.http.HTTPMessageBuilder;
 import de.linusdev.lutils.http.HTTPRequest;
+import de.linusdev.lutils.http.HTTPResponse;
+import de.linusdev.lutils.http.body.Bodies;
 import de.linusdev.lutils.http.body.UnparsedBody;
+import de.linusdev.lutils.http.status.StatusCodes;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public interface RequestHandler {
+
+    static @NotNull RequestHandler ofHtmlResource(@NotNull Class<?> clazz, @NotNull String name) {
+        return request -> HTTPResponse.builder().setStatusCode(StatusCodes.OK).setBody(Bodies.html().ofResource(clazz, name));
+    }
+
+    static @NotNull RequestHandler ofCssResource(@NotNull Class<?> clazz, @NotNull String name) {
+        return request -> HTTPResponse.builder().setStatusCode(StatusCodes.OK).setBody(Bodies.css().ofResource(clazz, name));
+    }
 
     @Nullable HTTPMessageBuilder handle(@NotNull HTTPRequest<UnparsedBody> request);
 

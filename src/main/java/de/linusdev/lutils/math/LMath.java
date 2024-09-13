@@ -95,4 +95,16 @@ public class LMath {
         return minUnsigned(maxUnsigned(value, min), max);
     }
 
+    /**
+     * Floored logarithm of basis two of given unsigned {@code value}.
+     * If given {@code value} is {@code 0}, {@code 0} is returned.
+     * @param value value to calculate the logaritm of the basis two of, as described above.
+     * @return {@code value == 0 ? 0 : floor(log2(value))}
+     */
+    public static int intLog2(int value) {
+        if(value == 0)
+            return 0;
+        return Integer.numberOfTrailingZeros(Integer.highestOneBit(value));
+    }
+
 }

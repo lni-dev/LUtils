@@ -2,7 +2,7 @@ package de.linusdev.lutils.math;
 
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class LMathTest {
 
@@ -65,5 +65,38 @@ class LMathTest {
         assertEquals(10, LMath.clampUnsigned(10, 3, 13));
         assertEquals(3, LMath.clampUnsigned(1, 3, 13));
         assertEquals(13, LMath.clampUnsigned(123, 3, 13));
+    }
+
+    @Test
+    void intLog2() {
+        assertEquals(0, LMath.intLog2(0));
+        assertEquals(0, LMath.intLog2(1));
+
+        assertEquals(1, LMath.intLog2(2));
+        assertEquals(1, LMath.intLog2(3));
+
+        assertEquals(2, LMath.intLog2(4));
+        assertEquals(2, LMath.intLog2(5));
+        assertEquals(2, LMath.intLog2(6));
+        assertEquals(2, LMath.intLog2(7));
+
+        assertEquals(3, LMath.intLog2(8));
+        assertEquals(3, LMath.intLog2(9));
+        assertEquals(3, LMath.intLog2(10));
+        assertEquals(3, LMath.intLog2(15));
+
+        assertEquals(4, LMath.intLog2(16));
+        assertEquals(4, LMath.intLog2(31));
+
+        assertEquals(5, LMath.intLog2(32));
+        assertEquals(5, LMath.intLog2(63));
+
+        assertEquals(19, LMath.intLog2(1048575));
+        assertEquals(20, LMath.intLog2(1048576));
+
+        assertEquals(30, LMath.intLog2(Integer.MAX_VALUE));
+
+        assertEquals(31, LMath.intLog2(0x80000000));
+        assertEquals(31, LMath.intLog2(0xFFFFFFFF));
     }
 }
