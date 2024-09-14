@@ -58,4 +58,10 @@ class Pointer64Test {
         assertEquals(array.getPointer(), array.get(0).getPointer());
     }
 
+    @Test
+    void testRNotNull() {
+        assertTrue(Pointer64.requireNotNull(1L, "Test"));
+        assertThrows(IllegalArgumentException.class, () -> Pointer64.requireNotNull(Pointer64.NULL_POINTER, ""));
+    }
+
 }

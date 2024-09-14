@@ -25,6 +25,14 @@ import java.util.List;
 public interface IntBitfield<V extends IntBitFieldValue> {
 
     /**
+     * Creates a new bitfield with the same flags set as {@code toCopy}.
+     */
+    @Contract("_ -> new")
+    static <V extends IntBitFieldValue> @NotNull IntBitfield<V> copy(@NotNull IntBitfield<V> toCopy) {
+        return new IntBitfieldImpl<>(toCopy.getValue());
+    }
+
+    /**
      * Get the value of this bitfield
      * @return bitfield as int
      */
@@ -166,6 +174,46 @@ public interface IntBitfield<V extends IntBitFieldValue> {
             if(isSet(c)) list.add(c);
 
         return list;
+    }
+
+    /**
+     * And operation with given {@code flags}
+     * @return {@code this & flags}
+     */
+    @Contract("_ -> this")
+    default @NotNull IntBitfield<V> and(int flags) {
+        replaceWith(getValue() & flags);
+        return this;
+    }
+
+    /**
+     * And operation with given {@code flags}
+     * @return {@code this & flags}
+     */
+    @Contract("_ -> this")
+    default @NotNull IntBitfield<V> and(@NotNull IntBitfield<V> flags) {
+        and(flags.getValue());
+        return this;
+    }
+
+    /**
+     * Or operation with given {@code flags}
+     * @return {@code this | flags}
+     */
+    @Contract("_ -> this")
+    default @NotNull IntBitfield<V> or(int flags) {
+        replaceWith(getValue() | flags);
+        return this;
+    }
+
+    /**
+     * Or operation with given {@code flags}
+     * @return {@code this | flags}
+     */
+    @Contract("_ -> this")
+    default @NotNull IntBitfield<V> or(@NotNull IntBitfield<V> flags) {
+        or(flags.getValue());
+        return this;
     }
 
 }

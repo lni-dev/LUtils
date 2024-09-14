@@ -2,7 +2,7 @@ package de.linusdev.lutils.nat.enums;
 
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class JavaEnumValue32Test {
 
@@ -39,6 +39,22 @@ class JavaEnumValue32Test {
 
         assertEquals(3, eVal.get());
         assertEquals(TestEnum.C, eVal.get(TestEnum.class));
+
+    }
+
+    @Test
+    void test2() {
+        EnumValue32<TestEnum> eVal = new JavaEnumValue32<>(1);
+        assertEquals(1, eVal.get());
+        assertEquals(TestEnum.A, eVal.get(TestEnum.class));
+
+    }
+
+    @Test
+    void test3() {
+        EnumValue32<TestEnum> eVal = new JavaEnumValue32<>(TestEnum.A);
+        assertEquals(1, eVal.get());
+        assertEquals(TestEnum.A, eVal.get(TestEnum.class));
 
     }
 }

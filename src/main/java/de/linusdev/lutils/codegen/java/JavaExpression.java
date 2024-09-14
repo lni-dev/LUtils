@@ -22,7 +22,9 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 
 public interface JavaExpression extends PartGenerator<JavaSourceGeneratorHelper> {
 
@@ -39,6 +41,22 @@ public interface JavaExpression extends PartGenerator<JavaSourceGeneratorHelper>
             @Override
             public @Nullable Collection<JavaImport> getRequiredImports() {
                 return requiredImports == null ? null : Arrays.asList(requiredImports);
+            }
+        };
+    }
+
+    static @NotNull JavaExpression javaAssert(
+            @NotNull JavaExpression expression
+    ) {
+        return new JavaExpression() {
+            @Override
+            public @NotNull String getExprString(@NotNull JavaSourceGeneratorHelper sg) {
+                return "assert " + expression.getExprString(sg);
+            }
+
+            @Override
+            public @Nullable Collection<JavaImport> getRequiredImports() {
+                return expression.getRequiredImports();
             }
         };
     }

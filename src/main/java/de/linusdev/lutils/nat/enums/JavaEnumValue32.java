@@ -24,6 +24,14 @@ public class JavaEnumValue32 <M extends NativeEnumMember32> implements EnumValue
         this.value = DEFAULT_VALUE;
     }
 
+    public JavaEnumValue32(int value) {
+        this.value = value;
+    }
+
+    public JavaEnumValue32(M value) {
+        this.value = value.getValue();
+    }
+
     @Override
     public void set(int value) {
         this.value = value;

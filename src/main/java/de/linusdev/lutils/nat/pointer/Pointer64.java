@@ -17,12 +17,27 @@
 package de.linusdev.lutils.nat.pointer;
 
 import de.linusdev.lutils.nat.NativeParsable;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public interface Pointer64 {
 
     long NULL_POINTER = 0L;
+
+    /**
+     * Ensures, that given {@code pointer} is not {@link #NULL_POINTER}.
+     * @param pointer pointer to check.
+     * @param message message contained in the exception.
+     * @return {@code true}
+     * @throws IllegalArgumentException if given pointer is a {@link #NULL_POINTER}.
+     */
+    @Contract()
+    static boolean requireNotNull(long pointer, @NotNull String message) {
+        if(pointer == NULL_POINTER)
+            throw new IllegalArgumentException(message);
+        return true;
+    }
 
     static @NotNull Pointer64 of(long pointer) {
         return new Pointer64Impl(pointer);

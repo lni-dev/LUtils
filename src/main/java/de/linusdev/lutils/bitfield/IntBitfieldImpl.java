@@ -76,8 +76,9 @@ public class IntBitfieldImpl<V extends IntBitFieldValue> implements IntBitfield<
     /**
      * reset this bitfield to 0
      */
-    public void reset() {
+    public IntBitfieldImpl<V> reset() {
         this.value = 0;
+        return this;
     }
 
     @Override
