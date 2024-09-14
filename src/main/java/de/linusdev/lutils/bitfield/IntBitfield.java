@@ -16,6 +16,7 @@
 
 package de.linusdev.lutils.bitfield;
 
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -36,10 +37,21 @@ public interface IntBitfield<V extends IntBitFieldValue> {
     void replaceWith(int value);
 
     /**
+     * Replace the current value of this bitfield with given {@code flags.getValue()}. So that
+     * the flags in this bitfield match the flags of given {@code flags}.
+     * @param flags flags to replace current flags with.
+     */
+    default void replaceWith(@NotNull IntBitfield<V> flags) {
+        replaceWith(flags.getValue());
+    }
+
+    /**
      * reset this bitfield to 0 (not flags set)
      */
-    default void reset() {
+    @Contract("-> this")
+    default IntBitfield<V> reset() {
         replaceWith(0);
+        return this;
     }
 
     /**
@@ -123,15 +135,6 @@ public interface IntBitfield<V extends IntBitFieldValue> {
     default void set(@NotNull V @NotNull [] flags) {
         for(V flag : flags)
             setFlag(flag.getValue());
-    }
-
-    /**
-     * Replace the current value of this bitfield with given {@code flags.getValue()}. So that
-     * the flags in this bitfield match the flags of given {@code flags}.
-     * @param flags flags to replace current flags with.
-     */
-    default void replaceWith(@NotNull IntBitfield<V> flags) {
-        replaceWith(flags.getValue());
     }
 
     /**
