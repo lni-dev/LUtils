@@ -7,6 +7,7 @@ import de.linusdev.lutils.nat.memory.stack.PopPoint;
 import de.linusdev.lutils.nat.memory.stack.SafePointError;
 import de.linusdev.lutils.nat.pointer.BBPointer64;
 import de.linusdev.lutils.nat.pointer.BBTypedPointer64;
+import de.linusdev.lutils.nat.size.Size;
 import de.linusdev.lutils.nat.string.NullTerminatedUTF8String;
 import de.linusdev.lutils.nat.struct.array.StructureArray;
 import de.linusdev.lutils.nat.struct.utils.BufferUtils;
@@ -22,9 +23,9 @@ class DirectMemoryStack64Test {
 
     @Test
     void test() {
-        DirectMemoryStack64 stack = new DirectMemoryStack64();
+        DirectMemoryStack64 stack = new DirectMemoryStack64(new Size(10000));
 
-        assertEquals(DirectMemoryStack64.DEFAULT_MEMORY_SIZE, stack.memorySize());
+        assertEquals(10000, stack.memorySize());
         assertEquals(DirectMemoryStack64.ALIGNMENT, stack.getAlignment());
         assertTrue(stack.isInitialised());
         assertEquals(stack.getAddress(), stack.stackPointers.stackPointer);

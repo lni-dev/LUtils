@@ -21,6 +21,7 @@ import de.linusdev.lutils.nat.abi.OverwriteChildABI;
 import de.linusdev.lutils.nat.memory.stack.PopPoint;
 import de.linusdev.lutils.nat.memory.stack.SafePoint;
 import de.linusdev.lutils.nat.memory.stack.Stack;
+import de.linusdev.lutils.nat.size.Size;
 import de.linusdev.lutils.nat.struct.abstracts.Structure;
 import de.linusdev.lutils.nat.struct.annos.RequirementType;
 import de.linusdev.lutils.nat.struct.annos.StructValue;
@@ -45,6 +46,10 @@ public class DirectMemoryStack64 extends Structure implements Stack {
 
     private final long address;
     protected final @NotNull StackPointerQueue stackPointers;
+
+    public DirectMemoryStack64(@NotNull Size size) {
+        this(size.getAsInt());
+    }
 
     public DirectMemoryStack64(int size) {
         setInfo(new StructureInfo(ALIGNMENT, false, 0, size, 0));
