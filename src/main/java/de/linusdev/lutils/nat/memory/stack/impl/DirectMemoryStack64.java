@@ -51,15 +51,15 @@ public class DirectMemoryStack64 extends Structure implements Stack {
         this(size.getAsInt());
     }
 
+    public DirectMemoryStack64() {
+        this(DEFAULT_MEMORY_SIZE);
+    }
+
     public DirectMemoryStack64(int size) {
         setInfo(new StructureInfo(ALIGNMENT, false, 0, size, 0));
         allocate();
         this.address = getPointer();
         this.stackPointers = new StackPointerQueue(address);
-    }
-
-    public DirectMemoryStack64() {
-        this(DEFAULT_MEMORY_SIZE);
     }
 
     @Override
