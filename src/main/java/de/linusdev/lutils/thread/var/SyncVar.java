@@ -16,6 +16,7 @@
 
 package de.linusdev.lutils.thread.var;
 
+import de.linusdev.lutils.interfaces.TRunnable;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Consumer;
@@ -48,6 +49,12 @@ public interface SyncVar<T> {
      * @param consumer {@link Consumer}
      */
     void doSynchronised(@NotNull Consumer<@NotNull SyncVar<T>> consumer);
+
+    /**
+     * Execute given {@code runnable} synchronised on this variable.
+     * @param runnable {@link TRunnable}
+     */
+    <E extends Throwable> void doSynchronised(@NotNull TRunnable<E> runnable) throws E;
 
     <S> S computeSynchronised(@NotNull Function<@NotNull SyncVar<T>, S> computer);
 

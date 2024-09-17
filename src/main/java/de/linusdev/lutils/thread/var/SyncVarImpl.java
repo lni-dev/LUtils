@@ -16,8 +16,8 @@
 
 package de.linusdev.lutils.thread.var;
 
+import de.linusdev.lutils.interfaces.TRunnable;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -27,14 +27,14 @@ public class SyncVarImpl<T> implements SyncVar<T>{
 
     private final @NotNull Object lock = new Object();
 
-    private @Nullable T var;
+    private T var;
 
-    public SyncVarImpl(@Nullable T var) {
+    public SyncVarImpl(T var) {
         this.var = var;
     }
 
     @Override
-    public @Nullable T get() {
+    public T get() {
         return var;
     }
 
@@ -42,6 +42,13 @@ public class SyncVarImpl<T> implements SyncVar<T>{
     public void doSynchronised(@NotNull Consumer<@NotNull SyncVar<T>> consumer) {
         synchronized (lock) {
             consumer.accept(this);
+        }
+    }
+
+    @Override
+    public <E extends Throwable> void doSynchronised(@NotNull TRunnable<E> runnable) throws E {
+        synchronized (lock) {
+            runnable.run();
         }
     }
 
@@ -65,7 +72,7 @@ public class SyncVarImpl<T> implements SyncVar<T>{
     }
 
     @Override
-    public boolean setIfNull(@Nullable T value) {
+    public boolean setIfNull(T value) {
         synchronized (lock) {
             if(var == null) {
                 var = value;
@@ -89,7 +96,7 @@ public class SyncVarImpl<T> implements SyncVar<T>{
     }
 
     @Override
-    public void set(@Nullable T value) {
+    public void set(T value) {
         synchronized (lock) {
             var = value;
         }
