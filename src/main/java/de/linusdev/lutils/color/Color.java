@@ -65,22 +65,40 @@ public interface Color {
     }
 
     @Contract(value = "_, _, _ -> new", pure = true)
-    static @NotNull RGBAColor ofRGB(double r, double g, double b) {
+    static @NotNull RGBAColor ofRGB(
+            @Range(from = (long) RGBAColor.RGB_DOUBLE_MIN, to = (long) RGBAColor.RGB_DOUBLE_MAX) double r,
+            @Range(from = (long) RGBAColor.RGB_DOUBLE_MIN, to = (long) RGBAColor.RGB_DOUBLE_MAX) double g,
+            @Range(from = (long) RGBAColor.RGB_DOUBLE_MIN, to = (long) RGBAColor.RGB_DOUBLE_MAX) double b
+    ) {
         return new RGBAColorDoubleImpl(r, g, b, 1d);
     }
 
     @Contract(value = "_, _, _, _ -> new", pure = true)
-    static @NotNull RGBAColor ofRGBA(double r, double g, double b, double a) {
+    static @NotNull RGBAColor ofRGBA(
+            @Range(from = (long) RGBAColor.RGB_DOUBLE_MIN, to = (long) RGBAColor.RGB_DOUBLE_MAX) double r,
+            @Range(from = (long) RGBAColor.RGB_DOUBLE_MIN, to = (long) RGBAColor.RGB_DOUBLE_MAX) double g,
+            @Range(from = (long) RGBAColor.RGB_DOUBLE_MIN, to = (long) RGBAColor.RGB_DOUBLE_MAX) double b,
+            @Range(from = (long) RGBAColor.RGB_DOUBLE_MIN, to = (long) RGBAColor.RGB_DOUBLE_MAX) double a
+    ) {
         return new RGBAColorDoubleImpl(r, g, b, a);
     }
 
     @Contract(value = "_, _, _ -> new", pure = true)
-    static @NotNull HSVAColor ofHSV(double h, double s, double v) {
+    static @NotNull HSVAColor ofHSV(
+            @Range(from = (long) HSVAColor.HSV_HUE_MIN, to = (long) HSVAColor.HSV_HUE_MAX)                  double h,
+            @Range(from = (long) HSVAColor.HSV_SATURATION_MIN, to = (long) HSVAColor.HSV_SATURATION_MAX)    double s,
+            @Range(from = (long) HSVAColor.HSV_VALUE_MIN, to = (long) HSVAColor.HSV_VALUE_MAX)              double v
+    ) {
         return new HSVAColorImpl(h,s,v, 1d);
     }
 
     @Contract(value = "_, _, _, _ -> new", pure = true)
-    static @NotNull HSVAColor ofHSVA(double h, double s, double v, double a) {
+    static @NotNull HSVAColor ofHSVA(
+            @Range(from = (long) HSVAColor.HSV_HUE_MIN, to = (long) HSVAColor.HSV_HUE_MAX)                  double h,
+            @Range(from = (long) HSVAColor.HSV_SATURATION_MIN, to = (long) HSVAColor.HSV_SATURATION_MAX)    double s,
+            @Range(from = (long) HSVAColor.HSV_VALUE_MIN, to = (long) HSVAColor.HSV_VALUE_MAX)              double v,
+            @Range(from = (long) HSVAColor.HSV_ALPHA_MIN, to = (long) HSVAColor.HSV_ALPHA_MAX)              double a
+    ) {
         return new HSVAColorImpl(h,s,v, a);
     }
 

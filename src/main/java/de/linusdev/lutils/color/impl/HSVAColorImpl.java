@@ -27,16 +27,16 @@ public class HSVAColorImpl implements HSVAColor {
 
     public HSVAColorImpl(double hue, double saturation, double value, double alpha) {
 
-        if(hue < 0d || hue >= 360d)
+        if(hue < HSV_HUE_MIN || hue >= HSV_HUE_MAX)
             throw new IllegalArgumentException("hue must be between 0 (inclusive) and 360 (exclusive).");
 
-        if(saturation < 0d || saturation > 100d)
+        if(saturation < HSV_SATURATION_MIN || saturation > HSV_SATURATION_MAX)
             throw new IllegalArgumentException("hue must be between 0 (inclusive) and 100 (inclusive).");
 
-        if(value < 0d || value > 100d)
+        if(value < HSV_VALUE_MIN || value > HSV_VALUE_MAX)
             throw new IllegalArgumentException("hue must be between 0 (inclusive) and 100 (inclusive).");
 
-        if(alpha < 0d || alpha > 1d)
+        if(alpha < HSV_ALPHA_MIN || alpha > HSV_ALPHA_MAX)
             throw new IllegalArgumentException("hue must be between 0 (inclusive) and 1 (inclusive).");
 
         this.hue = hue;

@@ -37,7 +37,7 @@ class BBInt32ImageTest {
         System.out.println("Copied: ");
         System.out.println(Image.printable(bufferBackedImage));
 
-        assertTrue(Image.equalsRGBA(read, bufferBackedImage));
+        assertTrue(Image.equals(read, bufferBackedImage));
 
     }
 }

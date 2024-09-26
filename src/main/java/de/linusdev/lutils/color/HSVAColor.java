@@ -25,6 +25,15 @@ import org.jetbrains.annotations.NotNull;
 @SuppressWarnings("unused")
 public interface HSVAColor extends Color {
 
+    double HSV_HUE_MIN = 0;
+    double HSV_HUE_MAX = 360;
+    double HSV_SATURATION_MIN = 0;
+    double HSV_SATURATION_MAX = 100;
+    double HSV_VALUE_MIN = 0;
+    double HSV_VALUE_MAX = 100;
+    double HSV_ALPHA_MIN = 0;
+    double HSV_ALPHA_MAX = 1;
+
     /**
      *
      * @return hue of this color in degree (from 0°, inclusive, to 360°, exclusive)

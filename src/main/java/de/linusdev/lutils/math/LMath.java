@@ -16,6 +16,8 @@
 
 package de.linusdev.lutils.math;
 
+import org.jetbrains.annotations.Range;
+
 /**
  * LUtils custom math functions
  */
@@ -105,6 +107,31 @@ public class LMath {
         if(value == 0)
             return 0;
         return Integer.numberOfTrailingZeros(Integer.highestOneBit(value));
+    }
+
+    /**
+     * {@link #interpolate(double, double, double) Interpolate} between {@code minOut} and {@code maxOut}
+     * based on {@code pos}, which will be normalized to {@code 0.0} and {@code 1.0} based on {@code minPos}
+     * and {@code maxPos}. {@code pos} will automatically be {@link #clamp(double, double, double) clamped}
+     * between {@code minPos} and {@code maxPos}.
+     */
+    public static double interpolate(double minPos, double maxPos, double minOut, double maxOut, double pos) {
+        pos = clamp(pos, minPos, maxPos) - minPos;
+        double normalizedPos = pos / (maxPos - minPos);
+        return interpolate(minOut, maxOut, normalizedPos);
+    }
+
+    /**
+     * Interpolates linearly between {@code minOut} and {@code maxOut} depending on {@code pos}.
+     * If {@code pos} is {@code 0.0}, {@code minOut} will be returned.
+     * If {@code pos} is {@code 1.0}, {@code maxOut} will be returned.
+     * @param minOut minimum output
+     * @param maxOut maximum output
+     * @param pos position between {@code 0.0} and {@code 1.0}
+     * @return linear interpolation between {@code minOut} and {@code maxOut} depending on {@code pos}.
+     */
+    public static double interpolate(double minOut, double maxOut, @Range(from = 0, to = 1)  double pos) {
+        return (minOut * (1d - pos)) + (maxOut * pos);
     }
 
 }

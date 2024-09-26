@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 
-package de.linusdev.lutils.image;
+package de.linusdev.lutils.image.java;
 
+import de.linusdev.lutils.image.Image;
+import de.linusdev.lutils.image.PixelFormat;
 import org.jetbrains.annotations.NotNull;
 
 import java.awt.image.BufferedImage;
@@ -45,12 +47,12 @@ public class JavaBackedImage implements Image {
 
     @Override
     public void setPixelAsRGBA(int x, int y, int rgba) {
-        throw new UnsupportedOperationException();
+        image.setRGB(x, y, PixelFormat.R8G8B8A8_SRGB.toA8R8G8B8_SRGB(rgba));
     }
 
     @Override
     public boolean isReadOnly() {
-        return true;
+        return !image.hasTileWriters();
     }
 
 }

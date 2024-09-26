@@ -99,4 +99,18 @@ class LMathTest {
         assertEquals(31, LMath.intLog2(0x80000000));
         assertEquals(31, LMath.intLog2(0xFFFFFFFF));
     }
+
+    @Test
+    void interpolate1() {
+        assertEquals(10.0, LMath.interpolate(5.0, 15.0, 0.5));
+        assertEquals(5.0, LMath.interpolate(5.0, 15.0, 0.0));
+        assertEquals(15.0, LMath.interpolate(5.0, 15.0, 1.0));
+    }
+
+    @Test
+    void interpolate2() {
+        assertEquals(10.0, LMath.interpolate(1.0, 4.0,5.0, 15.0, 2.5));
+        assertEquals( 5.0, LMath.interpolate(1.0, 4.0,5.0, 15.0, 1.0));
+        assertEquals(15.0, LMath.interpolate(1.0, 4.0,5.0, 15.0, 4.0));
+    }
 }

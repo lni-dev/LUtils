@@ -18,38 +18,7 @@ package de.linusdev.lutils.image;
 
 import org.jetbrains.annotations.NotNull;
 
-public interface ImageSize {
-
-    static @NotNull ImageSize of(int width, int height) {
-        return new ImageSize() {
-            @Override
-            public int getWidth() {
-                return width;
-            }
-
-            @Override
-            public int getHeight() {
-                return height;
-            }
-        };
-    }
-
-    /**
-     * Width of the image.
-     */
-    int getWidth();
-
-    /**
-     * Height of the image.
-     */
-    int getHeight();
-
-    /**
-     * Area of the image.
-     * @return {@code getWidth() * getHeight()}
-     */
-    default int getArea() {
-        return getWidth() * getHeight();
-    }
-
+@FunctionalInterface
+public interface ImageSupplier<T extends Image> {
+    @NotNull T supply(int width, int height);
 }

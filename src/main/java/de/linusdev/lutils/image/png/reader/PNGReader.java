@@ -17,7 +17,7 @@
 package de.linusdev.lutils.image.png.reader;
 
 import de.linusdev.lutils.image.Image;
-import de.linusdev.lutils.image.JavaBackedImage;
+import de.linusdev.lutils.image.java.JavaBackedImage;
 import org.jetbrains.annotations.NotNull;
 
 import javax.imageio.ImageIO;
