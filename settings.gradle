@@ -1,2 +1,3 @@
 rootProject.name = 'lutils'
+include 'lutils-gradle'
 

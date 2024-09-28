@@ -1,0 +1,44 @@
+plugins {
+    id 'java-gradle-plugin'
+    id 'com.gradle.plugin-publish' version '+'
+}
+
+group = 'de.linusdev'
+version = lutils_version
+
+javadoc {
+    options.encoding = 'UTF-8'
+    options.addStringOption('Xdoclint:none', '-quiet')
+    title = "lutils-gradle"
+}
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+}
+
+dependencies {
+    implementation(implementation("de.linusdev:lutils:+"))
+    compileOnly gradleApi()
+}
+
+publishing {
+    repositories {
+        mavenLocal()
+    }
+}
+
+gradlePlugin {
+    // Define the plugin
+    website = 'https://www.linudev.de'
+    vcsUrl = 'https://github.com/lni-dev/lutils.git'
+    plugins {
+        "lutils-gradle" {
+            id = 'de.linusdev.lutils.gradle'
+            displayName = 'lutils-gradle'
+            description = 'Linusdevs gradle utils'
+            tags.addAll('utils')
+            implementationClass = 'de.linusdev.lutils.gradle.LUtilsGradlePlugin'
+        }
+    }
+}
