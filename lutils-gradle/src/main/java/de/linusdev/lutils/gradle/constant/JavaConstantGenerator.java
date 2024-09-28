@@ -80,7 +80,7 @@ public class JavaConstantGenerator extends DefaultTask {
 
         SourceGenerator generator = sourceGenerator.get();
 
-        var clazz = generator.addJavaFile(basePackage.get());
+        var clazz = generator.addJavaFile();
         clazz.setName(clazzName.get());
 
         for (Constant constant : constants.get()) {
