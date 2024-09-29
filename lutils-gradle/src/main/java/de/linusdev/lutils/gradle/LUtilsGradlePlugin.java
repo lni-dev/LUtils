@@ -19,13 +19,12 @@ public class LUtilsGradlePlugin implements Plugin<Project> {
     public void applyConstantGen(@NotNull Project target) {
         TaskProvider<JavaConstantGenerator> genTask = target.getTasks().register("constantGen", JavaConstantGenerator.class);
 
-        // Add the generated source directory to the main source set
         target.getPlugins().withId("java", plugin -> {
             target.afterEvaluate(proj -> {
                 SourceSetContainer sourceSets = target.getExtensions().getByType(SourceSetContainer.class);
                 SourceSet mainSourceSet = sourceSets.getByName(SourceSet.MAIN_SOURCE_SET_NAME);
 
-                // Add the generated source directory to the source set
+                // Add src
                 mainSourceSet.getJava().srcDir(genTask);
 
                 // Ensure the sources are generated before compilation
