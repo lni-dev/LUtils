@@ -45,7 +45,7 @@ public class JavaConstantGenerator extends DefaultTask {
             ));
 
     @Input
-    Property<String> basePackage = getProject().getObjects().property(String.class);
+    Property<String> basePackage = getProject().getObjects().property(String.class).convention("");
 
     @Input
     Property<String> clazzName = getProject().getObjects().property(String.class)
