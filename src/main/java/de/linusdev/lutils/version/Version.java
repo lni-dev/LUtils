@@ -103,6 +103,17 @@ public interface Version extends Comparable<Version> {
         return prefix + version().getAsUserFriendlyString() + postfix + typeAppendix;
     }
 
+    /**
+     * Same as {@link #getAsUserFriendlyString()}, but instead of a {@code :}, before
+     * the release type, a underscore {@code _} is added instead.
+     */
+    default @NotNull String getAsArchiveReadyString() {
+        String prefix = prefix() == null ? "" : prefix() + "-";
+        String postfix = postfix() == null ? "" :  "-" + postfix();
+        String typeAppendix = type().appendix() == null ? "" : "_" + type().appendix();
+        return prefix + version().getAsUserFriendlyString() + postfix + typeAppendix;
+    }
+
     static boolean equals(@Nullable Version that, @Nullable Object other) {
         if(that == other) return true;
         if(other == null) return false;

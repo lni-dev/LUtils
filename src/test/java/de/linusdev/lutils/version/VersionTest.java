@@ -28,6 +28,7 @@ class VersionTest {
         assertEquals("pre", v2.prefix());
         assertEquals("post", v2.postfix());
         assertEquals("pre-1.2.3-post:beta", v2.getAsUserFriendlyString());
+        assertEquals("pre-1.2.3-post_beta", v2.getAsArchiveReadyString());
 
         Version v3 = Version.of("pre-1.2.3-post:beta");
         assertEquals(ReleaseType.BETA, v3.type());
