@@ -55,6 +55,8 @@ public class ImageRef<ID> implements ImageSize {
           atlas.addImage(this, offsetX, offsetY);
      }
 
+     protected void onAddedToAtlas(@SuppressWarnings("unused") @NotNull AtlasImage<ID> added) {}
+
      void rotate() {
           rotate = !rotate;
      }

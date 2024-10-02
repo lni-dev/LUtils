@@ -40,7 +40,7 @@ public class Atlas<T extends Image, ID> implements Image, Iterable<AtlasImage<ID
         double uvXEnd =  uvXStart + (double) ref.getWidth() / getWidth();
         double uvYEnd =  uvYStart + (double) ref.getHeight() / getHeight();
 
-        images.add(new AtlasImage<>(this,
+        AtlasImage<ID> added = new AtlasImage<>(this,
                 ref.getId(),
                 ref.isRotated(),
                 ref.isRotated() ? uvYStart : uvXStart,
@@ -50,7 +50,10 @@ public class Atlas<T extends Image, ID> implements Image, Iterable<AtlasImage<ID
                 offsetX, offsetY,
                 ref.getWidth(),
                 ref.getHeight()
-        ));
+        );
+
+        images.add(added);
+        ref.onAddedToAtlas(added);
     }
 
     @Override
