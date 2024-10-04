@@ -50,6 +50,14 @@ public class Bodies {
     }
 
     /**
+     * Create a javascript body
+     * @see Creator
+     */
+    public static @NotNull Creator javascript() {
+        return new Creator(ContentTypes.Text.js());
+    }
+
+    /**
      * Create a string body
      * @see Creator
      */

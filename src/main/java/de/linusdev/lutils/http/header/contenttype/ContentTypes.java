@@ -46,6 +46,11 @@ public class ContentTypes extends BasicHeaderValueImpl implements ContentType {
             return new Text("css");
         }
 
+        @Contract(" -> new")
+        public static @NotNull Text js() {
+            return new Text("javascript");
+        }
+
         protected Text(@NotNull String name) {
             super("text/" + name);
         }

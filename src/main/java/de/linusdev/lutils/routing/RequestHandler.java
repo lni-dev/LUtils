@@ -25,6 +25,7 @@ import de.linusdev.lutils.http.status.StatusCodes;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+@SuppressWarnings("unused")
 public interface RequestHandler {
 
     static @NotNull RequestHandler ofHtmlResource(@NotNull Class<?> clazz, @NotNull String name) {
@@ -33,6 +34,10 @@ public interface RequestHandler {
 
     static @NotNull RequestHandler ofCssResource(@NotNull Class<?> clazz, @NotNull String name) {
         return request -> HTTPResponse.builder().setStatusCode(StatusCodes.OK).setBody(Bodies.css().ofResource(clazz, name));
+    }
+
+    static @NotNull RequestHandler ofJsResource(@NotNull Class<?> clazz, @NotNull String name) {
+        return request -> HTTPResponse.builder().setStatusCode(StatusCodes.OK).setBody(Bodies.javascript().ofResource(clazz, name));
     }
 
     @Nullable HTTPMessageBuilder handle(@NotNull HTTPRequest<UnparsedBody> request);
