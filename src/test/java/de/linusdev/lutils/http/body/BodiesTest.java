@@ -1,6 +1,7 @@
 package de.linusdev.lutils.http.body;
 
-import de.linusdev.lutils.http.HTTPResponse;
+import de.linusdev.lutils.net.http.HTTPResponse;
+import de.linusdev.lutils.net.http.body.Bodies;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;

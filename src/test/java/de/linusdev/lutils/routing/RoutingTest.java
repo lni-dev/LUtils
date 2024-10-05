@@ -1,13 +1,14 @@
 package de.linusdev.lutils.routing;
 
-import de.linusdev.lutils.http.HTTPMessageBuilder;
-import de.linusdev.lutils.http.HTTPRequest;
-import de.linusdev.lutils.http.HTTPResponse;
-import de.linusdev.lutils.http.body.Bodies;
-import de.linusdev.lutils.http.body.BodyParsers;
-import de.linusdev.lutils.http.body.UnparsedBody;
-import de.linusdev.lutils.http.status.StatusCodes;
-import de.linusdev.lutils.routing.builder.RoutingBuilder;
+import de.linusdev.lutils.net.http.HTTPMessageBuilder;
+import de.linusdev.lutils.net.http.HTTPRequest;
+import de.linusdev.lutils.net.http.HTTPResponse;
+import de.linusdev.lutils.net.http.body.Bodies;
+import de.linusdev.lutils.net.http.body.BodyParsers;
+import de.linusdev.lutils.net.http.body.UnparsedBody;
+import de.linusdev.lutils.net.http.status.StatusCodes;
+import de.linusdev.lutils.net.routing.Routing;
+import de.linusdev.lutils.net.routing.builder.RoutingBuilder;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 

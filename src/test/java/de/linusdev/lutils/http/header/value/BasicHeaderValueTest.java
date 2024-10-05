@@ -1,12 +1,13 @@
 package de.linusdev.lutils.http.header.value;
 
-import de.linusdev.lutils.http.HTTPMessageBuilder;
-import de.linusdev.lutils.http.HTTPRequest;
-import de.linusdev.lutils.http.body.Body;
-import de.linusdev.lutils.http.body.BodyParsers;
-import de.linusdev.lutils.http.header.HeaderNames;
-import de.linusdev.lutils.http.header.contenttype.ContentType;
-import de.linusdev.lutils.http.header.contenttype.ContentTypes;
+import de.linusdev.lutils.net.http.HTTPMessageBuilder;
+import de.linusdev.lutils.net.http.HTTPRequest;
+import de.linusdev.lutils.net.http.body.Body;
+import de.linusdev.lutils.net.http.body.BodyParsers;
+import de.linusdev.lutils.net.http.header.HeaderNames;
+import de.linusdev.lutils.net.http.header.contenttype.ContentType;
+import de.linusdev.lutils.net.http.header.contenttype.ContentTypes;
+import de.linusdev.lutils.net.http.header.value.BasicHeaderValue;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 

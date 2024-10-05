@@ -4,9 +4,10 @@
 
 package de.linusdev.lutils.http;
 
-import de.linusdev.lutils.http.header.Header;
-import de.linusdev.lutils.http.method.Methods;
-import de.linusdev.lutils.http.method.RequestMethod;
+import de.linusdev.lutils.net.http.HTTPRequest;
+import de.linusdev.lutils.net.http.header.Header;
+import de.linusdev.lutils.net.http.method.Methods;
+import de.linusdev.lutils.net.http.method.RequestMethod;
 import org.junit.jupiter.api.Test;
 
 import java.io.*;

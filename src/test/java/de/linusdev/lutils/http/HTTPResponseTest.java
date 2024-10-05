@@ -1,9 +1,10 @@
 package de.linusdev.lutils.http;
 
-import de.linusdev.lutils.http.header.Header;
-import de.linusdev.lutils.http.status.ResponseStatusCode;
-import de.linusdev.lutils.http.status.ResponseStatusCodeType;
-import de.linusdev.lutils.http.status.StatusCodes;
+import de.linusdev.lutils.net.http.HTTPResponse;
+import de.linusdev.lutils.net.http.header.Header;
+import de.linusdev.lutils.net.http.status.ResponseStatusCode;
+import de.linusdev.lutils.net.http.status.ResponseStatusCodeType;
+import de.linusdev.lutils.net.http.status.StatusCodes;
 import org.junit.jupiter.api.Test;
 
 import java.io.*;
