@@ -14,24 +14,19 @@
  * limitations under the License.
  */
 
-package de.linusdev.lutils.net.routing;
+package de.linusdev.lutils.net.ws;
 
-import de.linusdev.lutils.net.http.HTTPMessageBuilder;
-import de.linusdev.lutils.net.http.HTTPRequest;
-import de.linusdev.lutils.net.http.body.UnparsedBody;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.IOException;
+import java.io.InputStream;
 
-public interface RoutingStateHandler extends RequestHandler {
+public interface WriteablePayload {
 
-    @Override
-    default @Nullable HTTPMessageBuilder handle(@NotNull HTTPRequest<UnparsedBody> request) {
-        throw new UnsupportedOperationException("call handle(RoutingState) instead.");
-    }
+    @NotNull OpCodes opcode();
 
-    @Override
-    @Nullable
-    HTTPMessageBuilder handle(@NotNull RoutingState state) throws IOException;
+    int length();
+
+    @Nullable InputStream stream();
+
 }

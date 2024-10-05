@@ -1,4 +1,4 @@
-package de.linusdev.lutils.routing;
+package de.linusdev.lutils.net.routing;
 
 import de.linusdev.lutils.net.http.HTTPMessageBuilder;
 import de.linusdev.lutils.net.http.HTTPRequest;

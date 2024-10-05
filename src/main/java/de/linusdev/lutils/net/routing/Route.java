@@ -21,6 +21,7 @@ import de.linusdev.lutils.net.http.method.RequestMethod;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -88,7 +89,8 @@ public class Route {
     /**
      * Get responds to given {@code RoutingState} if possible.
      */
-    public @Nullable HTTPMessageBuilder accept(@NotNull RoutingState state) {
+    public @Nullable HTTPMessageBuilder accept(@NotNull RoutingState state) throws IOException {
+        if(state.isHandled()) return null;
         if(state.isAnotherPathPartAvailable()) {
             // There is another part, lets route...
             return fallBackToDefaultRouteIfNull(route(state), state);
@@ -116,7 +118,7 @@ public class Route {
     private @Nullable HTTPMessageBuilder fallBackToDefaultRouteIfNull(
             @Nullable HTTPMessageBuilder response,
             @NotNull RoutingState state
-    ) {
+    ) throws IOException {
         if(response == null) {
             // Can route it, maybe we have a default route
             if(defaultRoute == null)
@@ -132,7 +134,7 @@ public class Route {
      */
     private @Nullable HTTPMessageBuilder fallBackToDefaultHandler(
             @NotNull RoutingState state
-    ) {
+    ) throws IOException {
         if(defaultHandler == null)
             return null;
         return defaultHandler.handle(state);
@@ -142,7 +144,7 @@ public class Route {
      * Route to sub routes if possible.
      * @return {@code null} if routing was not possible.
      */
-    private @Nullable HTTPMessageBuilder route(@NotNull RoutingState state) {
+    private @Nullable HTTPMessageBuilder route(@NotNull RoutingState state) throws IOException {
         Route route = routes.get(state.getNextPathPart());
 
         if(route == null) return null; // can route

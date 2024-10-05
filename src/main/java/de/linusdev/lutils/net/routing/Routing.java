@@ -71,18 +71,35 @@ public class Routing extends Route {
         this.exceptionHandler = exceptionHandler;
     }
 
-    public @NotNull HTTPMessageBuilder route(@NotNull Socket socket) throws IOException {
-        return route(socket, socket.getInputStream());
+    /**
+     * Parses the input stream of given {@code socket} to a {@link HTTPRequest} and routes it.
+     * It will then automatically send the by the routing selected {@link HTTPResponse} to
+     * the output stream of given {@code socket}. Also closes the socket if required.
+     * @param socket socket to route
+     * @throws IOException while writing to or reading from the sockets streams.
+     */
+    public void route(@NotNull Socket socket) throws IOException {
+        HTTPMessageBuilder response = route(socket, socket.getInputStream());
+        if(response != null) {
+            response.buildResponse(socket.getOutputStream());
+            socket.close();
+        }
+
     }
 
-    public @NotNull HTTPMessageBuilder route(@NotNull HTTPRequest<UnparsedBody> request) {
+    /**
+     * Starts routing for given {@code request}.
+     * @param request incoming {@link HTTPRequest}
+     * @return {@link HTTPMessageBuilder} ready to {@link HTTPMessageBuilder#buildResponse(OutputStream, int) build the response}.
+     */
+    public @Nullable HTTPMessageBuilder route(@NotNull HTTPRequest<UnparsedBody> request) {
         return route(null, request);
     }
 
-        /**
-         * Reads a {@link HTTPRequest} from given {@code stream} and {@link #route(HTTPRequest) routes} it.
-         */
-    public @NotNull HTTPMessageBuilder route(@Nullable Socket socket, @NotNull InputStream stream) {
+    /**
+     * Reads a {@link HTTPRequest} from given {@code stream} and {@link #route(HTTPRequest) routes} it.
+     */
+    private @Nullable HTTPMessageBuilder route(@Nullable Socket socket, @NotNull InputStream stream) {
         try {
             return route(socket, HTTPRequest.parse(stream, BodyParsers.newUnparsedBodyParser()));
         } catch (Throwable t) {
@@ -96,7 +113,7 @@ public class Routing extends Route {
      * @param request incoming {@link HTTPRequest}
      * @return {@link HTTPMessageBuilder} ready to {@link HTTPMessageBuilder#buildResponse(OutputStream, int) build the response}.
      */
-    public @NotNull HTTPMessageBuilder route(
+    private @Nullable HTTPMessageBuilder route(
             @Nullable Socket socket,
             @NotNull HTTPRequest<UnparsedBody> request
     ) {
@@ -111,8 +128,9 @@ public class Routing extends Route {
         path = path.substring(prefixNoEndSlash.length());
 
         try {
-            HTTPMessageBuilder response = accept(new RoutingState(socket, request, path));
-            if(response == null) {
+            RoutingState state = new RoutingState(socket, request, path);
+            HTTPMessageBuilder response = accept(state);
+            if(response == null && !state.isHandled()) {
                 // This should never happen, as the default route of Routing should always send a response!
                 return HTTPResponse.builder().setStatusCode(StatusCodes.INTERNAL_SERVER_ERROR);
             }

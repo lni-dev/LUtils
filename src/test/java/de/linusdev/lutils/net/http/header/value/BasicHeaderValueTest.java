@@ -1,4 +1,4 @@
-package de.linusdev.lutils.http.header.value;
+package de.linusdev.lutils.net.http.header.value;
 
 import de.linusdev.lutils.net.http.HTTPMessageBuilder;
 import de.linusdev.lutils.net.http.HTTPRequest;

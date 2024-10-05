@@ -26,7 +26,7 @@ public class Frame extends InputStream {
     private final boolean fin;
     private final boolean masked;
     private final byte[] maskKey;
-    private final byte opcode;
+    private final OpCodes opcode;
     private final int payloadLength;
     private final @NotNull InputStream in;
 
@@ -36,7 +36,7 @@ public class Frame extends InputStream {
         this.fin = fin;
         this.masked = masked;
         this.maskKey = maskKey;
-        this.opcode = opcode;
+        this.opcode = OpCodes.ofByte(opcode);
         this.payloadLength = payloadLength;
         this.in = in;
     }
@@ -51,5 +51,9 @@ public class Frame extends InputStream {
 
     public boolean isFinal() {
         return fin;
+    }
+
+    public OpCodes getOpcode() {
+        return opcode;
     }
 }

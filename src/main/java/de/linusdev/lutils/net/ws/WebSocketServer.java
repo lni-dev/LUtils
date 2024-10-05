@@ -16,6 +16,8 @@
 
 package de.linusdev.lutils.net.ws;
 
+import de.linusdev.lutils.async.consumer.ErrorConsumer;
+import de.linusdev.lutils.llist.LLinkedList;
 import de.linusdev.lutils.net.http.HTTPMessageBuilder;
 import de.linusdev.lutils.net.http.HTTPRequest;
 import de.linusdev.lutils.net.http.HTTPResponse;
@@ -38,6 +40,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
+import java.util.function.Consumer;
 
 public class WebSocketServer implements RoutingStateHandler {
 
@@ -52,18 +55,17 @@ public class WebSocketServer implements RoutingStateHandler {
         return Base64.getEncoder().encodeToString(hashed);
     }
 
-    private final MessageDigest hashAlgo = MessageDigest.getInstance("SHA-1");
+    private final @NotNull MessageDigest hashAlgo = MessageDigest.getInstance("SHA-1");
+    private final LLinkedList<WebSocket> webSockets = new LLinkedList<>();
 
-    public WebSocketServer(
-            @NotNull Socket socket,
-            @NotNull HTTPRequest<UnparsedBody> request
-    ) throws IOException, NoSuchAlgorithmException {
+    private final @NotNull Consumer<WebSocket> createdWebsocketConsumer;
 
-
+    public WebSocketServer(@NotNull Consumer<WebSocket> createdWebsocketConsumer) throws NoSuchAlgorithmException {
+        this.createdWebsocketConsumer = createdWebsocketConsumer;
     }
 
     @Override
-    public @Nullable HTTPMessageBuilder handle(@NotNull RoutingState state) {
+    public @Nullable HTTPMessageBuilder handle(@NotNull RoutingState state) throws IOException {
         HTTPRequest<UnparsedBody> request = state.getRequest();
         HeaderMap headers = request.getHeaders();
 
@@ -86,11 +88,24 @@ public class WebSocketServer implements RoutingStateHandler {
 
         String hashedKey = calculateResponseKey(key.getValue(), hashAlgo);
 
-        return HTTPResponse.builder()
+        Socket socket = state.getSocket();
+
+        if(socket == null) {
+            throw new IllegalStateException("A socket is required to create a web socket");
+        }
+
+        HTTPResponse.builder()
                 .setStatusCode(StatusCodes.SWITCHING_PROTOCOLS)
                 .setHeader(HeaderNames.SEC_WEBSOCKET_ACCEPT, hashedKey)
                 .setHeader(HeaderNames.UPGRADE, "websocket")
-                .setHeader(HeaderNames.CONNECTION, "Upgrade");
+                .setHeader(HeaderNames.CONNECTION, "Upgrade")
+                .buildResponse(socket.getOutputStream());
+
+        WebSocket webSocket = new WebSocket(socket, false, true);
+        createdWebsocketConsumer.accept(webSocket);
+        webSockets.add(webSocket);
+        state.handled();
+        return null;
     }
 
 }

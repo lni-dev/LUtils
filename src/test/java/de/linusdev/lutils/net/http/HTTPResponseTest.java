@@ -1,4 +1,4 @@
-package de.linusdev.lutils.http;
+package de.linusdev.lutils.net.http;
 
 import de.linusdev.lutils.net.http.HTTPResponse;
 import de.linusdev.lutils.net.http.header.Header;

@@ -25,6 +25,8 @@ import de.linusdev.lutils.net.http.status.StatusCodes;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.IOException;
+
 @SuppressWarnings("unused")
 public interface RequestHandler {
 
@@ -42,7 +44,7 @@ public interface RequestHandler {
 
     @Nullable HTTPMessageBuilder handle(@NotNull HTTPRequest<UnparsedBody> request);
 
-    default @Nullable HTTPMessageBuilder handle(@NotNull RoutingState state) {
+    default @Nullable HTTPMessageBuilder handle(@NotNull RoutingState state) throws IOException {
         return handle(state.getRequest());
     }
 

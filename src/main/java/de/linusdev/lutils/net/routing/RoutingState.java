@@ -31,6 +31,7 @@ public class RoutingState {
     private final @NotNull String[] path;
 
     private int pathIndex = 0;
+    private boolean handled = false;
 
     public RoutingState(
             @Nullable Socket socket,
@@ -69,5 +70,27 @@ public class RoutingState {
      */
     public @NotNull RequestMethod getMethod() {
         return request.getMethod();
+    }
+
+    /**
+     * The {@link Socket} of the {@link HTTPRequest} being routed.
+     */
+    public @Nullable Socket getSocket() {
+        return socket;
+    }
+
+    /**
+     * Marks this routing state as handled. This is useful, if the protocol was upgraded
+     * to a different one and the socket should not be closed.
+     */
+    public void handled() {
+        this.handled = true;
+    }
+
+    /**
+     * Whether this routing state is already handled or not.
+     */
+    public boolean isHandled() {
+        return handled;
     }
 }

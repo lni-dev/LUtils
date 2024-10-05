@@ -17,6 +17,7 @@
 package de.linusdev.lutils.net.ws;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -25,6 +26,7 @@ import java.util.List;
 
 public class BufferedPayload extends InputStream {
 
+    private final @Nullable OpCodes opcode;
     private final @NotNull List<byte[]> content;
     private int listIndex = 0;
     private int index = 0;
@@ -41,6 +43,8 @@ public class BufferedPayload extends InputStream {
                 frame = parent.readFrame();
             }
         }
+
+        this.opcode = first.getOpcode();
     }
 
     @Override

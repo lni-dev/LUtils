@@ -1,4 +1,4 @@
-package de.linusdev.lutils.http;
+package de.linusdev.lutils.net.http;
 
 import de.linusdev.lutils.net.http.HTTPMessageBuilder;
 import de.linusdev.lutils.net.http.body.Body;

@@ -1,4 +1,4 @@
-package de.linusdev.lutils.http.header.contenttype;
+package de.linusdev.lutils.net.http.header.contenttype;
 
 import de.linusdev.lutils.net.http.header.contenttype.ContentTypes;
 import org.junit.jupiter.api.Test;

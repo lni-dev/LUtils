@@ -16,10 +16,45 @@
 
 package de.linusdev.lutils.net.ws;
 
-public interface OpCodes {
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-    byte CONTINUATION = 0x00;
-    byte TEXT_UTF8 = 0x01;
-    byte BINARY = 0x02;
+public enum OpCodes {
 
+    CONTINUATION((byte) 0x00),
+    TEXT_UTF8((byte) 0x01),
+    BINARY((byte) 0x02),
+
+    CLOSE((byte) 0x08),
+    PING((byte) 0x09),
+    PONG((byte) 0x0A),
+    ;
+
+    private final static OpCodes[] codes = new OpCodes[]{
+            /*00*/ CONTINUATION,
+            /*01*/ TEXT_UTF8,
+            /*02*/ BINARY,
+            /*03*/ null,
+            /*04*/ null,
+            /*05*/ null,
+            /*06*/ null,
+            /*07*/ null,
+            /*08*/ CLOSE,
+            /*09*/ PING,
+            /*0A*/ PONG,
+    };
+
+    public static @Nullable OpCodes ofByte(byte b) {
+        return codes[b&0xFF];
+    }
+
+    private final byte code;
+
+    OpCodes(byte code) {
+        this.code = code;
+    }
+
+    public byte getCode() {
+        return code;
+    }
 }
