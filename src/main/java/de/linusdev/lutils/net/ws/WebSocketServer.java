@@ -16,8 +16,6 @@
 
 package de.linusdev.lutils.net.ws;
 
-import de.linusdev.lutils.async.consumer.ErrorConsumer;
-import de.linusdev.lutils.llist.LLinkedList;
 import de.linusdev.lutils.net.http.HTTPMessageBuilder;
 import de.linusdev.lutils.net.http.HTTPRequest;
 import de.linusdev.lutils.net.http.HTTPResponse;
@@ -56,7 +54,6 @@ public class WebSocketServer implements RoutingStateHandler {
     }
 
     private final @NotNull MessageDigest hashAlgo = MessageDigest.getInstance("SHA-1");
-    private final LLinkedList<WebSocket> webSockets = new LLinkedList<>();
 
     private final @NotNull Consumer<WebSocket> createdWebsocketConsumer;
 
@@ -101,11 +98,9 @@ public class WebSocketServer implements RoutingStateHandler {
                 .setHeader(HeaderNames.CONNECTION, "Upgrade")
                 .buildResponse(socket.getOutputStream());
 
-        WebSocket webSocket = new WebSocket(socket, false, true);
+        WebSocket webSocket = new WebSocket(socket, false, false);
         createdWebsocketConsumer.accept(webSocket);
-        webSockets.add(webSocket);
         state.handled();
         return null;
     }
-
 }

@@ -14,19 +14,37 @@
  * limitations under the License.
  */
 
-package de.linusdev.lutils.net.ws;
+package de.linusdev.lutils.net.ws.frames.writable;
 
+import de.linusdev.lutils.net.ws.frame.OpCodes;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 
-public interface WriteablePayload {
+public class WriteableByteArrayFrame implements WriteableFrame {
 
-    @NotNull OpCodes opcode();
+    private final @NotNull OpCodes opCode;
+    private final byte @NotNull [] payload;
 
-    int length();
+    public WriteableByteArrayFrame(@NotNull OpCodes opCode, byte @NotNull [] payload) {
+        this.opCode = opCode;
+        this.payload = payload;
+    }
 
-    @Nullable InputStream stream();
+    @Override
+    public @NotNull OpCodes opcode() {
+        return opCode;
+    }
 
+    @Override
+    public int length() {
+        return payload.length;
+    }
+
+    @Override
+    public @Nullable InputStream stream() {
+        return new ByteArrayInputStream(payload);
+    }
 }

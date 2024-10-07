@@ -26,10 +26,6 @@ import java.util.function.Consumer;
 public class SimpleHttpServer {
 
     private final @NotNull ServerSocket serverSocket;
-    private final @NotNull SvThread thread;
-
-    private final @NotNull Routing routing;
-    private final @NotNull Consumer<Throwable> exceptionHandler;
 
     private volatile boolean keepAlive = true;
 
@@ -39,27 +35,8 @@ public class SimpleHttpServer {
             @NotNull Consumer<Throwable> exceptionHandler
     ) throws IOException {
         this.serverSocket = new ServerSocket(port, 3);
-        this.routing = routing;
-        this.exceptionHandler = exceptionHandler;
 
-        this.thread = new SvThread();
-        this.thread.start();
-    }
-
-    public void shutdown() {
-        keepAlive = false;
-    }
-
-    private class SvThread extends Thread {
-
-        public SvThread() {
-            super("simple-http-server");
-            setDaemon(true);
-        }
-
-        @Override
-        public void run() {
-
+        Thread thread = new Thread(() -> {
             while (keepAlive) {
                 try {
                     routing.route(serverSocket.accept());
@@ -67,6 +44,18 @@ public class SimpleHttpServer {
                     exceptionHandler.accept(e);
                 }
             }
-        }
+
+            try {
+                serverSocket.close();
+            } catch (IOException e) {
+                exceptionHandler.accept(e);
+            }
+        },"simple-http-server");
+        thread.setDaemon(true);
+        thread.start();
+    }
+
+    public void shutdown() {
+        keepAlive = false;
     }
 }

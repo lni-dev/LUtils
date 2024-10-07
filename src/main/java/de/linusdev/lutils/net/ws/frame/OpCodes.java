@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-package de.linusdev.lutils.net.ws;
+package de.linusdev.lutils.net.ws.frame;
 
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public enum OpCodes {
@@ -56,5 +55,9 @@ public enum OpCodes {
 
     public byte getCode() {
         return code;
+    }
+
+    public boolean isControlOpCode() {
+        return (code & 0x08) > 0;
     }
 }

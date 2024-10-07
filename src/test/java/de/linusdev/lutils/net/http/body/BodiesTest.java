@@ -19,7 +19,7 @@ class BodiesTest {
                 .setBody(Bodies.html().ofResource(BodiesTest.class, "index.html"))
                 .buildResponse();
 
-        String content = Files.readString(Paths.get("src/test/resources/de/linusdev/lutils/http/body/index.html"), StandardCharsets.UTF_8);
+        String content = Files.readString(Paths.get("src/test/resources/de/linusdev/lutils/net/http/body/index.html"), StandardCharsets.UTF_8);
 
         assertEquals("HTTP/1.1 200 OK\r\n" +
                      "Content-Length: " + content.getBytes(StandardCharsets.UTF_8).length + "\r\n" +
@@ -31,7 +31,7 @@ class BodiesTest {
 
     @Test
     void css() throws IOException {
-        Path res = Paths.get("src/test/resources/de/linusdev/lutils/http/body/index.css");
+        Path res = Paths.get("src/test/resources/de/linusdev/lutils/net/http/body/index.css");
         String response = HTTPResponse.builder()
                 .setBody(Bodies.css().ofRegularFile(res))
                 .buildResponse();
