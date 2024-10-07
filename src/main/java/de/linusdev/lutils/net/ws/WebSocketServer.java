@@ -19,10 +19,12 @@ package de.linusdev.lutils.net.ws;
 import de.linusdev.lutils.net.http.HTTPMessageBuilder;
 import de.linusdev.lutils.net.http.HTTPRequest;
 import de.linusdev.lutils.net.http.HTTPResponse;
+import de.linusdev.lutils.net.http.body.Bodies;
 import de.linusdev.lutils.net.http.body.UnparsedBody;
 import de.linusdev.lutils.net.http.header.Header;
 import de.linusdev.lutils.net.http.header.HeaderMap;
 import de.linusdev.lutils.net.http.header.HeaderNames;
+import de.linusdev.lutils.net.http.header.value.BasicHeaderValue;
 import de.linusdev.lutils.net.http.header.value.IntegerHeaderValue;
 import de.linusdev.lutils.net.http.method.Methods;
 import de.linusdev.lutils.net.http.method.RequestMethod;
@@ -69,11 +71,17 @@ public class WebSocketServer implements RoutingStateHandler {
         if(!RequestMethod.equals(Methods.GET, request.getMethod()))
             return HTTPResponse.builder().setStatusCode(StatusCodes.BAD_REQUEST);
 
-        if(!headers.get(HeaderNames.UPGRADE).getValue().equals("websocket"))
-            return HTTPResponse.builder().setStatusCode(StatusCodes.BAD_REQUEST);
+        Header upgradeHeader = headers.get(HeaderNames.UPGRADE);
+        if(upgradeHeader == null || !upgradeHeader.getValue().equals("websocket"))
+            return HTTPResponse.builder()
+                    .setStatusCode(StatusCodes.BAD_REQUEST)
+                    .setBody(Bodies.textUtf8().ofStringUtf8("Missing or wrong '" + HeaderNames.UPGRADE + "' header."));
 
-        if(!headers.get(HeaderNames.CONNECTION).getValue().equals("Upgrade"))
-            return HTTPResponse.builder().setStatusCode(StatusCodes.BAD_REQUEST);
+        Header connHeader = headers.get(HeaderNames.CONNECTION);
+        if(connHeader == null || !connHeader.parseValue(BasicHeaderValue.PARSER).contains("Upgrade"))
+            return HTTPResponse.builder()
+                    .setStatusCode(StatusCodes.BAD_REQUEST)
+                    .setBody(Bodies.textUtf8().ofStringUtf8("Missing or wrong '" + HeaderNames.CONNECTION + "' header."));
 
         Header key = headers.get(HeaderNames.SEC_WEBSOCKET_KEY);
         var version = headers.get(HeaderNames.SEC_WEBSOCKET_VERSION).parseValue(IntegerHeaderValue.PARSER);
