@@ -26,7 +26,7 @@ class ThreadWithStackPoolTest {
             public void onExceptionInListener(@NotNull Future<?, ?> future, @Nullable Task<?, ?> task, @NotNull Throwable throwable) {
                 throwable.printStackTrace();
             }
-        }, Thread::new, StackFactory.DEFAULT, Throwable::printStackTrace);
+        }, Thread::new, StackFactory.DEFAULT);
 
         var fut0 = pool.execute(stack -> {
             try(var a = stack.popPoint()) {

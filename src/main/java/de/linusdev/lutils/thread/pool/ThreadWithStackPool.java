@@ -22,7 +22,6 @@ import de.linusdev.lutils.async.completeable.CompletableFuture;
 import de.linusdev.lutils.async.completeable.CompletableTask;
 import de.linusdev.lutils.async.error.ThrowableAsyncError;
 import de.linusdev.lutils.async.manager.AsyncManager;
-import de.linusdev.lutils.interfaces.ExceptionHandler;
 import de.linusdev.lutils.interfaces.TFunction;
 import de.linusdev.lutils.llist.LLinkedList;
 import de.linusdev.lutils.nat.memory.stack.Stack;
@@ -53,8 +52,6 @@ public class ThreadWithStackPool implements AutoCloseable {
     private final @NotNull ThreadFactory threadFactory;
     private final @NotNull StackFactory stackFactory;
 
-    private final @NotNull ExceptionHandler exceptionHandler;
-
     private final @NotNull AsyncManager asyncManager;
     private final @NotNull LLinkedList<ThreadWithStack> threads;
 
@@ -65,19 +62,17 @@ public class ThreadWithStackPool implements AutoCloseable {
             int minThreadCount, long maxIdleMillis,
             @NotNull AsyncManager asyncManager,
             @NotNull ThreadFactory threadFactory,
-            @NotNull StackFactory stackFactory,
-            @NotNull ExceptionHandler exceptionHandler
+            @NotNull StackFactory stackFactory
     ) {
         this.minThreadCount = minThreadCount;
         this.maxIdleMillis = maxIdleMillis;
         this.asyncManager = asyncManager;
         this.threadFactory = threadFactory;
         this.stackFactory = stackFactory;
-        this.exceptionHandler = exceptionHandler;
         this.threads = new LLinkedList<>();
 
         for (int i = 0; i < minThreadCount; i++) {
-            this.threads.add(new ThreadWithStack(threadFactory, stackFactory, exceptionHandler));
+            this.threads.add(new ThreadWithStack(threadFactory, stackFactory, Throwable::printStackTrace));
         }
 
         this.sweeper = Executors.newSingleThreadScheduledExecutor();
@@ -138,7 +133,11 @@ public class ThreadWithStackPool implements AutoCloseable {
             }
         }
 
-        ThreadWithStack thread = new ThreadWithStack(threadFactory, stackFactory, exceptionHandler);
+        ThreadWithStack thread = new ThreadWithStack(
+                threadFactory,
+                stackFactory,
+                Throwable::printStackTrace /*Exceptions are caught before anyway*/
+        );
         if(!thread.setRunnableIfAvailable(fun))
             throw new Error();
         threads.add(thread);
