@@ -19,8 +19,15 @@ package de.linusdev.lutils.nat.memory.stack;
 import de.linusdev.lutils.nat.memory.stack.impl.DirectMemoryStack64;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * Factory to create new {@link Stack}s.
+ */
 public interface StackFactory {
 
+    /**
+     * {@link StackFactory}, which creates {@link DirectMemoryStack64}. Default size is the same as
+     * {@link DirectMemoryStack64#DirectMemoryStack64()}.
+     */
     @NotNull StackFactory DEFAULT = new StackFactory() {
         @Override
         public @NotNull Stack create(long size) {
@@ -33,8 +40,14 @@ public interface StackFactory {
         }
     };
 
+    /**
+     * Create a {@link Stack} with given {@code size}.
+     */
     @NotNull Stack create(long size);
 
+    /**
+     * Create a {@link Stack} with a suitable default size.
+     */
     @NotNull Stack create();
 
 }
