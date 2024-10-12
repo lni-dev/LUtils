@@ -24,17 +24,43 @@ import java.io.IOException;
 
 public class JavaDocGenerator implements PartGenerator<JavaSourceGeneratorHelper> {
 
+    public static @NotNull String escape(@NotNull String text) {
+        text = text.replaceAll("&", "&amp;");
+        text = text.replaceAll("\"", "&quot;");
+        text = text.replaceAll("<", "&lt;");
+        text = text.replaceAll("<", "&gt;");
+        return text;
+    }
+
     private final StringBuilder text = new StringBuilder();
 
     public void addText(@NotNull String text) {
+        addText(text, false);
+    }
+
+    public void addText(@NotNull String text, boolean escape) {
+        if(escape)
+            text = escape(text);
         this.text.append(text);
     }
 
     public void addTextNl(@NotNull String text) {
+        addTextNl(text, false);
+    }
+
+    public void addTextNl(@NotNull String text, boolean escape) {
+        if(escape)
+            text = escape(text);
         this.text.append(text).append("\n");
     }
 
     public void addAtText(@NotNull String at, @NotNull String text) {
+        addAtText(at, text, false);
+    }
+
+    public void addAtText(@NotNull String at, @NotNull String text, boolean escape) {
+        if(escape)
+            text = escape(text);
         this.text.append("\n").append("@").append(at).append(" ").append(text).append("\n");
     }
 
