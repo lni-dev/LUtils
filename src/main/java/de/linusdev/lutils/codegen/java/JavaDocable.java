@@ -28,4 +28,10 @@ public interface JavaDocable {
         return gen;
     }
 
+    default @NotNull JavaDocGenerator setJavaDoc(@NotNull String text, boolean escape) {
+        var gen = setJavaDoc();
+        gen.addText(text, escape);
+        return gen;
+    }
+
 }
