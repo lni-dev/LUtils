@@ -24,4 +24,6 @@ public interface HtmlElementType<B extends HtmlElementBuilder> {
     @NotNull String name();
 
     @NotNull B builder();
+
+    @NotNull HtmlObjectParser<? extends HtmlElement> parser();
 }

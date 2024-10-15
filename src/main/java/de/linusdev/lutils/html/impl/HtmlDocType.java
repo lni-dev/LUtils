@@ -17,6 +17,7 @@
 package de.linusdev.lutils.html.impl;
 
 import de.linusdev.lutils.html.HtmlObject;
+import de.linusdev.lutils.html.HtmlObjectParser;
 import de.linusdev.lutils.html.HtmlObjectType;
 import de.linusdev.lutils.html.parser.HtmlParserState;
 import org.jetbrains.annotations.NotNull;
@@ -25,6 +26,12 @@ import java.io.IOException;
 import java.io.Writer;
 
 public class HtmlDocType implements HtmlObject {
+
+    public final static HtmlObjectParser<HtmlDocType> PARSER = (parser, reader) -> {
+        reader.skip("<!doctype ".length());
+        String value = reader.readUntil('>', false);
+        return new HtmlDocType(value);
+    };
 
     private final @NotNull String value;
 

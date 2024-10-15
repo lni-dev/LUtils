@@ -50,6 +50,12 @@ public class StandardHtmlElementTypes {
             return new StandardHtmlElement.Builder(this);
         }
 
+        @Override
+        public @NotNull HtmlObjectParser<? extends HtmlElement> parser() {
+            return new StandardHtmlElement.Parser(this);
+        }
+
+        @SuppressWarnings("BooleanMethodIsAlwaysInverted")
         public boolean isInline() {
             return inline;
         }

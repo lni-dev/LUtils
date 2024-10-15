@@ -16,12 +16,14 @@
 
 package de.linusdev.lutils.html;
 
+import de.linusdev.lutils.html.parser.HtmlParser;
+import de.linusdev.lutils.html.parser.HtmlReader;
 import org.jetbrains.annotations.NotNull;
 
-public class StandardHtmlAttributeTypes {
-    public static final @NotNull HtmlAttributeType CLASS = () -> "class";
+import java.io.IOException;
 
-    public static final @NotNull HtmlAttributeType @NotNull [] VALUES = new HtmlAttributeType[] {
-            CLASS,
-    };
+public interface HtmlObjectParser<O extends HtmlObject> {
+
+    @NotNull O parse(@NotNull HtmlParser parser, @NotNull HtmlReader reader) throws IOException;
+
 }

@@ -14,14 +14,11 @@
  * limitations under the License.
  */
 
-package de.linusdev.lutils.html;
+package de.linusdev.lutils.html.parser;
 
-import org.jetbrains.annotations.NotNull;
-
-public class StandardHtmlAttributeTypes {
-    public static final @NotNull HtmlAttributeType CLASS = () -> "class";
-
-    public static final @NotNull HtmlAttributeType @NotNull [] VALUES = new HtmlAttributeType[] {
-            CLASS,
-    };
+public enum AttrReaderState {
+    READING,
+    TAG_END,
+    TAG_SELF_CLOSE,
+    ATTR_VALUE,
 }
