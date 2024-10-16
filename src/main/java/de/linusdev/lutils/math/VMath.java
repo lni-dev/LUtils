@@ -733,6 +733,7 @@ public class VMath {
      * @param height height of screen (2f for 45°)
      * @param near near clipping
      * @param far far clipping
+     * @param invertY whether the projection matrix should invert the y-axis.
      * @param perspective whether to store perspective in w
      * @param fudgeFactor fudge factor for perspective
      * @return projection matrix
@@ -743,6 +744,7 @@ public class VMath {
             float height,
             float near,
             float far,
+            boolean invertY,
             boolean perspective,
             float fudgeFactor,
             @NotNull M store
@@ -752,7 +754,8 @@ public class VMath {
         float nDfn = -near * dfn;
 
         store.put(0,0, 2f/(aspect * width));
-        store.put(1,1, 2f/height);
+        if(invertY) store.put(1,1, -2f/height);
+        else store.put(1,1, 2f/height);
 
         store.put(2, 2, dfn);
         store.put(2, 3, nDfn);

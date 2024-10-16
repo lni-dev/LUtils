@@ -928,7 +928,7 @@ class VMathTest {
         float near = 1f;
         float far = 10f;
 
-        var mat = VMath.projectionMatrix(2f, width, height, near, far, false, 1.01f, new ABFloat4x4());
+        var mat = VMath.projectionMatrix(2f, width, height, near, far, false, false, 1.01f, new ABFloat4x4());
 
 
 
@@ -941,7 +941,7 @@ class VMathTest {
 
     @Test
     void projectionMatrixExplained() {
-        var mat = VMath.projectionMatrix(16f/9f, 2.3f, 2.1f, 1f, 10f, true, 1.01f, new ABFloat4x4());
+        var mat = VMath.projectionMatrix(16f/9f, 2.3f, 2.1f, 1f, 10f, false, true, 1.01f, new ABFloat4x4());
         var mat2 = VMath.projectionMatrixExplained(16f/9f, 2.3f, 2.1f, 1f, 10f, true, 1.01f);
 
 
