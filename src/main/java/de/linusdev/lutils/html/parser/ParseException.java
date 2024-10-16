@@ -14,25 +14,18 @@
  * limitations under the License.
  */
 
-package de.linusdev.lutils.html;
+package de.linusdev.lutils.html.parser;
 
-import de.linusdev.lutils.html.parser.HtmlParser;
-import de.linusdev.lutils.html.parser.HtmlReader;
-import de.linusdev.lutils.html.parser.ParseException;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.IOException;
+public class ParseException extends Exception{
 
-public interface HtmlObjectParser<O extends HtmlObject> {
+    public ParseException(@NotNull String message) {
+        super(message);
+    }
 
-    /**
-     * Parse given {@code reader} to a {@link O}.
-     * @param parser parser
-     * @param reader reader to read from
-     * @return parsed {@link O}
-     * @throws IOException while reading
-     * @throws ParseException while parsing
-     */
-    @NotNull O parse(@NotNull HtmlParser parser, @NotNull HtmlReader reader) throws IOException, ParseException;
+    public ParseException(char c) {
+        this("Illegal char '" + c + "'");
+    }
 
 }

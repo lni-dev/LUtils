@@ -16,11 +16,34 @@
 
 package de.linusdev.lutils.html;
 
+import de.linusdev.lutils.html.impl.HtmlComment;
+import de.linusdev.lutils.html.impl.HtmlDocType;
+
 public enum HtmlObjectType {
+    /**
+     * Html element, e.g.: {@code <div></div>}
+     */
     ELEMENT,
+    /**
+     * Html comment, e.g.: {@link HtmlComment}
+     */
     COMMENT,
+    /**
+     * Html doc type, e.g.: {@link HtmlDocType}
+     */
     DOC_TYPE,
 
+    /**
+     * Simple text
+     */
     TEXT,
-    CUSTOM
+    /**
+     * Unused currently
+     */
+    CUSTOM,
+
+    /**
+     * Not a real html object. Instead, a collection of html objects.
+     */
+    PAGE,
 }

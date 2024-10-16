@@ -22,6 +22,9 @@ import java.io.IOException;
 
 import static de.linusdev.lutils.html.parser.AttrReaderState.*;
 
+/**
+ * This class should be used to read attributes from html element tags.
+ */
 public class AttributeReader {
 
     private final @NotNull HtmlReader reader;
@@ -32,29 +35,38 @@ public class AttributeReader {
         this.reader = reader;
     }
 
-    public String readAttributeName() throws IOException {
-        char r;
-        while ((r = reader.read()) == ' ') {
-        }
+    /**
+     * Checks if an attribute name can be read and reads it, if one is available. Also changes the
+     * {@link #state} of this attribute reader.
+     * If {@link #state} is {@link AttrReaderState#READING} or {@link AttrReaderState#ATTR_VALUE} after this method
+     * returned, then the return value was definitely not {@code null}.
+     * @return the read attribute name or {@code null} if no attribute name could be read.
+     * @throws IOException while reading
+     * @throws ParseException while parsing
+     */
+    public String readAttributeName() throws IOException, ParseException {
+        char r = reader.skipNewLinesAndSpaces();
+
         if (r == '>') {
             state = TAG_END;
             return null;
         } else if (r == '/') {
             if ((r = reader.read()) != '>')
-                throw new IOException("Illegal char '" + r + "'.");
+                throw new ParseException(r);
 
             state = TAG_SELF_CLOSE;
             return null;
         }
 
-        var res = reader.readUntil('=', ' ', '>', '/', false);
+        reader.pushBack(r);
+        var res = reader.readUntil('=', ' ', '>', '/');
 
         if (res.result2() == '>') {
             state = TAG_END;
             return res.result1();
         } else if (res.result2() == '/') {
             if ((r = reader.read()) != '>')
-                throw new IOException("Illegal char '" + r + "'.");
+                throw new ParseException(r);
 
             state = TAG_SELF_CLOSE;
             return res.result1();
@@ -67,6 +79,11 @@ public class AttributeReader {
         return res.result1();
     }
 
+    /**
+     * Caller must ensure, that {@link #state} is {@link AttrReaderState#ATTR_VALUE} when this method is called.
+     * @return attribute value as string.
+     * @throws IOException while reading.
+     */
     public @NotNull String readAttributeValue() throws IOException {
         if (state != ATTR_VALUE) throw new IllegalStateException("State is not ATTR_VALUE, but is " + state);
 

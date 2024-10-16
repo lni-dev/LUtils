@@ -1,10 +1,15 @@
 package de.linusdev.lutils.html;
 
 import de.linusdev.lutils.html.builder.Html;
+import de.linusdev.lutils.html.impl.HtmlPage;
+import de.linusdev.lutils.html.parser.HtmlParser;
 import de.linusdev.lutils.html.parser.HtmlParserState;
+import de.linusdev.lutils.html.parser.ParseException;
+import org.intellij.lang.annotations.Language;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
+import java.io.StringReader;
 import java.io.StringWriter;
 
 import static de.linusdev.lutils.html.StandardHtmlElementTypes.DIV;
@@ -38,5 +43,30 @@ class HtmlElementTest {
                     <p>Some Text in the body</p>
                   </div>
                 </div>""", writer.toString());
+    }
+
+    @Test
+    void testRead() throws IOException, ParseException {
+        @Language("html") String html =  """
+                <!doctype html>
+                <div>
+                  <div class="test">
+                    Header
+                  </div>
+                  <div>
+                    <p>Some Text
+                        in the body
+                    </p>
+                  </div>
+                </div>""";
+
+        HtmlParser parser = new HtmlParser(Registry.getDefault());
+
+        HtmlPage page = parser.parsePage(new StringReader(html));
+
+        StringWriter writer = new StringWriter();
+        page.write(new HtmlParserState(""), writer);
+        System.out.println(writer);
+
     }
 }

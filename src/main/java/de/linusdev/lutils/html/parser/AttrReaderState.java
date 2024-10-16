@@ -17,8 +17,23 @@
 package de.linusdev.lutils.html.parser;
 
 public enum AttrReaderState {
+    /**
+     * Attribute reader must read for more information.
+     */
     READING,
+
+    /**
+     * A {@code >} has been reached.
+     */
     TAG_END,
+
+    /**
+     * A {@code />} has been reached.
+     */
     TAG_SELF_CLOSE,
+
+    /**
+     * A {@code =} has been reached. {@link AttributeReader#readAttributeValue()} can now be called.
+     */
     ATTR_VALUE,
 }

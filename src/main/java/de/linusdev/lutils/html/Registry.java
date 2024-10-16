@@ -16,9 +16,11 @@
 
 package de.linusdev.lutils.html;
 
+import de.linusdev.lutils.html.impl.HtmlComment;
 import de.linusdev.lutils.html.impl.HtmlDocType;
 import de.linusdev.lutils.html.impl.HtmlText;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.function.Function;
@@ -27,21 +29,52 @@ public class Registry {
     private final @NotNull HashMap<String, HtmlElementType<?>> elements;
     private final @NotNull HashMap<String, HtmlAttributeType> attributes;
 
-    private final @NotNull HtmlObjectParser<?> docTypeParser = HtmlDocType.PARSER;
-    private final @NotNull HtmlObjectParser<?> textParser = HtmlText.PARSER;
-    private final @NotNull Function<String, HtmlElementType<?>> defaultElementType = s -> new StandardHtmlElementTypes.Type(s, true);
-    private final @NotNull Function<String, HtmlAttributeType> defaultAttributeType = s -> () -> s;
+    private final @NotNull HtmlObjectParser<?> docTypeParser;
+    private final @NotNull HtmlObjectParser<?> textParser;
+    private final @NotNull HtmlObjectParser<?> commentParser;
+    private final @NotNull Function<String, HtmlElementType<?>> defaultElementType;
+    private final @NotNull Function<String, HtmlAttributeType> defaultAttributeType;
 
-    public Registry() {
-        this.elements = new HashMap<>();
+    private static @Nullable Registry DEFAULT = null;
+
+    public static @NotNull Registry getDefault() {
+        if(DEFAULT != null) return DEFAULT;
+
+        HashMap<String, HtmlElementType<?>> elements = new HashMap<>();
         for (@NotNull HtmlElementType<?> value : StandardHtmlElementTypes.VALUES) {
             elements.put(value.name(), value);
         }
 
-        this.attributes = new HashMap<>();
+        HashMap<String, HtmlAttributeType> attributes = new HashMap<>();
         for (@NotNull HtmlAttributeType value : StandardHtmlAttributeTypes.VALUES) {
             attributes.put(value.name(), value);
         }
+
+        DEFAULT = new Registry(elements, attributes,
+                HtmlDocType.PARSER, HtmlText.PARSER, HtmlComment.PARSER,
+                s -> new StandardHtmlElementTypes.Type(s, true),
+                s -> () -> s
+        );
+
+        return DEFAULT;
+    }
+
+    public Registry(
+            @NotNull HashMap<String, HtmlElementType<?>> elements,
+            @NotNull HashMap<String, HtmlAttributeType> attributes,
+            @NotNull HtmlObjectParser<?> docTypeParser,
+            @NotNull HtmlObjectParser<?> textParser,
+            @NotNull HtmlObjectParser<?> commentParser,
+            @NotNull Function<String, HtmlElementType<?>> defaultElementType,
+            @NotNull Function<String, HtmlAttributeType> defaultAttributeType
+    ) {
+        this.elements = elements;
+        this.attributes = attributes;
+        this.docTypeParser = docTypeParser;
+        this.textParser = textParser;
+        this.commentParser = commentParser;
+        this.defaultElementType = defaultElementType;
+        this.defaultAttributeType = defaultAttributeType;
     }
 
     public @NotNull HtmlElementType<?> getElementTypeByName(@NotNull String name) {
@@ -66,5 +99,9 @@ public class Registry {
 
     public @NotNull HtmlObjectParser<?> getTextParser() {
         return textParser;
+    }
+
+    public @NotNull HtmlObjectParser<?> getCommentParser() {
+        return commentParser;
     }
 }

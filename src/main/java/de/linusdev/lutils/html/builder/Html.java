@@ -24,6 +24,13 @@ import java.util.function.Consumer;
 
 public class Html {
 
+    /**
+     * Convenience method to create a {@link HtmlElement} of given {@code type}.
+     * @param type element tag/type.
+     * @param adjuster consumer to adjust the elements {@link HtmlElementBuilder builder}.
+     * @return The built element.
+     * @param <B> {@link HtmlElementBuilder} class, should be inferred by {@code type}.
+     */
     public static <B extends HtmlElementBuilder> @NotNull HtmlElement buildElement(
             @NotNull HtmlElementType<B> type, Consumer<B> adjuster
     ) {

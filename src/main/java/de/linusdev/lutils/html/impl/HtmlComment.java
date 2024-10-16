@@ -20,45 +20,46 @@ import de.linusdev.lutils.html.HtmlObject;
 import de.linusdev.lutils.html.HtmlObjectParser;
 import de.linusdev.lutils.html.HtmlObjectType;
 import de.linusdev.lutils.html.parser.HtmlParserState;
-import de.linusdev.lutils.result.BiResult;
+import de.linusdev.lutils.html.parser.ParseException;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.EOFException;
 import java.io.IOException;
 import java.io.Writer;
 
-public class HtmlText implements HtmlObject {
+/**
+ * Html comment with the following syntax: {@code <!--comment-->}.
+ */
+public class HtmlComment implements HtmlObject {
 
-    public static final @NotNull HtmlObjectParser<HtmlText> PARSER =
+    public static final @NotNull HtmlObjectParser<HtmlComment> PARSER =
             (parser, reader) -> {
-                StringBuilder text = new StringBuilder();
+                char c;
 
-                BiResult<String, Character> res = reader.readEscapedUntil('<', '\n');
-                text.append(res.result1());
+                if((c = reader.read()) != '<') throw new ParseException(c);
+                if((c = reader.read()) != '!') throw new ParseException(c);
+                if((c = reader.read()) != '-') throw new ParseException(c);
+                if((c = reader.read()) != '-') throw new ParseException(c);
 
-                while(res.result2() != '<') {
+                StringBuilder comment = new StringBuilder();
 
-                    if(!reader.availableSkipNewLinesAndSpaces())
-                        throw new EOFException();
+                while (true) {
+                    String text = reader.readUntil('>');
 
-                    res = reader.readEscapedUntil('<', '\n');
-
-                    if(!res.result1().isEmpty()) {
-                        text.append(' ');
-                        text.append(res.result1());
+                    if(!text.endsWith("--")) {
+                        comment.append(text);
+                        comment.append('>');
+                    } else {
+                        break;
                     }
-
                 }
 
-                reader.pushBack('<');
-                return new HtmlText(text.toString());
-
+                return new HtmlComment(comment.toString());
             };
 
 
     private final @NotNull String text;
 
-    public HtmlText(@NotNull String text) {
+    public HtmlComment(@NotNull String text) {
         this.text = text;
     }
 
@@ -69,8 +70,6 @@ public class HtmlText implements HtmlObject {
 
     @Override
     public void write(@NotNull HtmlParserState state, @NotNull Writer writer) throws IOException {
-        //TODO: escape text
-        String processed = text.replaceAll("\n", "\n" + state.getIndent());
-        writer.write(processed);
+        writer.append("<!--").append(text).append("-->");
     }
 }

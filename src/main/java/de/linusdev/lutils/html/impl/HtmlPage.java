@@ -24,31 +24,45 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.io.Writer;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
- * Html doc type with the following syntax: {@code <!doctype name>}.
+ * @see HtmlObjectType#PAGE
  */
-public class HtmlDocType implements HtmlObject {
+public class HtmlPage implements HtmlObject {
 
-    public final static HtmlObjectParser<HtmlDocType> PARSER = (parser, reader) -> {
-        reader.skip("<!doctype ".length());
-        String value = reader.readUntil('>');
-        return new HtmlDocType(value);
+    public static final @NotNull HtmlObjectParser<HtmlPage> PARSER = (parser, reader) -> {
+        HtmlObject object;
+        List<HtmlObject> content = new ArrayList<>();
+
+        while ((object = parser.parseIfPresent(reader)) != null) {
+            content.add(object);
+        }
+
+        return new HtmlPage(content);
     };
 
-    private final @NotNull String value;
+    private final @NotNull List<HtmlObject> content;
 
-    public HtmlDocType(@NotNull String value) {
-        this.value = value;
+    public HtmlPage(@NotNull List<HtmlObject> content) {
+        this.content = content;
+    }
+
+    public @NotNull List<@NotNull HtmlObject> content() {
+        return content;
+    }
+
+    public void write(@NotNull HtmlParserState state, @NotNull Writer writer) throws IOException {
+        for (HtmlObject object : content) {
+            writer.write(state.getIndent());
+            object.write(state, writer);
+            writer.append("\n");
+        }
     }
 
     @Override
     public @NotNull HtmlObjectType type() {
-        return HtmlObjectType.DOC_TYPE;
-    }
-
-    @Override
-    public void write(@NotNull HtmlParserState state, @NotNull Writer writer) throws IOException {
-        writer.append("<!doctype ").append(value).append(">");
+        return HtmlObjectType.PAGE;
     }
 }

@@ -19,11 +19,24 @@ package de.linusdev.lutils.html;
 import de.linusdev.lutils.html.builder.HtmlElementBuilder;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * A html element type/tag.
+ * @param <B> the {@link HtmlElementBuilder} class.
+ */
 public interface HtmlElementType<B extends HtmlElementBuilder> {
 
+    /**
+     * tag name
+     */
     @NotNull String name();
 
+    /**
+     * A new builder for an element of this type.
+     */
     @NotNull B builder();
 
+    /**
+     * A parser for an element of this type.
+     */
     @NotNull HtmlObjectParser<? extends HtmlElement> parser();
 }

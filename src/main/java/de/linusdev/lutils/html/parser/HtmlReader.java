@@ -35,6 +35,11 @@ public class HtmlReader {
         this.reader = reader;
     }
 
+    /**
+     * Check if {@link #read()} can be called.
+     * @return {@code true} if {@link #read()} can be called without throwing an exception.
+     * @throws IOException while reading.
+     */
     public boolean canRead() throws IOException {
         if(pushBackIndex != 0) return true;
         int r = reader.read();
@@ -43,6 +48,12 @@ public class HtmlReader {
         return true;
     }
 
+    /**
+     *
+     * @return the next char which was read. May read from the pushback-buffer.
+     * @throws IOException while reading.
+     * @throws EOFException if the end of the stream has been reached.
+     */
     public char read() throws IOException {
         if(pushBackIndex != 0)
             return pushBackBuffer[--pushBackIndex];
@@ -53,85 +64,128 @@ public class HtmlReader {
         return (char) r;
     }
 
-    public char skipNewLines() throws IOException {
+    /**
+     * Reads until a char which is not a new line or a space.
+     * @return the next char returned from {@link #read()}, which is nota new line or a space.
+     * @throws IOException see {@link #read()}.
+     */
+    public char skipNewLinesAndSpaces() throws IOException {
         char r;
         //noinspection StatementWithEmptyBody
-        while ((r = read()) == '\n') {}
+        while ((r = read()) == '\n' || r == ' ') {}
         return r;
     }
 
-    public @NotNull String readUntil(char c, boolean allowEOF) throws IOException {
-        StringBuilder sb = new StringBuilder();
+    /**
+     * Reads until the next {@link #read()} would return a char which is not a new line or a space.
+     * This method uses {@link #canRead()} before reading, to avoid throwing an {@link EOFException}.
+     * @return {@code true} if {@link #read()} can be called without throwing an exception
+     * @throws IOException while reading, but {@link EOFException} cannot be thrown.
+     */
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
+    public boolean availableSkipNewLinesAndSpaces() throws IOException {
+        if(!canRead())
+            return false;
         char r = 0;
-        while (canRead() && (r = read()) != c) {
+        //noinspection StatementWithEmptyBody
+        while (canRead() && ((r = read()) == '\n' || r == ' ')) {}
+
+        if(r == '\n' || r == ' ')
+            return false;
+
+        pushBack(r);
+        return true;
+    }
+
+    /**
+     * Read until a char matching any of {@code c1}, {@code c2}, ... is read. Then returns
+     * the read string without the last char. If the return type is a {@link BiResult}, the first
+     * result will be the read string without the last char. The second result will be the last char.
+     * @return as described above.
+     * @throws IOException while reading
+     */
+    public @NotNull String readUntil(char c) throws IOException {
+        StringBuilder sb = new StringBuilder();
+        char r;
+        while ((r = read()) != c) {
             sb.append(r);
         }
-
-        if (r != c && !allowEOF)
-            throw new EOFException();
 
         return sb.toString();
     }
 
-    public @NotNull String readEscapedUntil(char c, boolean allowEOF) throws IOException {
+    public @NotNull String readEscapedUntil(char c) throws IOException {
         StringBuilder sb = new StringBuilder();
-        char r = 0;
-        while (canRead() && (r = read()) != c) {
+        char r;
+        while ((r = read()) != c) {
             sb.append(r);
             //TODO: escaping!!!
         }
 
-        if (r != c && !allowEOF)
-            throw new EOFException();
-
         return sb.toString();
     }
 
-    public @NotNull BiResult<String, Character> readUntil(char c1, char c2, boolean allowEOF) throws IOException {
+    public @NotNull BiResult<String, Character> readEscapedUntil(char c1, char c2) throws IOException {
         StringBuilder sb = new StringBuilder();
-        char r = 0;
-        while (canRead() && (r = read()) != c1 && r != c2) {
+        char r;
+        while ((r = read()) != c1 && r != c2) {
             sb.append(r);
+            //TODO: escaping!!!
         }
 
-        if (r != c1 && r != c2 && !allowEOF)
-            throw new EOFException();
+        return new BiResult<>(sb.toString(), r) ;
+    }
+
+    /**
+     * @see #readUntil(char)
+     */
+    public @NotNull BiResult<String, Character> readUntil(char c1, char c2) throws IOException {
+        StringBuilder sb = new StringBuilder();
+        char r;
+        while ((r = read()) != c1 && r != c2) {
+            sb.append(r);
+        }
 
         return new BiResult<>(sb.toString(), r);
     }
 
-    public @NotNull BiResult<String, Character> readUntil(char c1, char c2, char c3, boolean allowEOF) throws IOException {
+    /**
+     * @see #readUntil(char)
+     */
+    @SuppressWarnings("unused")
+    public @NotNull BiResult<String, Character> readUntil(char c1, char c2, char c3) throws IOException {
         StringBuilder sb = new StringBuilder();
-        char r = 0;
-        while (canRead() && (r = read()) != c1 && r != c2 && r != c3) {
+        char r;
+        while ((r = read()) != c1 && r != c2 && r != c3) {
             sb.append(r);
         }
-
-        if (r != c1 && r != c2 && r != c3 && !allowEOF)
-            throw new EOFException();
 
         return new BiResult<>(sb.toString(), r);
     }
 
-    public @NotNull BiResult<String, Character> readUntil(char c1, char c2, char c3, char c4, boolean allowEOF) throws IOException {
+    /**
+     * @see #readUntil(char)
+     */
+    public @NotNull BiResult<String, Character> readUntil(char c1, char c2, char c3, char c4) throws IOException {
         StringBuilder sb = new StringBuilder();
-        char r = 0;
-        while (canRead() && (r = read()) != c1 && r != c2 && r != c3 && r != c4) {
+        char r;
+        while ((r = read()) != c1 && r != c2 && r != c3 && r != c4) {
             sb.append(r);
         }
-
-        if (r != c1 && r != c2 && r != c3 && r != c4 && !allowEOF)
-            throw new EOFException();
 
         return new BiResult<>(sb.toString(), r);
     }
 
-
+    /**
+     * Skip {@code n} characters. If {@code n} chars cannot be skipped, because the stream ended, a {@link EOFException} will be thrown.
+     * @param n amount of chars to skip.
+     * @throws IOException while skipping.
+     */
     public void skip(int n) throws IOException {
         if(pushBackIndex != 0) {
             if(pushBackIndex >= n) {
                 pushBackIndex = pushBackIndex - n;
-            } else if (pushBackIndex < n) {
+            } else /*if (pushBackIndex < n)*/ {
                 n -= pushBackIndex;
                 pushBackIndex = 0;
                 skip(n);
@@ -143,32 +197,76 @@ public class HtmlReader {
             throw new EOFException();
     }
 
+    /**
+     * Pushback given char {@code c}. A {@link #read()} right after this method call
+     * will return {@code c}.
+     * @param c char to pushback
+     */
     public void pushBack(char c) {
         pushBackBuffer[pushBackIndex++] = c;
     }
 
-    public void pushBack(char[] c, int offset, int len) {
-        len += offset;
-        for (int i = offset; i < len; i++) {
+    /**
+     * Will {@link #pushBack(char)} given char array in reverse order.
+     * @param c array to pushback
+     * @param len array length
+     */
+    public void pushBack(char[] c, int len) {
+        for (int i = len - 1 ; i >= 0; i--) {
             pushBackBuffer[pushBackIndex++] = c[i];
         }
     }
 
+    /**
+     * Will {@link #pushBack(char)} given string in reverse order.
+     * @param string string to pushback
+     */
+    public void pushBack(@NotNull String string) {
+        for (int i = string.length() - 1; i >= 0; i--) {
+            pushBackBuffer[pushBackIndex++] = string.charAt(i);
+        }
+    }
+
+    /**
+     * Read a string. e.g.: Reading {@code "test"}, {@code 'test'} or {@code test} will all return the string {@code test}.
+     * This method will automatically convert escaped sequences back to the original characters.
+     * @return the string read.
+     * @throws IOException while reading.
+     */
     public String readString() throws IOException {
         char r = read();
 
         if(r == '"') {
-            return readEscapedUntil('"', false);
+            return readEscapedUntil('"');
         } else if (r == '\'') {
-            return readEscapedUntil('\'', false);
+            return readEscapedUntil('\'');
+        } else {
+            BiResult<String, Character> res = readEscapedUntil(' ', '>');
+            pushBack(res.result2());
+            return res.result1();
         }
-
-        throw new IOException("Illegal char '" + r + "'.");
     }
 
-    public AttributeReader getAttributeReader() {
+    /**
+     * Get a new {@link AttributeReader}.
+     */
+    public @NotNull AttributeReader getAttributeReader() {
         return new AttributeReader(this);
     }
 
+    @SuppressWarnings("unused") // debug method only
+    public void debug() throws IOException {
+        StringBuilder sb = new StringBuilder();
+        char r;
+        int i = 0;
+        while (canRead() && pushBackIndex+i < pushBackBuffer.length) {
+            r = read();
+            i++;
+            sb.append(r);
+        }
+
+        pushBack(sb.toString());
+        System.out.println("Remaining:\n" + sb);
+    }
 
 }

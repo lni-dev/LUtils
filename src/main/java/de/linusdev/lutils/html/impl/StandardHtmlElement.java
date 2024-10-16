@@ -18,10 +18,7 @@ package de.linusdev.lutils.html.impl;
 
 import de.linusdev.lutils.html.*;
 import de.linusdev.lutils.html.builder.HtmlElementBuilder;
-import de.linusdev.lutils.html.parser.AttributeReader;
-import de.linusdev.lutils.html.parser.HtmlParser;
-import de.linusdev.lutils.html.parser.HtmlParserState;
-import de.linusdev.lutils.html.parser.HtmlReader;
+import de.linusdev.lutils.html.parser.*;
 import de.linusdev.lutils.result.BiResult;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -33,6 +30,7 @@ import java.util.function.Consumer;
 
 import static de.linusdev.lutils.html.parser.AttrReaderState.*;
 
+@SuppressWarnings("ClassCanBeRecord")
 public class StandardHtmlElement implements HtmlElement, HtmlWritable {
 
     private final @NotNull StandardHtmlElementTypes.Type tag;
@@ -55,7 +53,7 @@ public class StandardHtmlElement implements HtmlElement, HtmlWritable {
     }
 
     @Override
-    public @NotNull HtmlElementType tag() {
+    public @NotNull StandardHtmlElementTypes.Type tag() {
         return tag;
     }
 
@@ -189,28 +187,28 @@ public class StandardHtmlElement implements HtmlElement, HtmlWritable {
         }
 
         @Override
-        public @NotNull StandardHtmlElement parse(@NotNull HtmlParser parser, @NotNull HtmlReader reader) throws IOException {
+        public @NotNull StandardHtmlElement parse(@NotNull HtmlParser parser, @NotNull HtmlReader reader) throws IOException, ParseException {
             char c = reader.read();
             if(c != '<')
-                throw new IOException("Illegal char '" + c + "'.");
+                throw new ParseException(c);
 
-            BiResult<String, Character> res = reader.readUntil(' ', '>', false);
+            BiResult<String, Character> res = reader.readUntil(' ', '>');
             String tag = res.result1();
 
             if(tag.charAt(tag.length()-1) == '/' && res.result2() == '>') {
                 if(!tag.substring(0, tag.length() - 1).equals(type.name()))
-                    throw new IOException("Illegal tag name '" + tag + "'.");
+                    throw new ParseException("Illegal tag name '" + tag + "'.");
 
                 // is immediately closed
                 return new StandardHtmlElement(type, List.of(), Map.of());
             }
 
             if(!tag.equals(type.name()))
-                throw new IOException("Illegal tag name '" + tag + "'.");
+                throw new ParseException("Illegal tag name '" + tag + "'.");
 
             Map<String, HtmlAttribute> attributes = new HashMap<>();
 
-            if(res.result2() != '>') {
+            if(res.result2() == ' ') {
                 // Read attributes
                 AttributeReader attrReader = reader.getAttributeReader();
 
@@ -228,9 +226,7 @@ public class StandardHtmlElement implements HtmlElement, HtmlWritable {
                         String value = attrReader.readAttributeValue();
                         HtmlAttributeType attrType = parser.getRegistry().getAttributeTypeByName(name);
                         attributes.put(name, new StandardHtmlAttribute(attrType, value));
-                    }
-
-                    if(name != null) {
+                    } else if(name != null) {
                         HtmlAttributeType attrType = parser.getRegistry().getAttributeTypeByName(name);
                         attributes.put(name, new StandardHtmlAttribute(attrType, null));
                     }
@@ -241,26 +237,27 @@ public class StandardHtmlElement implements HtmlElement, HtmlWritable {
             ArrayList<HtmlObject> content = new ArrayList<>();
 
             for(;;) {
-                c = reader.skipNewLines();
+                c = reader.skipNewLinesAndSpaces();
 
                 if(c == '<') {
-                    char c1 = reader.read();
-                    if(c1 == '/') {
+                    c = reader.read();
+                    if(c == '/') {
                         // end tag
                         break;
                     }
+                    reader.pushBack(c);
                     reader.pushBack('<');
-                    reader.pushBack('/');
                     content.add(parser.parse(reader));
                 } else {
+                    reader.pushBack(c);
                     content.add(parser.parse(reader));
                 }
             }
 
-            tag = reader.readUntil('>', false).trim();
+            tag = reader.readUntil('>').trim();
 
             if(!tag.equals(type.name()))
-                throw new IOException("Illegal end tag name '" + tag + "'.");
+                throw new ParseException("Illegal end tag name '" + tag + "', should be '" + type.name() + "'.");
 
             return new StandardHtmlElement(type, content, attributes);
         }
