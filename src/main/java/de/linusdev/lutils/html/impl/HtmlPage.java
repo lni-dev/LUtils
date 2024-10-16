@@ -30,6 +30,7 @@ import java.util.List;
 /**
  * @see HtmlObjectType#PAGE
  */
+@SuppressWarnings("ClassCanBeRecord")
 public class HtmlPage implements HtmlObject {
 
     public static final @NotNull HtmlObjectParser<HtmlPage> PARSER = (parser, reader) -> {
@@ -54,11 +55,15 @@ public class HtmlPage implements HtmlObject {
     }
 
     public void write(@NotNull HtmlParserState state, @NotNull Writer writer) throws IOException {
+        boolean first = true;
         for (HtmlObject object : content) {
+            if(first) first = false;
+            else writer.append("\n");
+
             writer.write(state.getIndent());
             object.write(state, writer);
-            writer.append("\n");
         }
+
     }
 
     @Override

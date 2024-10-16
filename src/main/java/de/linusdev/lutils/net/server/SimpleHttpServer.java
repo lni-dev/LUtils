@@ -29,7 +29,7 @@ public class SimpleHttpServer {
 
     private volatile boolean keepAlive = true;
 
-    public SimpleHttpServer(
+    public  SimpleHttpServer(
             int port,
             @NotNull Routing routing,
             @NotNull Consumer<Throwable> exceptionHandler
@@ -57,5 +57,10 @@ public class SimpleHttpServer {
 
     public void shutdown() {
         keepAlive = false;
+    }
+
+    @SuppressWarnings("unused")
+    public void print() {
+        System.out.println("SimpleHttpServer running on: http://localhost:" + serverSocket.getLocalPort());
     }
 }

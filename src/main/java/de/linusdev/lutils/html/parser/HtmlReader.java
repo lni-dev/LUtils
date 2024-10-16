@@ -16,6 +16,7 @@
 
 package de.linusdev.lutils.html.parser;
 
+import de.linusdev.lutils.html.HtmlUtils;
 import de.linusdev.lutils.result.BiResult;
 import org.jetbrains.annotations.NotNull;
 
@@ -114,26 +115,32 @@ public class HtmlReader {
         return sb.toString();
     }
 
+    /**
+     * {@link #readUntil(char)} using an {@link HtmlUtils.Unescaper}.
+     * @see #readUntil(char)
+     */
     public @NotNull String readEscapedUntil(char c) throws IOException {
-        StringBuilder sb = new StringBuilder();
+        HtmlUtils.Unescaper unescaper = new HtmlUtils.Unescaper();
         char r;
         while ((r = read()) != c) {
-            sb.append(r);
-            //TODO: escaping!!!
+            unescaper.append(r);
         }
 
-        return sb.toString();
+        return unescaper.getString();
     }
 
+    /**
+     * {@link #readUntil(char)} using an {@link HtmlUtils.Unescaper}.
+     * @see #readUntil(char)
+     */
     public @NotNull BiResult<String, Character> readEscapedUntil(char c1, char c2) throws IOException {
-        StringBuilder sb = new StringBuilder();
+        HtmlUtils.Unescaper unescaper = new HtmlUtils.Unescaper();
         char r;
         while ((r = read()) != c1 && r != c2) {
-            sb.append(r);
-            //TODO: escaping!!!
+            unescaper.append(r);
         }
 
-        return new BiResult<>(sb.toString(), r) ;
+        return new BiResult<>(unescaper.getString(), r) ;
     }
 
     /**

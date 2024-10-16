@@ -18,8 +18,13 @@ package de.linusdev.lutils.html.builder;
 
 import de.linusdev.lutils.html.HtmlElement;
 import de.linusdev.lutils.html.HtmlElementType;
+import de.linusdev.lutils.html.StandardHtmlElementTypes;
+import de.linusdev.lutils.html.impl.HtmlDocType;
+import de.linusdev.lutils.html.impl.HtmlPage;
+import de.linusdev.lutils.html.impl.StandardHtmlElement;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.List;
 import java.util.function.Consumer;
 
 public class Html {
@@ -32,11 +37,37 @@ public class Html {
      * @param <B> {@link HtmlElementBuilder} class, should be inferred by {@code type}.
      */
     public static <B extends HtmlElementBuilder> @NotNull HtmlElement buildElement(
-            @NotNull HtmlElementType<B> type, Consumer<B> adjuster
+            @NotNull HtmlElementType<B> type, @NotNull Consumer<B> adjuster
     ) {
         B builder = type.builder();
         adjuster.accept(builder);
         return builder.build();
+    }
+
+    /**
+     * Convenience method to create a {@link HtmlPage} with the following elements:
+     * <pre>{@code
+     * <!doctype html>
+     * <html>
+     *     <head></head>
+     *     <body></body>
+     * </html>
+     * }</pre>
+     * @param headAdjuster consumer to adjust the {@code head} element.
+     * @param bodyAdjuster consumer to adjust the {@code body} element.
+     * @return the built {@link HtmlPage}.
+     */
+    public static @NotNull HtmlPage buildPage(
+            @NotNull Consumer<StandardHtmlElement.Builder> headAdjuster,
+            @NotNull Consumer<StandardHtmlElement.Builder> bodyAdjuster
+    ) {
+        return new HtmlPage(List.of(
+                new HtmlDocType("html"),
+                buildElement(StandardHtmlElementTypes.HTML, builder -> {
+                    builder.addElement(StandardHtmlElementTypes.HEAD, headAdjuster);
+                    builder.addElement(StandardHtmlElementTypes.BODY, bodyAdjuster);
+                })
+        ));
     }
 
 }

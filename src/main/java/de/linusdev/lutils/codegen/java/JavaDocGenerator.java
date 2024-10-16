@@ -18,6 +18,7 @@ package de.linusdev.lutils.codegen.java;
 
 import de.linusdev.lutils.codegen.GeneratorState;
 import de.linusdev.lutils.codegen.PartGenerator;
+import de.linusdev.lutils.html.HtmlUtils;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
@@ -25,11 +26,7 @@ import java.io.IOException;
 public class JavaDocGenerator implements PartGenerator<JavaSourceGeneratorHelper> {
 
     public static @NotNull String escape(@NotNull String text) {
-        text = text.replaceAll("&", "&amp;");
-        text = text.replaceAll("\"", "&quot;");
-        text = text.replaceAll("<", "&lt;");
-        text = text.replaceAll("<", "&gt;");
-        return text;
+        return HtmlUtils.escape(text, false);
     }
 
     private final StringBuilder text = new StringBuilder();

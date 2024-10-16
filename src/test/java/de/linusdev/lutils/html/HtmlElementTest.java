@@ -65,8 +65,16 @@ class HtmlElementTest {
         HtmlPage page = parser.parsePage(new StringReader(html));
 
         StringWriter writer = new StringWriter();
-        page.write(new HtmlParserState(""), writer);
-        System.out.println(writer);
-
+        page.write(writer);
+        assertEquals("""
+                <!doctype html>
+                <div>
+                  <div class="test">
+                    Header
+                  </div>
+                  <div>
+                    <p>Some Text in the body</p>
+                  </div>
+                </div>""", writer.toString());
     }
 }

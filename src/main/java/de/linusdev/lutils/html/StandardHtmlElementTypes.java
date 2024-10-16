@@ -20,12 +20,42 @@ import de.linusdev.lutils.html.impl.StandardHtmlElement;
 import org.jetbrains.annotations.NotNull;
 
 public class StandardHtmlElementTypes {
+    public final static @NotNull Type HTML = new Type("html", false);
+    public final static @NotNull Type HEAD = new Type("head", false);
+    public final static @NotNull Type BODY = new Type("body", false);
+
+    public final static @NotNull Type TITLE = new Type("title", true);
+
     public final static @NotNull Type PARAGRAPH = new Type("p", true);
     public final static @NotNull Type DIV = new Type("div", false);
 
+    public final static @NotNull Type H1 = new Type("h1", true);
+    public final static @NotNull Type H2 = new Type("h2", true);
+    public final static @NotNull Type H3 = new Type("h3", true);
+    public final static @NotNull Type H4 = new Type("h4", true);
+    public final static @NotNull Type H5 = new Type("h5", true);
+    public final static @NotNull Type H6 = new Type("h6", true);
+    public final static @NotNull Type H7 = new Type("h7", true);
+    public final static @NotNull Type H8 = new Type("h8", true);
+    public final static @NotNull Type H9 = new Type("h9", true);
+
+
     public final static @NotNull HtmlElementType<?> @NotNull [] VALUES = new HtmlElementType[] {
+            HTML,
+            HEAD,
+            BODY,
+            TITLE,
             PARAGRAPH,
-            DIV
+            DIV,
+            H1,
+            H2,
+            H3,
+            H4,
+            H5,
+            H6,
+            H7,
+            H8,
+            H9,
     };
 
     private StandardHtmlElementTypes() { }

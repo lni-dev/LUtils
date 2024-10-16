@@ -16,13 +16,15 @@
 
 package de.linusdev.lutils.net.http.body;
 
+import de.linusdev.lutils.interfaces.TSupplier;
+import de.linusdev.lutils.interfaces.Writable;
+import de.linusdev.lutils.io.ResourceUtils;
 import de.linusdev.lutils.net.http.header.contenttype.ContentType;
 import de.linusdev.lutils.net.http.header.contenttype.ContentTypes;
-import de.linusdev.lutils.interfaces.TSupplier;
-import de.linusdev.lutils.io.ResourceUtils;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
@@ -109,6 +111,15 @@ public class Bodies {
 
         public @NotNull Body ofStringUtf8(@NotNull String string) {
             return new ByteArrayBody(string.getBytes(StandardCharsets.UTF_8), contentType);
+        }
+
+        @SuppressWarnings("unused")
+        public @NotNull Body ofWritable(@NotNull Writable writable){
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            try {
+                writable.write(out);
+            } catch (IOException ignored) {}
+            return new ByteArrayBody(out.toByteArray(), contentType);
         }
     }
 
