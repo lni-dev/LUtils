@@ -126,7 +126,8 @@ public class StandardHtmlElement implements HtmlElement, HtmlWritable {
         if(tag.isVoidElement()) {
             writer.append(">");
         } else if(content.isEmpty()) {
-            writer.append("/>");
+            writer.append(">");
+            writer.append("</").append(tag.name()).append(">");
         } else {
             writer.append(">");
 
