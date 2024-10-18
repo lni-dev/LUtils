@@ -1,7 +1,7 @@
 package de.linusdev.lutils.html.builder;
 
-import de.linusdev.lutils.html.StandardHtmlElementTypes;
 import de.linusdev.lutils.html.impl.HtmlPage;
+import de.linusdev.lutils.html.impl.StandardHtmlElementTypes;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;

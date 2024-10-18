@@ -33,12 +33,12 @@ import static de.linusdev.lutils.html.parser.AttrReaderState.*;
 @SuppressWarnings("ClassCanBeRecord")
 public class StandardHtmlElement implements HtmlElement, HtmlWritable {
 
-    private final @NotNull StandardHtmlElementTypes.Type tag;
+    private final @NotNull Type tag;
     private final @NotNull List<@NotNull HtmlObject> content;
     private final @NotNull Map<String, HtmlAttribute> attributes;
 
     public StandardHtmlElement(
-            @NotNull StandardHtmlElementTypes.Type tag,
+            @NotNull Type tag,
             @NotNull List<@NotNull HtmlObject> content,
             @NotNull Map<String, HtmlAttribute> attributes
     ) {
@@ -53,7 +53,7 @@ public class StandardHtmlElement implements HtmlElement, HtmlWritable {
     }
 
     @Override
-    public @NotNull StandardHtmlElementTypes.Type tag() {
+    public @NotNull Type tag() {
         return tag;
     }
 
@@ -123,7 +123,9 @@ public class StandardHtmlElement implements HtmlElement, HtmlWritable {
             }
         }
 
-        if(content.isEmpty()) {
+        if(tag.isVoidElement()) {
+            writer.append(">");
+        } else if(content.isEmpty()) {
             writer.append("/>");
         } else {
             writer.append(">");
@@ -146,13 +148,88 @@ public class StandardHtmlElement implements HtmlElement, HtmlWritable {
         }
     }
 
+    public static class Type implements HtmlElementType<StandardHtmlElement.Builder> {
+
+        /**
+         * Normal element with content and attributes. Will be written as
+         * <pre>{@code
+         * <tag attr="value">
+         *     content
+         * </tag>
+         * }</pre>
+         * @param name tag name
+         * @return {@link HtmlAttributeType} as described above
+         */
+        public static @NotNull Type newNormal(@NotNull String name)  {
+            return new Type(name, false, false);
+        }
+
+        /**
+         * Void element with attributes and <b>no</b> content. Will be written as
+         * <pre>{@code
+         * <tag attr="value">
+         * }</pre>
+         * @param name tag name
+         * @return {@link HtmlAttributeType} as described above
+         */
+        public static @NotNull Type newVoid(@NotNull String name)  {
+            return new Type(name, false, true);
+        }
+
+        /**
+         * Normal element with content and attributes. Will be written as
+         * <pre>{@code
+         * <tag attr="value">content</tag>
+         * }</pre>
+         * @param name tag name
+         * @return {@link HtmlAttributeType} as described above
+         */
+        public static @NotNull Type newInline(@NotNull String name)  {
+            return new Type(name, true, false);
+        }
+
+        private final @NotNull String name;
+        private final boolean inline;
+        private final boolean voidElement;
+
+        public Type(@NotNull String name, boolean inline, boolean voidElement) {
+            this.name = name;
+            this.inline = inline;
+            this.voidElement = voidElement;
+        }
+
+        @Override
+        public @NotNull String name() {
+            return name;
+        }
+
+        @Override
+        public @NotNull StandardHtmlElement.Builder builder() {
+            return new StandardHtmlElement.Builder(this);
+        }
+
+        @Override
+        public @NotNull HtmlObjectParser<? extends HtmlElement> parser() {
+            return new StandardHtmlElement.Parser(this);
+        }
+
+        @SuppressWarnings("BooleanMethodIsAlwaysInverted")
+        public boolean isInline() {
+            return inline;
+        }
+
+        public boolean isVoidElement() {
+            return voidElement;
+        }
+    }
+
     public static class Builder implements HtmlElementBuilder {
 
-        private final @NotNull StandardHtmlElementTypes.Type tag;
+        private final @NotNull Type tag;
         private final @NotNull List<@NotNull HtmlObject> content;
         private final @NotNull Map<String, HtmlAttribute> attributes;
 
-        public Builder(@NotNull StandardHtmlElementTypes.Type tag) {
+        public Builder(@NotNull Type tag) {
             this.tag = tag;
             this.content = new ArrayList<>();
             this.attributes = new HashMap<>();
@@ -180,9 +257,9 @@ public class StandardHtmlElement implements HtmlElement, HtmlWritable {
 
     public static class Parser implements HtmlObjectParser<StandardHtmlElement> {
 
-        private final @NotNull StandardHtmlElementTypes.Type type;
+        private final @NotNull Type type;
 
-        public Parser(@NotNull StandardHtmlElementTypes.Type type) {
+        public Parser(@NotNull Type type) {
             this.type = type;
         }
 
@@ -231,6 +308,10 @@ public class StandardHtmlElement implements HtmlElement, HtmlWritable {
                         attributes.put(name, new StandardHtmlAttribute(attrType, null));
                     }
                 }
+            }
+
+            if(type.isVoidElement()) {
+                return new StandardHtmlElement(type, List.of(), attributes);
             }
 
             // read content

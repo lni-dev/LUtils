@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-package de.linusdev.lutils.html;
+package de.linusdev.lutils.html.impl;
 
+import de.linusdev.lutils.html.HtmlAttributeType;
 import org.jetbrains.annotations.NotNull;
 
 public class StandardHtmlAttributeTypes {

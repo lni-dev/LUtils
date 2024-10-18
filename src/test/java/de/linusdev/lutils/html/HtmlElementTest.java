@@ -2,6 +2,7 @@ package de.linusdev.lutils.html;
 
 import de.linusdev.lutils.html.builder.Html;
 import de.linusdev.lutils.html.impl.HtmlPage;
+import de.linusdev.lutils.html.impl.StandardHtmlAttributeTypes;
 import de.linusdev.lutils.html.parser.HtmlParser;
 import de.linusdev.lutils.html.parser.HtmlParserState;
 import de.linusdev.lutils.html.parser.ParseException;
@@ -12,8 +13,8 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
 
-import static de.linusdev.lutils.html.StandardHtmlElementTypes.DIV;
-import static de.linusdev.lutils.html.StandardHtmlElementTypes.PARAGRAPH;
+import static de.linusdev.lutils.html.impl.StandardHtmlElementTypes.DIV;
+import static de.linusdev.lutils.html.impl.StandardHtmlElementTypes.PARAGRAPH;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class HtmlElementTest {
@@ -51,10 +52,10 @@ class HtmlElementTest {
                 <!doctype html>
                 <div>
                   <div class="test">
-                    Header
+                    Header <a href='https://www.linusdev.de'>Here</a>
                   </div>
                   <div>
-                    <p>Some Text
+                    <p>Some<br>Text
                         in the body
                     </p>
                   </div>
@@ -70,10 +71,13 @@ class HtmlElementTest {
                 <!doctype html>
                 <div>
                   <div class="test">
-                    Header
+                    Header\s
+                    <a href="https://www.linusdev.de">
+                      Here
+                    </a>
                   </div>
                   <div>
-                    <p>Some Text in the body</p>
+                    <p>Some<br>Text in the body</p>
                   </div>
                 </div>""", writer.toString());
     }

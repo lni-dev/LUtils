@@ -16,9 +16,7 @@
 
 package de.linusdev.lutils.html;
 
-import de.linusdev.lutils.html.impl.HtmlComment;
-import de.linusdev.lutils.html.impl.HtmlDocType;
-import de.linusdev.lutils.html.impl.HtmlText;
+import de.linusdev.lutils.html.impl.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -52,7 +50,7 @@ public class Registry {
 
         DEFAULT = new Registry(elements, attributes,
                 HtmlDocType.PARSER, HtmlText.PARSER, HtmlComment.PARSER,
-                s -> new StandardHtmlElementTypes.Type(s, true),
+                StandardHtmlElement.Type::newInline,
                 s -> () -> s
         );
 
