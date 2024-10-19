@@ -19,7 +19,7 @@ package de.linusdev.lutils.html.impl;
 import de.linusdev.lutils.html.HtmlObject;
 import de.linusdev.lutils.html.HtmlObjectParser;
 import de.linusdev.lutils.html.HtmlObjectType;
-import de.linusdev.lutils.html.parser.HtmlParserState;
+import de.linusdev.lutils.html.parser.HtmlWritingState;
 import de.linusdev.lutils.result.BiResult;
 import org.jetbrains.annotations.NotNull;
 
@@ -30,7 +30,7 @@ import java.io.Writer;
 public class HtmlText implements HtmlObject {
 
     public static final @NotNull HtmlObjectParser<HtmlText> PARSER =
-            (parser, reader) -> {
+            (state, reader) -> {
                 StringBuilder text = new StringBuilder();
 
                 BiResult<String, Character> res = reader.readEscapedUntil('<', '\n');
@@ -68,7 +68,7 @@ public class HtmlText implements HtmlObject {
     }
 
     @Override
-    public void write(@NotNull HtmlParserState state, @NotNull Writer writer) throws IOException {
+    public void write(@NotNull HtmlWritingState state, @NotNull Writer writer) throws IOException {
         //TODO: escape text
         String processed = text.replaceAll("\n", "\n" + state.getIndent());
         writer.write(processed);

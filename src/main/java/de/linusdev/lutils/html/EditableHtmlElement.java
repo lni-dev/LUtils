@@ -16,23 +16,17 @@
 
 package de.linusdev.lutils.html;
 
-import de.linusdev.lutils.html.parser.HtmlParserState;
-import de.linusdev.lutils.html.parser.HtmlReader;
-import de.linusdev.lutils.html.parser.ParseException;
+import de.linusdev.lutils.html.impl.HtmlText;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.IOException;
+public interface EditableHtmlElement extends HtmlElement {
 
-public interface HtmlObjectParser<O extends HtmlObject> {
+    default void addContent(@NotNull HtmlObject object) {
+        content().add(object);
+    }
 
-    /**
-     * Parse given {@code reader} to a {@link O}.
-     * @param state state to use while parsing
-     * @param reader reader to read from
-     * @return parsed {@link O}
-     * @throws IOException while reading
-     * @throws ParseException while parsing
-     */
-    @NotNull O parse(@NotNull HtmlParserState state, @NotNull HtmlReader reader) throws IOException, ParseException;
+    default void addText(@NotNull String text) {
+        addContent(new HtmlText(text));
+    }
 
 }

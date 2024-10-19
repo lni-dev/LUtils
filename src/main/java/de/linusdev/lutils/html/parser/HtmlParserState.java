@@ -16,28 +16,54 @@
 
 package de.linusdev.lutils.html.parser;
 
+import de.linusdev.lutils.html.HtmlAttribute;
+import de.linusdev.lutils.html.HtmlElementType;
+import de.linusdev.lutils.html.HtmlObject;
+import de.linusdev.lutils.html.HtmlObjectParser;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-public class HtmlParserState {
+import java.util.Map;
 
-    private final @NotNull String baseIndent;
+/**
+ * Parser state, passed to {@link HtmlObjectParser}, so they can access {@link #injector}.
+ */
+public class HtmlParserState implements HtmlParserInjector {
 
-    private @NotNull String indent = "";
+    /**
+     * @see HtmlParserInjector
+     */
+    private final @Nullable HtmlParserInjector injector;
+    private final @NotNull HtmlParser parser;
 
-    public HtmlParserState(@NotNull String baseIndent) {
-        this.baseIndent = baseIndent;
+    public HtmlParserState(@Nullable HtmlParserInjector injector, @NotNull HtmlParser parser) {
+        this.injector = injector;
+        this.parser = parser;
     }
 
-    public @NotNull String getIndent() {
-        return indent;
+    public @NotNull HtmlParser getParser() {
+        return parser;
     }
 
-    public void addIndent() {
-        indent += baseIndent;
+    public @NotNull Registry getRegistry() {
+        return parser.getRegistry();
     }
 
-    public void removeIndent() {
-        indent = indent.substring(0, indent.length() - baseIndent.length());
+    @Override
+    public int onStartParsingContent(@NotNull HtmlElementType<?> tag, @NotNull Map<String, HtmlAttribute> attributes) {
+        if(injector == null) return 0;
+        return injector.onStartParsingContent(tag, attributes);
     }
 
+    @Override
+    public @Nullable HtmlObject onObjectParsed(@NotNull HtmlObject parsed) {
+        if(injector == null) return parsed;
+        return injector.onObjectParsed(parsed);
+    }
+
+    @Override
+    public void onEndParsingContent(int id) {
+        if(injector == null) return;
+        injector.onEndParsingContent(id);
+    }
 }

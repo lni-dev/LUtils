@@ -4,8 +4,9 @@ import de.linusdev.lutils.html.builder.Html;
 import de.linusdev.lutils.html.impl.HtmlPage;
 import de.linusdev.lutils.html.impl.StandardHtmlAttributeTypes;
 import de.linusdev.lutils.html.parser.HtmlParser;
-import de.linusdev.lutils.html.parser.HtmlParserState;
+import de.linusdev.lutils.html.parser.HtmlWritingState;
 import de.linusdev.lutils.html.parser.ParseException;
+import de.linusdev.lutils.html.parser.Registry;
 import org.intellij.lang.annotations.Language;
 import org.junit.jupiter.api.Test;
 
@@ -32,7 +33,7 @@ class HtmlElementTest {
         });
 
         StringWriter writer = new StringWriter();
-        element.write(new HtmlParserState("  "), writer);
+        element.write(new HtmlWritingState("  "), writer);
         System.out.println(writer);
 
         assertEquals("""

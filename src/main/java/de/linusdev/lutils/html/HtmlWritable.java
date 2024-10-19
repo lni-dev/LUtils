@@ -16,28 +16,33 @@
 
 package de.linusdev.lutils.html;
 
-import de.linusdev.lutils.html.parser.HtmlParserState;
+import de.linusdev.lutils.html.parser.HtmlWritingState;
 import de.linusdev.lutils.interfaces.Writable;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
 
 public interface HtmlWritable extends Writable {
 
-    void write(@NotNull HtmlParserState state, @NotNull Writer writer) throws IOException;
+    void write(@NotNull HtmlWritingState state, @NotNull Writer writer) throws IOException;
 
     default void write(@NotNull Writer writer) throws IOException {
-        write(new HtmlParserState("  "), writer);
+        write(new HtmlWritingState("  "), writer);
     }
 
     default void write(@NotNull OutputStream out) throws IOException {
         OutputStreamWriter writer = new OutputStreamWriter(out, StandardCharsets.UTF_8);
         write(writer);
         writer.flush();
+    }
+
+    default @NotNull String writeToString() {
+        StringWriter writer = new StringWriter();
+        try {
+            write(writer);
+        } catch (IOException ignored) {}
+        return writer.toString();
     }
 
 }

@@ -19,7 +19,7 @@ package de.linusdev.lutils.html.impl;
 import de.linusdev.lutils.html.HtmlObject;
 import de.linusdev.lutils.html.HtmlObjectParser;
 import de.linusdev.lutils.html.HtmlObjectType;
-import de.linusdev.lutils.html.parser.HtmlParserState;
+import de.linusdev.lutils.html.parser.HtmlWritingState;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
@@ -30,7 +30,7 @@ import java.io.Writer;
  */
 public class HtmlDocType implements HtmlObject {
 
-    public final static HtmlObjectParser<HtmlDocType> PARSER = (parser, reader) -> {
+    public final static HtmlObjectParser<HtmlDocType> PARSER = (state, reader) -> {
         reader.skip("<!doctype ".length());
         String value = reader.readUntil('>');
         return new HtmlDocType(value);
@@ -48,7 +48,7 @@ public class HtmlDocType implements HtmlObject {
     }
 
     @Override
-    public void write(@NotNull HtmlParserState state, @NotNull Writer writer) throws IOException {
+    public void write(@NotNull HtmlWritingState state, @NotNull Writer writer) throws IOException {
         writer.append("<!doctype ").append(value).append(">");
     }
 }

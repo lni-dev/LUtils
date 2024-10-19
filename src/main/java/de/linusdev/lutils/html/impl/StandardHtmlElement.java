@@ -25,19 +25,22 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.io.Writer;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
 
 import static de.linusdev.lutils.html.parser.AttrReaderState.*;
 
 @SuppressWarnings("ClassCanBeRecord")
-public class StandardHtmlElement implements HtmlElement, HtmlWritable {
+public class StandardHtmlElement implements EditableHtmlElement {
 
     private final @NotNull Type tag;
     private final @NotNull List<@NotNull HtmlObject> content;
     private final @NotNull Map<String, HtmlAttribute> attributes;
 
-    public StandardHtmlElement(
+    protected StandardHtmlElement(
             @NotNull Type tag,
             @NotNull List<@NotNull HtmlObject> content,
             @NotNull Map<String, HtmlAttribute> attributes
@@ -63,56 +66,12 @@ public class StandardHtmlElement implements HtmlElement, HtmlWritable {
     }
 
     @Override
-    public @NotNull Iterator<@NotNull HtmlElement> children() {
-        return new Iterator<>() {
-
-            final Iterator<@NotNull HtmlObject> it = content.iterator();
-            @Nullable HtmlElement next = null;
-
-            @Override
-            public boolean hasNext() {
-                if (next == null && !it.hasNext())
-                    return false;
-                if (next != null)
-                    return true;
-                getNext();
-                return hasNext();
-            }
-
-            @Override
-            public HtmlElement next() {
-                if (next == null) {
-                    getNext();
-                    return next();
-                }
-
-                HtmlElement buf = next;
-                next = null;
-                return buf;
-            }
-
-            private void getNext() {
-                if (next != null) return;
-                HtmlObject obj = it.next();
-                while (obj.type() != HtmlObjectType.ELEMENT && it.hasNext()) {
-                    obj = it.next();
-                }
-
-                if (obj.type() != HtmlObjectType.ELEMENT)
-                    return;
-
-                next = obj.asHtmlElement();
-            }
-        };
-    }
-
-    @Override
     public @NotNull Map<String,HtmlAttribute> attributes() {
         return attributes;
     }
 
     @Override
-    public void write(@NotNull HtmlParserState state, @NotNull Writer writer) throws IOException {
+    public void write(@NotNull HtmlWritingState state, @NotNull Writer writer) throws IOException {
         writer.append("<").append(tag.name());
 
         for (HtmlAttribute attr : attributes.values()) {
@@ -265,7 +224,7 @@ public class StandardHtmlElement implements HtmlElement, HtmlWritable {
         }
 
         @Override
-        public @NotNull StandardHtmlElement parse(@NotNull HtmlParser parser, @NotNull HtmlReader reader) throws IOException, ParseException {
+        public @NotNull StandardHtmlElement parse(@NotNull HtmlParserState state, @NotNull HtmlReader reader) throws IOException, ParseException {
             char c = reader.read();
             if(c != '<')
                 throw new ParseException(c);
@@ -278,7 +237,7 @@ public class StandardHtmlElement implements HtmlElement, HtmlWritable {
                     throw new ParseException("Illegal tag name '" + tag + "'.");
 
                 // is immediately closed
-                return new StandardHtmlElement(type, List.of(), Map.of());
+                return new StandardHtmlElement(type, new ArrayList<>(), new HashMap<>());
             }
 
             if(!tag.equals(type.name()))
@@ -295,28 +254,29 @@ public class StandardHtmlElement implements HtmlElement, HtmlWritable {
 
                     if(attrReader.state == TAG_SELF_CLOSE) {
                         if(name != null) {
-                            HtmlAttributeType attrType = parser.getRegistry().getAttributeTypeByName(name);
+                            HtmlAttributeType attrType = state.getRegistry().getAttributeTypeByName(name);
                             attributes.put(name, new StandardHtmlAttribute(attrType, null));
                         }
 
-                        return new StandardHtmlElement(type, List.of(), attributes);
+                        return new StandardHtmlElement(type, new ArrayList<>(), attributes);
                     } else if(attrReader.state == ATTR_VALUE) {
                         String value = attrReader.readAttributeValue();
-                        HtmlAttributeType attrType = parser.getRegistry().getAttributeTypeByName(name);
+                        HtmlAttributeType attrType = state.getRegistry().getAttributeTypeByName(name);
                         attributes.put(name, new StandardHtmlAttribute(attrType, value));
                     } else if(name != null) {
-                        HtmlAttributeType attrType = parser.getRegistry().getAttributeTypeByName(name);
+                        HtmlAttributeType attrType = state.getRegistry().getAttributeTypeByName(name);
                         attributes.put(name, new StandardHtmlAttribute(attrType, null));
                     }
                 }
             }
 
             if(type.isVoidElement()) {
-                return new StandardHtmlElement(type, List.of(), attributes);
+                return new StandardHtmlElement(type, new ArrayList<>(), attributes);
             }
 
             // read content
             ArrayList<HtmlObject> content = new ArrayList<>();
+            int id = state.onStartParsingContent(type, attributes);
 
             for(;;) {
                 c = reader.skipNewLinesAndSpaces();
@@ -329,13 +289,16 @@ public class StandardHtmlElement implements HtmlElement, HtmlWritable {
                     }
                     reader.pushBack(c);
                     reader.pushBack('<');
-                    content.add(parser.parse(reader));
+                    HtmlObject child = state.onObjectParsed(state.getParser().parse(state, reader));
+                    if(child != null) content.add(child);
                 } else {
                     reader.pushBack(c);
-                    content.add(parser.parse(reader));
+                    HtmlObject child = state.onObjectParsed(state.getParser().parse(state, reader));
+                    if(child != null) content.add(child);
                 }
             }
 
+            state.onEndParsingContent(id);
             tag = reader.readUntil('>').trim();
 
             if(!tag.equals(type.name()))

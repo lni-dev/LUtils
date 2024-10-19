@@ -19,7 +19,7 @@ package de.linusdev.lutils.html.impl;
 import de.linusdev.lutils.html.HtmlObject;
 import de.linusdev.lutils.html.HtmlObjectParser;
 import de.linusdev.lutils.html.HtmlObjectType;
-import de.linusdev.lutils.html.parser.HtmlParserState;
+import de.linusdev.lutils.html.parser.HtmlWritingState;
 import de.linusdev.lutils.html.parser.ParseException;
 import org.jetbrains.annotations.NotNull;
 
@@ -32,7 +32,7 @@ import java.io.Writer;
 public class HtmlComment implements HtmlObject {
 
     public static final @NotNull HtmlObjectParser<HtmlComment> PARSER =
-            (parser, reader) -> {
+            (state, reader) -> {
                 char c;
 
                 if((c = reader.read()) != '<') throw new ParseException(c);
@@ -69,7 +69,7 @@ public class HtmlComment implements HtmlObject {
     }
 
     @Override
-    public void write(@NotNull HtmlParserState state, @NotNull Writer writer) throws IOException {
+    public void write(@NotNull HtmlWritingState state, @NotNull Writer writer) throws IOException {
         writer.append("<!--").append(text).append("-->");
     }
 }

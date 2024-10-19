@@ -16,7 +16,10 @@
 
 package de.linusdev.lutils.html.parser;
 
-import de.linusdev.lutils.html.*;
+import de.linusdev.lutils.html.HtmlElement;
+import de.linusdev.lutils.html.HtmlElementType;
+import de.linusdev.lutils.html.HtmlObject;
+import de.linusdev.lutils.html.HtmlObjectType;
 import de.linusdev.lutils.html.impl.HtmlPage;
 import de.linusdev.lutils.result.BiResult;
 import org.jetbrains.annotations.NotNull;
@@ -35,20 +38,21 @@ public class HtmlParser {
     }
 
     public @NotNull HtmlPage parsePage(@NotNull Reader reader) throws IOException, ParseException {
-        return HtmlPage.PARSER.parse(this, new HtmlReader(reader));
+        return HtmlPage.PARSER.parse(new HtmlParserState(null, this), new HtmlReader(reader));
     }
 
     /**
-     * If a html object is present, it reads exactly one html object using {@link #parse(HtmlReader)}. If no html object is present, {@code null} is returned.
+     * If a html object is present, it reads exactly one html object using {@link #parse(HtmlParserState, HtmlReader)}. If no html object is present, {@code null} is returned.
      * @param reader reader to read from.
-     * @return {@link #parse(HtmlReader)} if an object is present
-     * @throws IOException see {@link #parse(HtmlReader)}
+     * @param state {@link HtmlParserState} to use while parsing.
+     * @return {@link #parse(HtmlParserState, HtmlReader)} if an object is present
+     * @throws IOException see {@link #parse(HtmlParserState, HtmlReader)}
      */
-    public @Nullable HtmlObject parseIfPresent(@NotNull HtmlReader reader) throws IOException, ParseException {
+    public @Nullable HtmlObject parseIfPresent(@NotNull HtmlParserState state, @NotNull HtmlReader reader) throws IOException, ParseException {
         if(!reader.availableSkipNewLinesAndSpaces())
             return null;
 
-        return parse(reader);
+        return parse(state, reader);
     }
 
     /**
@@ -61,10 +65,11 @@ public class HtmlParser {
      *     <li>{@link HtmlObjectType#ELEMENT}</li>
      * </ul>
      * @param reader reader to read the element from
+     * @param state {@link HtmlParserState} to use while parsing.
      * @return parsed {@link HtmlObject}
      * @throws IOException possible while reading.
      */
-    public @NotNull HtmlObject parse(@NotNull HtmlReader reader) throws IOException, ParseException {
+    public @NotNull HtmlObject parse(@NotNull HtmlParserState state, @NotNull HtmlReader reader) throws IOException, ParseException {
 
         char[] buf = new char[3];
 
@@ -79,31 +84,32 @@ public class HtmlParser {
                 if(buf[2] == '-') {
                     //comment
                     reader.pushBack(buf, 3);
-                    return registry.getCommentParser().parse(this, reader);
+                    return registry.getCommentParser().parse(state, reader);
                 }
 
                 // doc type
                 reader.pushBack(buf, 3);
-                return registry.getDocTypeParser().parse(this, reader);
+                return registry.getDocTypeParser().parse(state, reader);
             }
 
             // element
             reader.pushBack(buf[1]);
-            return parseElement(reader);
+            return parseElement(state, reader);
         }
 
         // text
         reader.pushBack(buf[0]);
-        return registry.getTextParser().parse(this, reader);
+        return registry.getTextParser().parse(state, reader);
     }
 
     /**
      * Opening {@code <} of the element tag should already be read, when this method is called.
      * @param reader reader to read the element from.
+     * @param state {@link HtmlParserState} to use while parsing.
      * @return {@link HtmlElement}, which was parsed.
      * @throws IOException while reading.
      */
-    private @NotNull HtmlElement parseElement(@NotNull HtmlReader reader) throws IOException, ParseException {
+    private @NotNull HtmlElement parseElement(@NotNull HtmlParserState state, @NotNull HtmlReader reader) throws IOException, ParseException {
         BiResult<String, Character> res = reader.readUntil(' ', '>');
         HtmlElementType<?> type = registry.getElementTypeByName(res.result1());
         reader.pushBack(res.result2());
@@ -111,7 +117,7 @@ public class HtmlParser {
         reader.pushBack('<');
 
 
-        return type.parser().parse(this, reader);
+        return type.parser().parse(state, reader);
     }
 
     public @NotNull Registry getRegistry() {

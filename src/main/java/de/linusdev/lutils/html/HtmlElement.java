@@ -17,6 +17,7 @@
 package de.linusdev.lutils.html;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Iterator;
 import java.util.List;
@@ -27,7 +28,7 @@ public interface HtmlElement extends HtmlObject {
     /**
      * The tag of this html element.
      */
-    @NotNull HtmlElementType tag();
+    @NotNull HtmlElementType<?> tag();
 
     /**
      * Content of this html element, including text and comments.
@@ -37,7 +38,48 @@ public interface HtmlElement extends HtmlObject {
     /**
      * Child elements of this html element.
      */
-    @NotNull Iterator<@NotNull HtmlElement> children();
+    default @NotNull Iterator<@NotNull HtmlElement> children() {
+        return new Iterator<>() {
+
+            final Iterator<@NotNull HtmlObject> it = content().iterator();
+            @Nullable HtmlElement next = null;
+
+            @Override
+            public boolean hasNext() {
+                if (next == null && !it.hasNext())
+                    return false;
+                if (next != null)
+                    return true;
+                getNext();
+                return hasNext();
+            }
+
+            @Override
+            public HtmlElement next() {
+                if (next == null) {
+                    getNext();
+                    return next();
+                }
+
+                HtmlElement buf = next;
+                next = null;
+                return buf;
+            }
+
+            private void getNext() {
+                if (next != null) return;
+                HtmlObject obj = it.next();
+                while (obj.type() != HtmlObjectType.ELEMENT && it.hasNext()) {
+                    obj = it.next();
+                }
+
+                if (obj.type() != HtmlObjectType.ELEMENT)
+                    return;
+
+                next = obj.asHtmlElement();
+            }
+        };
+    }
 
     /**
      * Attributes of this html element.

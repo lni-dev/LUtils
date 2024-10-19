@@ -19,8 +19,10 @@ package de.linusdev.lutils.io;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
 
@@ -46,6 +48,31 @@ public class ResourceUtils {
         }
 
         return new StreamURLConnection(path, resource);
+    }
+
+    /**
+     * Read a resource as string.
+     * @param relClazz class used to get the resource.
+     * @param path Either absolut (starting with {@code /}) or relative to the package of given {@code relClazz}
+     *             (not starting {@code /}).
+     * @return read string.
+     * @throws Error if resource with given {@code path} does not exist.
+     */
+    public static @NotNull String readString(
+            @NotNull Class<?> relClazz,
+            @NotNull String path
+    ) throws IOException {
+        try (
+                var in = getURLConnectionOfResource(relClazz, path).openInputStream();
+                var reader = new BufferedReader(new InputStreamReader(in))
+        ) {
+            StringBuilder sb = new StringBuilder();
+            String line;
+            while ((line = reader.readLine()) != null)
+                sb.append(line);
+
+            return sb.toString();
+        }
     }
 
     public static class StreamURLConnection {

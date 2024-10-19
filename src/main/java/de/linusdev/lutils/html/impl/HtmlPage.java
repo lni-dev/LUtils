@@ -19,7 +19,7 @@ package de.linusdev.lutils.html.impl;
 import de.linusdev.lutils.html.HtmlObject;
 import de.linusdev.lutils.html.HtmlObjectParser;
 import de.linusdev.lutils.html.HtmlObjectType;
-import de.linusdev.lutils.html.parser.HtmlParserState;
+import de.linusdev.lutils.html.parser.HtmlWritingState;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
@@ -33,11 +33,11 @@ import java.util.List;
 @SuppressWarnings("ClassCanBeRecord")
 public class HtmlPage implements HtmlObject {
 
-    public static final @NotNull HtmlObjectParser<HtmlPage> PARSER = (parser, reader) -> {
+    public static final @NotNull HtmlObjectParser<HtmlPage> PARSER = (state, reader) -> {
         HtmlObject object;
         List<HtmlObject> content = new ArrayList<>();
 
-        while ((object = parser.parseIfPresent(reader)) != null) {
+        while ((object = state.getParser().parseIfPresent(state, reader)) != null) {
             content.add(object);
         }
 
@@ -54,7 +54,7 @@ public class HtmlPage implements HtmlObject {
         return content;
     }
 
-    public void write(@NotNull HtmlParserState state, @NotNull Writer writer) throws IOException {
+    public void write(@NotNull HtmlWritingState state, @NotNull Writer writer) throws IOException {
         boolean first = true;
         for (HtmlObject object : content) {
             if(first) first = false;

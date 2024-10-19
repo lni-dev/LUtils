@@ -14,8 +14,11 @@
  * limitations under the License.
  */
 
-package de.linusdev.lutils.html;
+package de.linusdev.lutils.html.parser;
 
+import de.linusdev.lutils.html.HtmlAttributeType;
+import de.linusdev.lutils.html.HtmlElementType;
+import de.linusdev.lutils.html.HtmlObjectParser;
 import de.linusdev.lutils.html.impl.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
