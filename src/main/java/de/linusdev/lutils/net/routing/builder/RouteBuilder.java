@@ -25,6 +25,8 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.BiConsumer;
+import java.util.function.Function;
 
 @SuppressWarnings("JavadocReference")
 public class RouteBuilder<PARENT> implements RouteBuilderParent {
@@ -52,6 +54,28 @@ public class RouteBuilder<PARENT> implements RouteBuilderParent {
      */
     public RouteBuilder<PARENT> GET(@NotNull RequestHandler handler) {
         handlers.put(Methods.GET, handler);
+        return this;
+    }
+
+    /**
+     * Add a handler for multiple routes. Calls {@link #route(String)} for every element of {@code params}.
+     * The route path is for each element supplied by {@code routePath} and the route should be adjusted by {@code route}.
+     * @param routePath get the route-path for an element of {@code params}.
+     * @param route adjust the route for an element of {@code params}.
+     * @param params parameters for each route. For each param a route will be created.
+     * @param <T> param type.
+     */
+    @SafeVarargs
+    public final <T> RouteBuilder<PARENT> routes(
+            @NotNull Function<T, String> routePath,
+            @NotNull BiConsumer<T, RouteBuilder<?>> route,
+            T... params
+    ) {
+        for (T param : params) {
+            var builder = route(routePath.apply(param));
+            route.accept(param, builder);
+            builder.buildRoute();
+        }
         return this;
     }
 

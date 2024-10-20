@@ -22,6 +22,7 @@ import de.linusdev.lutils.io.ResourceUtils;
 import de.linusdev.lutils.net.http.header.contenttype.ContentType;
 import de.linusdev.lutils.net.http.header.contenttype.ContentTypes;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -83,10 +84,18 @@ public class Bodies {
         /**
          * See {@link ResourceUtils#getURLConnectionOfResource(Class, String)}
          */
-        public @NotNull Body ofResource(@NotNull Class<?> relClazz, @NotNull String path) {
+        public @NotNull Body ofResource(@Nullable Class<?> relClazz, @NotNull String path) {
             return new StreamURLConnectionBody(
                     ResourceUtils.getURLConnectionOfResource(relClazz, path), contentType
             );
+        }
+
+        /**
+         * See {@link #ofResource(Class, String)} with {@code relClazz} being {@code null}.
+         */
+        @SuppressWarnings("unused")
+        public @NotNull Body ofResource(@NotNull String path) {
+            return ofResource(null, path);
         }
 
         /**

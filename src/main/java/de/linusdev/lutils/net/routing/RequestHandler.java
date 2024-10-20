@@ -30,16 +30,28 @@ import java.io.IOException;
 @SuppressWarnings("unused")
 public interface RequestHandler {
 
-    static @NotNull RequestHandler ofHtmlResource(@NotNull Class<?> clazz, @NotNull String name) {
+    static @NotNull RequestHandler ofHtmlResource(@Nullable Class<?> clazz, @NotNull String name) {
         return request -> HTTPResponse.builder().setStatusCode(StatusCodes.OK).setBody(Bodies.html().ofResource(clazz, name));
     }
 
-    static @NotNull RequestHandler ofCssResource(@NotNull Class<?> clazz, @NotNull String name) {
+    static @NotNull RequestHandler ofHtmlResource(@NotNull String name) {
+        return ofHtmlResource(null, name);
+    }
+
+    static @NotNull RequestHandler ofCssResource(@Nullable Class<?> clazz, @NotNull String name) {
         return request -> HTTPResponse.builder().setStatusCode(StatusCodes.OK).setBody(Bodies.css().ofResource(clazz, name));
     }
 
-    static @NotNull RequestHandler ofJsResource(@NotNull Class<?> clazz, @NotNull String name) {
+    static @NotNull RequestHandler ofCssResource(@NotNull String name) {
+        return ofCssResource(null, name);
+    }
+
+    static @NotNull RequestHandler ofJsResource(@Nullable Class<?> clazz, @NotNull String name) {
         return request -> HTTPResponse.builder().setStatusCode(StatusCodes.OK).setBody(Bodies.javascript().ofResource(clazz, name));
+    }
+
+    static @NotNull RequestHandler ofJsResource(@NotNull String name) {
+        return ofJsResource(null, name);
     }
 
     @Nullable HTTPMessageBuilder handle(@NotNull HTTPRequest<UnparsedBody> request);

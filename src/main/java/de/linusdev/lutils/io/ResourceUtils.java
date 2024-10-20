@@ -28,16 +28,23 @@ public class ResourceUtils {
 
     /**
      * Get {@link StreamURLConnection} as described below.
-     * @param relClazz class used to get the resource.
-     * @param path Either absolut (starting with {@code /}) or relative to the package of given {@code relClazz}
+     * @param relClazz class used to get the resource or {@code null} if an absolute path is passed.
+     * @param path Either absolute (starting with {@code /}) or relative to the package of given {@code relClazz}
      *             (not starting {@code /}).
      * @return {@link StreamURLConnection} to resource at given {@code path}.
      * @throws Error if resource with given {@code path} does not exist.
      */
     public static @NotNull StreamURLConnection getURLConnectionOfResource(
-            @NotNull Class<?> relClazz,
+            @Nullable Class<?> relClazz,
             @NotNull String path
     ) {
+        if(relClazz == null) {
+            if(!path.startsWith("/"))
+                throw new IllegalArgumentException("If relClazz is null, an absolute path (starting with '/') must be passed.");
+
+            relClazz = ResourceUtils.class;
+        }
+
         URL resource =  relClazz.getResource(path);
 
         if (resource == null) {
@@ -50,36 +57,39 @@ public class ResourceUtils {
 
     /**
      * Get utf-8 reader of a resource
-     * @param relClazz class used to get the resource.
+     * @param relClazz class used to get the resource or {@code null} if an absolute path is passed.
      * @param path Either absolut (starting with {@code /}) or relative to the package of given {@code relClazz}
      *             (not starting {@code /}).
      * @return read string.
      * @throws Error if resource with given {@code path} does not exist.
      */
     public static @NotNull Reader getUtf8Reader(
-            @NotNull Class<?> relClazz,
+            @Nullable Class<?> relClazz,
             @NotNull String path
     ) throws IOException {
-        URL resource =  relClazz.getResource(path);
-
-        if (resource == null) {
-            throw new Error("Resource '" + path + "' does not exist. Remember paths starting with \"/\" are absolute." +
-                    " Paths not starting with \"/\" are relative to the package of relClazz.");
-        }
-
         return new BufferedReader(new InputStreamReader(getURLConnectionOfResource(relClazz, path).openInputStream(), StandardCharsets.UTF_8));
     }
 
     /**
+     * See {@link #getUtf8Reader(Class, String)} with {@code relClazz} being {@code null}.
+     */
+    @SuppressWarnings("unused")
+    public static @NotNull Reader getUtf8Reader(
+            @NotNull String path
+    ) throws IOException {
+        return getUtf8Reader(null, path);
+    }
+
+    /**
      * Read a resource as string.
-     * @param relClazz class used to get the resource.
+     * @param relClazz class used to get the resource or {@code null} if an absolute path is passed.
      * @param path Either absolut (starting with {@code /}) or relative to the package of given {@code relClazz}
      *             (not starting {@code /}).
      * @return read string.
      * @throws Error if resource with given {@code path} does not exist.
      */
     public static @NotNull String readString(
-            @NotNull Class<?> relClazz,
+            @Nullable Class<?> relClazz,
             @NotNull String path
     ) throws IOException {
         try (
