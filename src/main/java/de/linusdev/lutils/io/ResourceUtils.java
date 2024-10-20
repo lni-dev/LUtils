@@ -19,12 +19,10 @@ package de.linusdev.lutils.io;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.net.URL;
 import java.net.URLConnection;
+import java.nio.charset.StandardCharsets;
 
 public class ResourceUtils {
 
@@ -51,6 +49,28 @@ public class ResourceUtils {
     }
 
     /**
+     * Get utf-8 reader of a resource
+     * @param relClazz class used to get the resource.
+     * @param path Either absolut (starting with {@code /}) or relative to the package of given {@code relClazz}
+     *             (not starting {@code /}).
+     * @return read string.
+     * @throws Error if resource with given {@code path} does not exist.
+     */
+    public static @NotNull Reader getUtf8Reader(
+            @NotNull Class<?> relClazz,
+            @NotNull String path
+    ) throws IOException {
+        URL resource =  relClazz.getResource(path);
+
+        if (resource == null) {
+            throw new Error("Resource '" + path + "' does not exist. Remember paths starting with \"/\" are absolute." +
+                    " Paths not starting with \"/\" are relative to the package of relClazz.");
+        }
+
+        return new BufferedReader(new InputStreamReader(getURLConnectionOfResource(relClazz, path).openInputStream(), StandardCharsets.UTF_8));
+    }
+
+    /**
      * Read a resource as string.
      * @param relClazz class used to get the resource.
      * @param path Either absolut (starting with {@code /}) or relative to the package of given {@code relClazz}
@@ -64,7 +84,7 @@ public class ResourceUtils {
     ) throws IOException {
         try (
                 var in = getURLConnectionOfResource(relClazz, path).openInputStream();
-                var reader = new BufferedReader(new InputStreamReader(in))
+                var reader = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8))
         ) {
             StringBuilder sb = new StringBuilder();
             String line;
