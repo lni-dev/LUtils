@@ -53,6 +53,7 @@ class HtmlElementTest {
                 <!doctype html>
                 <div>
                   <div class="test">
+                    <!-- comment test -->
                     Header <a href='https://www.linusdev.de'>Here</a>
                   </div>
                   <div>
@@ -72,6 +73,46 @@ class HtmlElementTest {
                 <!doctype html>
                 <div>
                   <div class="test">
+                    <!-- comment test -->
+                    Header\s
+                    <a href="https://www.linusdev.de">
+                      Here
+                    </a>
+                  </div>
+                  <div>
+                    <p>Some<br>Text in the body</p>
+                  </div>
+                </div>""", writer.toString());
+    }
+
+    @Test
+    void testClone() throws IOException, ParseException {
+        @Language("html") String html =  """
+                <!doctype html>
+                <div>
+                  <div class="test">
+                    <!-- comment test -->
+                    Header <a href='https://www.linusdev.de'>Here</a>
+                  </div>
+                  <div>
+                    <p>Some<br>Text
+                        in the body
+                    </p>
+                  </div>
+                </div>""";
+
+        HtmlParser parser = new HtmlParser(Registry.getDefault());
+
+        HtmlPage page = parser.parsePage(new StringReader(html));
+        page = page.clone();
+
+        StringWriter writer = new StringWriter();
+        page.write(writer);
+        assertEquals("""
+                <!doctype html>
+                <div>
+                  <div class="test">
+                    <!-- comment test -->
                     Header\s
                     <a href="https://www.linusdev.de">
                       Here

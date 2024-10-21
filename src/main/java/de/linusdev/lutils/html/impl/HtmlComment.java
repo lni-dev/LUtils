@@ -49,6 +49,7 @@ public class HtmlComment implements HtmlObject {
                         comment.append(text);
                         comment.append('>');
                     } else {
+                        comment.append(text, 0, text.length() - 2);
                         break;
                     }
                 }
@@ -66,6 +67,12 @@ public class HtmlComment implements HtmlObject {
     @Override
     public @NotNull HtmlObjectType type() {
         return HtmlObjectType.TEXT;
+    }
+
+    @SuppressWarnings("MethodDoesntCallSuperMethod")
+    @Override
+    public @NotNull HtmlComment clone() {
+        return this; // fine because it is final
     }
 
     @Override

@@ -33,13 +33,13 @@ public class LhtmlInjector implements HtmlParserInjector {
     private static final int DEFAULT_ID = 0;
     private static final int TEMPLATE_ID = 1;
 
-    private final @NotNull HashMap<String, EditableHtmlElement> placeholders = new HashMap<>();
+    private final @NotNull HashMap<String, LhtmlPlaceholder> placeholders = new HashMap<>();
     private final @NotNull HashMap<String, LhtmlTemplate> templates = new HashMap<>();
 
     private boolean inTemplate = false;
-    private HashMap<String, EditableHtmlElement> templatePlaceholders;
+    private HashMap<String, LhtmlPlaceholder> templatePlaceholders;
 
-    public @NotNull HashMap<String, EditableHtmlElement> getPlaceholders() {
+    public @NotNull HashMap<String, LhtmlPlaceholder> getPlaceholders() {
         return placeholders;
     }
 
@@ -67,14 +67,21 @@ public class LhtmlInjector implements HtmlParserInjector {
             return parsed;
         HtmlElement element = parsed.asHtmlElement();
         HtmlAttribute lhtmlPlaceHolderAttr = element.attributes().get(LHTML_ATTR_PLACEHOLDER_NAME);
+
         if(lhtmlPlaceHolderAttr != null) {
+            String id = lhtmlPlaceHolderAttr.value();
+
+            if(id == null)
+                throw new IllegalStateException("Placeholder id missing");
+
             if(!(element instanceof EditableHtmlElement editable))
                 throw new IllegalStateException("Parsed element is not editable!");
 
+            LhtmlPlaceholder placeholder = new LhtmlPlaceholder(id, editable);
             if(inTemplate) {
-                templatePlaceholders.put(lhtmlPlaceHolderAttr.value(), editable);
+                templatePlaceholders.put(lhtmlPlaceHolderAttr.value(), placeholder);
             } else {
-                placeholders.put(lhtmlPlaceHolderAttr.value(), editable);
+                placeholders.put(lhtmlPlaceHolderAttr.value(), placeholder);
             }
 
             return parsed;

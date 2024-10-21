@@ -36,9 +36,9 @@ import static de.linusdev.lutils.html.parser.AttrReaderState.*;
 @SuppressWarnings("ClassCanBeRecord")
 public class StandardHtmlElement implements EditableHtmlElement {
 
-    private final @NotNull Type tag;
-    private final @NotNull List<@NotNull HtmlObject> content;
-    private final @NotNull Map<String, HtmlAttribute> attributes;
+    protected final @NotNull Type tag;
+    protected final @NotNull List<@NotNull HtmlObject> content;
+    protected final @NotNull Map<String, HtmlAttribute> attributes;
 
     protected StandardHtmlElement(
             @NotNull Type tag,
@@ -68,6 +68,18 @@ public class StandardHtmlElement implements EditableHtmlElement {
     @Override
     public @NotNull Map<String,HtmlAttribute> attributes() {
         return attributes;
+    }
+
+    @SuppressWarnings("MethodDoesntCallSuperMethod")
+    @Override
+    public @NotNull StandardHtmlElement clone() {
+        List<@NotNull HtmlObject> content = new ArrayList<>(this.content.size());
+        Map<String, HtmlAttribute> attributes = new HashMap<>(this.attributes.size());
+
+        this.content.forEach(object -> content.add(object.clone()));
+        this.attributes.forEach((key, attr) -> attributes.put(key, attr.clone()));
+        
+        return new StandardHtmlElement(tag, content, attributes);
     }
 
     @Override

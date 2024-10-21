@@ -14,47 +14,59 @@
  * limitations under the License.
  */
 
-package de.linusdev.lutils.html.impl;
+package de.linusdev.lutils.html.lhtml;
 
-import de.linusdev.lutils.html.HtmlObject;
-import de.linusdev.lutils.html.HtmlObjectParser;
-import de.linusdev.lutils.html.HtmlObjectType;
+import de.linusdev.lutils.html.*;
 import de.linusdev.lutils.html.parser.HtmlWritingState;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.io.Writer;
+import java.util.List;
+import java.util.Map;
 
-/**
- * Html doc type with the following syntax: {@code <!doctype name>}.
- */
-public class HtmlDocType implements HtmlObject {
+public class LhtmlPlaceholder implements EditableHtmlElement {
 
-    public final static HtmlObjectParser<HtmlDocType> PARSER = (state, reader) -> {
-        reader.skip("<!doctype ".length());
-        String value = reader.readUntil('>');
-        return new HtmlDocType(value);
-    };
+    private final @NotNull String id;
+    private final @NotNull EditableHtmlElement actual;
 
-    private final @NotNull String value;
+    public LhtmlPlaceholder(@NotNull String id, @NotNull EditableHtmlElement actual) {
+        this.id = id;
+        this.actual = actual;
+    }
 
-    public HtmlDocType(@NotNull String value) {
-        this.value = value;
+    @Override
+    public @NotNull HtmlElementType<?> tag() {
+        return actual.tag();
+    }
+
+    @Override
+    public @NotNull List<@NotNull HtmlObject> content() {
+        return actual.content();
+    }
+
+    @Override
+    public @NotNull Map<String, HtmlAttribute> attributes() {
+        return actual.attributes();
     }
 
     @Override
     public @NotNull HtmlObjectType type() {
-        return HtmlObjectType.DOC_TYPE;
+        return HtmlObjectType.ELEMENT;
     }
 
     @SuppressWarnings("MethodDoesntCallSuperMethod")
     @Override
-    public @NotNull HtmlDocType clone() {
-        return this; // fine since it is a final class
+    public @NotNull LhtmlPlaceholder clone() {
+        return new LhtmlPlaceholder(id, actual.clone());
+    }
+
+    public @NotNull String getId() {
+        return id;
     }
 
     @Override
     public void write(@NotNull HtmlWritingState state, @NotNull Writer writer) throws IOException {
-        writer.append("<!doctype ").append(value).append(">");
+        actual.write(state, writer);
     }
 }

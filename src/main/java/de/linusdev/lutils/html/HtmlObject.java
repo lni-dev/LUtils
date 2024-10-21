@@ -31,4 +31,6 @@ public interface HtmlObject extends HtmlWritable {
     default @NotNull HtmlElement asHtmlElement() {
         return (HtmlElement) this;
     }
+
+    @NotNull HtmlObject clone();
 }

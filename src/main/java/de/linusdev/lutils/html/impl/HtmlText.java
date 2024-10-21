@@ -67,6 +67,12 @@ public class HtmlText implements HtmlObject {
         return HtmlObjectType.TEXT;
     }
 
+    @SuppressWarnings("MethodDoesntCallSuperMethod")
+    @Override
+    public @NotNull HtmlObject clone() {
+        return this; // Fine since it is final
+    }
+
     @Override
     public void write(@NotNull HtmlWritingState state, @NotNull Writer writer) throws IOException {
         //TODO: escape text

@@ -31,4 +31,6 @@ public interface HtmlAttribute {
      */
     @Nullable String value();
 
+    @NotNull HtmlAttribute clone();
+
 }

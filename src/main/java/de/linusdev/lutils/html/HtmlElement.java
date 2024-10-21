@@ -86,4 +86,6 @@ public interface HtmlElement extends HtmlObject {
      */
     @NotNull Map<String, HtmlAttribute> attributes();
 
+    @Override
+    @NotNull HtmlElement clone();
 }

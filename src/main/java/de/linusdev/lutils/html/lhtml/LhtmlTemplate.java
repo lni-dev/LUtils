@@ -22,26 +22,45 @@ import de.linusdev.lutils.html.HtmlObject;
 import de.linusdev.lutils.html.impl.StandardHtmlElement;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 public class LhtmlTemplate extends StandardHtmlElement implements LhtmlElement {
 
-    private final @NotNull Map<String, EditableHtmlElement> placeHolders;
+    protected final @NotNull Map<String, LhtmlPlaceholder> placeholders;
 
     public LhtmlTemplate(
             @NotNull Type tag,
             @NotNull List<@NotNull HtmlObject> content,
             @NotNull Map<String, HtmlAttribute> attributes,
-            @NotNull Map<String, EditableHtmlElement> placeHolders
+            @NotNull Map<String, LhtmlPlaceholder> placeholders
     ) {
         super(tag, content, attributes);
-        this.placeHolders = placeHolders;
+        this.placeholders = placeholders;
+    }
+
+    @SuppressWarnings("MethodDoesntCallSuperMethod")
+    @Override
+    public @NotNull LhtmlTemplate clone() {
+        List<@NotNull HtmlObject> content = new ArrayList<>(this.content.size());
+        Map<String, HtmlAttribute> attributes = new HashMap<>(this.attributes.size());
+        Map<String, LhtmlPlaceholder> placeHolders = new HashMap<>(this.placeholders.size());
+
+        this.content.forEach(object -> {
+            if(object instanceof LhtmlPlaceholder placeholder) {
+                LhtmlPlaceholder clone = placeholder.clone();
+                content.add(clone);
+                placeHolders.put(clone.getId(), clone);
+            } else {
+                content.add(object.clone());
+            }
+        });
+        this.attributes.forEach((key, attr) -> attributes.put(key, attr.clone()));
+
+        return new LhtmlTemplate(tag, content, attributes, placeHolders);
     }
 
     @Override
     public @NotNull EditableHtmlElement getPlaceholder(@NotNull String id) {
-        return Objects.requireNonNull(placeHolders.get(id));
+        return Objects.requireNonNull(placeholders.get(id));
     }
 }
