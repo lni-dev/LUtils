@@ -22,6 +22,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 
 public interface HtmlElement extends HtmlObject {
 
@@ -34,6 +35,23 @@ public interface HtmlElement extends HtmlObject {
      * Content of this html element, including text and comments.
      */
     @NotNull List<@NotNull HtmlObject> content();
+
+    /**
+     * Iterate and consume each {@link HtmlObject} in {@link #content()} and all
+     * if any object is an {@link HtmlObjectType#ELEMENT element} also iterate over its {@link #content()}
+     * and so on.
+     * @param consumer consumer to call for each object
+     */
+    default void iterateContentRecursive(
+            @NotNull Consumer<@NotNull HtmlObject> consumer
+    ) {
+        for (@NotNull HtmlObject object : content()) {
+            consumer.accept(object);
+            if(object.type() == HtmlObjectType.ELEMENT) {
+                object.asHtmlElement().iterateContentRecursive(consumer);
+            }
+        }
+    }
 
     /**
      * Child elements of this html element.
@@ -87,5 +105,5 @@ public interface HtmlElement extends HtmlObject {
     @NotNull Map<String, HtmlAttribute> attributes();
 
     @Override
-    @NotNull HtmlElement clone();
+    @NotNull HtmlElement copy();
 }

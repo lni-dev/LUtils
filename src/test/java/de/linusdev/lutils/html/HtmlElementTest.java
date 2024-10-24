@@ -14,8 +14,8 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
 
-import static de.linusdev.lutils.html.impl.StandardHtmlElementTypes.DIV;
-import static de.linusdev.lutils.html.impl.StandardHtmlElementTypes.PARAGRAPH;
+import static de.linusdev.lutils.html.impl.element.StandardHtmlElementTypes.DIV;
+import static de.linusdev.lutils.html.impl.element.StandardHtmlElementTypes.PARAGRAPH;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class HtmlElementTest {
@@ -104,7 +104,7 @@ class HtmlElementTest {
         HtmlParser parser = new HtmlParser(Registry.getDefault());
 
         HtmlPage page = parser.parsePage(new StringReader(html));
-        page = page.clone();
+        page = page.copy();
 
         StringWriter writer = new StringWriter();
         page.write(writer);

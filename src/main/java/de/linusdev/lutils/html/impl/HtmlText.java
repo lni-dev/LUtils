@@ -67,9 +67,8 @@ public class HtmlText implements HtmlObject {
         return HtmlObjectType.TEXT;
     }
 
-    @SuppressWarnings("MethodDoesntCallSuperMethod")
     @Override
-    public @NotNull HtmlObject clone() {
+    public @NotNull HtmlObject copy() {
         return this; // Fine since it is final
     }
 

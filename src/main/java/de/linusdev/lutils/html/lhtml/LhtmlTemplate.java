@@ -19,10 +19,12 @@ package de.linusdev.lutils.html.lhtml;
 import de.linusdev.lutils.html.EditableHtmlElement;
 import de.linusdev.lutils.html.HtmlAttribute;
 import de.linusdev.lutils.html.HtmlObject;
-import de.linusdev.lutils.html.impl.StandardHtmlElement;
+import de.linusdev.lutils.html.HtmlObjectType;
+import de.linusdev.lutils.html.impl.element.StandardHtmlElement;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
+import java.util.function.Consumer;
 
 public class LhtmlTemplate extends StandardHtmlElement implements LhtmlElement {
 
@@ -38,22 +40,34 @@ public class LhtmlTemplate extends StandardHtmlElement implements LhtmlElement {
         this.placeholders = placeholders;
     }
 
-    @SuppressWarnings("MethodDoesntCallSuperMethod")
+
     @Override
-    public @NotNull LhtmlTemplate clone() {
+    public @NotNull LhtmlTemplate copy() {
         List<@NotNull HtmlObject> content = new ArrayList<>(this.content.size());
         Map<String, HtmlAttribute> attributes = new HashMap<>(this.attributes.size());
         Map<String, LhtmlPlaceholder> placeHolders = new HashMap<>(this.placeholders.size());
 
-        this.content.forEach(object -> {
+
+        Consumer<HtmlObject> consumer = object -> {
+            System.out.println("type: " + object.type());
+            System.out.println(object.writeToString());
             if(object instanceof LhtmlPlaceholder placeholder) {
-                LhtmlPlaceholder clone = placeholder.clone();
-                content.add(clone);
-                placeHolders.put(clone.getId(), clone);
-            } else {
-                content.add(object.clone());
+                System.out.println("is placeholder!");
+                placeHolders.put(placeholder.getId(), placeholder);
             }
-        });
+        };
+
+        for (@NotNull HtmlObject object : this.content) {
+            HtmlObject copy = object.copy();
+            consumer.accept(copy);
+
+            if(copy.type() == HtmlObjectType.ELEMENT) {
+                copy.asHtmlElement().iterateContentRecursive(consumer);
+                content.add(copy);
+            } else {
+                content.add(copy);
+            }
+        }
         this.attributes.forEach((key, attr) -> attributes.put(key, attr.clone()));
 
         return new LhtmlTemplate(tag, content, attributes, placeHolders);
@@ -61,6 +75,6 @@ public class LhtmlTemplate extends StandardHtmlElement implements LhtmlElement {
 
     @Override
     public @NotNull EditableHtmlElement getPlaceholder(@NotNull String id) {
-        return Objects.requireNonNull(placeholders.get(id));
+        return Objects.requireNonNull(placeholders.get(id), "No template found with id '" + id + "'.");
     }
 }

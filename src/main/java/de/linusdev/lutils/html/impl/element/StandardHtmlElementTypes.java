@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package de.linusdev.lutils.html.impl;
+package de.linusdev.lutils.html.impl.element;
 
 import de.linusdev.lutils.html.HtmlElementType;
 import org.jetbrains.annotations.NotNull;
 
-import static de.linusdev.lutils.html.impl.StandardHtmlElement.Type.*;
+import static de.linusdev.lutils.html.impl.element.StandardHtmlElement.Type.*;
 
 public class StandardHtmlElementTypes {
     public final static @NotNull StandardHtmlElement.Type HTML       =      newNormal("html");

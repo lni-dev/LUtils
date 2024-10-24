@@ -14,24 +14,24 @@
  * limitations under the License.
  */
 
-package de.linusdev.lutils.html;
+package de.linusdev.lutils.html.clone;
 
+import de.linusdev.lutils.html.HtmlAttribute;
+import de.linusdev.lutils.html.HtmlObject;
 import org.jetbrains.annotations.NotNull;
 
-public interface HtmlObject extends HtmlWritable {
+public interface CloneListener {
 
-    /**
-     * The type of this html object.
-     */
-    @NotNull HtmlObjectType type();
+    @NotNull CloneListener EMPTY = new CloneListener() {
+        @Override
+        public void onChildCloned(@NotNull HtmlObject clone) {}
 
-    /**
-     * Can be safely called only if {@link #type()} is {@link HtmlObjectType#ELEMENT}.
-     */
-    default @NotNull HtmlElement asHtmlElement() {
-        return (HtmlElement) this;
-    }
+        @Override
+        public void onAttributeCloned(@NotNull HtmlAttribute attribute) {}
+    };
 
-    @NotNull HtmlObject copy();
+    void onChildCloned(@NotNull HtmlObject clone);
+
+    void onAttributeCloned(@NotNull HtmlAttribute attribute);
 
 }

@@ -17,6 +17,7 @@
 package de.linusdev.lutils.html.lhtml;
 
 import de.linusdev.lutils.html.EditableHtmlElement;
+import de.linusdev.lutils.html.HtmlElement;
 import de.linusdev.lutils.html.HtmlObject;
 import de.linusdev.lutils.html.HtmlObjectType;
 import de.linusdev.lutils.html.parser.*;
@@ -44,25 +45,41 @@ public class LhtmlPage implements HtmlObject, LhtmlElement {
             content.add(object);
         }
 
-        return new LhtmlPage(content, injector.getPlaceholders(), injector.getTemplates());
+        LhtmlHead head = injector.getHead();
+        HtmlElement body = injector.getBody();
+
+        if(head == null)
+            throw new IllegalArgumentException("LhtmlPage is missing a head element.");
+
+        if(body == null)
+            throw new IllegalArgumentException("LhtmlPage is missing a body element.");
+
+
+        return new LhtmlPage(content, injector.getPlaceholders(), injector.getTemplates(), head, body);
     }
 
     private final @NotNull List<HtmlObject> content;
     private final @NotNull HashMap<String, LhtmlPlaceholder> placeholders;
     private final @NotNull HashMap<String, LhtmlTemplate> templates;
+    private final @NotNull LhtmlHead head;
+    private final @NotNull HtmlElement body;
 
     public LhtmlPage(
             @NotNull List<HtmlObject> content,
             @NotNull HashMap<String, LhtmlPlaceholder> placeholders,
-            @NotNull HashMap<String, LhtmlTemplate> templates
+            @NotNull HashMap<String, LhtmlTemplate> templates,
+            @NotNull LhtmlHead head,
+            @NotNull HtmlElement body
     ) {
         this.content = content;
         this.placeholders = placeholders;
         this.templates = templates;
+        this.head = head;
+        this.body = body;
     }
 
     public @NotNull EditableHtmlElement getPlaceholder(@NotNull String id) {
-        return Objects.requireNonNull(placeholders.get(id));
+        return Objects.requireNonNull(placeholders.get(id), "No template found with id '" + id + "'.");
     }
 
     public @NotNull LhtmlTemplate getTemplate(@NotNull String id) {
@@ -74,23 +91,17 @@ public class LhtmlPage implements HtmlObject, LhtmlElement {
         return HtmlObjectType.PAGE;
     }
 
-    @SuppressWarnings("MethodDoesntCallSuperMethod")
+    public @NotNull LhtmlHead getHead() {
+        return head;
+    }
+
+    public @NotNull HtmlElement getBody() {
+        return body;
+    }
+
     @Override
-    public @NotNull LhtmlPage clone() {
-        List<@NotNull HtmlObject> content = new ArrayList<>(this.content.size());
-        HashMap<String, LhtmlPlaceholder> placeholders = new HashMap<>(this.placeholders.size());
-
-        this.content.forEach(object -> {
-            if(object instanceof LhtmlPlaceholder placeholder) {
-                LhtmlPlaceholder clone = placeholder.clone();
-                content.add(clone);
-                placeholders.put(clone.getId(), clone);
-            } else {
-                content.add(object.clone());
-            }
-        });
-
-        return new LhtmlPage(content, placeholders, templates);
+    public @NotNull LhtmlPage copy() {
+        throw new UnsupportedOperationException("A page cannot be cloned.");
     }
 
     @Override

@@ -55,10 +55,9 @@ public class LhtmlPlaceholder implements EditableHtmlElement {
         return HtmlObjectType.ELEMENT;
     }
 
-    @SuppressWarnings("MethodDoesntCallSuperMethod")
     @Override
-    public @NotNull LhtmlPlaceholder clone() {
-        return new LhtmlPlaceholder(id, actual.clone());
+    public @NotNull LhtmlPlaceholder copy() {
+        return new LhtmlPlaceholder(id, actual.copy());
     }
 
     public @NotNull String getId() {

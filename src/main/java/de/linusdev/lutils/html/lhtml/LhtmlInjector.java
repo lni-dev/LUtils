@@ -17,7 +17,8 @@
 package de.linusdev.lutils.html.lhtml;
 
 import de.linusdev.lutils.html.*;
-import de.linusdev.lutils.html.impl.StandardHtmlElement;
+import de.linusdev.lutils.html.impl.element.StandardHtmlElement;
+import de.linusdev.lutils.html.impl.element.StandardHtmlElementTypes;
 import de.linusdev.lutils.html.parser.HtmlParserInjector;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -35,17 +36,11 @@ public class LhtmlInjector implements HtmlParserInjector {
 
     private final @NotNull HashMap<String, LhtmlPlaceholder> placeholders = new HashMap<>();
     private final @NotNull HashMap<String, LhtmlTemplate> templates = new HashMap<>();
+    private @Nullable LhtmlHead head = null;
+    private @Nullable HtmlElement body = null;
 
     private boolean inTemplate = false;
     private HashMap<String, LhtmlPlaceholder> templatePlaceholders;
-
-    public @NotNull HashMap<String, LhtmlPlaceholder> getPlaceholders() {
-        return placeholders;
-    }
-
-    public @NotNull HashMap<String, LhtmlTemplate> getTemplates() {
-        return templates;
-    }
 
     @Override
     public int onStartParsingContent(@NotNull HtmlElementType<?> tag, @NotNull Map<String, HtmlAttribute> attributes) {
@@ -66,6 +61,17 @@ public class LhtmlInjector implements HtmlParserInjector {
         if(parsed.type() != HtmlObjectType.ELEMENT)
             return parsed;
         HtmlElement element = parsed.asHtmlElement();
+
+        if(element.tag() == LhtmlHead.TYPE) {
+            head = (LhtmlHead) element;
+            return element;
+        }
+
+        if(HtmlElementType.equals(StandardHtmlElementTypes.BODY, element.tag())) {
+            body = element;
+            return element;
+        }
+
         HtmlAttribute lhtmlPlaceHolderAttr = element.attributes().get(LHTML_ATTR_PLACEHOLDER_NAME);
 
         if(lhtmlPlaceHolderAttr != null) {
@@ -84,7 +90,7 @@ public class LhtmlInjector implements HtmlParserInjector {
                 placeholders.put(lhtmlPlaceHolderAttr.value(), placeholder);
             }
 
-            return parsed;
+            return placeholder;
         }
 
         HtmlAttribute lhtmlTemplateAttr = element.attributes().get(LHTML_ATTR_TEMPLATE_NAME);
@@ -104,5 +110,21 @@ public class LhtmlInjector implements HtmlParserInjector {
     public void onEndParsingContent(int id) {
         if(id == TEMPLATE_ID)
             inTemplate = false;
+    }
+
+    public @NotNull HashMap<String, LhtmlPlaceholder> getPlaceholders() {
+        return placeholders;
+    }
+
+    public @NotNull HashMap<String, LhtmlTemplate> getTemplates() {
+        return templates;
+    }
+
+    public @Nullable LhtmlHead getHead() {
+        return head;
+    }
+
+    public @Nullable HtmlElement getBody() {
+        return body;
     }
 }

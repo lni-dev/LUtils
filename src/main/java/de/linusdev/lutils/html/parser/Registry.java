@@ -19,7 +19,12 @@ package de.linusdev.lutils.html.parser;
 import de.linusdev.lutils.html.HtmlAttributeType;
 import de.linusdev.lutils.html.HtmlElementType;
 import de.linusdev.lutils.html.HtmlObjectParser;
-import de.linusdev.lutils.html.impl.*;
+import de.linusdev.lutils.html.impl.HtmlComment;
+import de.linusdev.lutils.html.impl.HtmlDocType;
+import de.linusdev.lutils.html.impl.HtmlText;
+import de.linusdev.lutils.html.impl.StandardHtmlAttributeTypes;
+import de.linusdev.lutils.html.impl.element.StandardHtmlElement;
+import de.linusdev.lutils.html.impl.element.StandardHtmlElementTypes;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

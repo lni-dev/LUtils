@@ -30,5 +30,7 @@ public interface EditableHtmlElement extends HtmlElement {
     }
 
     @Override
-    @NotNull EditableHtmlElement clone();
+    @NotNull EditableHtmlElement copy();
+
+
 }

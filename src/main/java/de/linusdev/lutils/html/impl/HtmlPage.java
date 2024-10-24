@@ -71,11 +71,10 @@ public class HtmlPage implements HtmlObject {
         return HtmlObjectType.PAGE;
     }
 
-    @SuppressWarnings("MethodDoesntCallSuperMethod")
     @Override
-    public @NotNull HtmlPage clone() {
+    public @NotNull HtmlPage copy() {
         List<HtmlObject> content = new ArrayList<>(this.content.size());
-        this.content.forEach(object -> content.add(object.clone()));
+        this.content.forEach(object -> content.add(object.copy()));
         return new HtmlPage(content);
     }
 }

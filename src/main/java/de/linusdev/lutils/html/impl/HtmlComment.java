@@ -69,9 +69,8 @@ public class HtmlComment implements HtmlObject {
         return HtmlObjectType.TEXT;
     }
 
-    @SuppressWarnings("MethodDoesntCallSuperMethod")
     @Override
-    public @NotNull HtmlComment clone() {
+    public @NotNull HtmlComment copy() {
         return this; // fine because it is final
     }
 

@@ -14,10 +14,12 @@
  * limitations under the License.
  */
 
-package de.linusdev.lutils.html.impl;
+package de.linusdev.lutils.html.impl.element;
 
 import de.linusdev.lutils.html.*;
 import de.linusdev.lutils.html.builder.HtmlElementBuilder;
+import de.linusdev.lutils.html.impl.HtmlText;
+import de.linusdev.lutils.html.impl.StandardHtmlAttribute;
 import de.linusdev.lutils.html.parser.*;
 import de.linusdev.lutils.result.BiResult;
 import org.jetbrains.annotations.NotNull;
@@ -30,6 +32,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 import static de.linusdev.lutils.html.parser.AttrReaderState.*;
 
@@ -70,13 +73,12 @@ public class StandardHtmlElement implements EditableHtmlElement {
         return attributes;
     }
 
-    @SuppressWarnings("MethodDoesntCallSuperMethod")
     @Override
-    public @NotNull StandardHtmlElement clone() {
+    public @NotNull StandardHtmlElement copy() {
         List<@NotNull HtmlObject> content = new ArrayList<>(this.content.size());
         Map<String, HtmlAttribute> attributes = new HashMap<>(this.attributes.size());
 
-        this.content.forEach(object -> content.add(object.clone()));
+        this.content.forEach(object -> content.add(object.copy()));
         this.attributes.forEach((key, attr) -> attributes.put(key, attr.clone()));
         
         return new StandardHtmlElement(tag, content, attributes);
@@ -160,6 +162,36 @@ public class StandardHtmlElement implements EditableHtmlElement {
             return new Type(name, true, false);
         }
 
+        /**
+         * Same as {@link #newNormal(String)}, but with a custom builder supplied by {@code builder}.
+         */
+        public static <B extends StandardHtmlElement.Builder> @NotNull CustomType<B> newCustom(
+                Function<@NotNull CustomType<B>, @NotNull B> builder,
+                @NotNull String name
+        ) {
+            return new CustomType<>(builder, name, false, false);
+        }
+
+        /**
+         * Same as {@link #newInline(String)}, but with a custom builder supplied by {@code builder}.
+         */
+        public static <B extends StandardHtmlElement.Builder> @NotNull CustomType<B> newCustomInline(
+                Function<@NotNull CustomType<B>, @NotNull B> builder,
+                @NotNull String name
+        ) {
+            return new CustomType<>(builder, name, true, false);
+        }
+
+        /**
+         * Same as {@link #newVoid(String)}, but with a custom builder supplied by {@code builder}.
+         */
+        public static <B extends StandardHtmlElement.Builder> @NotNull CustomType<B> newCustomVoid(
+                Function<@NotNull CustomType<B>, @NotNull B> builder,
+                @NotNull String name
+        ) {
+            return new CustomType<>(builder, name, false, true);
+        }
+
         private final @NotNull String name;
         private final boolean inline;
         private final boolean voidElement;
@@ -193,13 +225,33 @@ public class StandardHtmlElement implements EditableHtmlElement {
         public boolean isVoidElement() {
             return voidElement;
         }
+
+        @Override
+        public String toString() {
+            return HtmlElementType.toString(this);
+        }
+    }
+
+    public static class CustomType<B extends StandardHtmlElement.Builder> extends Type {
+
+        protected final @NotNull Function<@NotNull CustomType<B>, @NotNull B> builder;
+
+        public CustomType(@NotNull Function<@NotNull CustomType<B>, @NotNull B> builder, @NotNull String name, boolean inline, boolean voidElement) {
+            super(name, inline, voidElement);
+            this.builder = builder;
+        }
+
+        @Override
+        public @NotNull B builder() {
+            return builder.apply(this);
+        }
     }
 
     public static class Builder implements HtmlElementBuilder {
 
-        private final @NotNull Type tag;
-        private final @NotNull List<@NotNull HtmlObject> content;
-        private final @NotNull Map<String, HtmlAttribute> attributes;
+        protected final @NotNull Type tag;
+        protected final @NotNull List<@NotNull HtmlObject> content;
+        protected final @NotNull Map<String, HtmlAttribute> attributes;
 
         public Builder(@NotNull Type tag) {
             this.tag = tag;
@@ -207,22 +259,42 @@ public class StandardHtmlElement implements EditableHtmlElement {
             this.attributes = new HashMap<>();
         }
 
+        public void addContent(@NotNull HtmlObject object) {
+            object = onContentAdd(object);
+            if(object != null)
+                content.add(object);
+        }
+
         public <B extends HtmlElementBuilder> void addElement(@NotNull HtmlElementType<B> type, Consumer<B> adjuster) {
             B builder = type.builder();
             adjuster.accept(builder);
-            content.add(builder.build());
+            addContent(builder.build());
         }
 
         public void addAttribute(@NotNull HtmlAttributeType type, @Nullable String value) {
-            attributes.put(type.name(), new StandardHtmlAttribute(type, value));
+            HtmlAttribute attribute = onAttributeAdd(new StandardHtmlAttribute(type, value));
+            if(attribute != null)
+                attributes.put(attribute.type().name(), attribute);
         }
 
         public void addText(@NotNull String text) {
-            content.add(new HtmlText(text));
+            addContent(new HtmlText(text));
+        }
+
+        public @NotNull Map<String, HtmlAttribute> getCurrentAttributes() {
+            return attributes;
+        }
+
+        protected @Nullable HtmlObject onContentAdd(@NotNull HtmlObject object) {
+            return object;
+        }
+
+        protected @Nullable HtmlAttribute onAttributeAdd(@NotNull HtmlAttribute attribute) {
+            return attribute;
         }
 
         @Override
-        public @NotNull HtmlElement build() {
+        public @NotNull StandardHtmlElement build() {
             return new StandardHtmlElement(tag, content, attributes);
         }
     }
@@ -237,6 +309,8 @@ public class StandardHtmlElement implements EditableHtmlElement {
 
         @Override
         public @NotNull StandardHtmlElement parse(@NotNull HtmlParserState state, @NotNull HtmlReader reader) throws IOException, ParseException {
+            Builder builder = type.builder();
+
             char c = reader.read();
             if(c != '<')
                 throw new ParseException(c);
@@ -249,13 +323,13 @@ public class StandardHtmlElement implements EditableHtmlElement {
                     throw new ParseException("Illegal tag name '" + tag + "'.");
 
                 // is immediately closed
-                return new StandardHtmlElement(type, new ArrayList<>(), new HashMap<>());
+                return builder.build();
             }
 
             if(!tag.equals(type.name()))
                 throw new ParseException("Illegal tag name '" + tag + "'.");
 
-            Map<String, HtmlAttribute> attributes = new HashMap<>();
+
 
             if(res.result2() == ' ') {
                 // Read attributes
@@ -267,28 +341,27 @@ public class StandardHtmlElement implements EditableHtmlElement {
                     if(attrReader.state == TAG_SELF_CLOSE) {
                         if(name != null) {
                             HtmlAttributeType attrType = state.getRegistry().getAttributeTypeByName(name);
-                            attributes.put(name, new StandardHtmlAttribute(attrType, null));
+                            builder.addAttribute(attrType, null);
                         }
 
-                        return new StandardHtmlElement(type, new ArrayList<>(), attributes);
+                        return builder.build();
                     } else if(attrReader.state == ATTR_VALUE) {
                         String value = attrReader.readAttributeValue();
                         HtmlAttributeType attrType = state.getRegistry().getAttributeTypeByName(name);
-                        attributes.put(name, new StandardHtmlAttribute(attrType, value));
+                        builder.addAttribute(attrType, value);
                     } else if(name != null) {
                         HtmlAttributeType attrType = state.getRegistry().getAttributeTypeByName(name);
-                        attributes.put(name, new StandardHtmlAttribute(attrType, null));
+                        builder.addAttribute(attrType, null);
                     }
                 }
             }
 
             if(type.isVoidElement()) {
-                return new StandardHtmlElement(type, new ArrayList<>(), attributes);
+                return builder.build();
             }
 
             // read content
-            ArrayList<HtmlObject> content = new ArrayList<>();
-            int id = state.onStartParsingContent(type, attributes);
+            int id = state.onStartParsingContent(type, builder.getCurrentAttributes());
 
             for(;;) {
                 c = reader.skipNewLinesAndSpaces();
@@ -302,11 +375,11 @@ public class StandardHtmlElement implements EditableHtmlElement {
                     reader.pushBack(c);
                     reader.pushBack('<');
                     HtmlObject child = state.onObjectParsed(state.getParser().parse(state, reader));
-                    if(child != null) content.add(child);
+                    if(child != null) builder.addContent(child);
                 } else {
                     reader.pushBack(c);
                     HtmlObject child = state.onObjectParsed(state.getParser().parse(state, reader));
-                    if(child != null) content.add(child);
+                    if(child != null) builder.addContent(child);
                 }
             }
 
@@ -316,7 +389,8 @@ public class StandardHtmlElement implements EditableHtmlElement {
             if(!tag.equals(type.name()))
                 throw new ParseException("Illegal end tag name '" + tag + "', should be '" + type.name() + "'.");
 
-            return new StandardHtmlElement(type, content, attributes);
+            return builder.build();
         }
     }
+
 }

@@ -47,9 +47,8 @@ public class HtmlDocType implements HtmlObject {
         return HtmlObjectType.DOC_TYPE;
     }
 
-    @SuppressWarnings("MethodDoesntCallSuperMethod")
     @Override
-    public @NotNull HtmlDocType clone() {
+    public @NotNull HtmlDocType copy() {
         return this; // fine since it is a final class
     }
 

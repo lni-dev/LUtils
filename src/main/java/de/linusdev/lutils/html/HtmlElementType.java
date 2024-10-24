@@ -18,12 +18,23 @@ package de.linusdev.lutils.html;
 
 import de.linusdev.lutils.html.builder.HtmlElementBuilder;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * A html element type/tag.
  * @param <B> the {@link HtmlElementBuilder} class.
  */
 public interface HtmlElementType<B extends HtmlElementBuilder> {
+
+    static boolean equals(@NotNull HtmlElementType<?> that, @Nullable HtmlElementType<?> other) {
+        if(that == other) return true;
+        if(other == null) return false;
+        return that.name().equals(other.name());
+    }
+
+    static @NotNull String toString(@NotNull HtmlElementType<?> tag) {
+        return tag.name() + "/" + tag.getClass().getSimpleName();
+    }
 
     /**
      * tag name
@@ -39,4 +50,5 @@ public interface HtmlElementType<B extends HtmlElementBuilder> {
      * A parser for an element of this type.
      */
     @NotNull HtmlObjectParser<? extends HtmlElement> parser();
+
 }

@@ -20,8 +20,8 @@ import de.linusdev.lutils.html.HtmlElement;
 import de.linusdev.lutils.html.HtmlElementType;
 import de.linusdev.lutils.html.impl.HtmlDocType;
 import de.linusdev.lutils.html.impl.HtmlPage;
-import de.linusdev.lutils.html.impl.StandardHtmlElement;
-import de.linusdev.lutils.html.impl.StandardHtmlElementTypes;
+import de.linusdev.lutils.html.impl.element.StandardHtmlElement;
+import de.linusdev.lutils.html.impl.element.StandardHtmlElementTypes;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
