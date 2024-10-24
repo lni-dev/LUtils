@@ -3,7 +3,6 @@ package de.linusdev.lutils.html.lhtml;
 import de.linusdev.lutils.html.EditableHtmlElement;
 import de.linusdev.lutils.html.parser.HtmlParser;
 import de.linusdev.lutils.html.parser.ParseException;
-import de.linusdev.lutils.html.parser.Registry;
 import de.linusdev.lutils.io.ResourceUtils;
 import org.junit.jupiter.api.Test;
 
@@ -18,7 +17,7 @@ class LhtmlPageTest {
     void test() throws IOException, ParseException {
         String html = ResourceUtils.readString(LhtmlPageTest.class, "page.html");
 
-        LhtmlPage page = LhtmlPage.parse(new HtmlParser(Registry.getDefault()), new StringReader(html));
+        LhtmlPage page = LhtmlPage.parse(new HtmlParser(Lhtml.getRegistry()), new StringReader(html));
         EditableHtmlElement header = page.getPlaceholder("header");
         LhtmlTemplate item = page.getTemplate("item");
         EditableHtmlElement name = item.getPlaceholder("name");
