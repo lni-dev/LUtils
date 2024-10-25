@@ -17,26 +17,64 @@
 package de.linusdev.lutils.html.lhtml;
 
 import de.linusdev.lutils.html.*;
+import de.linusdev.lutils.html.impl.StandardHtmlAttribute;
 import de.linusdev.lutils.html.impl.element.StandardHtmlElementTypes;
 import de.linusdev.lutils.html.parser.HtmlParserInjector;
+import de.linusdev.lutils.other.str.ConstructableString;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
 import java.util.Stack;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class LhtmlInjector implements HtmlParserInjector {
 
+    protected static @Nullable ConstructableString getConstructableStringOfValue(@Nullable String value) {
+        if(value == null || value.isEmpty())
+            return null;
+
+        Pattern pattern = Pattern.compile("\\$\\{(?<key>[a-zA-Z0-9-_]+)}");
+        Matcher matcher = pattern.matcher(value);
+
+        if(!matcher.find())
+            return null;
+
+        ConstructableString.Builder builder = new ConstructableString.Builder();
+        int start = 0;
+        do {
+            String constant = value.substring(start, matcher.start());
+            if(!constant.isEmpty())
+                builder.addConstant(constant);
+            builder.addPlaceholder(matcher.group("key"));
+
+            start = matcher.end();
+
+        } while (matcher.find());
+
+        if (start != value.length())
+            builder.addConstant(value.substring(start));
+
+        return builder.build();
+    }
+
     public static final @NotNull String LHTML_ATTR_TEMPLATE_NAME = "lhtml-template";
     public static final @NotNull String LHTML_ATTR_PLACEHOLDER_NAME = "lhtml-placeholder";
-
-    private @Nullable LhtmlHead head = null;
-    private @Nullable HtmlElement body = null;
 
     private final Stack<Builder> builders = new Stack<>();
 
     public LhtmlInjector() {
         builders.add(new Builder());
+    }
+
+    @Override
+    public @Nullable HtmlAttribute onAttributeParsed(@NotNull HtmlAttributeType type, @Nullable String value) {
+        ConstructableString str = getConstructableStringOfValue(value);
+        if(str == null)
+            return new StandardHtmlAttribute(type, value);
+
+        return new LhtmlPlaceholderAttribute(type, str);
     }
 
     @Override
@@ -56,13 +94,12 @@ public class LhtmlInjector implements HtmlParserInjector {
         HtmlElement element = parsed.asHtmlElement();
 
         if(element.tag() == LhtmlHead.TYPE) {
-            head = (LhtmlHead) element;
+            builders.peek().setHead((LhtmlHead) element);
             return element;
         }
 
         if(HtmlElementType.equals(StandardHtmlElementTypes.BODY, element.tag())) {
-            body = element;
-            return element;
+            builders.peek().setBody(element);
         }
 
         HtmlAttribute lhtmlPlaceHolderAttr = element.attributes().get(LHTML_ATTR_PLACEHOLDER_NAME);
@@ -105,13 +142,5 @@ public class LhtmlInjector implements HtmlParserInjector {
 
     public Builder getBuilder() {
         return builders.pop();
-    }
-
-    public @Nullable LhtmlHead getHead() {
-        return head;
-    }
-
-    public @Nullable HtmlElement getBody() {
-        return body;
     }
 }

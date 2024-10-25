@@ -26,9 +26,8 @@ public record StandardHtmlAttribute(
         @Nullable String value
 ) implements HtmlAttribute {
 
-    @SuppressWarnings("MethodDoesntCallSuperMethod")
     @Override
-    public @NotNull HtmlAttribute clone() {
+    public @NotNull HtmlAttribute copy() {
         return this; // fine because it is final
     }
 }

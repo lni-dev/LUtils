@@ -79,7 +79,7 @@ public class StandardHtmlElement implements EditableHtmlElement {
         Map<String, HtmlAttribute> attributes = new HashMap<>(this.attributes.size());
 
         this.content.forEach(object -> content.add(object.copy()));
-        this.attributes.forEach((key, attr) -> attributes.put(key, attr.clone()));
+        this.attributes.forEach((key, attr) -> attributes.put(key, attr.copy()));
         
         return new StandardHtmlElement(tag, content, attributes);
     }
@@ -89,11 +89,8 @@ public class StandardHtmlElement implements EditableHtmlElement {
         writer.append("<").append(tag.name());
 
         for (HtmlAttribute attr : attributes.values()) {
-            writer.append(" ").append(attr.type().name());
-
-            if(attr.value() != null) {
-                writer.append("=\"").append(attr.value()).append("\"");
-            }
+            writer.append(" ");
+            attr.write(state, writer);
         }
 
         if(tag.isVoidElement()) {
@@ -277,6 +274,12 @@ public class StandardHtmlElement implements EditableHtmlElement {
                 attributes.put(attribute.type().name(), attribute);
         }
 
+        public void addAttribute(@NotNull HtmlAttribute attribute) {
+            attribute = onAttributeAdd(attribute);
+            if(attribute != null)
+                attributes.put(attribute.type().name(), attribute);
+        }
+
         public void addText(@NotNull String text) {
             addContent(new HtmlText(text));
         }
@@ -341,17 +344,23 @@ public class StandardHtmlElement implements EditableHtmlElement {
                     if(attrReader.state == TAG_SELF_CLOSE) {
                         if(name != null) {
                             HtmlAttributeType attrType = state.getRegistry().getAttributeTypeByName(name);
-                            builder.addAttribute(attrType, null);
+                            HtmlAttribute attribute = state.onAttributeParsed(attrType, null);
+                            if(attribute != null)
+                                builder.addAttribute(attrType, null);
                         }
 
                         return builder.build();
                     } else if(attrReader.state == ATTR_VALUE) {
                         String value = attrReader.readAttributeValue();
                         HtmlAttributeType attrType = state.getRegistry().getAttributeTypeByName(name);
-                        builder.addAttribute(attrType, value);
+                        HtmlAttribute attribute = state.onAttributeParsed(attrType, value);
+                        if(attribute != null)
+                            builder.addAttribute(attribute);
                     } else if(name != null) {
                         HtmlAttributeType attrType = state.getRegistry().getAttributeTypeByName(name);
-                        builder.addAttribute(attrType, null);
+                        HtmlAttribute attribute = state.onAttributeParsed(attrType, null);
+                        if(attribute != null)
+                            builder.addAttribute(attribute);
                     }
                 }
             }

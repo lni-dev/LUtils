@@ -16,67 +16,57 @@
 
 package de.linusdev.lutils.html.lhtml;
 
-import de.linusdev.lutils.html.HtmlAddable;
-import de.linusdev.lutils.html.HtmlElement;
-import de.linusdev.lutils.html.HtmlObject;
-import de.linusdev.lutils.html.HtmlObjectType;
+import de.linusdev.lutils.html.*;
+import de.linusdev.lutils.html.impl.HtmlPage;
+import de.linusdev.lutils.html.impl.element.StandardHtmlElementTypes;
 import de.linusdev.lutils.html.parser.*;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.io.Reader;
 import java.io.Writer;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Consumer;
 
-public class LhtmlPage implements HtmlObject, LhtmlElement {
+public class LhtmlPage implements HtmlObject, HasHtmlContent, LhtmlElement {
 
     public static @NotNull LhtmlPage parse(@NotNull HtmlParser parser, @NotNull Reader reader) throws IOException, ParseException {
         LhtmlInjector injector = new LhtmlInjector();
         HtmlParserState state = new HtmlParserState(injector, parser);
         HtmlReader htmlReader = new HtmlReader(reader);
 
-        HtmlObject object;
-        List<HtmlObject> content = new ArrayList<>();
+        HtmlPage page = HtmlPage.PARSER.parse(state, htmlReader);
 
-        while ((object = state.getParser().parseIfPresent(state, htmlReader)) != null) {
-            content.add(object);
-        }
-
-        LhtmlHead head = injector.getHead();
-        HtmlElement body = injector.getBody();
-
-        if(head == null)
-            throw new IllegalArgumentException("LhtmlPage is missing a head element.");
-
-        if(body == null)
-            throw new IllegalArgumentException("LhtmlPage is missing a body element.");
-
-
-        return injector.getBuilder().buildPage(content, head, body);
+        return injector.getBuilder().buildPage(page);
     }
 
-    private final @NotNull List<HtmlObject> content;
-    private final @NotNull HashMap<String, LhtmlPlaceholder> placeholders;
-    private final @NotNull HashMap<String, LhtmlTemplateElement> templates;
-    private final @NotNull LhtmlHead head;
-    private final @NotNull HtmlElement body;
+    protected final @NotNull HtmlPage actual;
+    protected final @NotNull Map<String, LhtmlPlaceholder> placeholders;
+    protected final @NotNull Map<String, LhtmlTemplateElement> templates;
+    protected final @NotNull Map<String, String> replaceValues;
+    protected final @NotNull LhtmlHead head;
+    protected final @NotNull HtmlElement body;
 
     public LhtmlPage(
-            @NotNull List<HtmlObject> content,
-            @NotNull HashMap<String, LhtmlPlaceholder> placeholders,
-            @NotNull HashMap<String, LhtmlTemplateElement> templates,
+            @NotNull HtmlPage actual,
+            @NotNull Map<String, LhtmlPlaceholder> placeholders,
+            @NotNull Map<String, LhtmlTemplateElement> templates,
+            @NotNull Map<String, String> replaceValues,
             @NotNull LhtmlHead head,
             @NotNull HtmlElement body
     ) {
-        this.content = content;
+        this.actual = actual;
         this.placeholders = placeholders;
         this.templates = templates;
+        this.replaceValues = replaceValues;
         this.head = head;
         this.body = body;
     }
+
 
     public @NotNull HtmlAddable getPlaceholder(@NotNull String id) {
         return Objects.requireNonNull(placeholders.get(id), "No template found with id '" + id + "'.");
@@ -101,18 +91,47 @@ public class LhtmlPage implements HtmlObject, LhtmlElement {
 
     @Override
     public @NotNull LhtmlPage copy() {
-        throw new UnsupportedOperationException("A page cannot be cloned.");
+        HtmlPage copy = actual.copy();
+        Map<String, LhtmlPlaceholder> placeholders = new HashMap<>(this.placeholders.size());
+        Map<String, String> replaceValues = new HashMap<>();
+        AtomicReference<LhtmlHead> head = new AtomicReference<>();
+        AtomicReference<HtmlElement> body = new AtomicReference<>();
+
+        Consumer<HtmlObject> consumer = object -> {
+            if(object.type() == HtmlObjectType.ELEMENT) {
+                HtmlElement element = object.asHtmlElement();
+
+                element.iterateAttributes(attribute -> {
+                    if(attribute instanceof LhtmlPlaceholderAttribute placeholderAttr) {
+                        placeholderAttr.setValues(replaceValues);
+                    }
+                });
+
+                if(element instanceof LhtmlPlaceholderElement placeholderEle) {
+                    LhtmlPlaceholder holder = placeholders.computeIfAbsent(placeholderEle.getId(), s -> new LhtmlPlaceholder());
+                    holder.addPlaceholderElement(placeholderEle);
+                }
+
+                if(HtmlElementType.equals(StandardHtmlElementTypes.BODY, element.tag())) {
+                    body.set(element);
+                } else if(element instanceof LhtmlHead lhtmlHead) {
+                    head.set(lhtmlHead);
+                }
+            }
+        };
+
+        copy.iterateContentRecursive(consumer);
+
+        return new LhtmlPage(copy, placeholders, templates, replaceValues, head.get(), body.get());
     }
 
     @Override
     public void write(@NotNull HtmlWritingState state, @NotNull Writer writer) throws IOException {
-        boolean first = true;
-        for (HtmlObject object : content) {
-            if(first) first = false;
-            else writer.append("\n");
+        actual.write(state, writer);
+    }
 
-            writer.write(state.getIndent());
-            object.write(state, writer);
-        }
+    @Override
+    public @NotNull List<@NotNull HtmlObject> content() {
+        return actual.content();
     }
 }

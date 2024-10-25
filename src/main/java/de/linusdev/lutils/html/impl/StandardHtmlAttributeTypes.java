@@ -16,13 +16,58 @@
 
 package de.linusdev.lutils.html.impl;
 
+import de.linusdev.lutils.html.HtmlAttribute;
 import de.linusdev.lutils.html.HtmlAttributeType;
 import org.jetbrains.annotations.NotNull;
 
 public class StandardHtmlAttributeTypes {
-    public static final @NotNull HtmlAttributeType CLASS = () -> "class";
+    public static final @NotNull Type<String[]> CLASS = new ListType("class");
+    public static final @NotNull Type<String> ID = new StringType("id");
 
     public static final @NotNull HtmlAttributeType @NotNull [] VALUES = new HtmlAttributeType[] {
             CLASS,
+            ID
     };
+
+    public static abstract class Type<V> implements HtmlAttributeType {
+
+        private final @NotNull String name;
+
+        public Type(@NotNull String name) {
+            this.name = name;
+        }
+
+        @Override
+        public @NotNull String name() {
+            return name;
+        }
+
+        public abstract @NotNull V convertValue(@NotNull HtmlAttribute attribute);
+    }
+
+    public static class StringType extends Type<String> {
+
+        public StringType(@NotNull String name) {
+            super(name);
+        }
+
+        @Override
+        public @NotNull String convertValue(@NotNull HtmlAttribute attribute) {
+            String val = attribute.value();
+            return val == null ? "" : val;
+        }
+    }
+
+    public static class ListType extends Type<String[]> {
+
+        public ListType(@NotNull String name) {
+            super(name);
+        }
+
+        @Override
+        public String @NotNull [] convertValue(@NotNull HtmlAttribute attribute) {
+            String val = attribute.value();
+            return val == null ? new String[0] : val.split(" ");
+        }
+    }
 }

@@ -19,6 +19,7 @@ package de.linusdev.lutils.html.impl;
 import de.linusdev.lutils.html.HtmlObject;
 import de.linusdev.lutils.html.HtmlObjectParser;
 import de.linusdev.lutils.html.HtmlObjectType;
+import de.linusdev.lutils.html.HtmlUtils;
 import de.linusdev.lutils.html.parser.HtmlWritingState;
 import de.linusdev.lutils.result.BiResult;
 import org.jetbrains.annotations.NotNull;
@@ -74,8 +75,8 @@ public class HtmlText implements HtmlObject {
 
     @Override
     public void write(@NotNull HtmlWritingState state, @NotNull Writer writer) throws IOException {
-        //TODO: escape text
-        String processed = text.replaceAll("\n", "\n" + state.getIndent());
+        String processed = HtmlUtils.escape(text, false);
+        processed = processed.replaceAll("\n", "\n" + state.getIndent());
         writer.write(processed);
     }
 }

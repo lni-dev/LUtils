@@ -16,10 +16,8 @@
 
 package de.linusdev.lutils.html.parser;
 
-import de.linusdev.lutils.html.HtmlAttribute;
-import de.linusdev.lutils.html.HtmlElementType;
-import de.linusdev.lutils.html.HtmlObject;
-import de.linusdev.lutils.html.HtmlObjectParser;
+import de.linusdev.lutils.html.*;
+import de.linusdev.lutils.html.impl.StandardHtmlAttribute;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -47,6 +45,12 @@ public class HtmlParserState implements HtmlParserInjector {
 
     public @NotNull Registry getRegistry() {
         return parser.getRegistry();
+    }
+
+    @Override
+    public @Nullable HtmlAttribute onAttributeParsed(@NotNull HtmlAttributeType type, @Nullable String value) {
+        if(injector == null) return new StandardHtmlAttribute(type, value);
+        return injector.onAttributeParsed(type, value);
     }
 
     @Override

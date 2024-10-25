@@ -18,16 +18,18 @@ package de.linusdev.lutils.html.lhtml;
 
 import de.linusdev.lutils.html.EditableHtmlElement;
 import de.linusdev.lutils.html.HtmlElement;
-import de.linusdev.lutils.html.HtmlObject;
+import de.linusdev.lutils.html.impl.HtmlPage;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
-import java.util.List;
 
 public class Builder {
 
     private final @NotNull HashMap<String, LhtmlPlaceholder> placeholders = new HashMap<>();
     private final @NotNull HashMap<String, LhtmlTemplateElement> templates = new HashMap<>();
+    private @Nullable LhtmlHead head = null;
+    private @Nullable HtmlElement body = null;
 
     public void addPlaceholder(@NotNull LhtmlPlaceholderElement element) {
         LhtmlPlaceholder holder = placeholders.computeIfAbsent(element.getId(), s -> new LhtmlPlaceholder());
@@ -40,12 +42,26 @@ public class Builder {
         }
     }
 
-    public @NotNull LhtmlTemplateElement buildTemplate(@NotNull String id, @NotNull EditableHtmlElement element) {
-        return new LhtmlTemplateElement(id, element , placeholders, templates);
+    public void setHead(@NotNull LhtmlHead head) {
+        this.head = head;
     }
 
-    public @NotNull LhtmlPage buildPage(@NotNull List<HtmlObject> content, @NotNull LhtmlHead head, @NotNull HtmlElement body) {
-        return new LhtmlPage(content, placeholders, templates, head, body);
+    public void setBody(@NotNull HtmlElement body) {
+        this.body = body;
+    }
+
+    public @NotNull LhtmlTemplateElement buildTemplate(@NotNull String id, @NotNull EditableHtmlElement element) {
+        return new LhtmlTemplateElement(id, element , placeholders, templates, null);
+    }
+
+    public @NotNull LhtmlPage buildPage(@NotNull HtmlPage actual) {
+        if(head == null)
+            throw new IllegalArgumentException("LhtmlPage is missing a head element.");
+
+        if(body == null)
+            throw new IllegalArgumentException("LhtmlPage is missing a body element.");
+
+        return new LhtmlPage(actual, placeholders, templates, null, head, body);
     }
 
 }

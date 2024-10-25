@@ -16,10 +16,7 @@
 
 package de.linusdev.lutils.html.parser;
 
-import de.linusdev.lutils.html.HtmlAttribute;
-import de.linusdev.lutils.html.HtmlElementType;
-import de.linusdev.lutils.html.HtmlObject;
-import de.linusdev.lutils.html.HtmlObjectParser;
+import de.linusdev.lutils.html.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -29,6 +26,8 @@ import java.util.Map;
  * Injector called by {@link HtmlObjectParser}, when parsing html elements.
  */
 public interface HtmlParserInjector {
+
+    @Nullable HtmlAttribute onAttributeParsed(@NotNull HtmlAttributeType type, @Nullable String value);
 
     /**
      * Called when content of a parent element is parsed.

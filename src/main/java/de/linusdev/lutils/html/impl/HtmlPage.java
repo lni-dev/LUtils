@@ -16,6 +16,7 @@
 
 package de.linusdev.lutils.html.impl;
 
+import de.linusdev.lutils.html.HasHtmlContent;
 import de.linusdev.lutils.html.HtmlObject;
 import de.linusdev.lutils.html.HtmlObjectParser;
 import de.linusdev.lutils.html.HtmlObjectType;
@@ -31,7 +32,7 @@ import java.util.List;
  * @see HtmlObjectType#PAGE
  */
 @SuppressWarnings("ClassCanBeRecord")
-public class HtmlPage implements HtmlObject {
+public class HtmlPage implements HtmlObject, HasHtmlContent {
 
     public static final @NotNull HtmlObjectParser<HtmlPage> PARSER = (state, reader) -> {
         HtmlObject object;

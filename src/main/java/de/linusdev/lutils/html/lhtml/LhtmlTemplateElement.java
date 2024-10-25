@@ -32,19 +32,23 @@ public class LhtmlTemplateElement implements EditableHtmlElement, LhtmlElement {
 
     protected final @NotNull String id;
     protected final @NotNull Map<String, LhtmlPlaceholder> placeholders;
-    private final @NotNull HashMap<String, LhtmlTemplateElement> templates;
+    protected final @NotNull HashMap<String, LhtmlTemplateElement> templates;
+    protected final @NotNull Map<String, String> replaceValues;
+
     protected final @NotNull EditableHtmlElement actual;
 
     public LhtmlTemplateElement(
             @NotNull String id,
             @NotNull EditableHtmlElement actual,
             @NotNull Map<String, LhtmlPlaceholder> placeholders,
-            @NotNull HashMap<String, LhtmlTemplateElement> templates
+            @NotNull HashMap<String, LhtmlTemplateElement> templates,
+            @NotNull Map<String, String> replaceValues
     ) {
         this.id = id;
         this.placeholders = placeholders;
         this.actual = actual;
         this.templates = templates;
+        this.replaceValues = replaceValues;
     }
 
 
@@ -72,17 +76,26 @@ public class LhtmlTemplateElement implements EditableHtmlElement, LhtmlElement {
     public @NotNull LhtmlTemplateElement copy() {
         EditableHtmlElement copy = actual.copy();
         Map<String, LhtmlPlaceholder> placeholders = new HashMap<>(this.placeholders.size());
+        Map<String, String> replaceValues = new HashMap<>();
 
         Consumer<HtmlObject> consumer = object -> {
-            if(object instanceof LhtmlPlaceholderElement placeholderEle) {
-                LhtmlPlaceholder holder = placeholders.computeIfAbsent(placeholderEle.getId(), s -> new LhtmlPlaceholder());
-                holder.addPlaceholderElement(placeholderEle);
+            if(object.type() == HtmlObjectType.ELEMENT) {
+                object.asHtmlElement().iterateAttributes(attribute -> {
+                    if(attribute instanceof LhtmlPlaceholderAttribute placeholderAttr) {
+                        placeholderAttr.setValues(replaceValues);
+                    }
+                });
+
+                if(object instanceof LhtmlPlaceholderElement placeholderEle) {
+                    LhtmlPlaceholder holder = placeholders.computeIfAbsent(placeholderEle.getId(), s -> new LhtmlPlaceholder());
+                    holder.addPlaceholderElement(placeholderEle);
+                }
             }
         };
 
         copy.iterateContentRecursive(consumer);
 
-        return new LhtmlTemplateElement(id, copy, placeholders, templates);
+        return new LhtmlTemplateElement(id, copy, placeholders, templates, replaceValues);
     }
 
     public @NotNull String getId() {

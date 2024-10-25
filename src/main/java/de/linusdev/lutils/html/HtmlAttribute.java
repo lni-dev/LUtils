@@ -16,10 +16,14 @@
 
 package de.linusdev.lutils.html;
 
+import de.linusdev.lutils.html.parser.HtmlWritingState;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public interface HtmlAttribute {
+import java.io.IOException;
+import java.io.Writer;
+
+public interface HtmlAttribute extends HtmlWritable{
 
     /**
      * The type of the attribute
@@ -31,6 +35,15 @@ public interface HtmlAttribute {
      */
     @Nullable String value();
 
-    @NotNull HtmlAttribute clone();
+    @NotNull HtmlAttribute copy();
 
+    @Override
+    default void write(@NotNull HtmlWritingState state, @NotNull Writer writer) throws IOException {
+        writer.append(type().name());
+
+        String value = value();
+        if(value != null) {
+            writer.append("=\"").append(HtmlUtils.escape(value, true)).append("\"");
+        }
+    }
 }
