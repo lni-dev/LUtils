@@ -16,7 +16,7 @@
 
 package de.linusdev.lutils.html.lhtml;
 
-import de.linusdev.lutils.html.EditableHtmlElement;
+import de.linusdev.lutils.html.HtmlAddable;
 import de.linusdev.lutils.html.HtmlElement;
 import de.linusdev.lutils.html.HtmlObject;
 import de.linusdev.lutils.html.HtmlObjectType;
@@ -55,19 +55,19 @@ public class LhtmlPage implements HtmlObject, LhtmlElement {
             throw new IllegalArgumentException("LhtmlPage is missing a body element.");
 
 
-        return new LhtmlPage(content, injector.getPlaceholders(), injector.getTemplates(), head, body);
+        return injector.getBuilder().buildPage(content, head, body);
     }
 
     private final @NotNull List<HtmlObject> content;
     private final @NotNull HashMap<String, LhtmlPlaceholder> placeholders;
-    private final @NotNull HashMap<String, LhtmlTemplate> templates;
+    private final @NotNull HashMap<String, LhtmlTemplateElement> templates;
     private final @NotNull LhtmlHead head;
     private final @NotNull HtmlElement body;
 
     public LhtmlPage(
             @NotNull List<HtmlObject> content,
             @NotNull HashMap<String, LhtmlPlaceholder> placeholders,
-            @NotNull HashMap<String, LhtmlTemplate> templates,
+            @NotNull HashMap<String, LhtmlTemplateElement> templates,
             @NotNull LhtmlHead head,
             @NotNull HtmlElement body
     ) {
@@ -78,11 +78,11 @@ public class LhtmlPage implements HtmlObject, LhtmlElement {
         this.body = body;
     }
 
-    public @NotNull EditableHtmlElement getPlaceholder(@NotNull String id) {
+    public @NotNull HtmlAddable getPlaceholder(@NotNull String id) {
         return Objects.requireNonNull(placeholders.get(id), "No template found with id '" + id + "'.");
     }
 
-    public @NotNull LhtmlTemplate getTemplate(@NotNull String id) {
+    public @NotNull LhtmlTemplateElement getTemplate(@NotNull String id) {
         return Objects.requireNonNull(templates.get(id));
     }
 

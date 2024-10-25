@@ -14,24 +14,17 @@
  * limitations under the License.
  */
 
-package de.linusdev.lutils.html.clone;
+package de.linusdev.lutils.html;
 
-import de.linusdev.lutils.html.HtmlAttribute;
-import de.linusdev.lutils.html.HtmlObject;
+import de.linusdev.lutils.html.impl.HtmlText;
 import org.jetbrains.annotations.NotNull;
 
-public interface CloneListener {
+public interface HtmlAddable {
 
-    @NotNull CloneListener EMPTY = new CloneListener() {
-        @Override
-        public void onChildCloned(@NotNull HtmlObject clone) {}
+    void addContent(@NotNull HtmlObject object);
 
-        @Override
-        public void onAttributeCloned(@NotNull HtmlAttribute attribute) {}
-    };
-
-    void onChildCloned(@NotNull HtmlObject clone);
-
-    void onAttributeCloned(@NotNull HtmlAttribute attribute);
+    default void addText(@NotNull String text) {
+        addContent(new HtmlText(text));
+    }
 
 }

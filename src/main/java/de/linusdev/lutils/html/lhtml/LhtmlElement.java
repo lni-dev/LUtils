@@ -16,10 +16,12 @@
 
 package de.linusdev.lutils.html.lhtml;
 
-import de.linusdev.lutils.html.EditableHtmlElement;
+import de.linusdev.lutils.html.HtmlAddable;
 import org.jetbrains.annotations.NotNull;
 
 public interface LhtmlElement {
 
-    @NotNull EditableHtmlElement getPlaceholder(@NotNull String id);
+    @NotNull HtmlAddable getPlaceholder(@NotNull String id);
+
+    @NotNull LhtmlTemplateElement getTemplate(@NotNull String id);
 }

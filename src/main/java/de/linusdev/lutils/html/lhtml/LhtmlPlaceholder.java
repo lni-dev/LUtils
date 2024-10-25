@@ -16,56 +16,29 @@
 
 package de.linusdev.lutils.html.lhtml;
 
-import de.linusdev.lutils.html.*;
-import de.linusdev.lutils.html.parser.HtmlWritingState;
+import de.linusdev.lutils.html.HtmlAddable;
+import de.linusdev.lutils.html.HtmlObject;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.IOException;
-import java.io.Writer;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
-public class LhtmlPlaceholder implements EditableHtmlElement {
+public class LhtmlPlaceholder implements HtmlAddable {
 
-    private final @NotNull String id;
-    private final @NotNull EditableHtmlElement actual;
+    protected final @NotNull List<LhtmlPlaceholderElement> elements;
 
-    public LhtmlPlaceholder(@NotNull String id, @NotNull EditableHtmlElement actual) {
-        this.id = id;
-        this.actual = actual;
+    public LhtmlPlaceholder() {
+        this.elements = new ArrayList<>(1);
+    }
+
+    void addPlaceholderElement(@NotNull LhtmlPlaceholderElement element) {
+        this.elements.add(element);
     }
 
     @Override
-    public @NotNull HtmlElementType<?> tag() {
-        return actual.tag();
-    }
-
-    @Override
-    public @NotNull List<@NotNull HtmlObject> content() {
-        return actual.content();
-    }
-
-    @Override
-    public @NotNull Map<String, HtmlAttribute> attributes() {
-        return actual.attributes();
-    }
-
-    @Override
-    public @NotNull HtmlObjectType type() {
-        return HtmlObjectType.ELEMENT;
-    }
-
-    @Override
-    public @NotNull LhtmlPlaceholder copy() {
-        return new LhtmlPlaceholder(id, actual.copy());
-    }
-
-    public @NotNull String getId() {
-        return id;
-    }
-
-    @Override
-    public void write(@NotNull HtmlWritingState state, @NotNull Writer writer) throws IOException {
-        actual.write(state, writer);
+    public void addContent(@NotNull HtmlObject object) {
+        for (LhtmlPlaceholderElement element : elements) {
+            element.addContent(object);
+        }
     }
 }

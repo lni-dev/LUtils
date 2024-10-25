@@ -25,6 +25,8 @@ dependencies {
 - [Code Generator](https://github.com/lni-dev/LUtils/tree/master/src/main/java/de/linusdev/lutils/codegen): Generate Java Code. WIP!
 
 ## Todo
+- Html parser:
+  - Skip leading spaces only if there was a \n before.
 - Replacement for nio.DirectByteBuffer:
   - DirectByteBuffer.allocatedDirect() is slow and bad for GC: see https://blog.lwjgl.org/memory-management-in-lwjgl-3/
   - Replace it with a custom buffer, which uses Unsafe for allocation

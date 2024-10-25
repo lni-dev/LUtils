@@ -17,43 +17,36 @@
 package de.linusdev.lutils.html.lhtml;
 
 import de.linusdev.lutils.html.*;
-import de.linusdev.lutils.html.impl.element.StandardHtmlElement;
 import de.linusdev.lutils.html.impl.element.StandardHtmlElementTypes;
 import de.linusdev.lutils.html.parser.HtmlParserInjector;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.Stack;
 
 public class LhtmlInjector implements HtmlParserInjector {
 
     public static final @NotNull String LHTML_ATTR_TEMPLATE_NAME = "lhtml-template";
     public static final @NotNull String LHTML_ATTR_PLACEHOLDER_NAME = "lhtml-placeholder";
 
-    private static final int DEFAULT_ID = 0;
-    private static final int TEMPLATE_ID = 1;
-
-    private final @NotNull HashMap<String, LhtmlPlaceholder> placeholders = new HashMap<>();
-    private final @NotNull HashMap<String, LhtmlTemplate> templates = new HashMap<>();
     private @Nullable LhtmlHead head = null;
     private @Nullable HtmlElement body = null;
 
-    private boolean inTemplate = false;
-    private HashMap<String, LhtmlPlaceholder> templatePlaceholders;
+    private final Stack<Builder> builders = new Stack<>();
+
+    public LhtmlInjector() {
+        builders.add(new Builder());
+    }
 
     @Override
     public int onStartParsingContent(@NotNull HtmlElementType<?> tag, @NotNull Map<String, HtmlAttribute> attributes) {
         HtmlAttribute lhtmlTemplateAttr = attributes.get(LHTML_ATTR_TEMPLATE_NAME);
         if(lhtmlTemplateAttr != null) {
-            if(inTemplate)
-                throw new IllegalStateException("Cannot have a template in a template!");
-            inTemplate = true;
-            templatePlaceholders = new HashMap<>();
-            return TEMPLATE_ID;
+            builders.push(new Builder());
         }
 
-        return DEFAULT_ID;
+        return 0;
     }
 
     @Override
@@ -83,23 +76,24 @@ public class LhtmlInjector implements HtmlParserInjector {
             if(!(element instanceof EditableHtmlElement editable))
                 throw new IllegalStateException("Parsed element is not editable!");
 
-            LhtmlPlaceholder placeholder = new LhtmlPlaceholder(id, editable);
-            if(inTemplate) {
-                templatePlaceholders.put(lhtmlPlaceHolderAttr.value(), placeholder);
-            } else {
-                placeholders.put(lhtmlPlaceHolderAttr.value(), placeholder);
-            }
+            LhtmlPlaceholderElement placeholder = new LhtmlPlaceholderElement(id, editable);
+            Builder builder = builders.peek();
+            builder.addPlaceholder(placeholder);
 
             return placeholder;
         }
 
         HtmlAttribute lhtmlTemplateAttr = element.attributes().get(LHTML_ATTR_TEMPLATE_NAME);
         if(lhtmlTemplateAttr != null) {
-            HtmlElementType<?> tag = element.tag();
-            if(!(tag instanceof StandardHtmlElement.Type))
-                tag = StandardHtmlElement.Type.newNormal(tag.name());
-            LhtmlTemplate template = new LhtmlTemplate((StandardHtmlElement.Type) tag, element.content(), element.attributes(), templatePlaceholders);
-            templates.put(lhtmlTemplateAttr.value(), template);
+            String id = lhtmlTemplateAttr.value();
+            if(id == null)
+                throw new IllegalArgumentException("Attribute '" + LHTML_ATTR_TEMPLATE_NAME + "' must have a value.");
+
+            if(!(element instanceof EditableHtmlElement editable))
+                throw new IllegalStateException("Parsed element is not editable!");
+
+            Builder builder = builders.pop();
+            builders.peek().addTemplate(builder.buildTemplate(id, editable));
             return null;
         }
 
@@ -107,17 +101,10 @@ public class LhtmlInjector implements HtmlParserInjector {
     }
 
     @Override
-    public void onEndParsingContent(int id) {
-        if(id == TEMPLATE_ID)
-            inTemplate = false;
-    }
+    public void onEndParsingContent(int id) {}
 
-    public @NotNull HashMap<String, LhtmlPlaceholder> getPlaceholders() {
-        return placeholders;
-    }
-
-    public @NotNull HashMap<String, LhtmlTemplate> getTemplates() {
-        return templates;
+    public Builder getBuilder() {
+        return builders.pop();
     }
 
     public @Nullable LhtmlHead getHead() {

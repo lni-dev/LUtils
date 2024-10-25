@@ -16,17 +16,13 @@
 
 package de.linusdev.lutils.html;
 
-import de.linusdev.lutils.html.impl.HtmlText;
 import org.jetbrains.annotations.NotNull;
 
-public interface EditableHtmlElement extends HtmlElement {
+public interface EditableHtmlElement extends HtmlElement, HtmlAddable {
 
+    @Override
     default void addContent(@NotNull HtmlObject object) {
         content().add(object);
-    }
-
-    default void addText(@NotNull String text) {
-        addContent(new HtmlText(text));
     }
 
     @Override
