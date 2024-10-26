@@ -77,6 +77,23 @@ public class HtmlReader {
         return r;
     }
 
+    public char skipNewLinesAndFollowingSpaces() throws IOException {
+        char r = read();
+
+        if(r == '\n') {
+            //noinspection StatementWithEmptyBody
+            while ((r = read()) == '\n') { }
+
+            if(r == ' ') //noinspection StatementWithEmptyBody
+                while ((r = read()) == ' ') { }
+
+            if(r == '\n')
+                return skipNewLinesAndFollowingSpaces();
+        }
+
+        return r;
+    }
+
     /**
      * Reads until the next {@link #read()} would return a char which is not a new line or a space.
      * This method uses {@link #canRead()} before reading, to avoid throwing an {@link EOFException}.
@@ -273,7 +290,11 @@ public class HtmlReader {
         }
 
         pushBack(sb.toString());
-        System.out.println("Remaining:\n" + sb);
+        System.out.println("Remaining:");
+        for (String s : sb.toString().split("\n")) {
+            System.out.println(s);
+        }
+
     }
 
 }

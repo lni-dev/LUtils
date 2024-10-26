@@ -39,6 +39,7 @@ public class HtmlText implements HtmlObject {
 
                 while(res.result2() != '<') {
 
+                    // It is safe to skip all new lines and spaces, because the last read char was a new line.
                     if(!reader.availableSkipNewLinesAndSpaces())
                         throw new EOFException();
 

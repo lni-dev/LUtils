@@ -16,66 +16,36 @@
 
 package de.linusdev.lutils.html.lhtml;
 
-import de.linusdev.lutils.html.*;
-import de.linusdev.lutils.html.parser.HtmlWritingState;
+import de.linusdev.lutils.html.EditableHtmlElement;
+import de.linusdev.lutils.html.HtmlObject;
+import de.linusdev.lutils.html.HtmlObjectType;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.IOException;
-import java.io.Writer;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.Consumer;
 
-public class LhtmlTemplateElement implements EditableHtmlElement, LhtmlElement {
+public class LhtmlTemplateSkeleton {
 
     protected final @NotNull String id;
-    protected final @NotNull Map<String, LhtmlPlaceholder> placeholders;
     protected final @NotNull HashMap<String, LhtmlTemplateSkeleton> templates;
-    protected final @NotNull Map<String, String> replaceValues;
 
     protected final @NotNull EditableHtmlElement actual;
 
-    public LhtmlTemplateElement(
+    public LhtmlTemplateSkeleton(
             @NotNull String id,
             @NotNull EditableHtmlElement actual,
-            @NotNull Map<String, LhtmlPlaceholder> placeholders,
-            @NotNull HashMap<String, LhtmlTemplateSkeleton> templates,
-            @NotNull Map<String, String> replaceValues
+            @NotNull HashMap<String, LhtmlTemplateSkeleton> templates
     ) {
         this.id = id;
-        this.placeholders = placeholders;
-        this.actual = actual;
         this.templates = templates;
-        this.replaceValues = replaceValues;
+        this.actual = actual;
     }
 
-
-    @Override
-    public @NotNull HtmlElementType<?> tag() {
-        return actual.tag();
-    }
-
-    @Override
-    public @NotNull List<@NotNull HtmlObject> content() {
-        return actual.content();
-    }
-
-    @Override
-    public @NotNull Map<String, HtmlAttribute> attributes() {
-        return actual.attributes();
-    }
-
-    @Override
-    public @NotNull HtmlObjectType type() {
-        return HtmlObjectType.ELEMENT;
-    }
-
-    @Override
     public @NotNull LhtmlTemplateElement copy() {
         EditableHtmlElement copy = actual.copy();
-        Map<String, LhtmlPlaceholder> placeholders = new HashMap<>(this.placeholders.size());
+        Map<String, LhtmlPlaceholder> placeholders = new HashMap<>();
         Map<String, String> replaceValues = new HashMap<>();
 
         Consumer<HtmlObject> consumer = object -> {
@@ -102,21 +72,8 @@ public class LhtmlTemplateElement implements EditableHtmlElement, LhtmlElement {
         return id;
     }
 
-    @Override
-    public @NotNull HtmlAddable getPlaceholder(@NotNull String id) {
-        return Objects.requireNonNull(placeholders.get(id), "No template found with id '" + id + "'.");
-    }
-
     public @NotNull LhtmlTemplateElement getTemplate(@NotNull String id) {
         return Objects.requireNonNull(templates.get(id)).copy();
     }
 
-    public void setValue(@NotNull String key, @NotNull String value) {
-        replaceValues.put(key, value);
-    }
-
-    @Override
-    public void write(@NotNull HtmlWritingState state, @NotNull Writer writer) throws IOException {
-        actual.write(state, writer);
-    }
 }

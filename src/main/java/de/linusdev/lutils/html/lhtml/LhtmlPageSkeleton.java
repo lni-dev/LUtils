@@ -16,83 +16,40 @@
 
 package de.linusdev.lutils.html.lhtml;
 
-import de.linusdev.lutils.html.*;
+import de.linusdev.lutils.html.HtmlElement;
+import de.linusdev.lutils.html.HtmlElementType;
+import de.linusdev.lutils.html.HtmlObject;
+import de.linusdev.lutils.html.HtmlObjectType;
 import de.linusdev.lutils.html.impl.HtmlPage;
 import de.linusdev.lutils.html.impl.element.StandardHtmlElementTypes;
-import de.linusdev.lutils.html.parser.*;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.IOException;
-import java.io.Reader;
-import java.io.Writer;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 
-public class LhtmlPage implements HtmlObject, HasHtmlContent, LhtmlElement {
-
-    public static @NotNull LhtmlPageSkeleton parse(@NotNull HtmlParser parser, @NotNull Reader reader) throws IOException, ParseException {
-        LhtmlInjector injector = new LhtmlInjector();
-        HtmlParserState state = new HtmlParserState(injector, parser);
-        HtmlReader htmlReader = new HtmlReader(reader);
-
-        HtmlPage page = HtmlPage.PARSER.parse(state, htmlReader);
-
-        return injector.getBuilder().buildPage(page);
-    }
+public class LhtmlPageSkeleton {
 
     protected final @NotNull HtmlPage actual;
-    protected final @NotNull Map<String, LhtmlPlaceholder> placeholders;
     protected final @NotNull Map<String, LhtmlTemplateSkeleton> templates;
-    protected final @NotNull Map<String, String> replaceValues;
-    protected final @NotNull LhtmlHead head;
-    protected final @NotNull HtmlElement body;
 
-    public LhtmlPage(
+    public LhtmlPageSkeleton(
             @NotNull HtmlPage actual,
-            @NotNull Map<String, LhtmlPlaceholder> placeholders,
-            @NotNull Map<String, LhtmlTemplateSkeleton> templates,
-            @NotNull Map<String, String> replaceValues,
-            @NotNull LhtmlHead head,
-            @NotNull HtmlElement body
+            @NotNull Map<String, LhtmlTemplateSkeleton> templates
     ) {
         this.actual = actual;
-        this.placeholders = placeholders;
         this.templates = templates;
-        this.replaceValues = replaceValues;
-        this.head = head;
-        this.body = body;
-    }
-
-
-    public @NotNull HtmlAddable getPlaceholder(@NotNull String id) {
-        return Objects.requireNonNull(placeholders.get(id), "No template found with id '" + id + "'.");
     }
 
     public @NotNull LhtmlTemplateElement getTemplate(@NotNull String id) {
         return Objects.requireNonNull(templates.get(id)).copy();
     }
 
-    @Override
-    public @NotNull HtmlObjectType type() {
-        return HtmlObjectType.PAGE;
-    }
-
-    public @NotNull LhtmlHead getHead() {
-        return head;
-    }
-
-    public @NotNull HtmlElement getBody() {
-        return body;
-    }
-
-    @Override
     public @NotNull LhtmlPage copy() {
         HtmlPage copy = actual.copy();
-        Map<String, LhtmlPlaceholder> placeholders = new HashMap<>(this.placeholders.size());
+        Map<String, LhtmlPlaceholder> placeholders = new HashMap<>();
         Map<String, String> replaceValues = new HashMap<>();
         AtomicReference<LhtmlHead> head = new AtomicReference<>();
         AtomicReference<HtmlElement> body = new AtomicReference<>();
@@ -125,13 +82,4 @@ public class LhtmlPage implements HtmlObject, HasHtmlContent, LhtmlElement {
         return new LhtmlPage(copy, placeholders, templates, replaceValues, head.get(), body.get());
     }
 
-    @Override
-    public void write(@NotNull HtmlWritingState state, @NotNull Writer writer) throws IOException {
-        actual.write(state, writer);
-    }
-
-    @Override
-    public @NotNull List<@NotNull HtmlObject> content() {
-        return actual.content();
-    }
 }

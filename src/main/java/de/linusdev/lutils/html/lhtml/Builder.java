@@ -27,7 +27,7 @@ import java.util.HashMap;
 public class Builder {
 
     private final @NotNull HashMap<String, LhtmlPlaceholder> placeholders = new HashMap<>();
-    private final @NotNull HashMap<String, LhtmlTemplateElement> templates = new HashMap<>();
+    private final @NotNull HashMap<String, LhtmlTemplateSkeleton> templates = new HashMap<>();
     private @Nullable LhtmlHead head = null;
     private @Nullable HtmlElement body = null;
 
@@ -36,7 +36,7 @@ public class Builder {
         holder.addPlaceholderElement(element);
     }
 
-    public void addTemplate(@NotNull LhtmlTemplateElement template) {
+    public void addTemplate(@NotNull LhtmlTemplateSkeleton template) {
         if(templates.put(template.getId(), template) != null) {
             throw new IllegalStateException("A template with the id '" + template.getId() + " already exists.");
         }
@@ -50,18 +50,19 @@ public class Builder {
         this.body = body;
     }
 
-    public @NotNull LhtmlTemplateElement buildTemplate(@NotNull String id, @NotNull EditableHtmlElement element) {
-        return new LhtmlTemplateElement(id, element , placeholders, templates, null);
+    public @NotNull LhtmlTemplateSkeleton buildTemplate(@NotNull String id, @NotNull EditableHtmlElement element) {
+        return new LhtmlTemplateSkeleton(id, element, templates);
     }
 
-    public @NotNull LhtmlPage buildPage(@NotNull HtmlPage actual) {
+    public @NotNull LhtmlPageSkeleton buildPage(@NotNull HtmlPage actual) {
+        // Check if head and body was found.
         if(head == null)
             throw new IllegalArgumentException("LhtmlPage is missing a head element.");
 
         if(body == null)
             throw new IllegalArgumentException("LhtmlPage is missing a body element.");
 
-        return new LhtmlPage(actual, placeholders, templates, null, head, body);
+        return new LhtmlPageSkeleton(actual, templates);
     }
 
 }

@@ -42,7 +42,10 @@ public class HtmlParser {
     }
 
     /**
-     * If a html object is present, it reads exactly one html object using {@link #parse(HtmlParserState, HtmlReader)}. If no html object is present, {@code null} is returned.
+     * If a html object is present, it reads exactly one html object using {@link #parse(HtmlParserState, HtmlReader)}.
+     * If no html object is present, {@code null} is returned. <br>
+     * This method will skip all spaces and new lines. Thus, it should
+     * only be called to start the parsing of html or if a line feed was just parsed.
      * @param reader reader to read from.
      * @param state {@link HtmlParserState} to use while parsing.
      * @return {@link #parse(HtmlParserState, HtmlReader)} if an object is present
@@ -73,7 +76,7 @@ public class HtmlParser {
 
         char[] buf = new char[3];
 
-        buf[0] = reader.skipNewLinesAndSpaces();
+        buf[0] = reader.skipNewLinesAndFollowingSpaces();
 
         if(buf[0] == '<') {
             buf[1] = reader.read();

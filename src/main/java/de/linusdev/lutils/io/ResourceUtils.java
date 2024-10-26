@@ -99,7 +99,7 @@ public class ResourceUtils {
             StringBuilder sb = new StringBuilder();
             String line;
             while ((line = reader.readLine()) != null)
-                sb.append(line);
+                sb.append(line).append("\n");
 
             return sb.toString();
         }

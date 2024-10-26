@@ -23,6 +23,11 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 
+/**
+ * - Any object parser must ignore all spaces after a line feed. A chunk of spaces not preceded by a line feed must not be ignored.<br>
+ * - Line feed character may be converted to a single space while parsing<br>
+ * - Line feed character may also be removed while parsing<br>
+ */
 public interface HtmlObjectParser<O extends HtmlObject> {
 
     /**

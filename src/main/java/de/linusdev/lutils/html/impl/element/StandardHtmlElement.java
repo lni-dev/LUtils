@@ -314,6 +314,7 @@ public class StandardHtmlElement implements EditableHtmlElement {
         public @NotNull StandardHtmlElement parse(@NotNull HtmlParserState state, @NotNull HtmlReader reader) throws IOException, ParseException {
             Builder builder = type.builder();
 
+
             char c = reader.read();
             if(c != '<')
                 throw new ParseException(c);
@@ -373,7 +374,7 @@ public class StandardHtmlElement implements EditableHtmlElement {
             int id = state.onStartParsingContent(type, builder.getCurrentAttributes());
 
             for(;;) {
-                c = reader.skipNewLinesAndSpaces();
+                c = reader.skipNewLinesAndFollowingSpaces();
 
                 if(c == '<') {
                     c = reader.read();
@@ -394,7 +395,6 @@ public class StandardHtmlElement implements EditableHtmlElement {
 
             state.onEndParsingContent(id);
             tag = reader.readUntil('>').trim();
-
             if(!tag.equals(type.name()))
                 throw new ParseException("Illegal end tag name '" + tag + "', should be '" + type.name() + "'.");
 
