@@ -18,14 +18,23 @@ package de.linusdev.lutils.html.parser;
 
 import org.jetbrains.annotations.NotNull;
 
-public class ParseException extends Exception{
+/**
+ * An exception thrown while parsing html.
+ */
+public class ParseException extends Exception {
 
+    /**
+     * Create new exception with a custom message.
+     */
     public ParseException(@NotNull String message) {
         super(message);
     }
 
+    /**
+     * Create new exception with message {@code Illegal character ...}.
+     */
     public ParseException(char c) {
-        this("Illegal char '" + c + "'");
+        this("Illegal character '" + c + "'");
     }
 
 }

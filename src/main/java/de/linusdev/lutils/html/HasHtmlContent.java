@@ -48,7 +48,7 @@ public interface HasHtmlContent {
     }
 
     /**
-     * Child elements of this html element.
+     * Child {@link HtmlObjectType#ELEMENT elements} of this html element.
      */
     default @NotNull Iterator<@NotNull HtmlElement> children() {
         return new Iterator<>() {

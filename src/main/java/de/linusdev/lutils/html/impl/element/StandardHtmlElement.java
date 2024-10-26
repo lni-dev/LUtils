@@ -36,7 +36,6 @@ import java.util.function.Function;
 
 import static de.linusdev.lutils.html.parser.AttrReaderState.*;
 
-@SuppressWarnings("ClassCanBeRecord")
 public class StandardHtmlElement implements EditableHtmlElement {
 
     protected final @NotNull Type tag;
@@ -317,27 +316,27 @@ public class StandardHtmlElement implements EditableHtmlElement {
 
             char c = reader.read();
             if(c != '<')
-                throw new ParseException(c);
+                throw state.fail(c);
 
             BiResult<String, Character> res = reader.readUntil(' ', '>');
             String tag = res.result1();
 
             if(tag.charAt(tag.length()-1) == '/' && res.result2() == '>') {
                 if(!tag.substring(0, tag.length() - 1).equals(type.name()))
-                    throw new ParseException("Illegal tag name '" + tag + "'.");
+                    throw state.fail("Illegal tag name '" + tag + "'.");
 
                 // is immediately closed
                 return builder.build();
             }
 
             if(!tag.equals(type.name()))
-                throw new ParseException("Illegal tag name '" + tag + "'.");
+                throw state.fail("Illegal tag name '" + tag + "'.");
 
 
 
             if(res.result2() == ' ') {
                 // Read attributes
-                AttributeReader attrReader = reader.getAttributeReader();
+                AttributeReader attrReader = reader.getAttributeReader(state);
 
                 while(attrReader.state != TAG_END) {
                     String name = attrReader.readAttributeName();
@@ -396,7 +395,7 @@ public class StandardHtmlElement implements EditableHtmlElement {
             state.onEndParsingContent(id);
             tag = reader.readUntil('>').trim();
             if(!tag.equals(type.name()))
-                throw new ParseException("Illegal end tag name '" + tag + "', should be '" + type.name() + "'.");
+                throw state.fail("Illegal end tag name '" + tag + "', should be '" + type.name() + "'.");
 
             return builder.build();
         }

@@ -18,6 +18,9 @@ package de.linusdev.lutils.html;
 
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * A html element, whose {@link #content()} and {@link #attributes()} can be edited.
+ */
 public interface EditableHtmlElement extends HtmlElement, HtmlAddable {
 
     @Override

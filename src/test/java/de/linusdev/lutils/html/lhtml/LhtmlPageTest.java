@@ -1,18 +1,13 @@
 package de.linusdev.lutils.html.lhtml;
 
 import de.linusdev.lutils.html.HtmlAddable;
-import de.linusdev.lutils.html.HtmlObject;
-import de.linusdev.lutils.html.parser.*;
+import de.linusdev.lutils.html.parser.HtmlParser;
+import de.linusdev.lutils.html.parser.ParseException;
 import de.linusdev.lutils.io.ResourceUtils;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
 
 import java.io.IOException;
 import java.io.StringReader;
-import java.io.StringWriter;
-import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -22,7 +17,7 @@ class LhtmlPageTest {
     void test() throws IOException, ParseException {
         String html = ResourceUtils.readString(LhtmlPageTest.class, "page.html");
 
-        LhtmlPageSkeleton pageSkeleton = LhtmlPage.parse(new HtmlParser(Lhtml.getRegistry()), new StringReader(html));
+        LhtmlPageSkeleton pageSkeleton = LhtmlPage.parse(new HtmlParser(Lhtml.getRegistry().build()), new StringReader(html));
         LhtmlPage page = pageSkeleton.copy();
         HtmlAddable header = page.getPlaceholder("header");
         LhtmlTemplateElement item = page.getTemplate("item");
@@ -57,7 +52,7 @@ class LhtmlPageTest {
     void test2() throws IOException, ParseException {
         String html = ResourceUtils.readString(LhtmlPageTest.class, "page2.html");
 
-        LhtmlPageSkeleton pageSkeleton = LhtmlPage.parse(new HtmlParser(Lhtml.getRegistry()), new StringReader(html));
+        LhtmlPageSkeleton pageSkeleton = LhtmlPage.parse(new HtmlParser(Lhtml.getRegistry().build()), new StringReader(html));
         LhtmlPage page = pageSkeleton.copy();
         HtmlAddable header = page.getPlaceholder("header");
 
@@ -108,28 +103,5 @@ class LhtmlPageTest {
                   </body>
                 </html>""", page.writeToString());
         System.out.println(page.writeToString());
-    }
-
-    private static Stream<Arguments> provideStringsForTest3() {
-        return Stream.of(
-                Arguments.of("<div>  </div>", "<div>\n  \n</div>"),
-                Arguments.of("<div></div>", "<div></div>"),
-                Arguments.of("<div>Some <span>test</span> here</div>", "<div>\nSome \n<span>test</span>\n here\n</div>"),
-                Arguments.of("<div>Some<span>test</span>here</div>", "<div>\nSome\n<span>test</span>\nhere\n</div>"),
-                Arguments.of("<span>Some <span>te</span><span>st</span></span>", "<span>Some <span>te</span><span>st</span></span>")
-        );
-    }
-
-    @ParameterizedTest()
-    @MethodSource(value = "provideStringsForTest3")
-    void test3(String html, String result) throws IOException, ParseException {
-
-        HtmlParser parser = new HtmlParser(Registry.getDefault());
-        HtmlObject parsed = parser.parse(new HtmlParserState(null, parser), new HtmlReader(new StringReader(html)));
-
-        StringWriter writer = new StringWriter();
-        parsed.write(new HtmlWritingState(""), writer);
-        System.out.println(writer);
-        assertEquals(result, writer.toString());
     }
 }

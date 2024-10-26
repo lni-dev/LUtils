@@ -19,10 +19,19 @@ package de.linusdev.lutils.html;
 import de.linusdev.lutils.html.impl.HtmlText;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * Object with html content, where new elements can be added.
+ */
 public interface HtmlAddable {
 
+    /**
+     * Add given {@code object} to the content.
+     */
     void addContent(@NotNull HtmlObject object);
 
+    /**
+     * Add given string as {@link HtmlText} to the content.
+     */
     default void addText(@NotNull String text) {
         addContent(new HtmlText(text));
     }

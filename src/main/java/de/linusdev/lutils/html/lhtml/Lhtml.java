@@ -16,48 +16,19 @@
 
 package de.linusdev.lutils.html.lhtml;
 
-import de.linusdev.lutils.html.HtmlAttributeType;
-import de.linusdev.lutils.html.HtmlElementType;
-import de.linusdev.lutils.html.impl.HtmlComment;
-import de.linusdev.lutils.html.impl.HtmlDocType;
-import de.linusdev.lutils.html.impl.HtmlText;
-import de.linusdev.lutils.html.impl.StandardHtmlAttributeTypes;
-import de.linusdev.lutils.html.impl.element.StandardHtmlElement;
-import de.linusdev.lutils.html.impl.element.StandardHtmlElementTypes;
 import de.linusdev.lutils.html.parser.Registry;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-
-import java.util.HashMap;
 
 public class Lhtml {
 
-    private static @Nullable Registry REGISTRY = null;
+    /**
+     * {@link Registry.Builder} required when parsing any {@link LhtmlElement}.
+     */
+    public static @NotNull Registry.Builder getRegistry() {
+        Registry.Builder builder = Registry.getDefault();
+        builder.putElement(LhtmlHead.TYPE);
 
-    public static @NotNull Registry getRegistry() {
-        if(REGISTRY != null) return REGISTRY;
-
-        HashMap<String, HtmlElementType<?>> elements = new HashMap<>();
-        for (@NotNull HtmlElementType<?> value : StandardHtmlElementTypes.VALUES) {
-            elements.put(value.name(), value);
-        }
-
-        elements.put(LhtmlHead.TYPE.name(), LhtmlHead.TYPE);
-
-        HashMap<String, HtmlAttributeType> attributes = new HashMap<>();
-        for (@NotNull HtmlAttributeType value : StandardHtmlAttributeTypes.VALUES) {
-            attributes.put(value.name(), value);
-        }
-
-        REGISTRY = new Registry(elements, attributes,
-                HtmlDocType.PARSER, HtmlText.PARSER, HtmlComment.PARSER,
-                StandardHtmlElement.Type::newInline,
-                s -> () -> s
-        );
-
-        return REGISTRY;
+        return builder;
     }
-
-
 
 }

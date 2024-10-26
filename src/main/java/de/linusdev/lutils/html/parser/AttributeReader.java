@@ -28,11 +28,13 @@ import static de.linusdev.lutils.html.parser.AttrReaderState.*;
 public class AttributeReader {
 
     private final @NotNull HtmlReader reader;
+    private final @NotNull HtmlParserState parserState;
 
     public AttrReaderState state = READING;
 
-    public AttributeReader(@NotNull HtmlReader reader) {
+    public AttributeReader(@NotNull HtmlReader reader, @NotNull HtmlParserState parserState) {
         this.reader = reader;
+        this.parserState = parserState;
     }
 
     /**
@@ -52,7 +54,7 @@ public class AttributeReader {
             return null;
         } else if (r == '/') {
             if ((r = reader.read()) != '>')
-                throw new ParseException(r);
+                throw parserState.fail(r);
 
             state = TAG_SELF_CLOSE;
             return null;
@@ -66,7 +68,7 @@ public class AttributeReader {
             return res.result1();
         } else if (res.result2() == '/') {
             if ((r = reader.read()) != '>')
-                throw new ParseException(r);
+                throw parserState.fail(r);
 
             state = TAG_SELF_CLOSE;
             return res.result1();

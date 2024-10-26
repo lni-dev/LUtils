@@ -126,4 +126,5 @@ public class HtmlParser {
     public @NotNull Registry getRegistry() {
         return registry;
     }
+
 }

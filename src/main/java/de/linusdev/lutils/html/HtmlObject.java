@@ -16,6 +16,7 @@
 
 package de.linusdev.lutils.html;
 
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
 public interface HtmlObject extends HtmlWritable {
@@ -32,6 +33,11 @@ public interface HtmlObject extends HtmlWritable {
         return (HtmlElement) this;
     }
 
+    /**
+     * Copy this {@link HtmlObject} and all of its content. The newly created {@link HtmlObject}
+     * can be modified without modifying this {@link HtmlObject}. Constant object may return themselves.
+     */
+    @Contract(value = "-> new", pure = true)
     @NotNull HtmlObject copy();
 
 }

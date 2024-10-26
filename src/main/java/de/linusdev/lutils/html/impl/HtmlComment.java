@@ -20,7 +20,6 @@ import de.linusdev.lutils.html.HtmlObject;
 import de.linusdev.lutils.html.HtmlObjectParser;
 import de.linusdev.lutils.html.HtmlObjectType;
 import de.linusdev.lutils.html.parser.HtmlWritingState;
-import de.linusdev.lutils.html.parser.ParseException;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
@@ -35,10 +34,10 @@ public class HtmlComment implements HtmlObject {
             (state, reader) -> {
                 char c;
 
-                if((c = reader.read()) != '<') throw new ParseException(c);
-                if((c = reader.read()) != '!') throw new ParseException(c);
-                if((c = reader.read()) != '-') throw new ParseException(c);
-                if((c = reader.read()) != '-') throw new ParseException(c);
+                if((c = reader.read()) != '<') throw state.fail(c);
+                if((c = reader.read()) != '!') throw state.fail(c);
+                if((c = reader.read()) != '-') throw state.fail(c);
+                if((c = reader.read()) != '-') throw state.fail(c);
 
                 StringBuilder comment = new StringBuilder();
 

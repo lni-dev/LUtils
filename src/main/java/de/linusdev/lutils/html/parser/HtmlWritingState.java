@@ -18,12 +18,22 @@ package de.linusdev.lutils.html.parser;
 
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * Current writing state. tracks {@link #indent}.
+ */
 public class HtmlWritingState {
 
     private final @NotNull String baseIndent;
 
+    /**
+     * Current indent as string.
+     */
     private @NotNull String indent = "";
 
+    /**
+     *
+     * @param baseIndent base indent, which will be repeated.
+     */
     public HtmlWritingState(@NotNull String baseIndent) {
         this.baseIndent = baseIndent;
     }
@@ -32,10 +42,16 @@ public class HtmlWritingState {
         return indent;
     }
 
+    /**
+     * Increase indent.
+     */
     public void addIndent() {
         indent += baseIndent;
     }
 
+    /**
+     * Decrease indent.
+     */
     public void removeIndent() {
         indent = indent.substring(0, indent.length() - baseIndent.length());
     }

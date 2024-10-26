@@ -26,12 +26,18 @@ import org.jetbrains.annotations.Nullable;
  */
 public interface HtmlElementType<B extends HtmlElementBuilder> {
 
+    /**
+     * Checks whether the given {@link HtmlElementType}s are equal, meaning they have the same {@link #name()}.
+     */
     static boolean equals(@NotNull HtmlElementType<?> that, @Nullable HtmlElementType<?> other) {
         if(that == other) return true;
         if(other == null) return false;
         return that.name().equals(other.name());
     }
 
+    /**
+     * Creates a string of the following form {@code tagName/className}.
+     */
     static @NotNull String toString(@NotNull HtmlElementType<?> tag) {
         return tag.name() + "/" + tag.getClass().getSimpleName();
     }

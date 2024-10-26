@@ -47,6 +47,20 @@ public class HtmlParserState implements HtmlParserInjector {
         return parser.getRegistry();
     }
 
+    /**
+     * @see ParseException#ParseException(String)
+     */
+    public @NotNull ParseException fail(@NotNull String message) {
+        return new ParseException(message);
+    }
+
+    /**
+     * @see ParseException#ParseException(char)
+     */
+    public @NotNull ParseException fail(char c) {
+        return new ParseException(c);
+    }
+
     @Override
     public @Nullable HtmlAttribute onAttributeParsed(@NotNull HtmlAttributeType type, @Nullable String value) {
         if(injector == null) return new StandardHtmlAttribute(type, value);

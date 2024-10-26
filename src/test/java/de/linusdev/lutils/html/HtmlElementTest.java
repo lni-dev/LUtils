@@ -63,7 +63,7 @@ class HtmlElementTest {
                   </div>
                 </div>""";
 
-        HtmlParser parser = new HtmlParser(Registry.getDefault());
+        HtmlParser parser = new HtmlParser(Registry.getDefault().build());
 
         HtmlPage page = parser.parsePage(new StringReader(html));
 
@@ -101,7 +101,7 @@ class HtmlElementTest {
                   </div>
                 </div>""";
 
-        HtmlParser parser = new HtmlParser(Registry.getDefault());
+        HtmlParser parser = new HtmlParser(Registry.getDefault().build());
 
         HtmlPage page = parser.parsePage(new StringReader(html));
         page = page.copy();

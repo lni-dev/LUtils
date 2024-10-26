@@ -23,20 +23,40 @@ import org.jetbrains.annotations.NotNull;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 
+/**
+ * Interface, that allows writing the html represented by this object to a {@link Writer}
+ * or an {@link OutputStream}.
+ */
 public interface HtmlWritable extends Writable {
 
+    /**
+     * Write html to given {@code writer} using given {@code state}.
+     * @param state {@link HtmlWritingState} to use while writing.
+     * @param writer {@link Writer} to write to.
+     * @throws IOException while writing
+     */
     void write(@NotNull HtmlWritingState state, @NotNull Writer writer) throws IOException;
 
+    /**
+     * Calls {@link #write(HtmlWritingState, Writer)} with a writing-state created by {@code new HtmlWritingState("  ")}
+     */
     default void write(@NotNull Writer writer) throws IOException {
         write(new HtmlWritingState("  "), writer);
     }
 
+    /**
+     * Calls {@link #write(Writer)} with {@code new OutputStreamWriter(out, StandardCharsets.UTF_8)}.
+     * Also {@link OutputStreamWriter#flush() flushes} the writer after writing.
+     */
     default void write(@NotNull OutputStream out) throws IOException {
         OutputStreamWriter writer = new OutputStreamWriter(out, StandardCharsets.UTF_8);
         write(writer);
         writer.flush();
     }
 
+    /**
+     * Writes the html to a string.
+     */
     default @NotNull String writeToString() {
         StringWriter writer = new StringWriter();
         try {

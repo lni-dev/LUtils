@@ -274,10 +274,14 @@ public class HtmlReader {
     /**
      * Get a new {@link AttributeReader}.
      */
-    public @NotNull AttributeReader getAttributeReader() {
-        return new AttributeReader(this);
+    public @NotNull AttributeReader getAttributeReader(@NotNull HtmlParserState state) {
+        return new AttributeReader(this, state);
     }
 
+    /**
+     * Print the remaining readable content that fits in the {@link #pushBackBuffer} and
+     * prints it to {@link System#out}.
+     */
     @SuppressWarnings("unused") // debug method only
     public void debug() throws IOException {
         StringBuilder sb = new StringBuilder();

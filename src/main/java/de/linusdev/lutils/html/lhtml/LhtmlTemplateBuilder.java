@@ -24,7 +24,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 
-public class Builder {
+public class LhtmlTemplateBuilder {
 
     private final @NotNull HashMap<String, LhtmlPlaceholder> placeholders = new HashMap<>();
     private final @NotNull HashMap<String, LhtmlTemplateSkeleton> templates = new HashMap<>();

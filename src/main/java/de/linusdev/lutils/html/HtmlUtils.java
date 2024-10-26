@@ -26,6 +26,9 @@ import java.util.Map;
 
 public class HtmlUtils {
 
+    /**
+     * Map for unescape operations.
+     */
     public static final @NotNull HashMap<String, String> UNESCAPE_MAP = new HashMap<>(Map.of(
             "amp", "&",
             "quot", "\"",
@@ -37,6 +40,23 @@ public class HtmlUtils {
     ));
 
 
+    /**
+     * <ul>
+     *     <li>
+     *         Always replaces all occurrences of {@code &} in {@code text} with {@code &amp;}.
+     *     </li>
+     *     <li>
+     *         If {@code attribute} is {@code true}, all {@code "} will be replaced with {@code &quot;}.
+     *     </li>
+     *     <li>
+     *         If {@code attribute} is {@code false}, all {@code <} and {@code >} will be replaced with
+     *         {@code &lt;} and {@code &gt;} respectively.
+     *     </li>
+     * </ul>
+     * @param text the text to escape
+     * @param attribute whether the text is an attribute value
+     * @return escaped text as described above.
+     */
     public static @NotNull String escape(@NotNull String text, boolean attribute) {
         text = text.replaceAll("&", "&amp;");
 
@@ -51,7 +71,8 @@ public class HtmlUtils {
     }
 
     /**
-     * Unescapes html text. Does not work on all special escape names.
+     * Unescapes html text. Does not work on all special escape-names. Always works on html escaped by
+     * {@link #escape(String, boolean)}. Works on all escape-names contained in {@link #UNESCAPE_MAP}.
      */
     @SuppressWarnings("unused")
     public static @NotNull String unescape(@NotNull String text) {
@@ -80,6 +101,10 @@ public class HtmlUtils {
 
     }
 
+    /**
+     * Useful class to {@link #unescape(String) unescape} an incoming stream of characters.
+     * The same limitations as for {@link #unescape(String)} apply.
+     */
     public static class Unescaper {
         private final StringBuilder sb = new StringBuilder();
         boolean amp = false;

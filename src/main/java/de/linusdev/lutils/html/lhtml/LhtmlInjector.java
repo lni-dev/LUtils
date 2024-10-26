@@ -62,10 +62,10 @@ public class LhtmlInjector implements HtmlParserInjector {
     public static final @NotNull String LHTML_ATTR_TEMPLATE_NAME = "lhtml-template";
     public static final @NotNull String LHTML_ATTR_PLACEHOLDER_NAME = "lhtml-placeholder";
 
-    private final Stack<Builder> builders = new Stack<>();
+    private final Stack<LhtmlTemplateBuilder> builders = new Stack<>();
 
     public LhtmlInjector() {
-        builders.add(new Builder());
+        builders.add(new LhtmlTemplateBuilder());
     }
 
     @Override
@@ -81,7 +81,7 @@ public class LhtmlInjector implements HtmlParserInjector {
     public int onStartParsingContent(@NotNull HtmlElementType<?> tag, @NotNull Map<String, HtmlAttribute> attributes) {
         HtmlAttribute lhtmlTemplateAttr = attributes.get(LHTML_ATTR_TEMPLATE_NAME);
         if(lhtmlTemplateAttr != null) {
-            builders.push(new Builder());
+            builders.push(new LhtmlTemplateBuilder());
         }
 
         return 0;
@@ -114,7 +114,7 @@ public class LhtmlInjector implements HtmlParserInjector {
                 throw new IllegalStateException("Parsed element is not editable!");
 
             LhtmlPlaceholderElement placeholder = new LhtmlPlaceholderElement(id, editable);
-            Builder builder = builders.peek();
+            LhtmlTemplateBuilder builder = builders.peek();
             builder.addPlaceholder(placeholder);
 
             return placeholder;
@@ -129,7 +129,7 @@ public class LhtmlInjector implements HtmlParserInjector {
             if(!(element instanceof EditableHtmlElement editable))
                 throw new IllegalStateException("Parsed element is not editable!");
 
-            Builder builder = builders.pop();
+            LhtmlTemplateBuilder builder = builders.pop();
             builders.peek().addTemplate(builder.buildTemplate(id, editable));
             return null;
         }
@@ -140,7 +140,7 @@ public class LhtmlInjector implements HtmlParserInjector {
     @Override
     public void onEndParsingContent(int id) {}
 
-    public Builder getBuilder() {
+    public LhtmlTemplateBuilder getBuilder() {
         return builders.pop();
     }
 }
