@@ -14,24 +14,17 @@
  * limitations under the License.
  */
 
-package de.linusdev.lutils.html;
+package de.linusdev.lutils.html.lhtml;
 
 import org.jetbrains.annotations.NotNull;
 
-public interface HtmlAttributeType<V> {
+public interface LhtmlIdentifiable {
 
     /**
-     * {@link Object#hashCode() Hashcode} method all classes implementing this interface should use.
+     * Identifier of this template. This identifier is only unique
+     * in its parent {@link LhtmlTemplate}. This means, there may exist a child {@link LhtmlHasTemplates#getTemplate(String)}
+     * with the same id.
      */
-    static int hashcode(@NotNull HtmlAttributeType<?> type) {
-        return type.name().hashCode();
-    }
-
-    /**
-     * Name or key of the attribute.
-     */
-    @NotNull String name();
-
-    @NotNull V convertValue(@NotNull HtmlAttribute attribute);
+    @NotNull String getId();
 
 }

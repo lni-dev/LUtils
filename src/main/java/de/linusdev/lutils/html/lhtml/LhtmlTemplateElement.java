@@ -17,6 +17,7 @@
 package de.linusdev.lutils.html.lhtml;
 
 import de.linusdev.lutils.html.*;
+import de.linusdev.lutils.html.lhtml.skeleton.LhtmlTemplateSkeleton;
 import de.linusdev.lutils.html.parser.HtmlWritingState;
 import org.jetbrains.annotations.NotNull;
 
@@ -28,7 +29,10 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.function.Consumer;
 
-public class LhtmlTemplateElement implements EditableHtmlElement, LhtmlElement {
+/**
+ * A normal template element.
+ */
+public class LhtmlTemplateElement implements EditableHtmlElement, LhtmlTemplate {
 
     protected final @NotNull String id;
     protected final @NotNull Map<String, LhtmlPlaceholder> placeholders;
@@ -63,7 +67,7 @@ public class LhtmlTemplateElement implements EditableHtmlElement, LhtmlElement {
     }
 
     @Override
-    public @NotNull Map<String, HtmlAttribute> attributes() {
+    public @NotNull HtmlAttributeMap attributes() {
         return actual.attributes();
     }
 
@@ -82,12 +86,12 @@ public class LhtmlTemplateElement implements EditableHtmlElement, LhtmlElement {
             if(object.type() == HtmlObjectType.ELEMENT) {
                 object.asHtmlElement().iterateAttributes(attribute -> {
                     if(attribute instanceof LhtmlPlaceholderAttribute placeholderAttr) {
-                        placeholderAttr.setValues(replaceValues);
+                        placeholderAttr.setReplaceValues(replaceValues);
                     }
                 });
 
                 if(object instanceof LhtmlPlaceholderElement placeholderEle) {
-                    LhtmlPlaceholder holder = placeholders.computeIfAbsent(placeholderEle.getId(), s -> new LhtmlPlaceholder());
+                    LhtmlPlaceholder holder = placeholders.computeIfAbsent(placeholderEle.getId(), LhtmlPlaceholder::new);
                     holder.addPlaceholderElement(placeholderEle);
                 }
             }
@@ -98,6 +102,7 @@ public class LhtmlTemplateElement implements EditableHtmlElement, LhtmlElement {
         return new LhtmlTemplateElement(id, copy, placeholders, templates, replaceValues);
     }
 
+    @Override
     public @NotNull String getId() {
         return id;
     }
@@ -107,10 +112,12 @@ public class LhtmlTemplateElement implements EditableHtmlElement, LhtmlElement {
         return Objects.requireNonNull(placeholders.get(id), "No template found with id '" + id + "'.");
     }
 
+    @Override
     public @NotNull LhtmlTemplateElement getTemplate(@NotNull String id) {
         return Objects.requireNonNull(templates.get(id)).copy();
     }
 
+    @Override
     public void setValue(@NotNull String key, @NotNull String value) {
         replaceValues.put(key, value);
     }

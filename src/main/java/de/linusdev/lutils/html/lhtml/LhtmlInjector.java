@@ -19,24 +19,38 @@ package de.linusdev.lutils.html.lhtml;
 import de.linusdev.lutils.html.*;
 import de.linusdev.lutils.html.impl.StandardHtmlAttribute;
 import de.linusdev.lutils.html.impl.element.StandardHtmlElementTypes;
+import de.linusdev.lutils.html.lhtml.skeleton.LhtmlPageSkeleton;
+import de.linusdev.lutils.html.lhtml.skeleton.LhtmlSkeletonBuilder;
+import de.linusdev.lutils.html.parser.HtmlParser;
 import de.linusdev.lutils.html.parser.HtmlParserInjector;
 import de.linusdev.lutils.other.str.ConstructableString;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Map;
+import java.io.Reader;
 import java.util.Stack;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * {@link HtmlParserInjector} to use while parsing to parse a {@link LhtmlPageSkeleton}. Must be used in combination with
+ * a {@link Lhtml#getRegistry() lhtml compatible registry}.
+ * @see LhtmlPage#parse(HtmlParser, Reader)
+ */
 public class LhtmlInjector implements HtmlParserInjector {
 
-    protected static @Nullable ConstructableString getConstructableStringOfValue(@Nullable String value) {
-        if(value == null || value.isEmpty())
+    /**
+     * Checks if a replace-key ({@code ${key}}) is present in given {@code text}. If at least once replace-key is present,
+     * a {@link ConstructableString} is created.
+     * @param text the value
+     * @return {@link ConstructableString} for given {@code text} or {@code null} if no replace-key is present in {@code text}.
+     */
+    protected static @Nullable ConstructableString getConstructableStringOfValue(@Nullable String text) {
+        if(text == null || text.isEmpty())
             return null;
 
         Pattern pattern = Pattern.compile("\\$\\{(?<key>[a-zA-Z0-9-_]+)}");
-        Matcher matcher = pattern.matcher(value);
+        Matcher matcher = pattern.matcher(text);
 
         if(!matcher.find())
             return null;
@@ -44,7 +58,7 @@ public class LhtmlInjector implements HtmlParserInjector {
         ConstructableString.Builder builder = new ConstructableString.Builder();
         int start = 0;
         do {
-            String constant = value.substring(start, matcher.start());
+            String constant = text.substring(start, matcher.start());
             if(!constant.isEmpty())
                 builder.addConstant(constant);
             builder.addPlaceholder(matcher.group("key"));
@@ -53,23 +67,20 @@ public class LhtmlInjector implements HtmlParserInjector {
 
         } while (matcher.find());
 
-        if (start != value.length())
-            builder.addConstant(value.substring(start));
+        if (start != text.length())
+            builder.addConstant(text.substring(start));
 
         return builder.build();
     }
 
-    public static final @NotNull String LHTML_ATTR_TEMPLATE_NAME = "lhtml-template";
-    public static final @NotNull String LHTML_ATTR_PLACEHOLDER_NAME = "lhtml-placeholder";
-
-    private final Stack<LhtmlTemplateBuilder> builders = new Stack<>();
+    private final Stack<LhtmlSkeletonBuilder> builders = new Stack<>();
 
     public LhtmlInjector() {
-        builders.add(new LhtmlTemplateBuilder());
+        builders.add(new LhtmlSkeletonBuilder());
     }
 
     @Override
-    public @Nullable HtmlAttribute onAttributeParsed(@NotNull HtmlAttributeType type, @Nullable String value) {
+    public @Nullable HtmlAttribute onAttributeParsed(@NotNull HtmlAttributeType<?> type, @Nullable String value) {
         ConstructableString str = getConstructableStringOfValue(value);
         if(str == null)
             return new StandardHtmlAttribute(type, value);
@@ -78,10 +89,10 @@ public class LhtmlInjector implements HtmlParserInjector {
     }
 
     @Override
-    public int onStartParsingContent(@NotNull HtmlElementType<?> tag, @NotNull Map<String, HtmlAttribute> attributes) {
-        HtmlAttribute lhtmlTemplateAttr = attributes.get(LHTML_ATTR_TEMPLATE_NAME);
+    public int onStartParsingContent(@NotNull HtmlElementType<?> tag, @NotNull HtmlAttributeMap attributes) {
+        HtmlAttribute lhtmlTemplateAttr = attributes.get(Lhtml.ATTR_TEMPLATE);
         if(lhtmlTemplateAttr != null) {
-            builders.push(new LhtmlTemplateBuilder());
+            builders.push(new LhtmlSkeletonBuilder());
         }
 
         return 0;
@@ -102,35 +113,27 @@ public class LhtmlInjector implements HtmlParserInjector {
             builders.peek().setBody(element);
         }
 
-        HtmlAttribute lhtmlPlaceHolderAttr = element.attributes().get(LHTML_ATTR_PLACEHOLDER_NAME);
+        String placeholderId = element.attributes().getValue(Lhtml.ATTR_PLACEHOLDER);
 
-        if(lhtmlPlaceHolderAttr != null) {
-            String id = lhtmlPlaceHolderAttr.value();
-
-            if(id == null)
-                throw new IllegalStateException("Placeholder id missing");
+        if(placeholderId != null) {
 
             if(!(element instanceof EditableHtmlElement editable))
                 throw new IllegalStateException("Parsed element is not editable!");
 
-            LhtmlPlaceholderElement placeholder = new LhtmlPlaceholderElement(id, editable);
-            LhtmlTemplateBuilder builder = builders.peek();
+            LhtmlPlaceholderElement placeholder = new LhtmlPlaceholderElement(placeholderId, editable);
+            LhtmlSkeletonBuilder builder = builders.peek();
             builder.addPlaceholder(placeholder);
 
             return placeholder;
         }
 
-        HtmlAttribute lhtmlTemplateAttr = element.attributes().get(LHTML_ATTR_TEMPLATE_NAME);
-        if(lhtmlTemplateAttr != null) {
-            String id = lhtmlTemplateAttr.value();
-            if(id == null)
-                throw new IllegalArgumentException("Attribute '" + LHTML_ATTR_TEMPLATE_NAME + "' must have a value.");
-
+        String templateId = element.attributes().getValue(Lhtml.ATTR_TEMPLATE);
+        if(templateId != null) {
             if(!(element instanceof EditableHtmlElement editable))
                 throw new IllegalStateException("Parsed element is not editable!");
 
-            LhtmlTemplateBuilder builder = builders.pop();
-            builders.peek().addTemplate(builder.buildTemplate(id, editable));
+            LhtmlSkeletonBuilder builder = builders.pop();
+            builders.peek().addTemplate(builder.buildTemplate(templateId, editable));
             return null;
         }
 
@@ -140,7 +143,12 @@ public class LhtmlInjector implements HtmlParserInjector {
     @Override
     public void onEndParsingContent(int id) {}
 
-    public LhtmlTemplateBuilder getBuilder() {
-        return builders.pop();
+    /**
+     * Get the last {@link LhtmlSkeletonBuilder}, which can be used to build a {@link LhtmlPageSkeleton}.
+     */
+    public LhtmlSkeletonBuilder getBuilder() {
+        LhtmlSkeletonBuilder builder = builders.pop();
+        assert builders.isEmpty();
+        return builder;
     }
 }

@@ -14,24 +14,17 @@
  * limitations under the License.
  */
 
-package de.linusdev.lutils.html;
+package de.linusdev.lutils.html.lhtml;
 
 import org.jetbrains.annotations.NotNull;
 
-public interface HtmlAttributeType<V> {
-
+/**
+ * lhtml element with {@link LhtmlTemplateElement templates}.
+ */
+public interface LhtmlHasTemplates {
     /**
-     * {@link Object#hashCode() Hashcode} method all classes implementing this interface should use.
+     * Get the template with given {@code id}. If no such template exists, a {@link NullPointerException}
+     * will be thrown.
      */
-    static int hashcode(@NotNull HtmlAttributeType<?> type) {
-        return type.name().hashCode();
-    }
-
-    /**
-     * Name or key of the attribute.
-     */
-    @NotNull String name();
-
-    @NotNull V convertValue(@NotNull HtmlAttribute attribute);
-
+    @NotNull LhtmlTemplateElement getTemplate(@NotNull String id);
 }

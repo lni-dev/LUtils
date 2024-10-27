@@ -1,6 +1,7 @@
 package de.linusdev.lutils.html.lhtml;
 
 import de.linusdev.lutils.html.HtmlAddable;
+import de.linusdev.lutils.html.lhtml.skeleton.LhtmlPageSkeleton;
 import de.linusdev.lutils.html.parser.HtmlParser;
 import de.linusdev.lutils.html.parser.ParseException;
 import de.linusdev.lutils.io.ResourceUtils;
@@ -17,7 +18,7 @@ class LhtmlPageTest {
     void test() throws IOException, ParseException {
         String html = ResourceUtils.readString(LhtmlPageTest.class, "page.html");
 
-        LhtmlPageSkeleton pageSkeleton = LhtmlPage.parse(new HtmlParser(Lhtml.getRegistry().build()), new StringReader(html));
+        LhtmlPageSkeleton pageSkeleton = Lhtml.parsePage(new StringReader(html));
         LhtmlPage page = pageSkeleton.copy();
         HtmlAddable header = page.getPlaceholder("header");
         LhtmlTemplateElement item = page.getTemplate("item");

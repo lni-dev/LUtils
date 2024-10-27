@@ -14,11 +14,15 @@
  * limitations under the License.
  */
 
-package de.linusdev.lutils.html.lhtml;
+package de.linusdev.lutils.html.lhtml.skeleton;
 
 import de.linusdev.lutils.html.EditableHtmlElement;
 import de.linusdev.lutils.html.HtmlObject;
 import de.linusdev.lutils.html.HtmlObjectType;
+import de.linusdev.lutils.html.lhtml.LhtmlPlaceholder;
+import de.linusdev.lutils.html.lhtml.LhtmlPlaceholderAttribute;
+import de.linusdev.lutils.html.lhtml.LhtmlPlaceholderElement;
+import de.linusdev.lutils.html.lhtml.LhtmlTemplateElement;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
@@ -26,7 +30,10 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.function.Consumer;
 
-public class LhtmlTemplateSkeleton {
+/**
+ * {@link LhtmlSkeleton} for a {@link LhtmlTemplateElement}.
+ */
+public class LhtmlTemplateSkeleton implements LhtmlSkeleton {
 
     protected final @NotNull String id;
     protected final @NotNull HashMap<String, LhtmlTemplateSkeleton> templates;
@@ -43,6 +50,7 @@ public class LhtmlTemplateSkeleton {
         this.actual = actual;
     }
 
+    @Override
     public @NotNull LhtmlTemplateElement copy() {
         EditableHtmlElement copy = actual.copy();
         Map<String, LhtmlPlaceholder> placeholders = new HashMap<>();
@@ -52,12 +60,12 @@ public class LhtmlTemplateSkeleton {
             if(object.type() == HtmlObjectType.ELEMENT) {
                 object.asHtmlElement().iterateAttributes(attribute -> {
                     if(attribute instanceof LhtmlPlaceholderAttribute placeholderAttr) {
-                        placeholderAttr.setValues(replaceValues);
+                        placeholderAttr.setReplaceValues(replaceValues);
                     }
                 });
 
                 if(object instanceof LhtmlPlaceholderElement placeholderEle) {
-                    LhtmlPlaceholder holder = placeholders.computeIfAbsent(placeholderEle.getId(), s -> new LhtmlPlaceholder());
+                    LhtmlPlaceholder holder = placeholders.computeIfAbsent(placeholderEle.getId(), LhtmlPlaceholder::new);
                     holder.addPlaceholderElement(placeholderEle);
                 }
             }
@@ -68,10 +76,12 @@ public class LhtmlTemplateSkeleton {
         return new LhtmlTemplateElement(id, copy, placeholders, templates, replaceValues);
     }
 
+    @Override
     public @NotNull String getId() {
         return id;
     }
 
+    @Override
     public @NotNull LhtmlTemplateElement getTemplate(@NotNull String id) {
         return Objects.requireNonNull(templates.get(id)).copy();
     }

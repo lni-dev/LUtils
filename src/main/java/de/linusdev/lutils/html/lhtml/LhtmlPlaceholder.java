@@ -18,20 +18,32 @@ package de.linusdev.lutils.html.lhtml;
 
 import de.linusdev.lutils.html.HtmlAddable;
 import de.linusdev.lutils.html.HtmlObject;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class LhtmlPlaceholder implements HtmlAddable {
+/**
+ * A meta placeholder. A placeholder's html can be changed using the methods of {@link HtmlAddable}.
+ * The change will be reflected in all {@link LhtmlPlaceholderElement}s in the parent with the same {@link #getId() id}.
+ */
+public class LhtmlPlaceholder implements HtmlAddable, LhtmlIdentifiable {
 
     protected final @NotNull List<LhtmlPlaceholderElement> elements;
+    private final @NotNull String id;
 
-    public LhtmlPlaceholder() {
+    public LhtmlPlaceholder(@NotNull String id) {
+        this.id = id;
         this.elements = new ArrayList<>(1);
     }
 
-    void addPlaceholderElement(@NotNull LhtmlPlaceholderElement element) {
+    /**
+     * Add a placeholder element with the same {@link #getId() id}. Called when constructing a {@link LhtmlPlaceholder}.
+     */
+    @ApiStatus.Internal
+    public void addPlaceholderElement(@NotNull LhtmlPlaceholderElement element) {
+        assert getId().equals(element.getId());
         this.elements.add(element);
     }
 
@@ -40,5 +52,10 @@ public class LhtmlPlaceholder implements HtmlAddable {
         for (LhtmlPlaceholderElement element : elements) {
             element.addContent(object);
         }
+    }
+
+    @Override
+    public @NotNull String getId() {
+        return id;
     }
 }

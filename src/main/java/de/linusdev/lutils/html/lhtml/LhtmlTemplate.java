@@ -19,9 +19,17 @@ package de.linusdev.lutils.html.lhtml;
 import de.linusdev.lutils.html.HtmlAddable;
 import org.jetbrains.annotations.NotNull;
 
-public interface LhtmlElement {
+public interface LhtmlTemplate extends LhtmlIdentifiable, LhtmlHasTemplates {
 
+    /**
+     * Get the placeholder with given {@code id} of this template. If no such placeholder exists,
+     * a {@link NullPointerException} will be thrown.
+     */
     @NotNull HtmlAddable getPlaceholder(@NotNull String id);
 
-    @NotNull LhtmlTemplateElement getTemplate(@NotNull String id);
+    /**
+     * Set the replace-value with given {@code key} to given {@code value}.
+     */
+    void setValue(@NotNull String key, @NotNull String value);
+
 }

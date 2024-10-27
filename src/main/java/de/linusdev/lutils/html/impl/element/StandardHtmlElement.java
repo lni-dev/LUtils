@@ -28,24 +28,28 @@ import org.jetbrains.annotations.Nullable;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
 import static de.linusdev.lutils.html.parser.AttrReaderState.*;
 
+/**
+ * A normal {@link HtmlElement}.
+ * @see Parser
+ * @see Builder
+ * @see Type
+ */
 public class StandardHtmlElement implements EditableHtmlElement {
 
     protected final @NotNull Type tag;
     protected final @NotNull List<@NotNull HtmlObject> content;
-    protected final @NotNull Map<String, HtmlAttribute> attributes;
+    protected final @NotNull HtmlAttributeMap attributes;
 
     protected StandardHtmlElement(
             @NotNull Type tag,
             @NotNull List<@NotNull HtmlObject> content,
-            @NotNull Map<String, HtmlAttribute> attributes
+            @NotNull HtmlAttributeMap attributes
     ) {
         this.tag = tag;
         this.content = content;
@@ -68,17 +72,17 @@ public class StandardHtmlElement implements EditableHtmlElement {
     }
 
     @Override
-    public @NotNull Map<String,HtmlAttribute> attributes() {
+    public @NotNull HtmlAttributeMap attributes() {
         return attributes;
     }
 
     @Override
     public @NotNull StandardHtmlElement copy() {
         List<@NotNull HtmlObject> content = new ArrayList<>(this.content.size());
-        Map<String, HtmlAttribute> attributes = new HashMap<>(this.attributes.size());
+        HtmlAttributeMap attributes = new HtmlAttributeMap();
 
         this.content.forEach(object -> content.add(object.copy()));
-        this.attributes.forEach((key, attr) -> attributes.put(key, attr.copy()));
+        this.attributes.forEach((attr) -> attributes.put(attr.copy()));
         
         return new StandardHtmlElement(tag, content, attributes);
     }
@@ -87,7 +91,7 @@ public class StandardHtmlElement implements EditableHtmlElement {
     public void write(@NotNull HtmlWritingState state, @NotNull Writer writer) throws IOException {
         writer.append("<").append(tag.name());
 
-        for (HtmlAttribute attr : attributes.values()) {
+        for (HtmlAttribute attr : attributes) {
             writer.append(" ");
             attr.write(state, writer);
         }
@@ -171,6 +175,7 @@ public class StandardHtmlElement implements EditableHtmlElement {
         /**
          * Same as {@link #newInline(String)}, but with a custom builder supplied by {@code builder}.
          */
+        @SuppressWarnings("unused")
         public static <B extends StandardHtmlElement.Builder> @NotNull CustomType<B> newCustomInline(
                 Function<@NotNull CustomType<B>, @NotNull B> builder,
                 @NotNull String name
@@ -181,6 +186,7 @@ public class StandardHtmlElement implements EditableHtmlElement {
         /**
          * Same as {@link #newVoid(String)}, but with a custom builder supplied by {@code builder}.
          */
+        @SuppressWarnings("unused")
         public static <B extends StandardHtmlElement.Builder> @NotNull CustomType<B> newCustomVoid(
                 Function<@NotNull CustomType<B>, @NotNull B> builder,
                 @NotNull String name
@@ -247,12 +253,12 @@ public class StandardHtmlElement implements EditableHtmlElement {
 
         protected final @NotNull Type tag;
         protected final @NotNull List<@NotNull HtmlObject> content;
-        protected final @NotNull Map<String, HtmlAttribute> attributes;
+        protected final @NotNull HtmlAttributeMap attributes;
 
         public Builder(@NotNull Type tag) {
             this.tag = tag;
             this.content = new ArrayList<>();
-            this.attributes = new HashMap<>();
+            this.attributes = new HtmlAttributeMap();
         }
 
         public void addContent(@NotNull HtmlObject object) {
@@ -267,23 +273,23 @@ public class StandardHtmlElement implements EditableHtmlElement {
             addContent(builder.build());
         }
 
-        public void addAttribute(@NotNull HtmlAttributeType type, @Nullable String value) {
+        public void addAttribute(@NotNull HtmlAttributeType<?> type, @Nullable String value) {
             HtmlAttribute attribute = onAttributeAdd(new StandardHtmlAttribute(type, value));
             if(attribute != null)
-                attributes.put(attribute.type().name(), attribute);
+                attributes.put(attribute);
         }
 
         public void addAttribute(@NotNull HtmlAttribute attribute) {
             attribute = onAttributeAdd(attribute);
             if(attribute != null)
-                attributes.put(attribute.type().name(), attribute);
+                attributes.put(attribute);
         }
 
         public void addText(@NotNull String text) {
             addContent(new HtmlText(text));
         }
 
-        public @NotNull Map<String, HtmlAttribute> getCurrentAttributes() {
+        public @NotNull HtmlAttributeMap getCurrentAttributes() {
             return attributes;
         }
 
@@ -343,7 +349,7 @@ public class StandardHtmlElement implements EditableHtmlElement {
 
                     if(attrReader.state == TAG_SELF_CLOSE) {
                         if(name != null) {
-                            HtmlAttributeType attrType = state.getRegistry().getAttributeTypeByName(name);
+                            HtmlAttributeType<?> attrType = state.getRegistry().getAttributeTypeByName(name);
                             HtmlAttribute attribute = state.onAttributeParsed(attrType, null);
                             if(attribute != null)
                                 builder.addAttribute(attrType, null);
@@ -352,12 +358,12 @@ public class StandardHtmlElement implements EditableHtmlElement {
                         return builder.build();
                     } else if(attrReader.state == ATTR_VALUE) {
                         String value = attrReader.readAttributeValue();
-                        HtmlAttributeType attrType = state.getRegistry().getAttributeTypeByName(name);
+                        HtmlAttributeType<?> attrType = state.getRegistry().getAttributeTypeByName(name);
                         HtmlAttribute attribute = state.onAttributeParsed(attrType, value);
                         if(attribute != null)
                             builder.addAttribute(attribute);
                     } else if(name != null) {
-                        HtmlAttributeType attrType = state.getRegistry().getAttributeTypeByName(name);
+                        HtmlAttributeType<?> attrType = state.getRegistry().getAttributeTypeByName(name);
                         HtmlAttribute attribute = state.onAttributeParsed(attrType, null);
                         if(attribute != null)
                             builder.addAttribute(attribute);

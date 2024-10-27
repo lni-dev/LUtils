@@ -28,7 +28,7 @@ public interface HtmlAttribute extends HtmlWritable{
     /**
      * The type of the attribute
      */
-    @NotNull HtmlAttributeType type();
+    @NotNull HtmlAttributeType<?> type();
 
     /**
      * Attribute value or {@code null} if this attribute has no value.

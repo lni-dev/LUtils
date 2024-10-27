@@ -20,14 +20,12 @@ import de.linusdev.lutils.html.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Map;
-
 /**
  * Injector called by {@link HtmlObjectParser}, when parsing html elements.
  */
 public interface HtmlParserInjector {
 
-    @Nullable HtmlAttribute onAttributeParsed(@NotNull HtmlAttributeType type, @Nullable String value);
+    @Nullable HtmlAttribute onAttributeParsed(@NotNull HtmlAttributeType<?> type, @Nullable String value);
 
     /**
      * Called when content of a parent element is parsed.
@@ -37,7 +35,7 @@ public interface HtmlParserInjector {
      */
     int onStartParsingContent(
             @NotNull HtmlElementType<?> tag,
-            @NotNull Map<String, HtmlAttribute> attributes
+            @NotNull HtmlAttributeMap attributes
     );
 
     /**
@@ -49,7 +47,7 @@ public interface HtmlParserInjector {
 
     /**
      * Finished parsing content of the parent with given {@code id}
-     * @param id id returned by {@link #onStartParsingContent(HtmlElementType, Map)}.
+     * @param id id returned by {@link #onStartParsingContent(HtmlElementType, HtmlAttributeMap)}.
      */
     void onEndParsingContent(int id);
 }

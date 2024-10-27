@@ -17,6 +17,7 @@
 package de.linusdev.lutils.html.lhtml;
 
 import de.linusdev.lutils.html.*;
+import de.linusdev.lutils.html.impl.StandardHtmlAttributeTypes;
 import de.linusdev.lutils.html.impl.element.StandardHtmlElement;
 import de.linusdev.lutils.html.impl.element.StandardHtmlElementTypes;
 import org.jetbrains.annotations.NotNull;
@@ -24,10 +25,17 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
+/**
+ * Head element for {@link LhtmlPage}s.
+ * @see #TYPE
+ * @see Builder
+ */
 public class LhtmlHead extends StandardHtmlElement {
 
+    /**
+     * {@link HtmlElementType}.
+     */
     public static final @NotNull CustomType<LhtmlHead.Builder> TYPE = StandardHtmlElement.Type.newCustom(Builder::new, "head");
 
     protected final @NotNull HashMap<String, HtmlElement> links;
@@ -35,19 +43,26 @@ public class LhtmlHead extends StandardHtmlElement {
     protected LhtmlHead(
             @NotNull Type tag,
             @NotNull List<@NotNull HtmlObject> content,
-            @NotNull Map<String, HtmlAttribute> attributes,
+            @NotNull HtmlAttributeMap attributes,
             @NotNull HashMap<String, HtmlElement> links
     ) {
         super(tag, content, attributes);
         this.links = links;
     }
 
+    /**
+     * Add a link to this head. The link must have the same element type name as the element type
+     * {@link StandardHtmlElementTypes#LINK link}
+     * and must have a {@link StandardHtmlAttributeTypes#HREF href} attribute. If a link with the same
+     * {@link StandardHtmlAttributeTypes#HREF href} already exists, it will not be added again.
+     * @param element the link
+     */
     public void addLink(@NotNull HtmlElement element) {
 
         if(!HtmlElementType.equals(StandardHtmlElementTypes.LINK, element.tag()))
             throw new IllegalArgumentException("Given element is not a link, but it is '" + element.tag().name() + "'.");
 
-        HtmlAttribute hrefAttr = element.attributes().get("href");
+        HtmlAttribute hrefAttr = element.attributes().get(StandardHtmlAttributeTypes.HREF);
 
         if(hrefAttr == null)
             throw new IllegalArgumentException("Given link has no href attribute.");
@@ -59,12 +74,19 @@ public class LhtmlHead extends StandardHtmlElement {
         links.put(hrefAttr.value(), element);
     }
 
+    /**
+     * {@link #addLink(HtmlElement) Adds} all links of given {@link LhtmlHead} to this.
+     */
+    @SuppressWarnings("unused")
     public void addLinks(@NotNull LhtmlHead other) {
         for (HtmlElement link : other.links.values()) {
             addLink(link);
         }
     }
 
+    /**
+     * Builder to build {@link LhtmlHead}s.
+     */
     public static class Builder extends StandardHtmlElement.Builder {
 
         protected final @NotNull HashMap<String, HtmlElement> links;
@@ -82,7 +104,7 @@ public class LhtmlHead extends StandardHtmlElement {
             HtmlElement element = object.asHtmlElement();
 
             if(HtmlElementType.equals(StandardHtmlElementTypes.LINK, element.tag())) {
-                HtmlAttribute hrefAttr = element.attributes().get("href");
+                HtmlAttribute hrefAttr = element.attributes().get(StandardHtmlAttributeTypes.HREF);
 
                 if(hrefAttr == null)
                     return super.onContentAdd(object);

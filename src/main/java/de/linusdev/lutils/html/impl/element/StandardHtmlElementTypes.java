@@ -21,6 +21,10 @@ import org.jetbrains.annotations.NotNull;
 
 import static de.linusdev.lutils.html.impl.element.StandardHtmlElement.Type.*;
 
+/**
+ * Some standard html element types.
+ * @see #VALUES
+ */
 public class StandardHtmlElementTypes {
     public final static @NotNull StandardHtmlElement.Type HTML       =      newNormal("html");
     public final static @NotNull StandardHtmlElement.Type HEAD       =      newNormal("head");
@@ -60,42 +64,11 @@ public class StandardHtmlElementTypes {
     public final static @NotNull StandardHtmlElement.Type WBR        =      newVoid("wbr");
 
     public final static @NotNull HtmlElementType<?> @NotNull [] VALUES = new HtmlElementType[] {
-            HTML,
-            HEAD,
-            BODY,
-            DIV,
-            A,
-            BUTTON,
-            OL,
-            UL,
-            LI,
-            VIDEO,
+            HTML, HEAD, BODY, DIV, A, BUTTON, OL, UL, LI, VIDEO,
 
-            TITLE,
-            PARAGRAPH,
-            SPAN,
-            H1,
-            H2,
-            H3,
-            H4,
-            H5,
-            H6,
-            B,
-            STRONG,
+            TITLE, PARAGRAPH, SPAN, H1, H2, H3, H4, H5, H6, B, STRONG,
 
-            AREA,
-            BASE,
-            BR,
-            COL,
-            EMBED,
-            HR,
-            IMG,
-            INPUT,
-            LINK,
-            META,
-            SOURCE,
-            TRACK,
-            WBR,
+            AREA, BASE, BR, COL, EMBED, HR, IMG, INPUT, LINK, META, SOURCE, TRACK, WBR,
     };
 
     private StandardHtmlElementTypes() { }

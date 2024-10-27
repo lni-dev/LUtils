@@ -19,6 +19,7 @@ package de.linusdev.lutils.html.lhtml;
 import de.linusdev.lutils.html.HtmlAttribute;
 import de.linusdev.lutils.html.HtmlAttributeType;
 import de.linusdev.lutils.other.str.ConstructableString;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -26,30 +27,42 @@ import java.util.Map;
 
 public class LhtmlPlaceholderAttribute implements HtmlAttribute {
 
-    private final @NotNull HtmlAttributeType type;
+    private final @NotNull HtmlAttributeType<?> type;
+    /**
+     * The value, which can be constructed.
+     */
     private final @NotNull ConstructableString value;
-    private Map<String, String> values;
+    /**
+     * Replace-values map.
+     */
+    private Map<String, String> replaceValues;
 
     public LhtmlPlaceholderAttribute(
-            @NotNull HtmlAttributeType type,
+            @NotNull HtmlAttributeType<?> type,
             @NotNull ConstructableString value
     ) {
         this.type = type;
         this.value = value;
     }
 
-    public void setValues(@NotNull Map<String, String> values) {
-        this.values = values;
+    /**
+     * Must be called by the parent lhtml-element to the set replace-values map
+     * which will be used, when {@link #value} is {@link ConstructableString#construct(Map) constructed}.
+     * @param replaceValues the parent's replace-values map.
+     */
+    @ApiStatus.Internal
+    public void setReplaceValues(@NotNull Map<String, String> replaceValues) {
+        this.replaceValues = replaceValues;
     }
 
     @Override
-    public @NotNull HtmlAttributeType type() {
+    public @NotNull HtmlAttributeType<?> type() {
         return type;
     }
 
     @Override
     public @Nullable String value() {
-        return value.construct(values);
+        return value.construct(replaceValues);
     }
 
     @Override

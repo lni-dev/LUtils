@@ -19,6 +19,8 @@ package de.linusdev.lutils.html.lhtml;
 import de.linusdev.lutils.html.*;
 import de.linusdev.lutils.html.impl.HtmlPage;
 import de.linusdev.lutils.html.impl.element.StandardHtmlElementTypes;
+import de.linusdev.lutils.html.lhtml.skeleton.LhtmlPageSkeleton;
+import de.linusdev.lutils.html.lhtml.skeleton.LhtmlTemplateSkeleton;
 import de.linusdev.lutils.html.parser.*;
 import org.jetbrains.annotations.NotNull;
 
@@ -32,7 +34,15 @@ import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 
-public class LhtmlPage implements HtmlObject, HasHtmlContent, LhtmlElement {
+/**
+ * lhtml page created by a {@link LhtmlPageSkeleton}.
+ */
+public class LhtmlPage implements HtmlObject, HasHtmlContent, LhtmlTemplate {
+
+    /**
+     * The id of all pages.
+     */
+    public static final @NotNull String ID = "page";
 
     public static @NotNull LhtmlPageSkeleton parse(@NotNull HtmlParser parser, @NotNull Reader reader) throws IOException, ParseException {
         LhtmlInjector injector = new LhtmlInjector();
@@ -67,9 +77,29 @@ public class LhtmlPage implements HtmlObject, HasHtmlContent, LhtmlElement {
         this.body = body;
     }
 
+    /**
+     * The {@link LhtmlHead head} of this page.
+     */
+    public @NotNull LhtmlHead getHead() {
+        return head;
+    }
 
+    /**
+     * The body of this page.
+     */
+    public @NotNull HtmlElement getBody() {
+        return body;
+    }
+
+
+    @Override
     public @NotNull HtmlAddable getPlaceholder(@NotNull String id) {
         return Objects.requireNonNull(placeholders.get(id), "No template found with id '" + id + "'.");
+    }
+
+    @Override
+    public void setValue(@NotNull String key, @NotNull String value) {
+        replaceValues.put(key, value);
     }
 
     public @NotNull LhtmlTemplateElement getTemplate(@NotNull String id) {
@@ -79,14 +109,6 @@ public class LhtmlPage implements HtmlObject, HasHtmlContent, LhtmlElement {
     @Override
     public @NotNull HtmlObjectType type() {
         return HtmlObjectType.PAGE;
-    }
-
-    public @NotNull LhtmlHead getHead() {
-        return head;
-    }
-
-    public @NotNull HtmlElement getBody() {
-        return body;
     }
 
     @Override
@@ -103,12 +125,12 @@ public class LhtmlPage implements HtmlObject, HasHtmlContent, LhtmlElement {
 
                 element.iterateAttributes(attribute -> {
                     if(attribute instanceof LhtmlPlaceholderAttribute placeholderAttr) {
-                        placeholderAttr.setValues(replaceValues);
+                        placeholderAttr.setReplaceValues(replaceValues);
                     }
                 });
 
                 if(element instanceof LhtmlPlaceholderElement placeholderEle) {
-                    LhtmlPlaceholder holder = placeholders.computeIfAbsent(placeholderEle.getId(), s -> new LhtmlPlaceholder());
+                    LhtmlPlaceholder holder = placeholders.computeIfAbsent(placeholderEle.getId(), LhtmlPlaceholder::new);
                     holder.addPlaceholderElement(placeholderEle);
                 }
 
@@ -133,5 +155,10 @@ public class LhtmlPage implements HtmlObject, HasHtmlContent, LhtmlElement {
     @Override
     public @NotNull List<@NotNull HtmlObject> content() {
         return actual.content();
+    }
+
+    @Override
+    public @NotNull String getId() {
+        return ID;
     }
 }

@@ -22,7 +22,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public record StandardHtmlAttribute(
-        @NotNull HtmlAttributeType type,
+        @NotNull HtmlAttributeType<?> type,
         @Nullable String value
 ) implements HtmlAttribute {
 

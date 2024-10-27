@@ -21,8 +21,6 @@ import de.linusdev.lutils.html.impl.StandardHtmlAttribute;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Map;
-
 /**
  * Parser state, passed to {@link HtmlObjectParser}, so they can access {@link #injector}.
  */
@@ -62,13 +60,13 @@ public class HtmlParserState implements HtmlParserInjector {
     }
 
     @Override
-    public @Nullable HtmlAttribute onAttributeParsed(@NotNull HtmlAttributeType type, @Nullable String value) {
+    public @Nullable HtmlAttribute onAttributeParsed(@NotNull HtmlAttributeType<?> type, @Nullable String value) {
         if(injector == null) return new StandardHtmlAttribute(type, value);
         return injector.onAttributeParsed(type, value);
     }
 
     @Override
-    public int onStartParsingContent(@NotNull HtmlElementType<?> tag, @NotNull Map<String, HtmlAttribute> attributes) {
+    public int onStartParsingContent(@NotNull HtmlElementType<?> tag, @NotNull HtmlAttributeMap attributes) {
         if(injector == null) return 0;
         return injector.onStartParsingContent(tag, attributes);
     }

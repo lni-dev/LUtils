@@ -23,9 +23,12 @@ import org.jetbrains.annotations.NotNull;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.List;
-import java.util.Map;
 
-public class LhtmlPlaceholderElement implements EditableHtmlElement {
+/**
+ * All elements, that have the {@link Lhtml#ATTR_PLACEHOLDER placeholder attribute} will be converted to
+ * this element by the {@link LhtmlInjector}.
+ */
+public class LhtmlPlaceholderElement implements EditableHtmlElement, LhtmlIdentifiable {
 
     private final @NotNull String id;
     private final @NotNull EditableHtmlElement actual;
@@ -46,7 +49,7 @@ public class LhtmlPlaceholderElement implements EditableHtmlElement {
     }
 
     @Override
-    public @NotNull Map<String, HtmlAttribute> attributes() {
+    public @NotNull HtmlAttributeMap attributes() {
         return actual.attributes();
     }
 
@@ -60,6 +63,7 @@ public class LhtmlPlaceholderElement implements EditableHtmlElement {
         return new LhtmlPlaceholderElement(id, actual.copy());
     }
 
+    @Override
     public @NotNull String getId() {
         return id;
     }

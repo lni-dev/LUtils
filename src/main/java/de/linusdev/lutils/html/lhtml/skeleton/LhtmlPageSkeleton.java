@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package de.linusdev.lutils.html.lhtml;
+package de.linusdev.lutils.html.lhtml.skeleton;
 
 import de.linusdev.lutils.html.HtmlElement;
 import de.linusdev.lutils.html.HtmlElementType;
@@ -22,6 +22,7 @@ import de.linusdev.lutils.html.HtmlObject;
 import de.linusdev.lutils.html.HtmlObjectType;
 import de.linusdev.lutils.html.impl.HtmlPage;
 import de.linusdev.lutils.html.impl.element.StandardHtmlElementTypes;
+import de.linusdev.lutils.html.lhtml.*;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
@@ -30,7 +31,10 @@ import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 
-public class LhtmlPageSkeleton {
+/**
+ * Skeleton for {@link LhtmlPage}.
+ */
+public class LhtmlPageSkeleton implements LhtmlSkeleton{
 
     protected final @NotNull HtmlPage actual;
     protected final @NotNull Map<String, LhtmlTemplateSkeleton> templates;
@@ -60,12 +64,12 @@ public class LhtmlPageSkeleton {
 
                 element.iterateAttributes(attribute -> {
                     if(attribute instanceof LhtmlPlaceholderAttribute placeholderAttr) {
-                        placeholderAttr.setValues(replaceValues);
+                        placeholderAttr.setReplaceValues(replaceValues);
                     }
                 });
 
                 if(element instanceof LhtmlPlaceholderElement placeholderEle) {
-                    LhtmlPlaceholder holder = placeholders.computeIfAbsent(placeholderEle.getId(), s -> new LhtmlPlaceholder());
+                    LhtmlPlaceholder holder = placeholders.computeIfAbsent(placeholderEle.getId(), LhtmlPlaceholder::new);
                     holder.addPlaceholderElement(placeholderEle);
                 }
 
@@ -82,4 +86,8 @@ public class LhtmlPageSkeleton {
         return new LhtmlPage(copy, placeholders, templates, replaceValues, head.get(), body.get());
     }
 
+    @Override
+    public @NotNull String getId() {
+        return LhtmlPage.ID;
+    }
 }

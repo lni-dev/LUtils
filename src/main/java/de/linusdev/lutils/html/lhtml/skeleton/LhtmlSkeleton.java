@@ -14,24 +14,18 @@
  * limitations under the License.
  */
 
-package de.linusdev.lutils.html;
+package de.linusdev.lutils.html.lhtml.skeleton;
 
+import de.linusdev.lutils.html.lhtml.LhtmlHasTemplates;
+import de.linusdev.lutils.html.lhtml.LhtmlIdentifiable;
+import de.linusdev.lutils.html.lhtml.LhtmlTemplate;
 import org.jetbrains.annotations.NotNull;
 
-public interface HtmlAttributeType<V> {
+public interface LhtmlSkeleton extends LhtmlHasTemplates, LhtmlIdentifiable {
 
     /**
-     * {@link Object#hashCode() Hashcode} method all classes implementing this interface should use.
+     * Creates a new {@link LhtmlTemplate} of this skeleton.
      */
-    static int hashcode(@NotNull HtmlAttributeType<?> type) {
-        return type.name().hashCode();
-    }
-
-    /**
-     * Name or key of the attribute.
-     */
-    @NotNull String name();
-
-    @NotNull V convertValue(@NotNull HtmlAttribute attribute);
+    @NotNull LhtmlTemplate copy();
 
 }

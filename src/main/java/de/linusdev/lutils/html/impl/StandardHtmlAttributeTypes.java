@@ -20,16 +20,22 @@ import de.linusdev.lutils.html.HtmlAttribute;
 import de.linusdev.lutils.html.HtmlAttributeType;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * Some standard html attribute types.
+ * @see #VALUES
+ */
 public class StandardHtmlAttributeTypes {
-    public static final @NotNull Type<String[]> CLASS = new ListType("class");
-    public static final @NotNull Type<String> ID = new StringType("id");
+    public static final @NotNull HtmlAttributeType<String[]> CLASS = new ListType("class");
+    public static final @NotNull HtmlAttributeType<String> ID = new StringType("id");
+    public static final @NotNull HtmlAttributeType<String> HREF = new StringType("href");
 
-    public static final @NotNull HtmlAttributeType @NotNull [] VALUES = new HtmlAttributeType[] {
+    public static final @NotNull HtmlAttributeType<?> @NotNull [] VALUES = new HtmlAttributeType[] {
             CLASS,
-            ID
+            ID,
+            HREF
     };
 
-    public static abstract class Type<V> implements HtmlAttributeType {
+    public static abstract class Type<V> implements HtmlAttributeType<V> {
 
         private final @NotNull String name;
 
@@ -42,7 +48,10 @@ public class StandardHtmlAttributeTypes {
             return name;
         }
 
-        public abstract @NotNull V convertValue(@NotNull HtmlAttribute attribute);
+        @Override
+        public int hashCode() {
+            return HtmlAttributeType.hashcode(this);
+        }
     }
 
     public static class StringType extends Type<String> {

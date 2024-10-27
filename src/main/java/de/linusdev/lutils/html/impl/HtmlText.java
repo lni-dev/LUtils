@@ -28,6 +28,10 @@ import java.io.EOFException;
 import java.io.IOException;
 import java.io.Writer;
 
+/**
+ * html text object.
+ * @see HtmlObjectType#TEXT
+ */
 public class HtmlText implements HtmlObject {
 
     public static final @NotNull HtmlObjectParser<HtmlText> PARSER =

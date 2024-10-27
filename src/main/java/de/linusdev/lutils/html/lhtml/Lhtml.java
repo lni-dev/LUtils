@@ -16,19 +16,40 @@
 
 package de.linusdev.lutils.html.lhtml;
 
+import de.linusdev.lutils.html.impl.StandardHtmlAttributeTypes;
+import de.linusdev.lutils.html.lhtml.skeleton.LhtmlPageSkeleton;
+import de.linusdev.lutils.html.parser.HtmlParser;
+import de.linusdev.lutils.html.parser.ParseException;
 import de.linusdev.lutils.html.parser.Registry;
 import org.jetbrains.annotations.NotNull;
 
+import java.io.IOException;
+import java.io.Reader;
+
 public class Lhtml {
 
+    public static final @NotNull StandardHtmlAttributeTypes.StringType ATTR_TEMPLATE = new StandardHtmlAttributeTypes.StringType("lhtml-template");
+    public static final @NotNull StandardHtmlAttributeTypes.StringType ATTR_PLACEHOLDER = new StandardHtmlAttributeTypes.StringType("lhtml-placeholder");
+
+    public static final @NotNull HtmlParser PARSER = new HtmlParser(getRegistry().build());
+
     /**
-     * {@link Registry.Builder} required when parsing any {@link LhtmlElement}.
+     * {@link Registry.Builder} required when parsing any {@link LhtmlTemplate}.
      */
     public static @NotNull Registry.Builder getRegistry() {
         Registry.Builder builder = Registry.getDefault();
         builder.putElement(LhtmlHead.TYPE);
+        builder.addAttribute(ATTR_TEMPLATE);
+        builder.addAttribute(ATTR_PLACEHOLDER);
 
         return builder;
+    }
+
+    /**
+     * Convenience method to parse a lhtml page.
+     */
+    public static @NotNull LhtmlPageSkeleton parsePage(@NotNull Reader reader) throws IOException, ParseException {
+        return LhtmlPage.parse(PARSER, reader);
     }
 
 }

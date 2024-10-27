@@ -19,8 +19,14 @@ package de.linusdev.lutils.html.builder;
 import de.linusdev.lutils.html.HtmlElement;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * Interface for html element builders
+ */
 public interface HtmlElementBuilder {
 
+    /**
+     * Build the element.
+     */
     @NotNull HtmlElement build();
 
 }

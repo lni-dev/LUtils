@@ -14,17 +14,26 @@
  * limitations under the License.
  */
 
-package de.linusdev.lutils.html.lhtml;
+package de.linusdev.lutils.html.lhtml.skeleton;
 
 import de.linusdev.lutils.html.EditableHtmlElement;
 import de.linusdev.lutils.html.HtmlElement;
 import de.linusdev.lutils.html.impl.HtmlPage;
+import de.linusdev.lutils.html.lhtml.LhtmlHead;
+import de.linusdev.lutils.html.lhtml.LhtmlInjector;
+import de.linusdev.lutils.html.lhtml.LhtmlPlaceholder;
+import de.linusdev.lutils.html.lhtml.LhtmlPlaceholderElement;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 
-public class LhtmlTemplateBuilder {
+/**
+ * Builder for {@link LhtmlPageSkeleton} and {@link LhtmlTemplateSkeleton} used by {@link LhtmlInjector}.
+ */
+@ApiStatus.Internal
+public class LhtmlSkeletonBuilder {
 
     private final @NotNull HashMap<String, LhtmlPlaceholder> placeholders = new HashMap<>();
     private final @NotNull HashMap<String, LhtmlTemplateSkeleton> templates = new HashMap<>();
@@ -32,7 +41,7 @@ public class LhtmlTemplateBuilder {
     private @Nullable HtmlElement body = null;
 
     public void addPlaceholder(@NotNull LhtmlPlaceholderElement element) {
-        LhtmlPlaceholder holder = placeholders.computeIfAbsent(element.getId(), s -> new LhtmlPlaceholder());
+        LhtmlPlaceholder holder = placeholders.computeIfAbsent(element.getId(), LhtmlPlaceholder::new);
         holder.addPlaceholderElement(element);
     }
 

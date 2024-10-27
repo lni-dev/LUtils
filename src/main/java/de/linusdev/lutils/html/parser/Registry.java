@@ -38,7 +38,7 @@ public class Registry {
     /**
      * All registered attribute types
      */
-    private final @NotNull HashMap<String, HtmlAttributeType> attributes;
+    private final @NotNull HashMap<String, HtmlAttributeType<?>> attributes;
 
     /**
      * Parser for doc-type elements ({@code <!doctype html>})
@@ -59,7 +59,7 @@ public class Registry {
     /**
      * Attribute type creator for attribute types not contained in {@link #attributes}.
      */
-    private final @NotNull Function<String, HtmlAttributeType> defaultAttributeType;
+    private final @NotNull Function<String, HtmlAttributeType<?>> defaultAttributeType;
 
 
     /**
@@ -72,7 +72,7 @@ public class Registry {
         for (@NotNull HtmlElementType<?> eleType : StandardHtmlElementTypes.VALUES)
             builder.putElement(eleType);
 
-        for (@NotNull HtmlAttributeType attrType : StandardHtmlAttributeTypes.VALUES)
+        for (@NotNull HtmlAttributeType<?> attrType : StandardHtmlAttributeTypes.VALUES)
             builder.addAttribute(attrType);
 
         return builder;
@@ -80,12 +80,12 @@ public class Registry {
 
     Registry(
             @NotNull HashMap<String, HtmlElementType<?>> elements,
-            @NotNull HashMap<String, HtmlAttributeType> attributes,
+            @NotNull HashMap<String, HtmlAttributeType<?>> attributes,
             @NotNull HtmlObjectParser<?> docTypeParser,
             @NotNull HtmlObjectParser<?> textParser,
             @NotNull HtmlObjectParser<?> commentParser,
             @NotNull Function<String, HtmlElementType<?>> defaultElementType,
-            @NotNull Function<String, HtmlAttributeType> defaultAttributeType
+            @NotNull Function<String, HtmlAttributeType<?>> defaultAttributeType
     ) {
         this.elements = elements;
         this.attributes = attributes;
@@ -110,8 +110,8 @@ public class Registry {
     /**
      * Get attribute type from {@link #attributes} or {@link #defaultAttributeType}.
      */
-    public @NotNull HtmlAttributeType getAttributeTypeByName(@NotNull String name) {
-        HtmlAttributeType type = attributes.get(name);
+    public @NotNull HtmlAttributeType<?> getAttributeTypeByName(@NotNull String name) {
+        HtmlAttributeType<?> type = attributes.get(name);
         if(type != null)
             return type;
 
@@ -133,19 +133,19 @@ public class Registry {
     @SuppressWarnings("unused")
     public static class Builder {
         private final @NotNull HashMap<String, HtmlElementType<?>> elements = new HashMap<>();
-        private final @NotNull HashMap<String, HtmlAttributeType> attributes = new HashMap<>();
+        private final @NotNull HashMap<String, HtmlAttributeType<?>> attributes = new HashMap<>();
 
         private @NotNull HtmlObjectParser<?> docTypeParser = HtmlDocType.PARSER;
         private @NotNull HtmlObjectParser<?> textParser = HtmlText.PARSER;
         private @NotNull HtmlObjectParser<?> commentParser = HtmlComment.PARSER;
         private @NotNull Function<String, HtmlElementType<?>> defaultElementType = StandardHtmlElement.Type::newInline;
-        private @NotNull Function<String, HtmlAttributeType> defaultAttributeType = StandardHtmlAttributeTypes.StringType::new;
+        private @NotNull Function<String, HtmlAttributeType<?>> defaultAttributeType = StandardHtmlAttributeTypes.StringType::new;
 
         public void putElement(@NotNull HtmlElementType<?> type) {
             elements.put(type.name(), type);
         }
 
-        public void addAttribute(@NotNull HtmlAttributeType type) {
+        public void addAttribute(@NotNull HtmlAttributeType<?> type) {
             if(attributes.put(type.name(), type) != null)
                 throw new IllegalStateException("Attribute with name '" + type.name() + "' already exists.");
         }
@@ -166,7 +166,7 @@ public class Registry {
             this.defaultElementType = defaultElementType;
         }
 
-        public void setDefaultAttributeType(@NotNull Function<String, HtmlAttributeType> defaultAttributeType) {
+        public void setDefaultAttributeType(@NotNull Function<String, HtmlAttributeType<?>> defaultAttributeType) {
             this.defaultAttributeType = defaultAttributeType;
         }
 

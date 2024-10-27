@@ -18,7 +18,6 @@ package de.linusdev.lutils.html;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Map;
 import java.util.function.Consumer;
 
 public interface HtmlElement extends HtmlObject, HasHtmlContent {
@@ -34,13 +33,13 @@ public interface HtmlElement extends HtmlObject, HasHtmlContent {
     default void iterateAttributes(
             @NotNull Consumer<HtmlAttribute> consumer
     ) {
-        attributes().forEach((s, attribute) -> consumer.accept(attribute));
+        attributes().forEach(consumer);
     }
 
     /**
      * Attributes of this html element.
      */
-    @NotNull Map<String, HtmlAttribute> attributes();
+    @NotNull HtmlAttributeMap attributes();
 
     @Override
     @NotNull HtmlElement copy();
