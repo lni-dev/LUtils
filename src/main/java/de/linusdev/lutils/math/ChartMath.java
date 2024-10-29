@@ -27,54 +27,39 @@ public class ChartMath {
      * @param leaningFactor between 0.0 and 1.0.<br>
      *                      <ul>
      *                          <li>
-     *                              1.0 means: Lean towards higher value labels / fewer labels<br>
+     *                              0.0 means: Lean towards higher value labels / fewer labels<br>
      *                              side effect: the highest label is more likely to be greater than max. It is more likely that the chart has some unused space at the top
      *                          </li>
      *                          <li>
-     *                              0.0 means: Lean towards lower value labels / more labels<br>
+     *                              1.0 means: Lean towards lower value labels / more labels<br>
      *                              side effect: the highest label is more likely to be less than max.
      *                          </li>
      *                      </ul>
      * @return label-value and label count
      */
     public static BiResult<Double, Integer> calcLabelValue(double max, int preferredLabelCount, double leaningFactor) {
-        double unnormalizedValue = max / preferredLabelCount;
-        double logV = Math.log10(unnormalizedValue);
-        double normalizeFactor = Math.pow(10, Math.floor(logV));
-        double normalizedValue = unnormalizedValue / normalizeFactor;
-
-        //System.out.println(normalizedValue);
-        if(normalizedValue >= leaningFactor) {
-            normalizedValue = 10.0;
-        } else if(normalizedValue > 3.33333333333333333){
-            normalizedValue = 5.0;
-        } else if (normalizedValue > 1.44224957030740838232) {
-            normalizedValue = 2.5;
-        } else {
-            normalizedValue = 1.0;
-        }
-
-        double value = normalizedValue * normalizeFactor;
-
-        if(value * (preferredLabelCount - 1) >= max)
-            preferredLabelCount--;
-        else if(value * (preferredLabelCount + 1) <= max)
-            preferredLabelCount++;
-
-        return new BiResult<>(value, preferredLabelCount);
+        return calcLabelValueTest(max, preferredLabelCount,
+                getFxx(F50_MIN, F50_MAX, preferredLabelCount, leaningFactor),
+                getFxx(F25_MIN, F25_MAX, preferredLabelCount, leaningFactor),
+                getFxx(F20_MIN, F20_MAX, preferredLabelCount, leaningFactor),
+                getFxx(F10_MIN, F10_MAX, preferredLabelCount, leaningFactor)
+        );
     }
 
-    protected static double[] F50_MAX = { 6.666 };
-    protected static double[] F50_MIN = { 6.666 };
+    //                                    2 NE/T             3 NE/T             4 NE/T             5 NE               6                   7                  8               9               10              11              12
+    protected static double[] F50_MAX = { 9.999999999999999, 6.666666666666666, 7.499999999999999, 6.999999999999999, 6.666649999987496, 7.157099999996525, };
+    protected static double[] F50_MIN = { 5.000000000000001, 5.000000000000001, 5.000000000000001, 6.000000000000001, 6.6650499999875, 6.414299999998256, };
 
-    protected static double[] F25_MAX = { 3.333 };
-    protected static double[] F25_MIN = { 3.333 };
+    //                                    2                  3                  4                  5                  6                  7                   8               9               10              11              12
+    protected static double[] F25_MAX = { 4.999999999999999, 4.166649999997801, 3.749999999999999, 3.499999999999999, 3.334950000002313, 3.5857000000026438, };
+    protected static double[] F25_MIN = { 2.500000000000001, 2.500000000000001, 2.500000000000001, 3.000000000000001, 3.3317000000023205, 3.2000000000018300, };
+    //                                    2                  3                  4                  5                  6                   7                   8               9               10              11              12
+    protected static double[] F20_MAX = { 2.499999999999999, 2.499999999999999, 2.499999999999999, 2.799999999999999, 2.4341490000282398, 2.4419000000007607, };
+    protected static double[] F20_MIN = { 2.000000000000001, 2.000000000000001, 2.000000000000001, 2.000000000000001, 2.2341500000002843, 1.7857999999998520, };
 
-    protected static double[] F20_MAX = { 1.442 };
-    protected static double[] F20_MIN = { 1.442 };
-
-    protected static double[] F10_MAX = { 1.0 };
-    protected static double[] F10_MIN = { 1.0 };
+    //                                    2                  3                  4                  5                  6             7               8               9               10              11              12
+    protected static double[] F10_MAX = { 1.999999999999999, 1.666666666666666, 1.499999999999999, 1.399999999999999, 1.3334833332987255, 1.999999999999, 1.999999999999, 1.999999999999, 1.999999999999, 1.999999999999, 1.999999999999 };
+    protected static double[] F10_MIN = { 1.000000000000001, 1.000000000000001, 1.000000000000001, 1.200000000000001, 1.3333833332987253, 1.211999999999, 1.284999999999, 1.248999999999, 1.190999999999, 1.172999999999, 1.158999999999 };
 
     protected static double getFxxMinMax(double[] fxxMinMax, int preferredLabelCount) {
         int index = preferredLabelCount - 2;
@@ -94,7 +79,6 @@ public class ChartMath {
         double normalizeFactor = Math.pow(10, Math.floor(logV));
         double normalizedValue = unnormalizedValue / normalizeFactor;
 
-        //System.out.println(normalizedValue);
         if(normalizedValue >= f50) {
             normalizedValue = 10.0;
         } else if(normalizedValue > f25){
