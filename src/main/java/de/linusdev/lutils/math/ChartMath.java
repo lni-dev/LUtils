@@ -64,19 +64,45 @@ public class ChartMath {
         return new BiResult<>(value, preferredLabelCount);
     }
 
-    public static BiResult<Double, Integer> calcLabelValueTest(double max, int preferredLabelCount, double f1, double f2, double f3) {
+    protected static double[] F50_MAX = { 6.666 };
+    protected static double[] F50_MIN = { 6.666 };
+
+    protected static double[] F25_MAX = { 3.333 };
+    protected static double[] F25_MIN = { 3.333 };
+
+    protected static double[] F20_MAX = { 1.442 };
+    protected static double[] F20_MIN = { 1.442 };
+
+    protected static double[] F10_MAX = { 1.0 };
+    protected static double[] F10_MIN = { 1.0 };
+
+    protected static double getFxxMinMax(double[] fxxMinMax, int preferredLabelCount) {
+        int index = preferredLabelCount - 2;
+        if(index >= fxxMinMax.length)
+            return fxxMinMax[fxxMinMax.length-1];
+        return fxxMinMax[index];
+    }
+
+    protected static double getFxx(double[] fxxMin, double[] fxxMax, int preferredLabelCount, double leaning) {
+        return LMath.interpolate(getFxxMinMax(fxxMin, preferredLabelCount), getFxxMinMax(fxxMax, preferredLabelCount), leaning);
+    }
+
+
+    public static BiResult<Double, Integer> calcLabelValueTest(double max, int preferredLabelCount, double f50, double f25, double f20, double f10) {
         double unnormalizedValue = max / preferredLabelCount;
         double logV = Math.log10(unnormalizedValue);
         double normalizeFactor = Math.pow(10, Math.floor(logV));
         double normalizedValue = unnormalizedValue / normalizeFactor;
 
         //System.out.println(normalizedValue);
-        if(normalizedValue >= f1) {
+        if(normalizedValue >= f50) {
             normalizedValue = 10.0;
-        } else if(normalizedValue > f2){
+        } else if(normalizedValue > f25){
             normalizedValue = 5.0;
-        } else if (normalizedValue > f3) {
+        } else if (normalizedValue > f20) {
             normalizedValue = 2.5;
+        } else if (normalizedValue > f10) {
+            normalizedValue = 2.0;
         } else {
             normalizedValue = 1.0;
         }
