@@ -29,7 +29,7 @@ class HtmlTest {
             body.addElement(StandardHtmlElementTypes.H1, h1 -> {
                 h1.addText("Hello World");
             });
-            body.addElement(StandardHtmlElementTypes.PARAGRAPH, p -> {
+            body.addElement(StandardHtmlElementTypes.P, p -> {
                 p.addText("This works wonderful");
             });
         });

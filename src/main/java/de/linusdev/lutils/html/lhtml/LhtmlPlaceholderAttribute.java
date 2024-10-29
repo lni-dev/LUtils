@@ -62,7 +62,12 @@ public class LhtmlPlaceholderAttribute implements HtmlAttribute {
 
     @Override
     public @Nullable String value() {
+        assert isReplaceValuesNotNull();
         return value.construct(replaceValues);
+    }
+
+    private boolean isReplaceValuesNotNull() {
+        return replaceValues != null;
     }
 
     @Override

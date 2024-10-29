@@ -40,14 +40,14 @@ public class SimpleHttpServer {
             while (keepAlive) {
                 try {
                     routing.route(serverSocket.accept());
-                } catch (IOException e) {
+                } catch (Throwable e) {
                     exceptionHandler.accept(e);
                 }
             }
 
             try {
                 serverSocket.close();
-            } catch (IOException e) {
+            } catch (Throwable e) {
                 exceptionHandler.accept(e);
             }
         },"simple-http-server");

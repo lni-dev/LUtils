@@ -23,11 +23,11 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.io.Writer;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.function.Consumer;
+
+import static de.linusdev.lutils.html.lhtml.skeleton.LhtmlTemplateSkeleton.createCopy;
 
 /**
  * A normal template element.
@@ -36,7 +36,7 @@ public class LhtmlTemplateElement implements EditableHtmlElement, LhtmlTemplate 
 
     protected final @NotNull String id;
     protected final @NotNull Map<String, LhtmlPlaceholder> placeholders;
-    protected final @NotNull HashMap<String, LhtmlTemplateSkeleton> templates;
+    protected final @NotNull Map<String, LhtmlTemplateSkeleton> templates;
     protected final @NotNull Map<String, String> replaceValues;
 
     protected final @NotNull EditableHtmlElement actual;
@@ -45,7 +45,7 @@ public class LhtmlTemplateElement implements EditableHtmlElement, LhtmlTemplate 
             @NotNull String id,
             @NotNull EditableHtmlElement actual,
             @NotNull Map<String, LhtmlPlaceholder> placeholders,
-            @NotNull HashMap<String, LhtmlTemplateSkeleton> templates,
+            @NotNull Map<String, LhtmlTemplateSkeleton> templates,
             @NotNull Map<String, String> replaceValues
     ) {
         this.id = id;
@@ -78,28 +78,7 @@ public class LhtmlTemplateElement implements EditableHtmlElement, LhtmlTemplate 
 
     @Override
     public @NotNull LhtmlTemplateElement copy() {
-        EditableHtmlElement copy = actual.copy();
-        Map<String, LhtmlPlaceholder> placeholders = new HashMap<>(this.placeholders.size());
-        Map<String, String> replaceValues = new HashMap<>();
-
-        Consumer<HtmlObject> consumer = object -> {
-            if(object.type() == HtmlObjectType.ELEMENT) {
-                object.asHtmlElement().iterateAttributes(attribute -> {
-                    if(attribute instanceof LhtmlPlaceholderAttribute placeholderAttr) {
-                        placeholderAttr.setReplaceValues(replaceValues);
-                    }
-                });
-
-                if(object instanceof LhtmlPlaceholderElement placeholderEle) {
-                    LhtmlPlaceholder holder = placeholders.computeIfAbsent(placeholderEle.getId(), LhtmlPlaceholder::new);
-                    holder.addPlaceholderElement(placeholderEle);
-                }
-            }
-        };
-
-        copy.iterateContentRecursive(consumer);
-
-        return new LhtmlTemplateElement(id, copy, placeholders, templates, replaceValues);
+        return createCopy(id, actual, templates);
     }
 
     @Override

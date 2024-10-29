@@ -42,12 +42,12 @@ import static de.linusdev.lutils.html.parser.AttrReaderState.*;
  */
 public class StandardHtmlElement implements EditableHtmlElement {
 
-    protected final @NotNull Type tag;
+    protected final @NotNull AbstractType<?> tag;
     protected final @NotNull List<@NotNull HtmlObject> content;
     protected final @NotNull HtmlAttributeMap attributes;
 
     protected StandardHtmlElement(
-            @NotNull Type tag,
+            @NotNull AbstractType<?> tag,
             @NotNull List<@NotNull HtmlObject> content,
             @NotNull HtmlAttributeMap attributes
     ) {
@@ -62,7 +62,7 @@ public class StandardHtmlElement implements EditableHtmlElement {
     }
 
     @Override
-    public @NotNull Type tag() {
+    public @NotNull AbstractType<?> tag() {
         return tag;
     }
 
@@ -78,13 +78,12 @@ public class StandardHtmlElement implements EditableHtmlElement {
 
     @Override
     public @NotNull StandardHtmlElement copy() {
-        List<@NotNull HtmlObject> content = new ArrayList<>(this.content.size());
-        HtmlAttributeMap attributes = new HtmlAttributeMap();
+        AbstractBuilder<?> builder = tag.builder();
 
-        this.content.forEach(object -> content.add(object.copy()));
-        this.attributes.forEach((attr) -> attributes.put(attr.copy()));
+        this.content.forEach(object -> builder.addContent(object.copy()));
+        this.attributes.forEach(attr -> builder.addAttribute(attr.copy()));
         
-        return new StandardHtmlElement(tag, content, attributes);
+        return builder.build();
     }
 
     @Override
@@ -122,7 +121,7 @@ public class StandardHtmlElement implements EditableHtmlElement {
         }
     }
 
-    public static class Type implements HtmlElementType<StandardHtmlElement.Builder> {
+    public static class Type extends AbstractType<Builder> {
 
         /**
          * Normal element with content and attributes. Will be written as
@@ -165,7 +164,7 @@ public class StandardHtmlElement implements EditableHtmlElement {
         /**
          * Same as {@link #newNormal(String)}, but with a custom builder supplied by {@code builder}.
          */
-        public static <B extends StandardHtmlElement.Builder> @NotNull CustomType<B> newCustom(
+        public static <B extends StandardHtmlElement.AbstractBuilder<?>> @NotNull CustomType<B> newCustom(
                 Function<@NotNull CustomType<B>, @NotNull B> builder,
                 @NotNull String name
         ) {
@@ -176,7 +175,7 @@ public class StandardHtmlElement implements EditableHtmlElement {
          * Same as {@link #newInline(String)}, but with a custom builder supplied by {@code builder}.
          */
         @SuppressWarnings("unused")
-        public static <B extends StandardHtmlElement.Builder> @NotNull CustomType<B> newCustomInline(
+        public static <B extends StandardHtmlElement.AbstractBuilder<B>> @NotNull CustomType<B> newCustomInline(
                 Function<@NotNull CustomType<B>, @NotNull B> builder,
                 @NotNull String name
         ) {
@@ -187,18 +186,30 @@ public class StandardHtmlElement implements EditableHtmlElement {
          * Same as {@link #newVoid(String)}, but with a custom builder supplied by {@code builder}.
          */
         @SuppressWarnings("unused")
-        public static <B extends StandardHtmlElement.Builder> @NotNull CustomType<B> newCustomVoid(
+        public static <B extends StandardHtmlElement.AbstractBuilder<B>> @NotNull CustomType<B> newCustomVoid(
                 Function<@NotNull CustomType<B>, @NotNull B> builder,
                 @NotNull String name
         ) {
             return new CustomType<>(builder, name, false, true);
         }
 
+        public Type(@NotNull String name, boolean inline, boolean voidElement) {
+            super(name, inline, voidElement);
+        }
+
+        @Override
+        public @NotNull Builder builder() {
+            return new Builder(this);
+        }
+
+    }
+    public static abstract class AbstractType<B extends AbstractBuilder<?>> implements HtmlElementType<B> {
+
         private final @NotNull String name;
         private final boolean inline;
         private final boolean voidElement;
 
-        public Type(@NotNull String name, boolean inline, boolean voidElement) {
+        public AbstractType(@NotNull String name, boolean inline, boolean voidElement) {
             this.name = name;
             this.inline = inline;
             this.voidElement = voidElement;
@@ -210,9 +221,7 @@ public class StandardHtmlElement implements EditableHtmlElement {
         }
 
         @Override
-        public @NotNull StandardHtmlElement.Builder builder() {
-            return new StandardHtmlElement.Builder(this);
-        }
+        public abstract @NotNull B builder();
 
         @Override
         public @NotNull HtmlObjectParser<? extends HtmlElement> parser() {
@@ -234,7 +243,7 @@ public class StandardHtmlElement implements EditableHtmlElement {
         }
     }
 
-    public static class CustomType<B extends StandardHtmlElement.Builder> extends Type {
+    public static class CustomType<B extends StandardHtmlElement.AbstractBuilder<?>> extends AbstractType<B> {
 
         protected final @NotNull Function<@NotNull CustomType<B>, @NotNull B> builder;
 
@@ -249,44 +258,54 @@ public class StandardHtmlElement implements EditableHtmlElement {
         }
     }
 
-    public static class Builder implements HtmlElementBuilder {
+    public static class Builder extends AbstractBuilder<Builder> {
+        public Builder(@NotNull Type tag) {super(tag);}
+    }
 
-        protected final @NotNull Type tag;
+    @SuppressWarnings({"UnusedReturnValue", "unchecked"})
+    public static class AbstractBuilder<SELF> implements HtmlElementBuilder {
+
+        protected final @NotNull AbstractType<?> tag;
         protected final @NotNull List<@NotNull HtmlObject> content;
         protected final @NotNull HtmlAttributeMap attributes;
 
-        public Builder(@NotNull Type tag) {
+        public AbstractBuilder(@NotNull AbstractType<?> tag) {
             this.tag = tag;
             this.content = new ArrayList<>();
             this.attributes = new HtmlAttributeMap();
         }
 
-        public void addContent(@NotNull HtmlObject object) {
+        public SELF addContent(@NotNull HtmlObject object) {
             object = onContentAdd(object);
             if(object != null)
                 content.add(object);
+            return (SELF) this;
         }
 
-        public <B extends HtmlElementBuilder> void addElement(@NotNull HtmlElementType<B> type, Consumer<B> adjuster) {
+        public <B extends HtmlElementBuilder> SELF addElement(@NotNull HtmlElementType<B> type, Consumer<B> adjuster) {
             B builder = type.builder();
             adjuster.accept(builder);
             addContent(builder.build());
+            return (SELF) this;
         }
 
-        public void addAttribute(@NotNull HtmlAttributeType<?> type, @Nullable String value) {
+        public SELF addAttribute(@NotNull HtmlAttributeType<?> type, @Nullable String value) {
             HtmlAttribute attribute = onAttributeAdd(new StandardHtmlAttribute(type, value));
             if(attribute != null)
                 attributes.put(attribute);
+            return (SELF) this;
         }
 
-        public void addAttribute(@NotNull HtmlAttribute attribute) {
+        public SELF addAttribute(@NotNull HtmlAttribute attribute) {
             attribute = onAttributeAdd(attribute);
             if(attribute != null)
                 attributes.put(attribute);
+            return (SELF) this;
         }
 
-        public void addText(@NotNull String text) {
+        public SELF addText(@NotNull String text) {
             addContent(new HtmlText(text));
+            return (SELF) this;
         }
 
         public @NotNull HtmlAttributeMap getCurrentAttributes() {
@@ -309,15 +328,15 @@ public class StandardHtmlElement implements EditableHtmlElement {
 
     public static class Parser implements HtmlObjectParser<StandardHtmlElement> {
 
-        private final @NotNull Type type;
+        private final @NotNull  AbstractType<?> type;
 
-        public Parser(@NotNull Type type) {
+        public Parser(@NotNull AbstractType<?> type) {
             this.type = type;
         }
 
         @Override
         public @NotNull StandardHtmlElement parse(@NotNull HtmlParserState state, @NotNull HtmlReader reader) throws IOException, ParseException {
-            Builder builder = type.builder();
+            AbstractBuilder<?> builder = type.builder();
 
 
             char c = reader.read();

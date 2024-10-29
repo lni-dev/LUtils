@@ -105,4 +105,45 @@ class LhtmlPageTest {
                 </html>""", page.writeToString());
         System.out.println(page.writeToString());
     }
+
+    @Test
+    void test3() throws IOException, ParseException {
+        String html = """
+                <html>
+                <head>
+                    <title>title</title>
+                </head>
+                <body>
+                  <div lhtml-placeholder="p"></div>
+                  <div lhtml-template="item" id="${id}">
+                    <a id="${id}">test</a>
+                  </div>
+                </body>
+                </html>""";
+
+        LhtmlPageSkeleton pageSkeleton = LhtmlPage.parse(new HtmlParser(Lhtml.getRegistry().build()), new StringReader(html));
+        LhtmlPage page = pageSkeleton.copy();
+
+        LhtmlTemplateElement item = page.getTemplate("item");
+        page.getPlaceholder("p").addContent(item);
+
+        item.setValue("id", "value");
+
+        assertEquals("""
+                <html>
+                  <head>
+                    <title>title</title>
+                  </head>
+                  <body>
+                    <div lhtml-placeholder="p">
+                      <div lhtml-template="item" id="value">
+                        <a id="value">
+                          test
+                        </a>
+                      </div>
+                    </div>
+                  </body>
+                </html>""", page.writeToString());
+        System.out.println(page.writeToString());
+    }
 }

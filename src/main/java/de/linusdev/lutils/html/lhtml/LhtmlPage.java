@@ -18,7 +18,6 @@ package de.linusdev.lutils.html.lhtml;
 
 import de.linusdev.lutils.html.*;
 import de.linusdev.lutils.html.impl.HtmlPage;
-import de.linusdev.lutils.html.impl.element.StandardHtmlElementTypes;
 import de.linusdev.lutils.html.lhtml.skeleton.LhtmlPageSkeleton;
 import de.linusdev.lutils.html.lhtml.skeleton.LhtmlTemplateSkeleton;
 import de.linusdev.lutils.html.parser.*;
@@ -27,12 +26,9 @@ import org.jetbrains.annotations.NotNull;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.Writer;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.Consumer;
 
 /**
  * lhtml page created by a {@link LhtmlPageSkeleton}.
@@ -91,6 +87,21 @@ public class LhtmlPage implements HtmlObject, HasHtmlContent, LhtmlTemplate {
         return body;
     }
 
+    /**
+     * Adds all content of given page {@code other} to the placeholder with given {@code id}.
+     * Also adds all links of the other page's {@link #head} to this {@link #head}.
+     * @param id id of the placeholder, where the content shall be added.
+     * @param other the page, whose content shall be added.
+     */
+    public void addPageContentToPlaceholder(@NotNull String id, @NotNull LhtmlPage other) {
+        HtmlAddable placeholder = getPlaceholder(id);
+        for (@NotNull HtmlObject object : other.getBody().content()) {
+            placeholder.addContent(object);
+        }
+
+        getHead().addLinks(other.getHead());
+    }
+
 
     @Override
     public @NotNull HtmlAddable getPlaceholder(@NotNull String id) {
@@ -113,38 +124,7 @@ public class LhtmlPage implements HtmlObject, HasHtmlContent, LhtmlTemplate {
 
     @Override
     public @NotNull LhtmlPage copy() {
-        HtmlPage copy = actual.copy();
-        Map<String, LhtmlPlaceholder> placeholders = new HashMap<>(this.placeholders.size());
-        Map<String, String> replaceValues = new HashMap<>();
-        AtomicReference<LhtmlHead> head = new AtomicReference<>();
-        AtomicReference<HtmlElement> body = new AtomicReference<>();
-
-        Consumer<HtmlObject> consumer = object -> {
-            if(object.type() == HtmlObjectType.ELEMENT) {
-                HtmlElement element = object.asHtmlElement();
-
-                element.iterateAttributes(attribute -> {
-                    if(attribute instanceof LhtmlPlaceholderAttribute placeholderAttr) {
-                        placeholderAttr.setReplaceValues(replaceValues);
-                    }
-                });
-
-                if(element instanceof LhtmlPlaceholderElement placeholderEle) {
-                    LhtmlPlaceholder holder = placeholders.computeIfAbsent(placeholderEle.getId(), LhtmlPlaceholder::new);
-                    holder.addPlaceholderElement(placeholderEle);
-                }
-
-                if(HtmlElementType.equals(StandardHtmlElementTypes.BODY, element.tag())) {
-                    body.set(element);
-                } else if(element instanceof LhtmlHead lhtmlHead) {
-                    head.set(lhtmlHead);
-                }
-            }
-        };
-
-        copy.iterateContentRecursive(consumer);
-
-        return new LhtmlPage(copy, placeholders, templates, replaceValues, head.get(), body.get());
+        return LhtmlPageSkeleton.createCopy(actual, templates);
     }
 
     @Override

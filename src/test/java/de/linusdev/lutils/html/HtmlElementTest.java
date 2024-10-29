@@ -15,7 +15,7 @@ import java.io.StringReader;
 import java.io.StringWriter;
 
 import static de.linusdev.lutils.html.impl.element.StandardHtmlElementTypes.DIV;
-import static de.linusdev.lutils.html.impl.element.StandardHtmlElementTypes.PARAGRAPH;
+import static de.linusdev.lutils.html.impl.element.StandardHtmlElementTypes.P;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class HtmlElementTest {
@@ -28,7 +28,7 @@ class HtmlElementTest {
                 header.addAttribute(StandardHtmlAttributeTypes.CLASS, "test");
             });
             container.addElement(DIV, body -> {
-                body.addElement(PARAGRAPH, p -> p.addText("Some Text in the body"));
+                body.addElement(P, p -> p.addText("Some Text in the body"));
             });
         });
 

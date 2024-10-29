@@ -41,7 +41,7 @@ public class LhtmlHead extends StandardHtmlElement {
     protected final @NotNull HashMap<String, HtmlElement> links;
 
     protected LhtmlHead(
-            @NotNull Type tag,
+            @NotNull AbstractType<?> tag,
             @NotNull List<@NotNull HtmlObject> content,
             @NotNull HtmlAttributeMap attributes,
             @NotNull HashMap<String, HtmlElement> links
@@ -87,11 +87,11 @@ public class LhtmlHead extends StandardHtmlElement {
     /**
      * Builder to build {@link LhtmlHead}s.
      */
-    public static class Builder extends StandardHtmlElement.Builder {
+    public static class Builder extends StandardHtmlElement.AbstractBuilder<Builder> {
 
         protected final @NotNull HashMap<String, HtmlElement> links;
 
-        public Builder(@NotNull Type tag) {
+        public Builder(@NotNull CustomType<Builder> tag) {
             super(tag);
             links = new HashMap<>();
         }

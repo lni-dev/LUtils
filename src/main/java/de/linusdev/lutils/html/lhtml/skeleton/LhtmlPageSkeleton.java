@@ -23,6 +23,7 @@ import de.linusdev.lutils.html.HtmlObjectType;
 import de.linusdev.lutils.html.impl.HtmlPage;
 import de.linusdev.lutils.html.impl.element.StandardHtmlElementTypes;
 import de.linusdev.lutils.html.lhtml.*;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
@@ -36,22 +37,11 @@ import java.util.function.Consumer;
  */
 public class LhtmlPageSkeleton implements LhtmlSkeleton{
 
-    protected final @NotNull HtmlPage actual;
-    protected final @NotNull Map<String, LhtmlTemplateSkeleton> templates;
-
-    public LhtmlPageSkeleton(
+    @ApiStatus.Internal
+    public static @NotNull LhtmlPage createCopy(
             @NotNull HtmlPage actual,
-            @NotNull Map<String, LhtmlTemplateSkeleton> templates
+            Map<String, LhtmlTemplateSkeleton> templates
     ) {
-        this.actual = actual;
-        this.templates = templates;
-    }
-
-    public @NotNull LhtmlTemplateElement getTemplate(@NotNull String id) {
-        return Objects.requireNonNull(templates.get(id)).copy();
-    }
-
-    public @NotNull LhtmlPage copy() {
         HtmlPage copy = actual.copy();
         Map<String, LhtmlPlaceholder> placeholders = new HashMap<>();
         Map<String, String> replaceValues = new HashMap<>();
@@ -83,7 +73,29 @@ public class LhtmlPageSkeleton implements LhtmlSkeleton{
 
         copy.iterateContentRecursive(consumer);
 
+        assert head.get() != null;
+        assert body.get() != null;
+
         return new LhtmlPage(copy, placeholders, templates, replaceValues, head.get(), body.get());
+    }
+
+    protected final @NotNull HtmlPage actual;
+    protected final @NotNull Map<String, LhtmlTemplateSkeleton> templates;
+
+    public LhtmlPageSkeleton(
+            @NotNull HtmlPage actual,
+            @NotNull Map<String, LhtmlTemplateSkeleton> templates
+    ) {
+        this.actual = actual;
+        this.templates = templates;
+    }
+
+    public @NotNull LhtmlTemplateElement getTemplate(@NotNull String id) {
+        return Objects.requireNonNull(templates.get(id)).copy();
+    }
+
+    public @NotNull LhtmlPage copy() {
+        return createCopy(actual, templates);
     }
 
     @Override

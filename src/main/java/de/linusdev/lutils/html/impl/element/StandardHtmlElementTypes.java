@@ -38,7 +38,7 @@ public class StandardHtmlElementTypes {
     public final static @NotNull StandardHtmlElement.Type VIDEO      =      newNormal("video");
 
     public final static @NotNull StandardHtmlElement.Type TITLE      =      newInline("title");
-    public final static @NotNull StandardHtmlElement.Type PARAGRAPH  =      newInline("p");
+    public final static @NotNull StandardHtmlElement.Type P          =      newInline("p");
     public final static @NotNull StandardHtmlElement.Type SPAN       =      newInline("span");
     public final static @NotNull StandardHtmlElement.Type H1         =      newInline("h1");
     public final static @NotNull StandardHtmlElement.Type H2         =      newInline("h2");
@@ -66,7 +66,7 @@ public class StandardHtmlElementTypes {
     public final static @NotNull HtmlElementType<?> @NotNull [] VALUES = new HtmlElementType[] {
             HTML, HEAD, BODY, DIV, A, BUTTON, OL, UL, LI, VIDEO,
 
-            TITLE, PARAGRAPH, SPAN, H1, H2, H3, H4, H5, H6, B, STRONG,
+            TITLE, P, SPAN, H1, H2, H3, H4, H5, H6, B, STRONG,
 
             AREA, BASE, BR, COL, EMBED, HR, IMG, INPUT, LINK, META, SOURCE, TRACK, WBR,
     };
