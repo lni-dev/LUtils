@@ -32,6 +32,17 @@ public class ArgUtils {
     }
 
     /**
+     * Throw an {@link IllegalArgumentException} if {@code value} is not at least {@code epsilon} greater than {@code limit}.
+     * @param name variable name
+     * @return {@code true}
+     */
+    public static boolean requireGreater(double value, double limit, double epsilon, @NotNull String name) {
+        if(value <= (limit + epsilon))
+            throw new IllegalArgumentException(name + " must be at least " + epsilon + " greater than " + limit + ", but was " + value);
+        return true;
+    }
+
+    /**
      * Throw an {@link IllegalArgumentException} if {@code value} is not greater than or equal to {@code limit}.
      * @param name variable name
      * @return {@code true}

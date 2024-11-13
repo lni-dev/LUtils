@@ -11,6 +11,9 @@ class ArgUtilsTest {
     void requireGreater() {
         assertThrows(IllegalArgumentException.class, () -> ArgUtils.requireGreater(0, 0, "test"));
         assertDoesNotThrow(() -> ArgUtils.requireGreater(1, 0, "test"));
+
+        assertThrows(IllegalArgumentException.class, () -> ArgUtils.requireGreater(0.0, 0.0, 1.0, "test"));
+        assertDoesNotThrow(() -> ArgUtils.requireGreater(1, 0, 0.9, "test"));
     }
 
     @Test

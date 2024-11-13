@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-package de.linusdev.lutils.math;
+package de.linusdev.lutils.chart;
 
+import de.linusdev.lutils.math.LMath;
 import de.linusdev.lutils.other.ArgUtils;
 import de.linusdev.lutils.result.BiResult;
 import de.linusdev.lutils.result.TriResult;
@@ -27,7 +28,7 @@ import java.util.function.Function;
 import static java.lang.Math.abs;
 import static java.lang.Math.pow;
 
-public class ChartMath {
+public class ChartUtils {
 
     public enum LabelLeaning {
         HIGHER_THAN_MAX {
@@ -76,6 +77,34 @@ public class ChartMath {
         );
     }
 
+    private static double beautifyMinValue(double minValue, double maxValue, int preferredLabelCount) {
+        ArgUtils.requireGreater(maxValue, minValue, 0.0, "maxValue");
+        double exactValue = (maxValue-minValue) / preferredLabelCount;
+        double normalizeFactor = Math.pow(10, Math.floor(Math.log10(exactValue)));
+        double normalizedMinValue = minValue / normalizeFactor;
+        double roundedMinValue = Math.floor(normalizedMinValue);
+        return roundedMinValue * normalizeFactor;
+    }
+
+    /**
+     * Same as {@link #calcBestLabelValue(double, int, int, int, LabelLeaning) calcBestLabelValue()}, but it supports a
+     * {@code minValue} too.
+     * @param minValue the smallest value, that must be displayed.
+     * @return the label value, label count and min value.
+     */
+    public static TriResult<Double, Integer, Double> calcBestLabelValue(
+            @Range(from = 0, to =(long)Double.MAX_VALUE) double minValue,
+            @Range(from = 0, to = (long)Double.MAX_VALUE) double maxValue,
+            @Range(from = 1, to = 1000) int minLabelCount,
+            @Range(from = 1, to = 10) int preferredLabelCount,
+            @Range(from = 1, to = 1000) int maxLabelCount,
+            @NotNull LabelLeaning leaning
+    ) {
+        double newMinValue = beautifyMinValue(minValue, maxValue, preferredLabelCount);
+        var res = calcBestLabelValue(maxValue - newMinValue, minLabelCount, preferredLabelCount, maxLabelCount, leaning);
+        return new TriResult<>(res.result1(), res.result2(), newMinValue);
+    }
+
     /**
      * Quick and dirty method to calculate a label value. For better results see
      * <ul>
@@ -122,6 +151,25 @@ public class ChartMath {
                 maxLabelCount,
                 count -> _calcReadableLabelValue(maxValue, count, sigLeaning, difAdd, difMultiply)
         );
+    }
+
+    /**
+     * Same as {@link #calcBestAndReadableLabelValue(double, int, int, int, double) calcBestAndReadableLabelValue()}, but it supports a
+     * {@code minValue} too.
+     * @param minValue the smallest value, that must be displayed.
+     * @return the label value, label count and min value.
+     */
+    public static TriResult<Double, Integer, Double> calcBestAndReadableLabelValue(
+            @Range(from = 0, to = (long)Double.MAX_VALUE) double minValue,
+            @Range(from = 0, to = (long)Double.MAX_VALUE) double maxValue,
+            @Range(from = 1, to = 1000) int minLabelCount,
+            @Range(from = 1, to = 10) int preferredLabelCount,
+            @Range(from = 1, to = 1000) int maxLabelCount,
+            @Range(from = -1, to = +1) double leaning
+    ) {
+        double newMinValue = beautifyMinValue(minValue, maxValue, preferredLabelCount);
+        var res = calcBestAndReadableLabelValue(maxValue - newMinValue, minLabelCount, preferredLabelCount, maxLabelCount, leaning);
+        return new TriResult<>(res.result1(), res.result2(), newMinValue);
     }
 
     /**
