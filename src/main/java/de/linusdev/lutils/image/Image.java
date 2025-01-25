@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Linus Andera
+ * Copyright (c) 2024-2025 Linus Andera
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -116,7 +116,7 @@ public interface Image extends ImageSize{
     }
 
     static @NotNull Image create(int width, int height) {
-        return new JavaBackedImage(new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB));
+        return new JavaBackedImage(new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB));
     }
 
     /**

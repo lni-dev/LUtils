@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Linus Andera
+ * Copyright (c) 2024-2025 Linus Andera
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,8 +19,13 @@ package de.linusdev.lutils.image.java;
 import de.linusdev.lutils.image.Image;
 import de.linusdev.lutils.image.PixelFormat;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
+import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
+import java.awt.image.RenderedImage;
+import java.io.IOException;
+import java.io.OutputStream;
 
 public class JavaBackedImage implements Image {
 
@@ -53,6 +58,18 @@ public class JavaBackedImage implements Image {
     @Override
     public boolean isReadOnly() {
         return !image.hasTileWriters();
+    }
+
+    /**
+     * Writes this image to given stream.
+     * @param formatName format to use. See {@link ImageIO#write(RenderedImage, String, OutputStream)}.
+     * @param stream the stream to write to
+     * @throws IOException while writing
+     */
+    public void write(@Nullable String formatName, @NotNull OutputStream stream) throws IOException {
+        if(formatName == null)
+            formatName = "png";
+        ImageIO.write(image, formatName, stream);
     }
 
 }
