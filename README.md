@@ -29,3 +29,4 @@ dependencies {
   - DirectByteBuffer.allocatedDirect() is slow and bad for GC: see https://blog.lwjgl.org/memory-management-in-lwjgl-3/
   - Replace it with a custom buffer, which uses Unsafe for allocation
   - Middleware interface between the buffer and Unsafe, so Unsafe could be easily replaced with native functions, that call malloc and free.
+- Color: add Oklab color space
