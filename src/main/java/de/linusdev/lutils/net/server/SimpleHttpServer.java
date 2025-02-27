@@ -46,7 +46,7 @@ public class SimpleHttpServer implements AsyncManager {
     private volatile boolean keepAlive = true;
 
 
-    public  SimpleHttpServer(
+    public SimpleHttpServer(
             int port,
             @NotNull Routing routing,
             @NotNull ExceptionHandler exceptionHandler
@@ -63,13 +63,6 @@ public class SimpleHttpServer implements AsyncManager {
                     exceptionHandler.accept(e);
                 }
             }
-
-            try {
-                closeFuture.complete(Nothing.INSTANCE, this, null);
-                serverSocket.close();
-            } catch (Throwable e) {
-                exceptionHandler.accept(e);
-            }
         },"simple-http-server");
         thread.setDaemon(true);
         thread.start();
@@ -81,7 +74,13 @@ public class SimpleHttpServer implements AsyncManager {
     }
 
     public void shutdown() {
-        keepAlive = false;
+        try {
+            closeFuture.complete(Nothing.INSTANCE, this, null);
+            keepAlive = false;
+            serverSocket.close();
+        } catch (Throwable e) {
+            exceptionHandler.accept(e);
+        }
     }
 
     @SuppressWarnings("unused")

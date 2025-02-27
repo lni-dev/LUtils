@@ -118,11 +118,12 @@ class WebSocketServerTest {
                     })).buildRoute()
                 .build();
 
-        SimpleHttpServer server = new SimpleHttpServer(8080, routing, Throwable::printStackTrace);
+        int port = 8081;
+        SimpleHttpServer server = new SimpleHttpServer(port, routing, Throwable::printStackTrace);
 
 
         HttpClient client = HttpClient.newHttpClient();
-        var ws = client.newWebSocketBuilder().buildAsync(new URI("ws://localhost:8080/"), new WebSocket.Listener() {
+        var ws = client.newWebSocketBuilder().buildAsync(new URI("ws://localhost:" + port + "/"), new WebSocket.Listener() {
             @Override
             public void onOpen(WebSocket webSocket) {
                 System.out.println("Client sending 'test'");
@@ -177,6 +178,7 @@ class WebSocketServerTest {
         Thread.sleep(1000);
 
         server.shutdown();
+        server.getCloseFuture().get();
 
         assertArrayEquals(serverReceived.toArray(), new String[] {"test", "Another Test"});
         assertEquals(1, serverReceivedPings.get());
