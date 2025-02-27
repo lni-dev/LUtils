@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Linus Andera
+ * Copyright (c) 2024-2025 Linus Andera
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ import de.linusdev.lutils.html.impl.HtmlText;
 import de.linusdev.lutils.html.impl.StandardHtmlAttribute;
 import de.linusdev.lutils.html.parser.*;
 import de.linusdev.lutils.result.BiResult;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -263,7 +264,7 @@ public class StandardHtmlElement implements EditableHtmlElement {
     }
 
     @SuppressWarnings({"UnusedReturnValue", "unchecked"})
-    public static class AbstractBuilder<SELF> implements HtmlElementBuilder {
+    public static class AbstractBuilder<SELF> implements HtmlElementBuilder, _HtmlAddable<SELF> {
 
         protected final @NotNull AbstractType<?> tag;
         protected final @NotNull List<@NotNull HtmlObject> content;
@@ -323,6 +324,12 @@ public class StandardHtmlElement implements EditableHtmlElement {
         @Override
         public @NotNull StandardHtmlElement build() {
             return new StandardHtmlElement(tag, content, attributes);
+        }
+
+        @ApiStatus.Internal
+        @Override
+        public void _addContent(@NotNull HtmlObject object) {
+            addContent(object);
         }
     }
 

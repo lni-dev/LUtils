@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Linus Andera
+ * Copyright (c) 2024-2025 Linus Andera
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,12 +17,13 @@
 package de.linusdev.lutils.html;
 
 import de.linusdev.lutils.html.impl.HtmlText;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
 /**
  * Object with html content, where new elements can be added.
  */
-public interface HtmlAddable {
+public interface HtmlAddable extends _HtmlAddable<HtmlAddable> {
 
     /**
      * Add given {@code object} to the content.
@@ -36,4 +37,9 @@ public interface HtmlAddable {
         addContent(new HtmlText(text));
     }
 
+    @Override
+    @ApiStatus.Internal
+    default void _addContent(@NotNull HtmlObject object) {
+        addContent(object);
+    }
 }

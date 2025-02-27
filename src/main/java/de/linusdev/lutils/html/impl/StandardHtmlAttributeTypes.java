@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Linus Andera
+ * Copyright (c) 2024-2025 Linus Andera
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,11 +28,13 @@ public class StandardHtmlAttributeTypes {
     public static final @NotNull HtmlAttributeType<String[]> CLASS = new ListType("class");
     public static final @NotNull HtmlAttributeType<String> ID = new StringType("id");
     public static final @NotNull HtmlAttributeType<String> HREF = new StringType("href");
+    public static final @NotNull HtmlAttributeType<String> REL = new StringType("rel");
 
     public static final @NotNull HtmlAttributeType<?> @NotNull [] VALUES = new HtmlAttributeType[] {
             CLASS,
             ID,
-            HREF
+            HREF,
+            REL
     };
 
     public static abstract class Type<V> implements HtmlAttributeType<V> {
