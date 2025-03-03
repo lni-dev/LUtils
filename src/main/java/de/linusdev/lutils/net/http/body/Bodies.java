@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Linus Andera
+ * Copyright (c) 2024-2025 Linus Andera
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -66,6 +66,15 @@ public class Bodies {
      */
     public static @NotNull Creator textUtf8() {
         return new Creator(ContentTypes.Text.plain().setCharset(StandardCharsets.UTF_8.name()));
+    }
+
+    /**
+     * Create a png body
+     * @see Creator
+     */
+    @SuppressWarnings("unused")
+    public static @NotNull Creator png(){
+        return new Creator(ContentTypes.Image.png());
     }
 
     /**

@@ -25,7 +25,28 @@ class HTTPRequestTest {
         HTTPRequest<InputStream> parsed = HTTPRequest.parse(new ByteArrayInputStream(request.getBytes()));
 
         assertTrue(RequestMethod.equals(Methods.GET, parsed.getMethod()));
-        assertEquals("/test.html", parsed.getPath());
+        assertEquals("/test.html", parsed.getPathAndQueryAsString());
+        assertEquals("HTTP/1.1", parsed.getVersion().asString());
+
+        assertEquals(1, parsed.getHeaders().size());
+        Header contentType = parsed.getHeaders().get("content-type");
+
+        assertEquals("application/json", contentType.getValue());
+        assertNotNull(parsed.getBody());
+    }
+
+    @Test
+    public void test2() throws IOException {
+
+        String request =
+                "GET /test.html?a=b HTTP/1.1\r\n" +
+                        "content-type: application/json\r\n";
+
+        HTTPRequest<InputStream> parsed = HTTPRequest.parse(new ByteArrayInputStream(request.getBytes()));
+
+        assertTrue(RequestMethod.equals(Methods.GET, parsed.getMethod()));
+        assertEquals("/test.html?a=b", parsed.getPathAndQueryAsString());
+        assertEquals("/test.html", parsed.getPathAndQuery().getPath());
         assertEquals("HTTP/1.1", parsed.getVersion().asString());
 
         assertEquals(1, parsed.getHeaders().size());
@@ -53,8 +74,8 @@ class HTTPRequestTest {
         });
 
         assertTrue(RequestMethod.equals(Methods.GET, parsed.getMethod()));
-        assertEquals("/test.html", parsed.getPath());
-        assertEquals("/test.html", parsed.getPathAsPath().getPath());
+        assertEquals("/test.html", parsed.getPathAndQueryAsString());
+        assertEquals("/test.html", parsed.getPathAndQuery().getPath());
         assertEquals("HTTP/1.1", parsed.getVersion().asString());
 
         assertEquals(1, parsed.getHeaders().size());

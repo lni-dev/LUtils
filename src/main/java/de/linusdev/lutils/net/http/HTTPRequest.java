@@ -92,17 +92,17 @@ public class HTTPRequest<B> extends HTTPMessage<B> {
     }
 
     /**
-     * Requested path
+     * Requested path with query.
      * @return requested path as {@link String}.
      */
-    public @Nullable String getPath() {
+    public @Nullable String getPathAndQueryAsString() {
         return path;
     }
 
     /**
      * Requested path as {@link PathAndQuery}.
      */
-    public @Nullable PathAndQuery getPathAsPath() {
+    public @Nullable PathAndQuery getPathAndQuery() {
         return path == null ? null : new PathAndQuery(path);
     }
 

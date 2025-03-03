@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Linus Andera
+ * Copyright (c) 2024-2025 Linus Andera
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package de.linusdev.lutils.net.http.header.contenttype;
 
+import de.linusdev.lutils.net.http.header.value.BasicHeaderValue;
 import de.linusdev.lutils.net.http.header.value.BasicHeaderValueImpl;
 import de.linusdev.lutils.net.http.header.value.parameters.BasicHeaderValueWithCharset;
 import org.jetbrains.annotations.Contract;
@@ -59,6 +60,18 @@ public class ContentTypes extends BasicHeaderValueImpl implements ContentType {
         public @NotNull Text setCharset(@Nullable String charset) {
             BasicHeaderValueWithCharset.super.setCharset(charset);
             return this;
+        }
+    }
+
+    public static class Image extends ContentTypes implements BasicHeaderValue {
+
+        @Contract(" -> new")
+        public static @NotNull Image png() {
+            return new Image("png");
+        }
+
+        protected Image(@NotNull String name) {
+            super("image/" + name);
         }
     }
 
