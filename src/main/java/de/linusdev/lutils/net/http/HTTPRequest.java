@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2024 Linus Andera
+ * Copyright (c) 2023-2025 Linus Andera
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package de.linusdev.lutils.net.http;
 import de.linusdev.lutils.net.http.body.BodyParser;
 import de.linusdev.lutils.net.http.header.HeaderMap;
 import de.linusdev.lutils.net.http.method.RequestMethod;
+import de.linusdev.lutils.net.http.path.PathAndQuery;
 import de.linusdev.lutils.net.http.version.HTTPVersion;
 import de.linusdev.lutils.net.http.version.HTTPVersions;
 import org.jetbrains.annotations.NotNull;
@@ -96,6 +97,13 @@ public class HTTPRequest<B> extends HTTPMessage<B> {
      */
     public @Nullable String getPath() {
         return path;
+    }
+
+    /**
+     * Requested path as {@link PathAndQuery}.
+     */
+    public @Nullable PathAndQuery getPathAsPath() {
+        return path == null ? null : new PathAndQuery(path);
     }
 
 }

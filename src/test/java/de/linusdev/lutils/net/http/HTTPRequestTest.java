@@ -4,7 +4,6 @@
 
 package de.linusdev.lutils.net.http;
 
-import de.linusdev.lutils.net.http.HTTPRequest;
 import de.linusdev.lutils.net.http.header.Header;
 import de.linusdev.lutils.net.http.method.Methods;
 import de.linusdev.lutils.net.http.method.RequestMethod;
@@ -55,6 +54,7 @@ class HTTPRequestTest {
 
         assertTrue(RequestMethod.equals(Methods.GET, parsed.getMethod()));
         assertEquals("/test.html", parsed.getPath());
+        assertEquals("/test.html", parsed.getPathAsPath().getPath());
         assertEquals("HTTP/1.1", parsed.getVersion().asString());
 
         assertEquals(1, parsed.getHeaders().size());
