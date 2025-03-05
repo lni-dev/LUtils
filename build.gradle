@@ -61,15 +61,15 @@ test {
 publishing {
     repositories {
         maven {
-            if(project.hasProperty("ossrhUsername") && project.hasProperty("ossrhPassword")){
+            if(project.hasProperty("ossrhTokenUserName") && project.hasProperty("ossrhTokenPassword")){
                 name = "OSSRH"
                 def releasesRepoUrl = 'https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/'
                 def snapshotsRepoUrl = 'https://s01.oss.sonatype.org/content/repositories/snapshots/'
                 url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
 
                 credentials {
-                    username = ossrhUsername
-                    password = ossrhPassword
+                    username = ossrhTokenUserName
+                    password = ossrhTokenPassword
                 }
 
             }else {
