@@ -1,6 +1,5 @@
 package de.linusdev.lutils.net.http;
 
-import de.linusdev.lutils.net.http.HTTPResponse;
 import de.linusdev.lutils.net.http.header.Header;
 import de.linusdev.lutils.net.http.status.ResponseStatusCode;
 import de.linusdev.lutils.net.http.status.ResponseStatusCodeType;
@@ -75,5 +74,22 @@ class HTTPResponseTest {
 
         assertEquals("application/json", contentType.getValue());
         assertEquals("{}", parsed.getBody());
+    }
+
+    @Test
+    public void prefabricated() throws IOException {
+        var res = HTTPResponse.responses().badRequest().buildResponse();
+
+        assertEquals("""
+                HTTP/1.1 400 Bad Request
+                
+                """, res.replaceAll("\r\n", "\n"));
+
+        res = HTTPResponse.responses().ok().buildResponse();
+
+        assertEquals("""
+                HTTP/1.1 200 OK
+                
+                """, res.replaceAll("\r\n", "\n"));
     }
 }

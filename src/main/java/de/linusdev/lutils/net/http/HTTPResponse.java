@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Linus Andera
+ * Copyright (c) 2024-2025 Linus Andera
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,12 @@
 
 package de.linusdev.lutils.net.http;
 
+import de.linusdev.lutils.net.http.body.Bodies;
+import de.linusdev.lutils.net.http.body.Body;
 import de.linusdev.lutils.net.http.body.BodyParser;
 import de.linusdev.lutils.net.http.header.HeaderMap;
 import de.linusdev.lutils.net.http.status.ResponseStatusCode;
+import de.linusdev.lutils.net.http.status.StatusCodes;
 import de.linusdev.lutils.net.http.version.HTTPVersion;
 import de.linusdev.lutils.net.http.version.HTTPVersions;
 import org.jetbrains.annotations.NotNull;
@@ -65,6 +68,8 @@ public class HTTPResponse<B> extends HTTPMessage<B> {
         return new HTTPMessageBuilder();
     }
 
+    public static @NotNull PrefabricatedResponses responses() { return new PrefabricatedResponses(); }
+
     private final @NotNull ResponseStatusCode statusCode;
 
     protected HTTPResponse(
@@ -77,5 +82,48 @@ public class HTTPResponse<B> extends HTTPMessage<B> {
 
     public @NotNull ResponseStatusCode getStatusCode() {
         return statusCode;
+    }
+
+    public static class PrefabricatedResponses {
+
+        /**
+         * Creates a response:
+         * <br>status code: {@link StatusCodes#BAD_REQUEST BAD_REQUEST}
+         * <br>body: uff8-string {@code reason} if not {@code null}
+         */
+        public @NotNull HTTPMessageBuilder badRequest(@Nullable String reason) {
+            var builder =  HTTPResponse.builder().setStatusCode(StatusCodes.BAD_REQUEST);
+            if(reason != null) builder.setBody(Bodies.textUtf8().ofStringUtf8(reason));
+            return builder;
+        }
+
+        /**
+         * Creates a response:
+         * <br>status code: {@link StatusCodes#BAD_REQUEST BAD_REQUEST}
+         * <br>body: none
+         */
+        public @NotNull HTTPMessageBuilder badRequest() {
+            return badRequest(null);
+        }
+
+        /**
+         * Creates a response:
+         * <br>status code: {@link StatusCodes#OK OK}
+         * <br>body: given {@code body} if not {@code null}
+         */
+        public @NotNull HTTPMessageBuilder ok(@Nullable Body body) {
+            var builder =  HTTPResponse.builder().setStatusCode(StatusCodes.OK);
+            if(body != null) builder.setBody(body);
+            return builder;
+        }
+
+        /**
+         * Creates a response:
+         * <br>status code: {@link StatusCodes#OK OK}
+         * <br>body: none
+         */
+        public @NotNull HTTPMessageBuilder ok() {
+            return ok(null);
+        }
     }
 }
