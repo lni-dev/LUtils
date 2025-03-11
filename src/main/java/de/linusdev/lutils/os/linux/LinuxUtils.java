@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Linus Andera
+ * Copyright (c) 2025 Linus Andera
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package de.linusdev.lutils.os.windows;
+package de.linusdev.lutils.os.linux;
 
 import de.linusdev.lutils.os.OsType;
 import de.linusdev.lutils.os.OsUtils;
@@ -24,21 +24,35 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-public class WinUtils {
+public class LinuxUtils {
 
     public static void showInExplorer(@NotNull Path path) {
-        OsUtils.requireOsType(OsType.WINDOWS);
+        OsUtils.requireOsType(OsType.LINUX);
+
         path = path.toAbsolutePath();
 
-        try {
-            ProcessBuilder builder = new ProcessBuilder("explorer",
-                    (Files.isDirectory(path) ? "" : "/select,") + path);
+        if(!Files.isDirectory(path)) {
+            //xdg-open can only show a directory. Passing a file would open the file
+            //in the users preferred application and not show it in the explorer.
+            path = path.getParent();
+        }
 
+        xdgOpen(path.toString());
+
+    }
+
+    /**
+     * See <a href="https://linux.die.net/man/1/xdg-open">xdg-open man page</a>.
+     * @param url url to open
+     */
+    public static void xdgOpen(@NotNull String url) {
+        try {
+            ProcessBuilder builder = new ProcessBuilder("xdg-open", url);
             builder.start();
+
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-
     }
 
 }
