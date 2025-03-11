@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Linus Andera
+ * Copyright (c) 2025 Linus Andera
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,32 +20,44 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Locale;
 
-public enum OSType {
-    LINUX("Linux", "linux"),
-    WINDOWS("Windows", "windows"),
-    UNKNOWN("Unknown")
+public enum OsArchitectureType {
+    /**
+     * 32-bit Intel or AMD processor.
+     */
+    X86("x86"),
+    /**
+     * 64-bit Intel or AMD processor.
+     */
+    AMD64("amd64", "x86_64"),
+    /**
+     * 32-bit ARM processor.
+     */
+    ARM("arm"),
+    /**
+     * 64-bit ARM processor.
+     */
+    AARCH64("aarch64"),
+
+    /**
+     * Unknown.
+     */
+    UNKNOWN
     ;
 
-    public static @NotNull OSType of(@NotNull String name) {
+    public static @NotNull OsArchitectureType of(@NotNull String name) {
         name = name.toLowerCase(Locale.ROOT);
-        for (OSType type : values()) {
-            for (@NotNull String fix : type.fixes) {
-                if(name.contains(fix)) return type;
+        for (OsArchitectureType type : values()) {
+            for (@NotNull String arch : type.names) {
+                if(name.equals(arch)) return type;
             }
         }
 
         return UNKNOWN;
     }
 
-    private final @NotNull String name;
-    private final @NotNull String @NotNull [] fixes;
+    private final @NotNull String @NotNull [] names;
 
-    OSType(@NotNull String name, @NotNull String @NotNull ... fix) {
-        this.name = name;
-        this.fixes = fix;
-    }
-
-    public @NotNull String getName() {
-        return name;
+    OsArchitectureType(@NotNull String @NotNull ... names) {
+        this.names = names;
     }
 }
