@@ -34,6 +34,7 @@ public class InvalidOsArchError extends Error {
         );
     }
 
+    @SuppressWarnings("unused")
     public InvalidOsArchError(
             @Nullable String message,
             @NotNull List<@NotNull OsArchitectureType> requiredOsArchitectures

@@ -34,6 +34,7 @@ public class InvalidOsTypeError extends Error {
         );
     }
 
+    @SuppressWarnings("unused")
     public InvalidOsTypeError(
             @Nullable String message,
             @NotNull List<@NotNull OsType> requiredOs
