@@ -56,6 +56,16 @@ public class ResourceUtils {
     }
 
     /**
+     * @see #getURLConnectionOfResource(Class, String) getURLConnectionOfResource(null, path)
+     */
+    @SuppressWarnings("unused")
+    public static @NotNull StreamURLConnection getURLConnectionOfResource(
+            @NotNull String path
+    ) {
+        return getURLConnectionOfResource(null, path);
+    }
+
+    /**
      * Get utf-8 reader of a resource
      * @param relClazz class used to get the resource or {@code null} if an absolute path is passed.
      * @param path Either absolut (starting with {@code /}) or relative to the package of given {@code relClazz}
