@@ -18,7 +18,7 @@ repositories {
 }
 
 dependencies {
-    implementation(implementation("de.linusdev:lutils:+"))
+    implementation("de.linusdev:lutils:2.0.1")
     compileOnly gradleApi()
 }
 

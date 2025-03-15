@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Linus Andera
+ * Copyright (c) 2024-2025 Linus Andera
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -73,11 +73,11 @@ public interface JavaSourceGeneratorHelper {
     }
 
     default @NotNull Path javaSourcePath() {
-        return Paths.get("src", "main", "java");
+        return Paths.get("java");
     }
 
     default @NotNull Path javaResourcesPath() {
-        return Paths.get("src", "main", "resources");
+        return Paths.get("resources");
     }
 
     default String javaLineBreak() {
