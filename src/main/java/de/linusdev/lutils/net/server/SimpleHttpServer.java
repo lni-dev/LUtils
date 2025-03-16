@@ -88,6 +88,14 @@ public class SimpleHttpServer implements AsyncManager {
         System.out.println("SimpleHttpServer running on: http://localhost:" + serverSocket.getLocalPort());
     }
 
+    /**
+     * @return http://localhost:port
+     */
+    @SuppressWarnings("unused")
+    public @NotNull String getUrl() {
+       return "http://localhost:" + serverSocket.getLocalPort();
+    }
+
     @SuppressWarnings("unused")
     public void openInBrowser(@NotNull String path) {
         if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
