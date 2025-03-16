@@ -98,6 +98,10 @@ public class JavaConstantGenerator extends DefaultTask {
         constants.add(new Constant.StringConst(name, value));
     }
 
+    public void add(@NotNull String name, @NotNull Path value) {
+        constants.add(new Constant.PathConstant(name, value));
+    }
+
     public String getBasePackage() {
         return basePackage.get();
     }

@@ -16,14 +16,14 @@
 
 package de.linusdev.lutils.gradle.constant;
 
-import de.linusdev.lutils.codegen.java.JavaClass;
-import de.linusdev.lutils.codegen.java.JavaClassGenerator;
-import de.linusdev.lutils.codegen.java.JavaExpression;
-import de.linusdev.lutils.codegen.java.JavaVisibility;
+import de.linusdev.lutils.codegen.java.*;
 import de.linusdev.lutils.version.Version;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.Serializable;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 public interface Constant extends Serializable {
 
@@ -109,6 +109,33 @@ public interface Constant extends Serializable {
         @Override
         public boolean equals(Object obj) {
             return Constant.equals(this, obj);
+        }
+    }
+
+    class PathConstant implements Constant {
+        private final @NotNull String name;
+        private final @Nullable String path;
+
+        public PathConstant(@NotNull String name, @Nullable Path path) {
+            this.name = name;
+            this.path = path == null ? null : path.toString().replaceAll("\\\\", "/");
+        }
+
+        @Override
+        public @NotNull String name() {
+            return name;
+        }
+
+        @Override
+        public @NotNull Class<?> clazz() {
+            return Path.class;
+        }
+
+        @Override
+        public @NotNull JavaExpression value() {
+            if(path == null)
+                return JavaExpression.nullExpression();
+            return JavaExpression.ofCode("Paths.get(\"" + path + "\")", JavaClass.ofClass(Paths.class).getRequiredImports().toArray(new JavaImport[0]));
         }
     }
 }
