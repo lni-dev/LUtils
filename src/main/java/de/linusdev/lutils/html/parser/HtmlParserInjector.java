@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Linus Andera
+ * Copyright (c) 2024-2025 Linus Andera
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,7 +28,7 @@ public interface HtmlParserInjector {
     @Nullable HtmlAttribute onAttributeParsed(@NotNull HtmlAttributeType<?> type, @Nullable String value);
 
     /**
-     * Called when content of a parent element is parsed.
+     * Called when content of a parent element is parsed. Called even if the parent element is a void element.
      * @param tag Parent element tag
      * @param attributes Parent element attribute
      * @return id given to parent element
@@ -46,7 +46,7 @@ public interface HtmlParserInjector {
     @Nullable HtmlObject onObjectParsed(@NotNull HtmlObject parsed);
 
     /**
-     * Finished parsing content of the parent with given {@code id}
+     * Finished parsing content of the parent with given {@code id}. Called even if the parent element is a void element.
      * @param id id returned by {@link #onStartParsingContent(HtmlElementType, HtmlAttributeMap)}.
      */
     void onEndParsingContent(int id);

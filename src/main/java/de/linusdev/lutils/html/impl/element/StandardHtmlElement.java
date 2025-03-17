@@ -381,6 +381,7 @@ public class StandardHtmlElement implements EditableHtmlElement {
                                 builder.addAttribute(attrType, null);
                         }
 
+                        state.onEndParsingContent(state.onStartParsingContent(type, builder.getCurrentAttributes()));
                         return builder.build();
                     } else if(attrReader.state == ATTR_VALUE) {
                         String value = attrReader.readAttributeValue();
