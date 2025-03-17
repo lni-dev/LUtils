@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Linus Andera
+ * Copyright (c) 2024-2025 Linus Andera
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,7 +49,10 @@ public class LhtmlPageSkeleton implements LhtmlSkeleton{
         AtomicReference<HtmlElement> body = new AtomicReference<>();
 
         Consumer<HtmlObject> consumer = object -> {
-            if(object.type() == HtmlObjectType.ELEMENT) {
+            if(object.type() == HtmlObjectType.TEXT && object instanceof LHtmlPlaceholderText placeholderText) {
+                placeholderText.setReplaceValues(replaceValues);
+
+            } else if(object.type() == HtmlObjectType.ELEMENT) {
                 HtmlElement element = object.asHtmlElement();
 
                 element.iterateAttributes(attribute -> {

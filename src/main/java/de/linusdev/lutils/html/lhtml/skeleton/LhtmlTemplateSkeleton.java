@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Linus Andera
+ * Copyright (c) 2024-2025 Linus Andera
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,10 +20,7 @@ import de.linusdev.lutils.html.EditableHtmlElement;
 import de.linusdev.lutils.html.HtmlAttribute;
 import de.linusdev.lutils.html.HtmlObject;
 import de.linusdev.lutils.html.HtmlObjectType;
-import de.linusdev.lutils.html.lhtml.LhtmlPlaceholder;
-import de.linusdev.lutils.html.lhtml.LhtmlPlaceholderAttribute;
-import de.linusdev.lutils.html.lhtml.LhtmlPlaceholderElement;
-import de.linusdev.lutils.html.lhtml.LhtmlTemplateElement;
+import de.linusdev.lutils.html.lhtml.*;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
@@ -54,7 +51,10 @@ public class LhtmlTemplateSkeleton implements LhtmlSkeleton {
         };
 
         Consumer<HtmlObject> consumer = object -> {
-            if(object.type() == HtmlObjectType.ELEMENT) {
+            if(object.type() == HtmlObjectType.TEXT && object instanceof LHtmlPlaceholderText placeholderText) {
+                placeholderText.setReplaceValues(replaceValues);
+
+            } else if(object.type() == HtmlObjectType.ELEMENT) {
                 object.asHtmlElement().iterateAttributes(attrConsumer);
 
                 if(object instanceof LhtmlPlaceholderElement placeholderEle) {

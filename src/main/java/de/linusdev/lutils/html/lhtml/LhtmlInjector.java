@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Linus Andera
+ * Copyright (c) 2024-2025 Linus Andera
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 package de.linusdev.lutils.html.lhtml;
 
 import de.linusdev.lutils.html.*;
+import de.linusdev.lutils.html.impl.HtmlText;
 import de.linusdev.lutils.html.impl.StandardHtmlAttribute;
 import de.linusdev.lutils.html.impl.element.StandardHtmlElementTypes;
 import de.linusdev.lutils.html.lhtml.skeleton.LhtmlPageSkeleton;
@@ -100,8 +101,19 @@ public class LhtmlInjector implements HtmlParserInjector {
 
     @Override
     public @Nullable HtmlObject onObjectParsed(@NotNull HtmlObject parsed) {
+        if(parsed.type() == HtmlObjectType.TEXT) {
+            HtmlText text = (HtmlText) parsed;
+
+            ConstructableString str = getConstructableStringOfValue(text.getText());
+            if(str == null)
+                return parsed;
+
+            return new LHtmlPlaceholderText(str);
+        }
+
         if(parsed.type() != HtmlObjectType.ELEMENT)
             return parsed;
+
         HtmlElement element = parsed.asHtmlElement();
 
         if(element.tag() == LhtmlHead.TYPE) {

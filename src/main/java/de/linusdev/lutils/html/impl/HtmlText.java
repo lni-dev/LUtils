@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Linus Andera
+ * Copyright (c) 2024-2025 Linus Andera
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -66,6 +66,10 @@ public class HtmlText implements HtmlObject {
 
     public HtmlText(@NotNull String text) {
         this.text = text;
+    }
+
+    public @NotNull String getText() {
+        return text;
     }
 
     @Override

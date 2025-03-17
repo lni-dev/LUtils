@@ -116,7 +116,7 @@ class LhtmlPageTest {
                 <body>
                   <div lhtml-placeholder="p"></div>
                   <div lhtml-template="item" id="${id}">
-                    <a id="${id}">test</a>
+                    <a id="${id}">${name}</a>
                   </div>
                 </body>
                 </html>""";
@@ -128,6 +128,7 @@ class LhtmlPageTest {
         page.getPlaceholder("p").addContent(item);
 
         item.setValue("id", "value");
+        item.setValue("name", "test");
 
         assertEquals("""
                 <html>
