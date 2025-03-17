@@ -397,12 +397,13 @@ public class StandardHtmlElement implements EditableHtmlElement {
                 }
             }
 
-            if(type.isVoidElement()) {
-                return builder.build();
-            }
-
             // read content
             int id = state.onStartParsingContent(type, builder.getCurrentAttributes());
+
+            if(type.isVoidElement()) {
+                state.onEndParsingContent(id);
+                return builder.build();
+            }
 
             for(;;) {
                 c = reader.skipNewLinesAndFollowingSpaces();
