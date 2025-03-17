@@ -109,7 +109,8 @@ public class StandardHtmlElement implements EditableHtmlElement {
             }
 
             for (@NotNull HtmlObject obj : content) {
-                if(!tag.isInline()) writer.append("\n").append(state.getIndent());
+                if(!tag.isInline())
+                    writer.append("\n").append(state.getIndent());
                 obj.write(state, writer);
             }
 
