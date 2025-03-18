@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Linus Andera
+ * Copyright (c) 2024-2025 Linus Andera
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package de.linusdev.lutils.net.ws;
 
+import de.linusdev.lutils.interfaces.TConsumer;
 import de.linusdev.lutils.net.http.HTTPMessageBuilder;
 import de.linusdev.lutils.net.http.HTTPRequest;
 import de.linusdev.lutils.net.http.HTTPResponse;
@@ -40,7 +41,6 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
-import java.util.function.Consumer;
 
 public class WebSocketServer implements RoutingStateHandler {
 
@@ -57,9 +57,9 @@ public class WebSocketServer implements RoutingStateHandler {
 
     private final @NotNull MessageDigest hashAlgo = MessageDigest.getInstance("SHA-1");
 
-    private final @NotNull Consumer<WebSocket> createdWebsocketConsumer;
+    private final @NotNull TConsumer<WebSocket, IOException> createdWebsocketConsumer;
 
-    public WebSocketServer(@NotNull Consumer<WebSocket> createdWebsocketConsumer) throws NoSuchAlgorithmException {
+    public WebSocketServer(@NotNull TConsumer<WebSocket, IOException> createdWebsocketConsumer) throws NoSuchAlgorithmException {
         this.createdWebsocketConsumer = createdWebsocketConsumer;
     }
 
@@ -107,7 +107,7 @@ public class WebSocketServer implements RoutingStateHandler {
                 .buildResponse(socket.getOutputStream());
 
         WebSocket webSocket = new WebSocket(socket, false, false);
-        createdWebsocketConsumer.accept(webSocket);
+        createdWebsocketConsumer.consume(webSocket);
         state.handled();
         return null;
     }
