@@ -28,22 +28,22 @@ import java.util.Arrays;
  * @see #VALUES
  */
 public class StandardHtmlAttributeTypes {
-    public static final @NotNull HtmlAttributeType<String[]>    CLASS           =   new ListType("class");
+    public static final @NotNull ListType       CLASS            =   new ListType("class");
 
-    public static final @NotNull HtmlAttributeType<String>      ID              =   new StringType("id");
-    public static final @NotNull HtmlAttributeType<String>      HREF            =   new StringType("href");
-    public static final @NotNull HtmlAttributeType<String>      SRC             =   new StringType("src");
-    public static final @NotNull HtmlAttributeType<String>      REL             =   new StringType("rel");
-    public static final @NotNull HtmlAttributeType<String>      ONCLICK         =   new StringType("onclick");
-    public static final @NotNull HtmlAttributeType<String>      ONSUBMIT        =   new StringType("onsubmit");
-    public static final @NotNull HtmlAttributeType<String>      ACCEPT_CHARSET  =   new StringType("accept-charset");
-    public static final @NotNull HtmlAttributeType<String>      TYPE            =   new StringType("type");
-    public static final @NotNull HtmlAttributeType<String>      AUTOCOMPLETE    =   new StringType("autocomplete");
-    public static final @NotNull HtmlAttributeType<String>      VALUE           =   new StringType("value");
+    public static final @NotNull StringType     ID               =   new StringType("id");
+    public static final @NotNull StringType     HREF             =   new StringType("href");
+    public static final @NotNull StringType     SRC              =   new StringType("src");
+    public static final @NotNull StringType     REL              =   new StringType("rel");
+    public static final @NotNull StringType     ONCLICK          =   new StringType("onclick");
+    public static final @NotNull StringType     ONSUBMIT         =   new StringType("onsubmit");
+    public static final @NotNull StringType     ACCEPT_CHARSET   =   new StringType("accept-charset");
+    public static final @NotNull StringType     TYPE             =   new StringType("type");
+    public static final @NotNull StringType     AUTOCOMPLETE     =   new StringType("autocomplete");
+    public static final @NotNull StringType     VALUE            =   new StringType("value");
 
 
-    public static final @NotNull NoValueType                    OPEN            =   new NoValueType("open");
-    public static final @NotNull NoValueType                    REQUIRED        =   new NoValueType("required");
+    public static final @NotNull NoValueType    OPEN             =   new NoValueType("open");
+    public static final @NotNull NoValueType    REQUIRED         =   new NoValueType("required");
 
 
     public static final @NotNull HtmlAttributeType<?> @NotNull [] VALUES = new HtmlAttributeType[] {
