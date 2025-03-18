@@ -35,6 +35,8 @@ public class StandardHtmlAttributeTypes {
     public static final @NotNull HtmlAttributeType<String>      SRC             =   new StringType("src");
     public static final @NotNull HtmlAttributeType<String>      REL             =   new StringType("rel");
     public static final @NotNull HtmlAttributeType<String>      ONCLICK         =   new StringType("onclick");
+    public static final @NotNull HtmlAttributeType<String>      ONSUBMIT        =   new StringType("onsubmit");
+    public static final @NotNull HtmlAttributeType<String>      ACCEPT_CHARSET  =   new StringType("accept-charset");
     public static final @NotNull HtmlAttributeType<String>      TYPE            =   new StringType("type");
     public static final @NotNull HtmlAttributeType<String>      AUTOCOMPLETE    =   new StringType("autocomplete");
     public static final @NotNull HtmlAttributeType<String>      VALUE           =   new StringType("value");
@@ -46,7 +48,7 @@ public class StandardHtmlAttributeTypes {
 
     public static final @NotNull HtmlAttributeType<?> @NotNull [] VALUES = new HtmlAttributeType[] {
             CLASS,
-            ID, HREF, SRC, REL, ONCLICK, OPEN, TYPE, AUTOCOMPLETE, VALUE,
+            ID, HREF, SRC, REL, ONCLICK, OPEN, TYPE, AUTOCOMPLETE, VALUE, ONSUBMIT, ACCEPT_CHARSET,
             REQUIRED
     };
 
