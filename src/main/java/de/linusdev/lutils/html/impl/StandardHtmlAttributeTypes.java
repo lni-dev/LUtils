@@ -19,22 +19,35 @@ package de.linusdev.lutils.html.impl;
 import de.linusdev.lutils.html.HtmlAttribute;
 import de.linusdev.lutils.html.HtmlAttributeType;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.Arrays;
 
 /**
  * Some standard html attribute types.
  * @see #VALUES
  */
 public class StandardHtmlAttributeTypes {
-    public static final @NotNull HtmlAttributeType<String[]> CLASS = new ListType("class");
-    public static final @NotNull HtmlAttributeType<String> ID = new StringType("id");
-    public static final @NotNull HtmlAttributeType<String> HREF = new StringType("href");
-    public static final @NotNull HtmlAttributeType<String> REL = new StringType("rel");
+    public static final @NotNull HtmlAttributeType<String[]>    CLASS           =   new ListType("class");
+
+    public static final @NotNull HtmlAttributeType<String>      ID              =   new StringType("id");
+    public static final @NotNull HtmlAttributeType<String>      HREF            =   new StringType("href");
+    public static final @NotNull HtmlAttributeType<String>      SRC             =   new StringType("src");
+    public static final @NotNull HtmlAttributeType<String>      REL             =   new StringType("rel");
+    public static final @NotNull HtmlAttributeType<String>      ONCLICK         =   new StringType("onclick");
+    public static final @NotNull HtmlAttributeType<String>      TYPE            =   new StringType("type");
+    public static final @NotNull HtmlAttributeType<String>      AUTOCOMPLETE    =   new StringType("autocomplete");
+    public static final @NotNull HtmlAttributeType<String>      VALUE           =   new StringType("value");
+
+
+    public static final @NotNull NoValueType                    OPEN            =   new NoValueType("open");
+    public static final @NotNull NoValueType                    REQUIRED        =   new NoValueType("required");
+
 
     public static final @NotNull HtmlAttributeType<?> @NotNull [] VALUES = new HtmlAttributeType[] {
             CLASS,
-            ID,
-            HREF,
-            REL
+            ID, HREF, SRC, REL, ONCLICK, OPEN, TYPE, AUTOCOMPLETE, VALUE,
+            REQUIRED
     };
 
     public static abstract class Type<V> implements HtmlAttributeType<V> {
@@ -50,6 +63,12 @@ public class StandardHtmlAttributeTypes {
             return name;
         }
 
+        public @NotNull HtmlAttribute of(V value) {
+            return new StandardHtmlAttribute(this, convertValue(value));
+        }
+
+        public abstract String convertValue(V value);
+
         @Override
         public int hashCode() {
             return HtmlAttributeType.hashcode(this);
@@ -60,6 +79,11 @@ public class StandardHtmlAttributeTypes {
 
         public StringType(@NotNull String name) {
             super(name);
+        }
+
+        @Override
+        public @NotNull String convertValue(String value) {
+            return value;
         }
 
         @Override
@@ -76,9 +100,35 @@ public class StandardHtmlAttributeTypes {
         }
 
         @Override
+        public @NotNull String convertValue(String[] value) {
+            return Arrays.stream(value).reduce("", (accumulator, next) -> accumulator + " " + next);
+        }
+
+        @Override
         public String @NotNull [] convertValue(@NotNull HtmlAttribute attribute) {
             String val = attribute.value();
             return val == null ? new String[0] : val.split(" ");
+        }
+    }
+
+    public static class NoValueType extends Type<Void> {
+
+        public NoValueType(@NotNull String name) {
+            super(name);
+        }
+
+        @Override
+        public String convertValue(Void value) {
+            return null;
+        }
+
+        @Override
+        public @Nullable Void convertValue(@NotNull HtmlAttribute attribute) {
+            return null;
+        }
+
+        public @NotNull HtmlAttribute of() {
+            return of(null);
         }
     }
 }
