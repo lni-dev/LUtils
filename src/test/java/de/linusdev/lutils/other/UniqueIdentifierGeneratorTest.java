@@ -17,6 +17,7 @@ class UniqueIdentifierGeneratorTest {
 
         gen = new UniqueIdentifierGenerator(15);
         assertEquals("15", gen.getNextAsString());
+        assertEquals(16, gen.getCurrentNextIdWithoutIncrementing());
 
     }
 }

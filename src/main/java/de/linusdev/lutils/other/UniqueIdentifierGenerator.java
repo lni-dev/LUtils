@@ -16,9 +16,11 @@
 
 package de.linusdev.lutils.other;
 
+import de.linusdev.lutils.interfaces.Simplifiable;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-public class UniqueIdentifierGenerator {
+public class UniqueIdentifierGenerator implements Simplifiable {
 
     /**
      * Prefix used for {@link #getNextAsString()}.
@@ -49,5 +51,14 @@ public class UniqueIdentifierGenerator {
 
     public @NotNull String getNextAsString() {
         return prefix + getNext();
+    }
+
+    public synchronized long getCurrentNextIdWithoutIncrementing() {
+        return nextId;
+    }
+
+    @Override
+    public @Nullable Object simplify() {
+        return nextId;
     }
 }
