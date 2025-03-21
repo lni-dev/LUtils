@@ -36,7 +36,13 @@ import java.io.OutputStream;
  */
 public interface Image extends ImageSize{
 
-    static void copy(@NotNull Image src, @NotNull Image dst) {
+    /**
+     * Copy from one image to another.
+     * @param src image to copy from
+     * @param dst image to copy to
+     * @return {@code dst}
+     */
+    static @NotNull Image copy(@NotNull Image src, @NotNull Image dst) {
         if(dst.isReadOnly())
             throw new IllegalArgumentException("Destination image is read only.");
 
@@ -51,6 +57,8 @@ public interface Image extends ImageSize{
                 dst.setPixelAsRGBA(x, y, src.getPixelAsRGBA(x, y));
             }
         }
+
+        return dst;
     }
 
     static void copy(
