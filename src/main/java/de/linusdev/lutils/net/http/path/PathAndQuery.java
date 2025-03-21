@@ -18,11 +18,12 @@ package de.linusdev.lutils.net.http.path;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Http path. Does not support escape character.
+ * Http path.
  */
 public class PathAndQuery {
 
@@ -30,17 +31,17 @@ public class PathAndQuery {
     private final @NotNull Map<String, String> parameters;
 
     public PathAndQuery(@NotNull String path) {
-        int sepIndex = path.indexOf('?');
+        URI uri = URI.create(path);
+        this.path = uri.getPath() == null ? "" : uri.getPath();
 
-        if(sepIndex == -1) {
-            this.path = path;
+        if(uri.getQuery() == null) {
             this.parameters = Map.of();
         } else {
-            this.path = path.substring(0, sepIndex);
             this.parameters = new HashMap<>();
 
-            String parameterString = path.substring(sepIndex + 1);
+            String parameterString = uri.getQuery();
             String[] params = parameterString.split("&");
+
 
             for (String param : params) {
                 String[] pair = param.split("=");
