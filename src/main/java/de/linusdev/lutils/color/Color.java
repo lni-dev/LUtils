@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2024 Linus Andera
+ * Copyright (c) 2023-2025 Linus Andera
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,9 @@ import de.linusdev.lutils.color.impl.RGBAColorIntImpl;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Range;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @SuppressWarnings("unused")
 public interface Color {
@@ -64,6 +67,20 @@ public interface Color {
         return new RGBAColorIntImpl((hex & 0x00ff0000) >>> 16, (hex & 0x0000ff00) >>> 8, hex & 0x000000ff, 255);
     }
 
+    @Contract(value = "_, -> new", pure = true)
+    static @NotNull RGBAColor ofRGBA(@NotNull String hex) {
+        if(hex.length() != 8)
+            throw new IllegalArgumentException("Given hex '" + hex + "' is to long or to short. Must be 8 chars. It must not start with '0x'.");
+        return ofRGBA((int)(long)Long.decode("0x" + hex));
+    }
+
+    @Contract(value = "_, -> new", pure = true)
+    static @NotNull RGBAColor ofRGB(@NotNull String hex) {
+        if(hex.length() != 6)
+            throw new IllegalArgumentException("Given hex '" + hex + "' is to long or to short. Must be 6 chars. It must not start with '0x'.");
+        return ofRGB((int)(long)Long.decode("0x" + hex));
+    }
+
     @Contract(value = "_, _, _ -> new", pure = true)
     static @NotNull RGBAColor ofRGB(
             @Range(from = (long) RGBAColor.RGB_DOUBLE_MIN, to = (long) RGBAColor.RGB_DOUBLE_MAX) double r,
@@ -100,6 +117,52 @@ public interface Color {
             @Range(from = (long) HSVAColor.HSV_ALPHA_MIN, to = (long) HSVAColor.HSV_ALPHA_MAX)              double a
     ) {
         return new HSVAColorImpl(h,s,v, a);
+    }
+
+    @NotNull Pattern CSS_RGB_PATTERN = Pattern.compile("rgba?\\( *(?<r>\\d+) *,? *(?<g>\\d+) *,? *(?<b>\\d+) *(,? *(?<a>\\d+) *)?\\)");
+    @NotNull Pattern CSS_HEX_PATTERN = Pattern.compile("#(?<hex>[0-9a-fA-F]{6}([0-9a-fA-F]{2})?)");
+
+    /**
+     * Can decode css color definitions to a {@link Color} instance.
+     * Allowed color definitions are:
+     * <ul>
+     *     <li>{@code rgb(<r>, <g>, <b>)}</li>
+     *     <li>{@code rgba(<r>, <g>, <b>, <a>)}</li>
+     *     <li>{@code #rrggbb}</li>
+     *     <li>{@code #rrggbbaa}</li>
+     * </ul>
+     */
+    static @NotNull Color ofCssColorDefinition(@NotNull String cssColorDef) {
+        Color parsed;
+
+        Matcher matcher = CSS_RGB_PATTERN.matcher(cssColorDef);
+
+        if(matcher.find()) {
+            if(matcher.group("a") != null) {
+                return Color.ofRGBA(
+                        Integer.parseInt(matcher.group("r")),
+                        Integer.parseInt(matcher.group("g")),
+                        Integer.parseInt(matcher.group("b")),
+                        Integer.parseInt(matcher.group("a"))
+                );
+            } else {
+                return Color.ofRGB(
+                        Integer.parseInt(matcher.group("r")),
+                        Integer.parseInt(matcher.group("g")),
+                        Integer.parseInt(matcher.group("b"))
+                );
+            }
+        }
+
+        matcher = CSS_HEX_PATTERN.matcher(cssColorDef);
+
+        if(matcher.find()) {
+            if(matcher.group("hex").length() == 8)
+                return Color.ofRGBA(matcher.group("hex"));
+            return Color.ofRGB(matcher.group("hex"));
+        }
+
+        throw new IllegalArgumentException("Cannot decode css color definition '" + cssColorDef + "'.");
     }
 
     /**

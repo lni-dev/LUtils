@@ -6,7 +6,7 @@ package de.linusdev.lutils.color;
 
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class RGBAColorTest {
 
@@ -65,5 +65,34 @@ class RGBAColorTest {
         assertEquals(77, Math.round(hsv.saturation()));
         assertEquals(87, Math.round(hsv.value()));
         assertEquals(245d/255d, hsv.alpha());
+    }
+
+    @Test
+    void ofCssDefinition() {
+        RGBAColor color = Color.ofCssColorDefinition("rgba(222, 100, 50, 245)").toRGBAColor();
+
+        assertEquals(222, color.getRed());
+        assertEquals(100, color.getGreen());
+        assertEquals(50, color.getBlue());
+        assertEquals(245, color.getAlpha());
+
+        color = Color.ofCssColorDefinition("rgb(222, 100, 50)").toRGBAColor();
+
+        assertEquals(222, color.getRed());
+        assertEquals(100, color.getGreen());
+        assertEquals(50, color.getBlue());
+
+        color = Color.ofCssColorDefinition("#de6432").toRGBAColor();
+
+        assertEquals(222, color.getRed());
+        assertEquals(100, color.getGreen());
+        assertEquals(50, color.getBlue());
+
+        color = Color.ofCssColorDefinition("#de6432ff").toRGBAColor();
+
+        assertEquals(222, color.getRed());
+        assertEquals(100, color.getGreen());
+        assertEquals(50, color.getBlue());
+        assertEquals(255, color.getAlpha());
     }
 }
