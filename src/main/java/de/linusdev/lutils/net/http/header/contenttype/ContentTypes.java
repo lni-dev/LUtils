@@ -25,6 +25,25 @@ import org.jetbrains.annotations.Nullable;
 
 public class ContentTypes extends BasicHeaderValueImpl implements ContentType {
 
+    private final @NotNull String type;
+    private final @NotNull String subtype;
+
+    ContentTypes(@NotNull String type, @NotNull String subType) {
+        super(type + "/" + subType);
+        this.type = type;
+        this.subtype = subType;
+    }
+
+    @Override
+    public @NotNull String type() {
+        return type;
+    }
+
+    @Override
+    public @NotNull String subtype() {
+        return subtype;
+    }
+
     public static class Text extends ContentTypes implements BasicHeaderValueWithCharset {
 
         @Contract(" -> new")
@@ -53,7 +72,7 @@ public class ContentTypes extends BasicHeaderValueImpl implements ContentType {
         }
 
         protected Text(@NotNull String name) {
-            super("text/" + name);
+            super("text", name);
         }
 
         @Override
@@ -71,11 +90,7 @@ public class ContentTypes extends BasicHeaderValueImpl implements ContentType {
         }
 
         protected Image(@NotNull String name) {
-            super("image/" + name);
+            super("image", name);
         }
-    }
-
-    ContentTypes(@NotNull String name) {
-        super(name);
     }
 }

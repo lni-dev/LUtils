@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Linus Andera
+ * Copyright (c) 2024-2025 Linus Andera
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,12 +23,31 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+/**
+ * Content-type: {@code type/subtype}
+ */
 public interface ContentType extends BasicHeaderValue {
 
-    @Contract("_ -> new")
-    static @NotNull ContentType of(@NotNull String name) {
-        return new ContentTypes(name);
+    @Contract("_, _ -> new")
+    static @NotNull ContentType of(@NotNull String type, @NotNull String subtype) {
+        return new ContentTypes(type, subtype);
     }
+
+    static boolean equals(@NotNull ContentType that, @Nullable ContentType other) {
+        if(that == other) return true;
+        if(other == null) return false;
+        return that.type().equals(other.type()) && that.subtype().equals(other.subtype());
+    }
+
+    /**
+     * The type before the slash.
+     */
+    @NotNull String type();
+
+    /**
+     * The subtype after the slash.
+     */
+    @NotNull String subtype();
 
     /**
      * This {@link ContentType} as content-type {@link Header}

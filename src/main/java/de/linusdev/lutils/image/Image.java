@@ -22,9 +22,12 @@ import de.linusdev.lutils.color.RGBAColor;
 import de.linusdev.lutils.image.java.JavaBackedImage;
 import de.linusdev.lutils.image.view.ImageView;
 import de.linusdev.lutils.image.view.RotatedImageView;
+import de.linusdev.lutils.net.http.header.contenttype.ContentType;
 import org.jetbrains.annotations.NotNull;
 
 import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.io.OutputStream;
 
 /**
  * Pixels positions go from {@code 0} to {@code getWidth() - 1} and {@code 0} to {@code getHeight() - 1}
@@ -115,6 +118,36 @@ public interface Image extends ImageSize{
         return image;
     }
 
+    /**
+     * Multiplies every pixel in given {@link Image} with given {@code color}.
+     * The multiplication will be done with in the rgba color spaces per channel with values ranging from {@code 0.0} to {@code 1.0}.
+     * Completely transparent pixels ({@link RGBAColor#alpha()} == 0.0) will not be affected.
+     * <br><br>
+     * The main use case for this function is: Given a completely white image, the image color will be changed to be
+     * exactly given {@code color}.
+     * @param image the image to edit.
+     * @param color the color to multiply onto this image.
+     * @return given {@code image}.
+     */
+    static @NotNull Image multiply(@NotNull Image image, @NotNull Color color) {
+        RGBAColor rgba = color.toRGBAColor();
+        double r = rgba.red();
+        double g = rgba.green();
+        double b = rgba.blue();
+        double a;
+
+        for (int y = 0; y < image.getHeight(); y++) {
+            for (int x = 0; x < image.getWidth(); x++) {
+                RGBAColor pixel = image.getPixelAsRGBAColor(x, y);
+                a = pixel.alpha();
+                if(a == 0.0) continue;
+                image.setPixelAsRGBA(x, y, Color.ofRGBA(r * pixel.red(), g * pixel.green(), b * pixel.blue(), pixel.alpha()).toRGBAHex());
+            }
+        }
+
+        return image;
+    }
+
     static @NotNull Image create(int width, int height) {
         return new JavaBackedImage(new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB));
     }
@@ -149,6 +182,10 @@ public interface Image extends ImageSize{
 
     default @NotNull Image createRotatedView() {
         return new RotatedImageView(this);
+    }
+
+    default void write(@NotNull ContentType imageType, @NotNull OutputStream outputStream) throws IOException {
+        throw new UnsupportedOperationException();
     }
 
 }

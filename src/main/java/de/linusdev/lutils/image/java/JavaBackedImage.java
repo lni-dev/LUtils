@@ -18,6 +18,7 @@ package de.linusdev.lutils.image.java;
 
 import de.linusdev.lutils.image.Image;
 import de.linusdev.lutils.image.PixelFormat;
+import de.linusdev.lutils.net.http.header.contenttype.ContentType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -72,4 +73,12 @@ public class JavaBackedImage implements Image {
         ImageIO.write(image, formatName, stream);
     }
 
+    @Override
+    public void write(@NotNull ContentType imageType, @NotNull OutputStream outputStream) throws IOException {
+        if(!imageType.type().equals("image")) {
+            throw new IllegalArgumentException("Content type must be 'image/...' but is '" + imageType + "'.");
+        }
+
+        ImageIO.write(image, imageType.subtype(), outputStream);
+    }
 }

@@ -1,6 +1,5 @@
 package de.linusdev.lutils.net.http;
 
-import de.linusdev.lutils.net.http.HTTPMessageBuilder;
 import de.linusdev.lutils.net.http.body.Body;
 import de.linusdev.lutils.net.http.header.HeaderMap;
 import de.linusdev.lutils.net.http.header.HeaderNames;
@@ -46,7 +45,7 @@ class HTTPMessageBuilderTest {
         builder.POST("/test", new Body() {
             @Override
             public ContentType contentType() {
-                return ContentType.of("text/plain");
+                return ContentType.of("text", "plain");
             }
 
             @Override
