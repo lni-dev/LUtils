@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Linus Andera
+ * Copyright (c) 2024-2025 Linus Andera
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,8 +22,8 @@ import de.linusdev.lutils.async.completeable.CompletableFuture;
 import de.linusdev.lutils.async.completeable.CompletableTask;
 import de.linusdev.lutils.async.error.ThrowableAsyncError;
 import de.linusdev.lutils.async.manager.AsyncManager;
+import de.linusdev.lutils.collections.llist.LLinkedList;
 import de.linusdev.lutils.interfaces.TFunction;
-import de.linusdev.lutils.llist.LLinkedList;
 import de.linusdev.lutils.nat.memory.stack.Stack;
 import de.linusdev.lutils.nat.memory.stack.StackFactory;
 import org.jetbrains.annotations.NotNull;

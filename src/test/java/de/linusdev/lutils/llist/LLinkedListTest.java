@@ -4,6 +4,7 @@
 
 package de.linusdev.lutils.llist;
 
+import de.linusdev.lutils.collections.llist.LLinkedList;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -28,7 +29,7 @@ class LLinkedListTest {
         list.add("7");
         list.add("8");
 
-        assertEquals(list.size, 8);
+        assertEquals(list.size(), 8);
     }
 
     @Test
