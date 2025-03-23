@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Linus Andera
+ * Copyright (c) 2024-2025 Linus Andera
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -65,7 +65,7 @@ public class HtmlComment implements HtmlObject {
 
     @Override
     public @NotNull HtmlObjectType type() {
-        return HtmlObjectType.TEXT;
+        return HtmlObjectType.COMMENT;
     }
 
     @Override
