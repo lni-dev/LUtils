@@ -28,7 +28,7 @@ public class MapView<K, V> implements BiIterable<K, V> {
     protected final @NotNull Function<K, V> get;
     protected final @NotNull BiIterable<K, V> iterable;
 
-    protected MapView(
+    public MapView(
             @NotNull Supplier<Integer> size,
             @NotNull Function<K, V> get,
             @NotNull BiIterable<K, V> iterable
