@@ -22,7 +22,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 @SuppressWarnings("unused")
-public abstract class MapView<K, V> implements BiIterable<K, V> {
+public class MapView<K, V> implements BiIterable<K, V> {
 
     protected final @NotNull Supplier<Integer> size;
     protected final @NotNull Function<K, V> get;
