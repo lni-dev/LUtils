@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Linus Andera
+ * Copyright (c) 2024-2025 Linus Andera
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ import de.linusdev.lutils.net.ws.frame.OpCodes;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class WebSocketListener {
@@ -73,6 +74,65 @@ public class WebSocketListener {
                 webSocket.close();
             });
         }
+    }
+
+    @SuppressWarnings("unused")
+    public abstract static class AdvancedListener implements Listener {
+
+        private OpCodes lastOpcode = null;
+
+        private final StringBuilder textMessage = new StringBuilder();
+        private ArrayList<byte[]> binaryPayload = null;
+
+        abstract void onText(@NotNull String text);
+        abstract void onBinary(@NotNull ArrayList<byte[]> binary);
+        abstract void onPing(@NotNull Frame pingFrame);
+        abstract void onPong(@NotNull Frame pongFrame);
+
+        private void handleText(@NotNull Frame frame) {
+            assert frame.opcode() == OpCodes.TEXT_UTF8;
+            textMessage.append(frame.toTextFrame().getText());
+
+            if(frame.isFinal()) {
+                onText(textMessage.toString());
+                textMessage.setLength(0);
+            } else {
+                lastOpcode = frame.opcode();
+            }
+        }
+
+        private void handleBinary(@NotNull Frame frame) {
+            assert frame.opcode() == OpCodes.BINARY;
+
+            if(binaryPayload == null)
+                binaryPayload = new ArrayList<>();
+
+            binaryPayload.add(frame.getPayload());
+
+            if(frame.isFinal()) {
+                onBinary(binaryPayload);
+                binaryPayload = null;
+            } else {
+                lastOpcode = frame.opcode();
+            }
+        }
+
+        @Override
+        public void onReceived(@NotNull WebSocket webSocket, @NotNull Frame frame) {
+            switch (frame.opcode()) {
+                case CONTINUATION -> {
+                    if(lastOpcode == OpCodes.TEXT_UTF8) handleText(frame);
+                    else if (lastOpcode == OpCodes.BINARY) handleBinary(frame);
+                    else throw new Error("This cannot happen");
+                }
+                case TEXT_UTF8 -> handleText(frame);
+                case BINARY -> handleBinary(frame);
+                case CLOSE -> throw new Error("This cannot happen");
+                case PING -> onPing(frame);
+                case PONG -> onPong(frame);
+            }
+        }
+
     }
 
 }
