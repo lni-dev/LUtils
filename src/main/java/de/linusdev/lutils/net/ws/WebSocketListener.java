@@ -84,10 +84,10 @@ public class WebSocketListener {
         private final StringBuilder textMessage = new StringBuilder();
         private ArrayList<byte[]> binaryPayload = null;
 
-        abstract void onText(@NotNull String text);
-        abstract void onBinary(@NotNull ArrayList<byte[]> binary);
-        abstract void onPing(@NotNull Frame pingFrame);
-        abstract void onPong(@NotNull Frame pongFrame);
+        protected abstract void onText(@NotNull String text);
+        protected abstract void onBinary(@NotNull ArrayList<byte[]> binary);
+        protected abstract void onPing(@NotNull Frame pingFrame);
+        protected abstract void onPong(@NotNull Frame pongFrame);
 
         private void handleText(@NotNull Frame frame) {
             assert frame.opcode() == OpCodes.TEXT_UTF8;
