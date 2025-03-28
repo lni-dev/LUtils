@@ -99,9 +99,19 @@ public class Routing extends Route {
     /**
      * Reads a {@link HTTPRequest} from given {@code stream} and {@link #route(HTTPRequest) routes} it.
      */
-    private @Nullable HTTPMessageBuilder route(@Nullable Socket socket, @NotNull InputStream stream) {
+    private @Nullable HTTPMessageBuilder route(@Nullable Socket socket, @NotNull InputStream stream) throws IOException {
+        HTTPRequest<UnparsedBody> request;
         try {
-            return route(socket, HTTPRequest.parse(stream, BodyParsers.newUnparsedBodyParser()));
+            request = HTTPRequest.parse(stream, BodyParsers.newUnparsedBodyParser());
+        } catch (IOException e) {
+            throw e;
+        } catch (Throwable t) {
+            var response = exceptionHandler.apply(t);
+            return response == null ? HTTPResponse.builder().setStatusCode(StatusCodes.INTERNAL_SERVER_ERROR) : response;
+        }
+
+        try {
+            return route(socket, request);
         } catch (Throwable t) {
             var response = exceptionHandler.apply(t);
             return response == null ? HTTPResponse.builder().setStatusCode(StatusCodes.INTERNAL_SERVER_ERROR) : response;

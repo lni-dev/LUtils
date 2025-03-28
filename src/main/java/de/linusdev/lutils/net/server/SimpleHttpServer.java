@@ -31,6 +31,7 @@ import org.jetbrains.annotations.Nullable;
 import java.awt.*;
 import java.io.IOException;
 import java.net.ServerSocket;
+import java.net.Socket;
 import java.net.URI;
 import java.net.URISyntaxException;
 
@@ -39,7 +40,7 @@ public class SimpleHttpServer implements AsyncManager {
     private final @NotNull ServerSocket serverSocket;
     private final ExceptionHandler exceptionHandler;
     /**
-     * This future will be completed before the server is closed.
+     * This future will be completed after the server is closed.
      */
     private final @NotNull CompletableFuture<Nothing, SimpleHttpServer, CompletableTask<Nothing, SimpleHttpServer>> closeFuture;
 
@@ -57,12 +58,31 @@ public class SimpleHttpServer implements AsyncManager {
 
         Thread thread = new Thread(() -> {
             while (keepAlive) {
+                Socket socket;
                 try {
-                    routing.route(serverSocket.accept());
+                    socket = serverSocket.accept();
+                } catch (IOException e) {
+                    if(serverSocket.isClosed())
+                        break;
+                    exceptionHandler.accept(e);
+                    continue;
+                } catch (Throwable e) {
+                    exceptionHandler.accept(e);
+                    continue;
+                }
+
+                try {
+                    routing.route(socket);
+                } catch (IOException e) {
+                    if(socket.isClosed())
+                        continue;
+                    exceptionHandler.accept(e);
                 } catch (Throwable e) {
                     exceptionHandler.accept(e);
                 }
             }
+
+            closeFuture.complete(Nothing.INSTANCE, this, null);
         },"simple-http-server");
         thread.setDaemon(true);
         thread.start();
@@ -75,7 +95,6 @@ public class SimpleHttpServer implements AsyncManager {
 
     public void shutdown() {
         try {
-            closeFuture.complete(Nothing.INSTANCE, this, null);
             keepAlive = false;
             serverSocket.close();
         } catch (Throwable e) {
@@ -91,7 +110,7 @@ public class SimpleHttpServer implements AsyncManager {
     /**
      * @return http://localhost:port
      */
-    @SuppressWarnings("unused")
+    @SuppressWarnings({"unused", "JavadocLinkAsPlainText"})
     public @NotNull String getUrl() {
        return "http://localhost:" + serverSocket.getLocalPort();
     }

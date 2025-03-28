@@ -17,6 +17,7 @@
 package de.linusdev.lutils.net.ws;
 
 import de.linusdev.lutils.net.ws.control.CloseFrame;
+import de.linusdev.lutils.net.ws.control.WSStatusCodes;
 import de.linusdev.lutils.net.ws.control.writable.WritableCloseFrame;
 import de.linusdev.lutils.net.ws.frame.Frame;
 import de.linusdev.lutils.net.ws.frame.OpCodes;
@@ -24,6 +25,9 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class WebSocketListener {
@@ -57,6 +61,8 @@ public class WebSocketListener {
                 }
             }
 
+            listener.onListenerThreadDeath();
+
         },"web-socket-listener-" + id).start();
     }
 
@@ -74,23 +80,66 @@ public class WebSocketListener {
                 webSocket.close();
             });
         }
+        default void onListenerThreadDeath() {}
     }
 
     @SuppressWarnings("unused")
     public abstract static class AdvancedListener implements Listener {
+
+        private final @NotNull WebSocket socket;
 
         private OpCodes lastOpcode = null;
 
         private final StringBuilder textMessage = new StringBuilder();
         private ArrayList<byte[]> binaryPayload = null;
 
+        private final AtomicBoolean onClosedCalled = new AtomicBoolean(false);
+
+        protected AdvancedListener(@NotNull WebSocket socket) {
+            this.socket = socket;
+        }
+
         protected abstract void onText(@NotNull String text);
         protected abstract void onBinary(@NotNull ArrayList<byte[]> binary);
         protected abstract void onPing(@NotNull Frame pingFrame);
         protected abstract void onPong(@NotNull Frame pongFrame);
+        protected abstract void onClosed();
+
+        private void callOnClosed() {
+            synchronized (onClosedCalled) {
+                if(onClosedCalled.get()) return;
+                onClosedCalled.set(true);
+            }
+
+            onClosed();
+        }
+
+        public void closeWebSocket() {
+            try {
+                socket.runSynchronisedWritable(() -> {
+                    // Send close frame. Socket will be closed when the other end sends a response close frame.
+                    socket.writeFrame(new WritableCloseFrame(WSStatusCodes.NORMAL_CLOSURE));
+                });
+            } catch (IOException e) {
+                onError(socket, e);
+            }
+
+            // Start a timer in case the other end does not respond and close the socket after 10 seconds
+            new Timer(true).schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    try {
+                        socket.close();
+                    } catch (IOException ignored) {}
+                }
+            }, 10_000);
+
+            callOnClosed();
+        }
 
         private void handleText(@NotNull Frame frame) {
             assert frame.opcode() == OpCodes.TEXT_UTF8;
+
             textMessage.append(frame.toTextFrame().getText());
 
             if(frame.isFinal()) {
@@ -119,20 +168,35 @@ public class WebSocketListener {
 
         @Override
         public void onReceived(@NotNull WebSocket webSocket, @NotNull Frame frame) {
+            synchronized (onClosedCalled) {
+                if(onClosedCalled.get())
+                    return;
+            }
+
             switch (frame.opcode()) {
+                case TEXT_UTF8 -> handleText(frame);
+                case BINARY -> handleBinary(frame);
                 case CONTINUATION -> {
                     if(lastOpcode == OpCodes.TEXT_UTF8) handleText(frame);
                     else if (lastOpcode == OpCodes.BINARY) handleBinary(frame);
                     else throw new Error("This cannot happen");
                 }
-                case TEXT_UTF8 -> handleText(frame);
-                case BINARY -> handleBinary(frame);
-                case CLOSE -> throw new Error("This cannot happen");
                 case PING -> onPing(frame);
                 case PONG -> onPong(frame);
+                case CLOSE -> throw new Error("This cannot happen"); // Close frame has a separate listener (onClose).
             }
         }
 
+        @Override
+        public void onClose(@NotNull WebSocket webSocket, @NotNull CloseFrame frame) throws IOException {
+            Listener.super.onClose(webSocket, frame);
+            callOnClosed();
+        }
+
+        @Override
+        public void onListenerThreadDeath() {
+            callOnClosed();
+        }
     }
 
 }
