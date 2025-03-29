@@ -24,6 +24,7 @@ import de.linusdev.lutils.net.ws.frame.OpCodes;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
+import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -52,12 +53,25 @@ public class WebSocketListener {
                         listener.onReceived(webSocket, frame);
 
 
-                } catch (IOException e) {
+                } catch (SocketException se) {
 
                     if(webSocket.isClosed())
                         break;
 
-                    listener.onError(webSocket, e);
+                    if (se.getMessage().equals("An established connection was aborted by the software in your host machine")
+                            || se.getMessage().equals("Connection reset")
+                            || se.getMessage().equals("Broken pipe")
+                    ) {
+                        // Connection aborted by client
+                        try {
+                            webSocket.close();
+                        } catch (IOException ignored) {}
+                        break;
+                    }
+
+                    listener.onError(webSocket, se);
+                } catch (Throwable t) {
+                    listener.onError(webSocket, t);
                 }
             }
 

@@ -74,14 +74,17 @@ public class SimpleHttpServer implements AsyncManager {
                     if(socket.isClosed())
                         continue;
 
-                    if(se.getMessage().equals("An established connection was aborted by the software in your host machine"))
-                        continue; // Connection aborted by client
-
-                    if(se.getMessage().equals("Connection reset"))
-                        continue; // Connection aborted by client
-
-                    if(se.getMessage().equals("Broken pipe"))
-                        continue; // Connection aborted by client
+                    if (se.getMessage().equals("An established connection was aborted by the software in your host machine")
+                                    || se.getMessage().equals("Connection reset")
+                                    || se.getMessage().equals("Broken pipe")
+                    ) {
+                        // Connection aborted by client
+                        try {
+                            socket.close();
+                        } catch (IOException ignored) {
+                        }
+                        continue;
+                    }
 
                     exceptionHandler.accept(se);
                 } catch (Throwable e) {

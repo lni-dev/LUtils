@@ -94,7 +94,12 @@ public class Routing extends Route {
      * @return {@link HTTPMessageBuilder} ready to {@link HTTPMessageBuilder#buildResponse(OutputStream, int) build the response}.
      */
     public @Nullable HTTPMessageBuilder route(@NotNull HTTPRequest<UnparsedBody> request) {
-        return route(null, request);
+        try {
+            return route(null, request);
+        } catch (Throwable t) {
+            var response = exceptionHandler.apply(t);
+            return response == null ? HTTPResponse.builder().setStatusCode(StatusCodes.INTERNAL_SERVER_ERROR) : response;
+        }
     }
 
     /**
@@ -104,15 +109,9 @@ public class Routing extends Route {
         HTTPRequest<UnparsedBody> request;
         try {
             request = HTTPRequest.parse(stream, BodyParsers.newUnparsedBodyParser());
+            return route(socket, request);
         } catch (SocketException e) {
             throw e;
-        } catch (Throwable t) {
-            var response = exceptionHandler.apply(t);
-            return response == null ? HTTPResponse.builder().setStatusCode(StatusCodes.INTERNAL_SERVER_ERROR) : response;
-        }
-
-        try {
-            return route(socket, request);
         } catch (Throwable t) {
             var response = exceptionHandler.apply(t);
             return response == null ? HTTPResponse.builder().setStatusCode(StatusCodes.INTERNAL_SERVER_ERROR) : response;
@@ -127,7 +126,7 @@ public class Routing extends Route {
     private @Nullable HTTPMessageBuilder route(
             @Nullable Socket socket,
             @NotNull HTTPRequest<UnparsedBody> request
-    ) {
+    ) throws IOException {
         String path = request.getPathAndQuery() == null ? "/" : request.getPathAndQuery().getPath();
         if(!path.startsWith("/")) path = "/" + path;
 
@@ -138,19 +137,14 @@ public class Routing extends Route {
         // Remove the prefix
         path = path.substring(prefixNoEndSlash.length());
 
-        try {
-            RoutingState state = new RoutingState(socket, request, path);
-            HTTPMessageBuilder response = accept(state);
-            if(response == null && !state.isHandled()) {
-                // This should never happen, as the default route of Routing should always send a response!
-                return HTTPResponse.builder().setStatusCode(StatusCodes.INTERNAL_SERVER_ERROR);
-            }
 
-            return response;
-        } catch (Throwable t) {
-            var response = exceptionHandler.apply(t);
-            return response == null ? HTTPResponse.builder().setStatusCode(StatusCodes.INTERNAL_SERVER_ERROR) : response;
+        RoutingState state = new RoutingState(socket, request, path);
+        HTTPMessageBuilder response = accept(state);
+        if(response == null && !state.isHandled()) {
+            // This should never happen, as the default route of Routing should always send a response!
+            return HTTPResponse.builder().setStatusCode(StatusCodes.INTERNAL_SERVER_ERROR);
         }
 
+        return response;
     }
 }
