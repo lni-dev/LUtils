@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2024 Linus Andera
+ * Copyright (c) 2023-2025 Linus Andera
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,11 +16,11 @@
 
 package de.linusdev.lutils.nat.struct.annos;
 
+import de.linusdev.lutils.nat.abi.ABI;
 import de.linusdev.lutils.nat.abi.OverwriteChildABI;
-import de.linusdev.lutils.nat.struct.generator.StaticGenerator;
 import de.linusdev.lutils.nat.struct.abstracts.Structure;
 import de.linusdev.lutils.nat.struct.abstracts.StructureStaticVariables;
-import de.linusdev.lutils.nat.abi.ABI;
+import de.linusdev.lutils.nat.struct.generator.StaticGenerator;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.annotation.*;

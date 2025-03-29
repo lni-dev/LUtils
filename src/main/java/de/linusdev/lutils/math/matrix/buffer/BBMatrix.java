@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Linus Andera
+ * Copyright (c) 2024-2025 Linus Andera
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import de.linusdev.lutils.math.matrix.Matrix;
 import de.linusdev.lutils.math.matrix.MatrixMemoryLayout;
 import de.linusdev.lutils.math.vector.buffer.BBVectorInfo;
 import de.linusdev.lutils.nat.NativeType;
+import de.linusdev.lutils.nat.abi.ABI;
 import de.linusdev.lutils.nat.abi.OverwriteChildABI;
 import de.linusdev.lutils.nat.struct.abstracts.Structure;
 import de.linusdev.lutils.nat.struct.annos.RequirementType;
@@ -30,7 +31,6 @@ import de.linusdev.lutils.nat.struct.generator.StaticGenerator;
 import de.linusdev.lutils.nat.struct.generator.StructCodeGenerator;
 import de.linusdev.lutils.nat.struct.info.ArrayInfo;
 import de.linusdev.lutils.nat.struct.info.StructureInfo;
-import de.linusdev.lutils.nat.abi.ABI;
 import de.linusdev.lutils.nat.struct.utils.SSMUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

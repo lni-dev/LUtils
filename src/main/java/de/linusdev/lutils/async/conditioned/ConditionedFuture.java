@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2024 Linus Andera
+ * Copyright (c) 2022-2025 Linus Andera
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,9 +18,9 @@ package de.linusdev.lutils.async.conditioned;
 
 
 import de.linusdev.lutils.async.ComputationResult;
+import de.linusdev.lutils.async.Future;
 import de.linusdev.lutils.async.executable.ExecutableFuture;
 import de.linusdev.lutils.async.executable.ExecutableTask;
-import de.linusdev.lutils.async.Future;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

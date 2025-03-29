@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2024 Linus Andera
+ * Copyright (c) 2023-2025 Linus Andera
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,9 @@
 
 package de.linusdev.lutils.async.executable;
 
-import de.linusdev.lutils.async.*;
+import de.linusdev.lutils.async.Future;
+import de.linusdev.lutils.async.PTask;
+import de.linusdev.lutils.async.Task;
 import de.linusdev.lutils.async.manager.AsyncManager;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Linus Andera
+ * Copyright (c) 2024-2025 Linus Andera
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package de.linusdev.lutils.nat.struct.utils;
 
 import de.linusdev.lutils.codegen.java.JavaClass;
 import de.linusdev.lutils.codegen.java.JavaMethod;
+import de.linusdev.lutils.nat.abi.ABI;
 import de.linusdev.lutils.nat.abi.OverwriteChildABI;
 import de.linusdev.lutils.nat.struct.abstracts.Structure;
 import de.linusdev.lutils.nat.struct.abstracts.StructureStaticVariables;
@@ -25,7 +26,6 @@ import de.linusdev.lutils.nat.struct.annos.*;
 import de.linusdev.lutils.nat.struct.exception.IllegalStructVarException;
 import de.linusdev.lutils.nat.struct.generator.StaticGenerator;
 import de.linusdev.lutils.nat.struct.info.StructureInfo;
-import de.linusdev.lutils.nat.abi.ABI;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

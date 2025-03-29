@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Linus Andera
+ * Copyright (c) 2024-2025 Linus Andera
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,11 +18,11 @@ package de.linusdev.lutils.nat.struct.abstracts;
 
 import de.linusdev.lutils.nat.NativeParsable;
 import de.linusdev.lutils.nat.struct.annos.StructValue;
+import de.linusdev.lutils.nat.struct.annos.StructureLayoutSettings;
 import de.linusdev.lutils.nat.struct.annos.StructureSettings;
 import de.linusdev.lutils.nat.struct.generator.Language;
 import de.linusdev.lutils.nat.struct.generator.StaticGenerator;
 import de.linusdev.lutils.nat.struct.info.StructureInfo;
-import de.linusdev.lutils.nat.struct.annos.StructureLayoutSettings;
 import de.linusdev.lutils.nat.struct.utils.BufferUtils;
 import de.linusdev.lutils.nat.struct.utils.SSMUtils;
 import de.linusdev.lutils.nat.struct.utils.Utils;

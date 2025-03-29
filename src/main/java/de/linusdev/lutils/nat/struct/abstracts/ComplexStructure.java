@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2024 Linus Andera
+ * Copyright (c) 2023-2025 Linus Andera
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package de.linusdev.lutils.nat.struct.abstracts;
 
+import de.linusdev.lutils.nat.abi.ABI;
 import de.linusdev.lutils.nat.abi.OverwriteChildABI;
 import de.linusdev.lutils.nat.struct.annos.RequirementType;
 import de.linusdev.lutils.nat.struct.annos.StructValue;
@@ -26,7 +27,6 @@ import de.linusdev.lutils.nat.struct.generator.StructCodeGenerator;
 import de.linusdev.lutils.nat.struct.info.ComplexStructureInfo;
 import de.linusdev.lutils.nat.struct.info.StructVarInfo;
 import de.linusdev.lutils.nat.struct.info.StructureInfo;
-import de.linusdev.lutils.nat.abi.ABI;
 import de.linusdev.lutils.nat.struct.mod.ModTrackingStructure;
 import de.linusdev.lutils.nat.struct.utils.ClassAndAbi;
 import de.linusdev.lutils.nat.struct.utils.SSMUtils;
