@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Linus Andera
+ * Copyright (c) 2024-2025 Linus Andera
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@ package de.linusdev.lutils.html;
 
 import de.linusdev.lutils.html.parser.HtmlParserState;
 import de.linusdev.lutils.html.parser.HtmlReader;
-import de.linusdev.lutils.html.parser.ParseException;
+import de.linusdev.lutils.other.parser.ParseException;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;

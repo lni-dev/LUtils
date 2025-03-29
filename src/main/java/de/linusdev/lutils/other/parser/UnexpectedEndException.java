@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Linus Andera
+ * Copyright (c) 2025 Linus Andera
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,27 +14,17 @@
  * limitations under the License.
  */
 
-package de.linusdev.lutils.html.parser;
+package de.linusdev.lutils.other.parser;
 
-import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-/**
- * An exception thrown while parsing html.
- */
-public class ParseException extends Exception {
+public class UnexpectedEndException extends ParseException{
 
-    /**
-     * Create new exception with a custom message.
-     */
-    public ParseException(@NotNull String message) {
-        super(message);
+    public UnexpectedEndException() {
+        super("Unexpected end");
     }
 
-    /**
-     * Create new exception with message {@code Illegal character ...}.
-     */
-    public ParseException(char c) {
-        this("Illegal character '" + c + "'");
+    public UnexpectedEndException(@Nullable ParseTracker tracker) {
+        super(tracker, "Unexpected end");
     }
-
 }

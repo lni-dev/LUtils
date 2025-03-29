@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Linus Andera
+ * Copyright (c) 2024-2025 Linus Andera
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package de.linusdev.lutils.html.parser;
 
+import de.linusdev.lutils.other.parser.ParseException;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
@@ -54,7 +55,7 @@ public class AttributeReader {
             return null;
         } else if (r == '/') {
             if ((r = reader.read()) != '>')
-                throw parserState.fail(r);
+                throw parserState.fail(reader, r);
 
             state = TAG_SELF_CLOSE;
             return null;
@@ -68,7 +69,7 @@ public class AttributeReader {
             return res.result1();
         } else if (res.result2() == '/') {
             if ((r = reader.read()) != '>')
-                throw parserState.fail(r);
+                throw parserState.fail(reader, r);
 
             state = TAG_SELF_CLOSE;
             return res.result1();

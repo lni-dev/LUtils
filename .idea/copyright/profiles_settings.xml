@@ -1,7 +1,3 @@
 <component name="CopyrightManager">
-  <settings>
-    <module2copyright>
-      <element module="src" copyright="Apache 2.0" />
-    </module2copyright>
-  </settings>
+  <settings default="Apache License, Version 2.0" />
 </component>

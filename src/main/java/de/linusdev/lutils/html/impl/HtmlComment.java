@@ -34,10 +34,10 @@ public class HtmlComment implements HtmlObject {
             (state, reader) -> {
                 char c;
 
-                if((c = reader.read()) != '<') throw state.fail(c);
-                if((c = reader.read()) != '!') throw state.fail(c);
-                if((c = reader.read()) != '-') throw state.fail(c);
-                if((c = reader.read()) != '-') throw state.fail(c);
+                if((c = reader.read()) != '<') throw state.fail(reader, c);
+                if((c = reader.read()) != '!') throw state.fail(reader, c);
+                if((c = reader.read()) != '-') throw state.fail(reader, c);
+                if((c = reader.read()) != '-') throw state.fail(reader, c);
 
                 StringBuilder comment = new StringBuilder();
 

@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2025 Linus Andera
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package de.linusdev.lutils.html;
 
 import de.linusdev.lutils.html.builder.Html;
@@ -5,8 +21,8 @@ import de.linusdev.lutils.html.impl.HtmlPage;
 import de.linusdev.lutils.html.impl.StandardHtmlAttributeTypes;
 import de.linusdev.lutils.html.parser.HtmlParser;
 import de.linusdev.lutils.html.parser.HtmlWritingState;
-import de.linusdev.lutils.html.parser.ParseException;
 import de.linusdev.lutils.html.parser.Registry;
+import de.linusdev.lutils.other.parser.ParseException;
 import org.intellij.lang.annotations.Language;
 import org.junit.jupiter.api.Test;
 

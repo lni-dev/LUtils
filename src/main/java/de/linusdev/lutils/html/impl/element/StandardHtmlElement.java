@@ -20,7 +20,11 @@ import de.linusdev.lutils.html.*;
 import de.linusdev.lutils.html.builder.HtmlElementBuilder;
 import de.linusdev.lutils.html.impl.HtmlText;
 import de.linusdev.lutils.html.impl.StandardHtmlAttribute;
-import de.linusdev.lutils.html.parser.*;
+import de.linusdev.lutils.html.parser.AttributeReader;
+import de.linusdev.lutils.html.parser.HtmlParserState;
+import de.linusdev.lutils.html.parser.HtmlReader;
+import de.linusdev.lutils.html.parser.HtmlWritingState;
+import de.linusdev.lutils.other.parser.ParseException;
 import de.linusdev.lutils.result.BiResult;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
@@ -349,21 +353,21 @@ public class StandardHtmlElement implements EditableHtmlElement {
 
             char c = reader.read();
             if(c != '<')
-                throw state.fail(c);
+                throw state.fail(reader, c);
 
             BiResult<String, Character> res = reader.readUntil(' ', '>');
             String tag = res.result1();
 
             if(tag.charAt(tag.length()-1) == '/' && res.result2() == '>') {
                 if(!tag.substring(0, tag.length() - 1).equals(type.name()))
-                    throw state.fail("Illegal tag name '" + tag + "'.");
+                    throw state.fail(reader, "Illegal tag name '" + tag + "'.");
 
                 // is immediately closed
                 return builder.build();
             }
 
             if(!tag.equals(type.name()))
-                throw state.fail("Illegal tag name '" + tag + "'.");
+                throw state.fail(reader, "Illegal tag name '" + tag + "'.");
 
 
 
@@ -430,7 +434,7 @@ public class StandardHtmlElement implements EditableHtmlElement {
             state.onEndParsingContent(id);
             tag = reader.readUntil('>').trim();
             if(!tag.equals(type.name()))
-                throw state.fail("Illegal end tag name '" + tag + "', should be '" + type.name() + "'.");
+                throw state.fail(reader, "Illegal end tag name '" + tag + "', should be '" + type.name() + "'.");
 
             return builder.build();
         }

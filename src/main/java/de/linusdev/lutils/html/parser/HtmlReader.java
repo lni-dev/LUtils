@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Linus Andera
+ * Copyright (c) 2024-2025 Linus Andera
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 package de.linusdev.lutils.html.parser;
 
 import de.linusdev.lutils.html.HtmlUtils;
+import de.linusdev.lutils.other.parser.ParseTracker;
 import de.linusdev.lutils.result.BiResult;
 import org.jetbrains.annotations.NotNull;
 
@@ -31,6 +32,7 @@ public class HtmlReader {
     private final char[] pushBackBuffer = new char[1024];
     private int pushBackIndex = 0;
 
+    private final @NotNull ParseTracker tracker = new ParseTracker();
 
     public HtmlReader(@NotNull Reader reader) {
         this.reader = reader;
@@ -45,6 +47,7 @@ public class HtmlReader {
         if(pushBackIndex != 0) return true;
         int r = reader.read();
         if(r == -1) return false;
+        if(r == '\n') tracker.nextLine();
         pushBack((char) r);
         return true;
     }
@@ -61,6 +64,7 @@ public class HtmlReader {
 
         int r = reader.read();
         if(r == -1) throw new EOFException();
+        if(r == '\n') tracker.nextLine();
 
         return (char) r;
     }
@@ -202,6 +206,7 @@ public class HtmlReader {
 
     /**
      * Skip {@code n} characters. If {@code n} chars cannot be skipped, because the stream ended, a {@link EOFException} will be thrown.
+     * This method will not update the {@link #tracker}!
      * @param n amount of chars to skip.
      * @throws IOException while skipping.
      */
@@ -228,6 +233,7 @@ public class HtmlReader {
      */
     public void pushBack(char c) {
         pushBackBuffer[pushBackIndex++] = c;
+        if(c == '\n') tracker.previousLine();
     }
 
     /**
@@ -237,6 +243,7 @@ public class HtmlReader {
      */
     public void pushBack(char[] c, int len) {
         for (int i = len - 1 ; i >= 0; i--) {
+            if(c[i] == '\n') tracker.previousLine();
             pushBackBuffer[pushBackIndex++] = c[i];
         }
     }
@@ -247,7 +254,9 @@ public class HtmlReader {
      */
     public void pushBack(@NotNull String string) {
         for (int i = string.length() - 1; i >= 0; i--) {
-            pushBackBuffer[pushBackIndex++] = string.charAt(i);
+            char c = string.charAt(i);
+            if(c == '\n') tracker.previousLine();
+            pushBackBuffer[pushBackIndex++] = c;
         }
     }
 
@@ -276,6 +285,13 @@ public class HtmlReader {
      */
     public @NotNull AttributeReader getAttributeReader(@NotNull HtmlParserState state) {
         return new AttributeReader(this, state);
+    }
+
+    /**
+     * The tracker that tracks the reading line.
+     */
+    public @NotNull ParseTracker getTracker() {
+        return tracker;
     }
 
     /**
