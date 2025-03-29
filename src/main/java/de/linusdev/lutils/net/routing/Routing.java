@@ -30,6 +30,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
+import java.net.SocketException;
 import java.util.HashMap;
 import java.util.function.Function;
 
@@ -99,11 +100,11 @@ public class Routing extends Route {
     /**
      * Reads a {@link HTTPRequest} from given {@code stream} and {@link #route(HTTPRequest) routes} it.
      */
-    private @Nullable HTTPMessageBuilder route(@Nullable Socket socket, @NotNull InputStream stream) throws IOException {
+    private @Nullable HTTPMessageBuilder route(@Nullable Socket socket, @NotNull InputStream stream) throws SocketException {
         HTTPRequest<UnparsedBody> request;
         try {
             request = HTTPRequest.parse(stream, BodyParsers.newUnparsedBodyParser());
-        } catch (IOException e) {
+        } catch (SocketException e) {
             throw e;
         } catch (Throwable t) {
             var response = exceptionHandler.apply(t);

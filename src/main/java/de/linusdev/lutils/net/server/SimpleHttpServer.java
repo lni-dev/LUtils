@@ -30,10 +30,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.awt.*;
 import java.io.IOException;
-import java.net.ServerSocket;
-import java.net.Socket;
-import java.net.URI;
-import java.net.URISyntaxException;
+import java.net.*;
 
 public class SimpleHttpServer implements AsyncManager {
 
@@ -73,10 +70,20 @@ public class SimpleHttpServer implements AsyncManager {
 
                 try {
                     routing.route(socket);
-                } catch (IOException e) {
+                } catch (SocketException se) {
                     if(socket.isClosed())
                         continue;
-                    exceptionHandler.accept(e);
+
+                    if(se.getMessage().equals("An established connection was aborted by the software in your host machine"))
+                        continue; // Connection aborted by client
+
+                    if(se.getMessage().equals("Connection reset"))
+                        continue; // Connection aborted by client
+
+                    if(se.getMessage().equals("Broken pipe"))
+                        continue; // Connection aborted by client
+
+                    exceptionHandler.accept(se);
                 } catch (Throwable e) {
                     exceptionHandler.accept(e);
                 }
