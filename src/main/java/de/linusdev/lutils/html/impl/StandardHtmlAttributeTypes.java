@@ -40,6 +40,8 @@ public class StandardHtmlAttributeTypes {
     public static final @NotNull StringType     TYPE             =   new StringType("type");
     public static final @NotNull StringType     AUTOCOMPLETE     =   new StringType("autocomplete");
     public static final @NotNull StringType     VALUE            =   new StringType("value");
+    public static final @NotNull StringType     NAME            =   new StringType("name");
+    public static final @NotNull StringType     CONTENT            =   new StringType("content");
 
 
     public static final @NotNull NoValueType    OPEN             =   new NoValueType("open");
@@ -48,8 +50,11 @@ public class StandardHtmlAttributeTypes {
 
     public static final @NotNull HtmlAttributeType<?> @NotNull [] VALUES = new HtmlAttributeType[] {
             CLASS,
-            ID, HREF, SRC, REL, ONCLICK, OPEN, TYPE, AUTOCOMPLETE, VALUE, ONSUBMIT, ACCEPT_CHARSET,
-            REQUIRED
+
+            ID, HREF, SRC, REL, ONCLICK , TYPE, AUTOCOMPLETE, VALUE, ONSUBMIT, ACCEPT_CHARSET, NAME,
+            CONTENT,
+
+            REQUIRED, OPEN
     };
 
     public static abstract class Type<V> implements HtmlAttributeType<V> {
