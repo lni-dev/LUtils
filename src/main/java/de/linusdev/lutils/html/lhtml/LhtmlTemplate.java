@@ -25,7 +25,7 @@ public interface LhtmlTemplate extends LhtmlIdentifiable, LhtmlHasTemplates {
      * Get the placeholder with given {@code id} of this template. If no such placeholder exists,
      * a {@link NullPointerException} will be thrown.
      */
-    @NotNull HtmlAddable getPlaceholder(@NotNull String id);
+    @NotNull HtmlAddable<?> getPlaceholder(@NotNull String id);
 
     /**
      * Set the replace-value with given {@code key} to given {@code value}.

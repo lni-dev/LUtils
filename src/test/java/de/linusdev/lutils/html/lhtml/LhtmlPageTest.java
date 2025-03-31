@@ -36,9 +36,9 @@ class LhtmlPageTest {
 
         LhtmlPageSkeleton pageSkeleton = Lhtml.parsePage(new StringReader(html));
         LhtmlPage page = pageSkeleton.copy();
-        HtmlAddable header = page.getPlaceholder("header");
+        HtmlAddable<?> header = page.getPlaceholder("header");
         LhtmlTemplateElement item = page.getTemplate("item");
-        HtmlAddable name = item.getPlaceholder("name");
+        HtmlAddable<?> name = item.getPlaceholder("name");
 
         name.addText("Sophie");
         header.addContent(item);
@@ -71,12 +71,12 @@ class LhtmlPageTest {
 
         LhtmlPageSkeleton pageSkeleton = LhtmlPage.parse(new HtmlParser(Lhtml.getRegistry().build()), new StringReader(html));
         LhtmlPage page = pageSkeleton.copy();
-        HtmlAddable header = page.getPlaceholder("header");
+        HtmlAddable<?> header = page.getPlaceholder("header");
 
         LhtmlTemplateElement item = page.getTemplate("item");
         item.setValue("clazz", "some-class");
-        HtmlAddable name = item.getPlaceholder("name");
-        HtmlAddable list = item.getPlaceholder("list");
+        HtmlAddable<?> name = item.getPlaceholder("name");
+        HtmlAddable<?> list = item.getPlaceholder("list");
 
         LhtmlTemplateElement listItem = item.getTemplate("item");
         listItem.getPlaceholder("id").addText("0");

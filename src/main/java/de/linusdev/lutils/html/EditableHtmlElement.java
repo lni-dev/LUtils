@@ -21,11 +21,16 @@ import org.jetbrains.annotations.NotNull;
 /**
  * A html element, whose {@link #content()} and {@link #attributes()} can be edited.
  */
-public interface EditableHtmlElement extends HtmlElement, HtmlAddable {
+public interface EditableHtmlElement extends HtmlElement, HtmlAddable<EditableHtmlElement> {
 
     @Override
-    default void addContent(@NotNull HtmlObject object) {
+    default void _addContent(@NotNull HtmlObject object) {
         content().add(object);
+    }
+
+    @Override
+    default void _addAttribute(@NotNull HtmlAttribute attribute) {
+        attributes().put(attribute);
     }
 
     @Override

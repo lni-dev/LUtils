@@ -16,7 +16,9 @@
 
 package de.linusdev.lutils.html.lhtml;
 
+
 import de.linusdev.lutils.html.HtmlAddable;
+import de.linusdev.lutils.html.HtmlAttribute;
 import de.linusdev.lutils.html.HtmlObject;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
@@ -28,7 +30,7 @@ import java.util.List;
  * A meta placeholder. A placeholder's html can be changed using the methods of {@link HtmlAddable}.
  * The change will be reflected in all {@link LhtmlPlaceholderElement}s in the parent with the same {@link #getId() id}.
  */
-public class LhtmlPlaceholder implements HtmlAddable, LhtmlIdentifiable {
+public class LhtmlPlaceholder implements HtmlAddable<LhtmlPlaceholder>, LhtmlIdentifiable {
 
     protected final @NotNull List<LhtmlPlaceholderElement> elements;
     private final @NotNull String id;
@@ -48,9 +50,16 @@ public class LhtmlPlaceholder implements HtmlAddable, LhtmlIdentifiable {
     }
 
     @Override
-    public void addContent(@NotNull HtmlObject object) {
+    public void _addContent(@NotNull HtmlObject object) {
         for (LhtmlPlaceholderElement element : elements) {
             element.addContent(object);
+        }
+    }
+
+    @Override
+    public void _addAttribute(@NotNull HtmlAttribute attribute) {
+        for (LhtmlPlaceholderElement element : elements) {
+            element.addAttribute(attribute);
         }
     }
 

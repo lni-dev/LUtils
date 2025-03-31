@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024-2025 Linus Andera
+ * Copyright (c) 2025 Linus Andera
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,30 +16,67 @@
 
 package de.linusdev.lutils.html;
 
+import de.linusdev.lutils.html.builder.HtmlElementBuilder;
 import de.linusdev.lutils.html.impl.HtmlText;
+import de.linusdev.lutils.html.impl.StandardHtmlAttribute;
+import de.linusdev.lutils.html.impl.StandardHtmlAttributeTypes;
+import de.linusdev.lutils.html.impl.element.StandardHtmlElementTypes;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-/**
- * Object with html content, where new elements can be added.
- */
-public interface HtmlAddable extends _HtmlAddable<HtmlAddable> {
+import java.util.function.Consumer;
+
+@SuppressWarnings({"unchecked", "UnusedReturnValue"})
+public interface HtmlAddable<SELF> {
+
+    @ApiStatus.Internal
+    void _addContent(@NotNull HtmlObject object);
+
+    @ApiStatus.Internal
+    void _addAttribute(@NotNull HtmlAttribute attribute);
 
     /**
-     * Add given {@code object} to the content.
+     * Adds a {@link StandardHtmlElementTypes#LINK link} element like this:
+     * {@code <link rel="stylesheet" href="path">}. "path" is replaced with
+     * given {@code path}.
      */
-    void addContent(@NotNull HtmlObject object);
+    default SELF addCssLink(@NotNull String path) {
+        _addContent(StandardHtmlElementTypes.LINK.builder()
+                .addAttribute(StandardHtmlAttributeTypes.REL, "stylesheet")
+                .addAttribute(StandardHtmlAttributeTypes.HREF, path).build()
+        );
+
+        return (SELF) this;
+    }
 
     /**
      * Add given string as {@link HtmlText} to the content.
      */
-    default void addText(@NotNull String text) {
-        addContent(new HtmlText(text));
+    default SELF addText(@NotNull String text) {
+        _addContent(new HtmlText(text));
+        return (SELF) this;
     }
 
-    @Override
-    @ApiStatus.Internal
-    default void _addContent(@NotNull HtmlObject object) {
-        addContent(object);
+    default SELF addContent(@NotNull HtmlObject object) {
+        _addContent(object);
+        return (SELF) this;
+    }
+
+    default  <B extends HtmlElementBuilder> SELF addElement(@NotNull HtmlElementType<B> type, @NotNull Consumer<B> adjuster) {
+        B builder = type.builder();
+        adjuster.accept(builder);
+        _addContent(builder.build());
+        return (SELF) this;
+    }
+
+    default SELF addAttribute(@NotNull HtmlAttribute attribute) {
+        _addAttribute(attribute);
+        return (SELF) this;
+    }
+
+    default SELF addAttribute(@NotNull HtmlAttributeType<?> type, @Nullable String value) {
+        _addAttribute(new StandardHtmlAttribute(type, value));
+        return (SELF) this;
     }
 }

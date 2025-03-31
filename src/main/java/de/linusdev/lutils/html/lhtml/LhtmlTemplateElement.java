@@ -87,7 +87,7 @@ public class LhtmlTemplateElement implements EditableHtmlElement, LhtmlTemplate 
     }
 
     @Override
-    public @NotNull HtmlAddable getPlaceholder(@NotNull String id) {
+    public @NotNull HtmlAddable<?> getPlaceholder(@NotNull String id) {
         return Objects.requireNonNull(placeholders.get(id), "No template found with id '" + id + "'.");
     }
 

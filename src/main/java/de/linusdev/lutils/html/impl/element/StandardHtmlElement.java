@@ -18,8 +18,6 @@ package de.linusdev.lutils.html.impl.element;
 
 import de.linusdev.lutils.html.*;
 import de.linusdev.lutils.html.builder.HtmlElementBuilder;
-import de.linusdev.lutils.html.impl.HtmlText;
-import de.linusdev.lutils.html.impl.StandardHtmlAttribute;
 import de.linusdev.lutils.html.parser.AttributeReader;
 import de.linusdev.lutils.html.parser.HtmlParserState;
 import de.linusdev.lutils.html.parser.HtmlReader;
@@ -34,7 +32,6 @@ import java.io.IOException;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Consumer;
 import java.util.function.Function;
 
 import static de.linusdev.lutils.html.parser.AttrReaderState.*;
@@ -268,8 +265,8 @@ public class StandardHtmlElement implements EditableHtmlElement {
         public Builder(@NotNull Type tag) {super(tag);}
     }
 
-    @SuppressWarnings({"UnusedReturnValue", "unchecked"})
-    public static class AbstractBuilder<SELF> implements HtmlElementBuilder, _HtmlAddable<SELF> {
+    @SuppressWarnings({"UnusedReturnValue"})
+    public static class AbstractBuilder<SELF> implements HtmlElementBuilder, HtmlAddable<SELF> {
 
         protected final @NotNull AbstractType<?> tag;
         protected final @NotNull List<@NotNull HtmlObject> content;
@@ -279,39 +276,6 @@ public class StandardHtmlElement implements EditableHtmlElement {
             this.tag = tag;
             this.content = new ArrayList<>();
             this.attributes = new HtmlAttributeMap();
-        }
-
-        public SELF addContent(@NotNull HtmlObject object) {
-            object = onContentAdd(object);
-            if(object != null)
-                content.add(object);
-            return (SELF) this;
-        }
-
-        public <B extends HtmlElementBuilder> SELF addElement(@NotNull HtmlElementType<B> type, Consumer<B> adjuster) {
-            B builder = type.builder();
-            adjuster.accept(builder);
-            addContent(builder.build());
-            return (SELF) this;
-        }
-
-        public SELF addAttribute(@NotNull HtmlAttributeType<?> type, @Nullable String value) {
-            HtmlAttribute attribute = onAttributeAdd(new StandardHtmlAttribute(type, value));
-            if(attribute != null)
-                attributes.put(attribute);
-            return (SELF) this;
-        }
-
-        public SELF addAttribute(@NotNull HtmlAttribute attribute) {
-            attribute = onAttributeAdd(attribute);
-            if(attribute != null)
-                attributes.put(attribute);
-            return (SELF) this;
-        }
-
-        public SELF addText(@NotNull String text) {
-            addContent(new HtmlText(text));
-            return (SELF) this;
         }
 
         public @NotNull HtmlAttributeMap getCurrentAttributes() {
@@ -334,7 +298,16 @@ public class StandardHtmlElement implements EditableHtmlElement {
         @ApiStatus.Internal
         @Override
         public void _addContent(@NotNull HtmlObject object) {
-            addContent(object);
+            object = onContentAdd(object);
+            if(object != null)
+                content.add(object);
+        }
+
+        @Override
+        public void _addAttribute(@NotNull HtmlAttribute attribute) {
+            attribute = onAttributeAdd(attribute);
+            if(attribute != null)
+                attributes.put(attribute);
         }
     }
 

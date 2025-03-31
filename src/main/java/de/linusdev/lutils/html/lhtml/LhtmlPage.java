@@ -98,7 +98,7 @@ public class LhtmlPage implements HtmlObject, HasHtmlContent, LhtmlTemplate {
      * @param other the page, whose content shall be added.
      */
     public void addPageContentToPlaceholder(@NotNull String id, @NotNull LhtmlPage other) {
-        HtmlAddable placeholder = getPlaceholder(id);
+        HtmlAddable<?> placeholder = getPlaceholder(id);
         for (@NotNull HtmlObject object : other.getBody().content()) {
             placeholder.addContent(object);
         }
@@ -108,7 +108,7 @@ public class LhtmlPage implements HtmlObject, HasHtmlContent, LhtmlTemplate {
 
 
     @Override
-    public @NotNull HtmlAddable getPlaceholder(@NotNull String id) {
+    public @NotNull HtmlAddable<?> getPlaceholder(@NotNull String id) {
         return Objects.requireNonNull(placeholders.get(id), "No template found with id '" + id + "'.");
     }
 
