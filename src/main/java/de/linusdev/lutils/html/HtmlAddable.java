@@ -34,7 +34,18 @@ public interface HtmlAddable<SELF> {
     void _addContent(@NotNull HtmlObject object);
 
     @ApiStatus.Internal
-    void _addAttribute(@NotNull HtmlAttribute attribute);
+    void _setAttribute(@NotNull HtmlAttribute attribute);
+
+    @ApiStatus.Internal
+    @NotNull HtmlAttributeMap _getAttributeMap();
+
+    default void addToAttribute(@NotNull HtmlAttributeType<?> type, String item) {
+        _getAttributeMap().addToAttribute(type, item);
+    }
+
+    default void removeFromAttribute(@NotNull HtmlAttributeType<?> type, String item) {
+        _getAttributeMap().removeFromAttribute(type, item);
+    }
 
     /**
      * Adds a {@link StandardHtmlElementTypes#LINK link} element like this:
@@ -43,8 +54,8 @@ public interface HtmlAddable<SELF> {
      */
     default SELF addCssLink(@NotNull String path) {
         _addContent(StandardHtmlElementTypes.LINK.builder()
-                .addAttribute(StandardHtmlAttributeTypes.REL, "stylesheet")
-                .addAttribute(StandardHtmlAttributeTypes.HREF, path).build()
+                .setAttribute(StandardHtmlAttributeTypes.REL, "stylesheet")
+                .setAttribute(StandardHtmlAttributeTypes.HREF, path).build()
         );
 
         return (SELF) this;
@@ -70,13 +81,13 @@ public interface HtmlAddable<SELF> {
         return (SELF) this;
     }
 
-    default SELF addAttribute(@NotNull HtmlAttribute attribute) {
-        _addAttribute(attribute);
+    default SELF setAttribute(@NotNull HtmlAttribute attribute) {
+        _setAttribute(attribute);
         return (SELF) this;
     }
 
-    default SELF addAttribute(@NotNull HtmlAttributeType<?> type, @Nullable String value) {
-        _addAttribute(new StandardHtmlAttribute(type, value));
+    default SELF setAttribute(@NotNull HtmlAttributeType<?> type, @Nullable String value) {
+        _setAttribute(new StandardHtmlAttribute(type, value));
         return (SELF) this;
     }
 }

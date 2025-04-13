@@ -21,31 +21,32 @@ import de.linusdev.lutils.html.HtmlAttributeType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Arrays;
+import java.util.LinkedHashSet;
+import java.util.List;
 
 /**
  * Some standard html attribute types.
  * @see #VALUES
  */
 public class StandardHtmlAttributeTypes {
-    public static final @NotNull ListType       CLASS            =   new ListType("class");
+    public static final @NotNull OrderedSetType     CLASS            =   new OrderedSetType("class");
 
-    public static final @NotNull StringType     ID               =   new StringType("id");
-    public static final @NotNull StringType     HREF             =   new StringType("href");
-    public static final @NotNull StringType     SRC              =   new StringType("src");
-    public static final @NotNull StringType     REL              =   new StringType("rel");
-    public static final @NotNull StringType     ONCLICK          =   new StringType("onclick");
-    public static final @NotNull StringType     ONSUBMIT         =   new StringType("onsubmit");
-    public static final @NotNull StringType     ACCEPT_CHARSET   =   new StringType("accept-charset");
-    public static final @NotNull StringType     TYPE             =   new StringType("type");
-    public static final @NotNull StringType     AUTOCOMPLETE     =   new StringType("autocomplete");
-    public static final @NotNull StringType     VALUE            =   new StringType("value");
-    public static final @NotNull StringType     NAME            =   new StringType("name");
-    public static final @NotNull StringType     CONTENT            =   new StringType("content");
+    public static final @NotNull StringType         ID               =   new StringType("id");
+    public static final @NotNull StringType         HREF             =   new StringType("href");
+    public static final @NotNull StringType         SRC              =   new StringType("src");
+    public static final @NotNull StringType         REL              =   new StringType("rel");
+    public static final @NotNull StringType         ONCLICK          =   new StringType("onclick");
+    public static final @NotNull StringType         ONSUBMIT         =   new StringType("onsubmit");
+    public static final @NotNull StringType         ACCEPT_CHARSET   =   new StringType("accept-charset");
+    public static final @NotNull StringType         TYPE             =   new StringType("type");
+    public static final @NotNull StringType         AUTOCOMPLETE     =   new StringType("autocomplete");
+    public static final @NotNull StringType         VALUE            =   new StringType("value");
+    public static final @NotNull StringType         NAME            =   new StringType("name");
+    public static final @NotNull StringType         CONTENT            =   new StringType("content");
 
 
-    public static final @NotNull NoValueType    OPEN             =   new NoValueType("open");
-    public static final @NotNull NoValueType    REQUIRED         =   new NoValueType("required");
+    public static final @NotNull NoValueType        OPEN             =   new NoValueType("open");
+    public static final @NotNull NoValueType        REQUIRED         =   new NoValueType("required");
 
 
     public static final @NotNull HtmlAttributeType<?> @NotNull [] VALUES = new HtmlAttributeType[] {
@@ -70,12 +71,6 @@ public class StandardHtmlAttributeTypes {
             return name;
         }
 
-        public @NotNull HtmlAttribute of(V value) {
-            return new StandardHtmlAttribute(this, convertValue(value));
-        }
-
-        public abstract String convertValue(V value);
-
         @Override
         public int hashCode() {
             return HtmlAttributeType.hashcode(this);
@@ -89,7 +84,7 @@ public class StandardHtmlAttributeTypes {
         }
 
         @Override
-        public @NotNull String convertValue(String value) {
+        public @Nullable String convertValue(String value) {
             return value;
         }
 
@@ -100,21 +95,43 @@ public class StandardHtmlAttributeTypes {
         }
     }
 
-    public static class ListType extends Type<String[]> {
+    public static class OrderedSetType extends Type<LinkedHashSet<String>> {
 
-        public ListType(@NotNull String name) {
+        public OrderedSetType(@NotNull String name) {
             super(name);
         }
 
         @Override
-        public @NotNull String convertValue(String[] value) {
-            return Arrays.stream(value).reduce("", (accumulator, next) -> accumulator + " " + next);
+        public @Nullable String convertValue(LinkedHashSet<String> value) {
+            return value.stream().reduce("", (accumulator, next) -> accumulator + " " + next);
         }
 
         @Override
-        public String @NotNull [] convertValue(@NotNull HtmlAttribute attribute) {
+        public @NotNull LinkedHashSet<@NotNull String> convertValue(@NotNull HtmlAttribute attribute) {
             String val = attribute.value();
-            return val == null ? new String[0] : val.split(" ");
+            return new LinkedHashSet<>(List.of(val == null ? new String[0] : val.split(" ")));
+        }
+
+        @Override
+        public @NotNull String add(@Nullable String current, @NotNull String item) {
+            if(current == null)
+                return item;
+
+            if(current.contains(" " + item + " "))
+                return current;
+
+            return current + " " + item;
+        }
+
+        @Override
+        public @Nullable String remove(@Nullable String current, @NotNull String item) {
+            if(current == null)
+                return null;
+
+            if(current.contains(" " + item + " "))
+                return current.replace(" " + item, "");
+
+            return current;
         }
     }
 
@@ -125,7 +142,7 @@ public class StandardHtmlAttributeTypes {
         }
 
         @Override
-        public String convertValue(Void value) {
+        public @Nullable String convertValue(Void value) {
             return null;
         }
 

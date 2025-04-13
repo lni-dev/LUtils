@@ -65,6 +65,32 @@ public class HtmlAttributeMap implements Iterable<HtmlAttribute> {
         return type.convertValue(attribute);
     }
 
+    /**
+     * {@link HtmlAttributeType#add(String, String) adds} given {@code item} to attribute with given {@code type}. If no
+     * attribute with given {@code type} exists a {@link HtmlAttributeType#of() new attribute will be created}.
+     */
+    public void addToAttribute(@NotNull HtmlAttributeType<?> type, @NotNull String item) {
+        HtmlAttribute attr = get(type);
+
+        if(attr == null)
+            attr = type.of();
+
+        put(attr.addToValue(item));
+    }
+
+    /**
+     * {@link HtmlAttributeType#add(String, String) removes} given {@code item} from attribute with given {@code type}. If no
+     * attribute with given {@code type} exists a {@link HtmlAttributeType#of() new attribute will be created}.
+     */
+    public void removeFromAttribute(@NotNull HtmlAttributeType<?> type, @NotNull String item) {
+        HtmlAttribute attr = get(type);
+
+        if(attr == null)
+            attr = type.of();
+
+        put(attr.removeFromValue(item));
+    }
+
     @Override
     public @NotNull Iterator<HtmlAttribute> iterator() {
         return attributes.values().iterator();

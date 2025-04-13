@@ -18,6 +18,7 @@ package de.linusdev.lutils.html.lhtml;
 
 import de.linusdev.lutils.html.HtmlAttribute;
 import de.linusdev.lutils.html.HtmlAttributeType;
+import de.linusdev.lutils.html.impl.StandardHtmlAttribute;
 import de.linusdev.lutils.other.str.ConstructableString;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
@@ -64,6 +65,14 @@ public class LhtmlPlaceholderAttribute implements HtmlAttribute {
     public @Nullable String value() {
         assert isReplaceValuesNotNull();
         return value.construct(replaceValues);
+    }
+
+    @Override
+    public @NotNull HtmlAttribute setValue(@Nullable String value) {
+        ConstructableString str = LhtmlInjector.getConstructableStringOfValue(value);
+        if(str == null)
+            return new StandardHtmlAttribute(type, value);
+        return new LhtmlPlaceholderAttribute(type, str);
     }
 
     private boolean isReplaceValuesNotNull() {

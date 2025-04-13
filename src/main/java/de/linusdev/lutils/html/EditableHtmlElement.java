@@ -29,8 +29,13 @@ public interface EditableHtmlElement extends HtmlElement, HtmlAddable<EditableHt
     }
 
     @Override
-    default void _addAttribute(@NotNull HtmlAttribute attribute) {
+    default void _setAttribute(@NotNull HtmlAttribute attribute) {
         attributes().put(attribute);
+    }
+
+    @Override
+    default @NotNull HtmlAttributeMap _getAttributeMap() {
+        return attributes();
     }
 
     @Override
