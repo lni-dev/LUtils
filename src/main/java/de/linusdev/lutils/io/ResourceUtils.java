@@ -16,6 +16,7 @@
 
 package de.linusdev.lutils.io;
 
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -32,11 +33,13 @@ public class ResourceUtils {
      * @param path Either absolute (starting with {@code /}) or relative to the package of given {@code relClazz}
      *             (not starting {@code /}).
      * @return {@link StreamURLConnection} to resource at given {@code path}.
-     * @throws Error if resource with given {@code path} does not exist.
+     * @throws Error if resource with given {@code path} does not exist and {@code allowNull} is {@code false}.
      */
-    public static @NotNull StreamURLConnection getURLConnectionOfResource(
+    @Contract("_, _, false -> !null")
+    public static @Nullable StreamURLConnection getURLConnectionOfResource(
             @Nullable Class<?> relClazz,
-            @NotNull String path
+            @NotNull String path,
+            boolean allowNull
     ) {
         if(relClazz == null) {
             if(!path.startsWith("/"))
@@ -48,6 +51,9 @@ public class ResourceUtils {
         URL resource =  relClazz.getResource(path);
 
         if (resource == null) {
+            if(allowNull)
+                return null;
+
             throw new Error("Resource '" + path + "' does not exist. Remember paths starting with \"/\" are absolute." +
                     " Paths not starting with \"/\" are relative to the package of relClazz.");
         }
@@ -56,13 +62,13 @@ public class ResourceUtils {
     }
 
     /**
-     * @see #getURLConnectionOfResource(Class, String) getURLConnectionOfResource(null, path)
+     * @see #getURLConnectionOfResource(Class, String, boolean) getURLConnectionOfResource(null, path, false)
      */
     @SuppressWarnings("unused")
     public static @NotNull StreamURLConnection getURLConnectionOfResource(
             @NotNull String path
     ) {
-        return getURLConnectionOfResource(null, path);
+        return getURLConnectionOfResource(null, path, false);
     }
 
     /**
@@ -77,7 +83,7 @@ public class ResourceUtils {
             @Nullable Class<?> relClazz,
             @NotNull String path
     ) throws IOException {
-        return new BufferedReader(new InputStreamReader(getURLConnectionOfResource(relClazz, path).openInputStream(), StandardCharsets.UTF_8));
+        return new BufferedReader(new InputStreamReader(getURLConnectionOfResource(relClazz, path, false).openInputStream(), StandardCharsets.UTF_8));
     }
 
     /**
@@ -103,7 +109,7 @@ public class ResourceUtils {
             @NotNull String path
     ) throws IOException {
         try (
-                var in = getURLConnectionOfResource(relClazz, path).openInputStream();
+                var in = getURLConnectionOfResource(relClazz, path, false).openInputStream();
                 var reader = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8))
         ) {
             StringBuilder sb = new StringBuilder();
