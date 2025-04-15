@@ -26,15 +26,15 @@ class ConstructableStringTest {
 
     @Test
     void construct() {
-        ConstructableString str = new ConstructableString(
-                new Part[]{
-                        Part.constant("Hello "),
-                        Part.placeholder("name"),
-                        Part.constant(", how are you?")
+        PartsString str = new PartsString(
+                new PartsString.Part[]{
+                        PartsString.Part.constant("Hello "),
+                        PartsString.Part.placeholder("name"),
+                        PartsString.Part.constant(", how are you?")
                 }
         );
 
 
-        assertEquals("Hello World, how are you?", str.construct(Map.of("name", "World")));
+        assertEquals("Hello World, how are you?", str.construct(Map.of("name", "World")::get));
     }
 }

@@ -30,7 +30,7 @@ import de.linusdev.lutils.nat.struct.info.StructureInfo;
 import de.linusdev.lutils.nat.struct.mod.ModTrackingStructure;
 import de.linusdev.lutils.nat.struct.utils.ClassAndAbi;
 import de.linusdev.lutils.nat.struct.utils.SSMUtils;
-import de.linusdev.lutils.nat.struct.utils.Utils;
+import de.linusdev.lutils.other.str.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -133,7 +133,7 @@ public abstract class ComplexStructure extends ModTrackingStructure {
                 text = "padding: { size=" + sizes[i] + " }\n";
             }
 
-            sb.append(Utils.indent(text, "    ")).append("\n");
+            sb.append(StringUtils.indent(text, "    ", true)).append("\n");
         }
 
         //noinspection DataFlowIssue: Always returns not null
@@ -198,7 +198,7 @@ public abstract class ComplexStructure extends ModTrackingStructure {
                             text = pad.toString();
                         }
 
-                        sb.append(Utils.indent(text, "    ")).append("\n");
+                        sb.append(StringUtils.indent(text, "    ", true)).append("\n");
                     }
 
                     sb.append(language.getEndStructString(true, getStructTypeName(language, selfClazz, info)));

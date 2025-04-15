@@ -21,6 +21,7 @@ import de.linusdev.lutils.html.HtmlObjectType;
 import de.linusdev.lutils.html.HtmlUtils;
 import de.linusdev.lutils.html.parser.HtmlWritingState;
 import de.linusdev.lutils.other.str.ConstructableString;
+import de.linusdev.lutils.other.str.PartsString;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
@@ -45,7 +46,7 @@ public class LHtmlPlaceholderText implements HtmlObject {
 
     /**
      * Must be called by the parent lhtml-element to the set replace-values map
-     * which will be used, when {@link #text} is {@link ConstructableString#construct(Map) constructed}.
+     * which will be used, when {@link #text} is {@link PartsString#construct(PartsString.Resolver) constructed}.
      * @param replaceValues the parent's replace-values map.
      */
     @ApiStatus.Internal
@@ -67,7 +68,7 @@ public class LHtmlPlaceholderText implements HtmlObject {
     @Override
     public void write(@NotNull HtmlWritingState state, @NotNull Writer writer) throws IOException {
         assert isReplaceValuesNotNull();
-        String processed = HtmlUtils.escape(text.construct(replaceValues), false);
+        String processed = HtmlUtils.escape(text.construct(replaceValues::get), false);
         processed = processed.replaceAll("\n", "\n" + state.getIndent());
         writer.write(processed);
     }

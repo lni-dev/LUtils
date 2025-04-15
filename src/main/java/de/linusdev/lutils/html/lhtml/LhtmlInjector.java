@@ -25,13 +25,12 @@ import de.linusdev.lutils.html.lhtml.skeleton.LhtmlSkeletonBuilder;
 import de.linusdev.lutils.html.parser.HtmlParser;
 import de.linusdev.lutils.html.parser.HtmlParserInjector;
 import de.linusdev.lutils.other.str.ConstructableString;
+import de.linusdev.lutils.other.str.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.Reader;
 import java.util.Stack;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * {@link HtmlParserInjector} to use while parsing to parse a {@link LhtmlPageSkeleton}. Must be used in combination with
@@ -39,40 +38,6 @@ import java.util.regex.Pattern;
  * @see LhtmlPage#parse(HtmlParser, Reader)
  */
 public class LhtmlInjector implements HtmlParserInjector {
-
-    /**
-     * Checks if a replace-key ({@code ${key}}) is present in given {@code text}. If at least once replace-key is present,
-     * a {@link ConstructableString} is created.
-     * @param text the value
-     * @return {@link ConstructableString} for given {@code text} or {@code null} if no replace-key is present in {@code text}.
-     */
-    protected static @Nullable ConstructableString getConstructableStringOfValue(@Nullable String text) {
-        if(text == null || text.isEmpty())
-            return null;
-
-        Pattern pattern = Pattern.compile("\\$\\{(?<key>[a-zA-Z0-9-_]+)}");
-        Matcher matcher = pattern.matcher(text);
-
-        if(!matcher.find())
-            return null;
-
-        ConstructableString.Builder builder = new ConstructableString.Builder();
-        int start = 0;
-        do {
-            String constant = text.substring(start, matcher.start());
-            if(!constant.isEmpty())
-                builder.addConstant(constant);
-            builder.addPlaceholder(matcher.group("key"));
-
-            start = matcher.end();
-
-        } while (matcher.find());
-
-        if (start != text.length())
-            builder.addConstant(text.substring(start));
-
-        return builder.build();
-    }
 
     private final Stack<LhtmlSkeletonBuilder> builders = new Stack<>();
 
@@ -82,7 +47,7 @@ public class LhtmlInjector implements HtmlParserInjector {
 
     @Override
     public @Nullable HtmlAttribute onAttributeParsed(@NotNull HtmlAttributeType<?> type, @Nullable String value) {
-        ConstructableString str = getConstructableStringOfValue(value);
+        ConstructableString str = StringUtils.computePossibleConstructableStringOfText(value);
         if(str == null)
             return new StandardHtmlAttribute(type, value);
 
@@ -104,7 +69,7 @@ public class LhtmlInjector implements HtmlParserInjector {
         if(parsed.type() == HtmlObjectType.TEXT) {
             HtmlText text = (HtmlText) parsed;
 
-            ConstructableString str = getConstructableStringOfValue(text.getText());
+            ConstructableString str = StringUtils.computePossibleConstructableStringOfText(text.getText());
             if(str == null)
                 return parsed;
 

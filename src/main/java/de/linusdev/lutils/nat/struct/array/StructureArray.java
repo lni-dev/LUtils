@@ -31,7 +31,7 @@ import de.linusdev.lutils.nat.struct.info.StructureInfo;
 import de.linusdev.lutils.nat.struct.mod.ModTrackingStructure;
 import de.linusdev.lutils.nat.struct.utils.BufferUtils;
 import de.linusdev.lutils.nat.struct.utils.SSMUtils;
-import de.linusdev.lutils.nat.struct.utils.Utils;
+import de.linusdev.lutils.other.str.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -395,7 +395,7 @@ public class StructureArray<T extends Structure> extends ModTrackingStructure im
 
         int index = 0;
         for (Structure item : items) {
-            sb.append(Utils.indent(index + " (offsetStart=" + (offset + positions.position(index++)) + "): " + item, "    ")).append(",\n");
+            sb.append(StringUtils.indent(index + " (offsetStart=" + (offset + positions.position(index++)) + "): " + item, "    ", true)).append(",\n");
         }
 
         sb.append("}");
