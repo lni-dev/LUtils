@@ -1,16 +1,14 @@
 package de.linusdev.lutils.other.iterator;
 
-import org.jetbrains.annotations.NotNull;
-
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 
-@SuppressWarnings("unused")
 public class SingleElementIterator<E> implements Iterator<E> {
 
-    private final @NotNull E element;
+    private final E element;
     private boolean hasNext = true;
 
-    public SingleElementIterator(@NotNull E element) {
+    public SingleElementIterator(E element) {
         this.element = element;
     }
 
@@ -21,6 +19,8 @@ public class SingleElementIterator<E> implements Iterator<E> {
 
     @Override
     public E next() {
+        if(!hasNext)
+            throw new NoSuchElementException();
         hasNext = false;
         return element;
     }

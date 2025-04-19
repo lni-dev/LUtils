@@ -5,7 +5,6 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Iterator;
 import java.util.function.Function;
 
-@SuppressWarnings("unused")
 public class IteratorView<R, E> implements Iterator<E> {
 
     private final @NotNull Iterator<R> original;
