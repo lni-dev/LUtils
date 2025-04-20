@@ -2,17 +2,45 @@ package de.linusdev.lutils.optional;
 
 import de.linusdev.lutils.interfaces.Converter;
 import de.linusdev.lutils.interfaces.ExceptionConverter;
+import de.linusdev.lutils.optional.noaction.NoActionContainer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.function.Consumer;
 
+/**
+ * This class holds a value possibly from some kind of collection (called parent collection) where it is accessible through {@link #key()}. It
+ * offers several methods to process this value. All these methods will not have any effect on the parent collection.
+ * The value can be accessed using the {@link #get()} method and processed with the {@link #process(Consumer)} method.
+ * <br><br>
+ * <h2>Code examples</h2>
+ * The following code will throw an exception if the parent collection {@code data} did not contain a key "some_key"
+ * or if its value was {@code null}. Otherwise, it will just print the value of "some_key":
+ * <pre>{@code
+ * data.getContainer("some_key")
+ *          .requireNotNull()
+ *          .process((Object o) -> System.out.println("some_key: " + o));
+ * }</pre>
+ * <br>
+ * The following code will do nothing if the key "some_value" does not exist. It throws an exception if the key does
+ * exist, but its value is {@code null}. And it will print the value of "some_key" if this exists and its value is not
+ * {@code null}:
+ * <pre>{@code
+ * data.getContainer("some_key")
+ *          .ifExists()
+ *          .requireNotNull()
+ *          .process((Object o) -> System.out.println("some_key: " + o));
+ * }</pre>
+ *
+ * @param <V> type of the contained object.
+ */
+@SuppressWarnings("unused")
 public abstract class Container<V> implements OptionalValue<V> {
 
-    private final @Nullable Object key;
-    private final boolean exists;
-    private final @Nullable V value;
+    protected final @Nullable Object key;
+    protected final boolean exists;
+    protected final @Nullable V value;
 
     protected Container(@Nullable Object key, boolean exists, @Nullable V value) {
         this.key = key;
@@ -30,6 +58,10 @@ public abstract class Container<V> implements OptionalValue<V> {
         return exists;
     }
 
+    /**
+     * The key through which {@link #value} is accessible in the parent collection or {@code null} if this {@link Container}
+     * does not have a parent collection.
+     */
     public @Nullable Object key() {
         return key;
     }
@@ -46,29 +78,63 @@ public abstract class Container<V> implements OptionalValue<V> {
         );
     }
 
+    /**
+     * Creates a new {@link Container} with given value.
+     * @param value the new value
+     * @return a new {@link  Container}
+     * @param <N> the type of the new value
+     */
     protected abstract <N> Container<N> createNewContainer(@Nullable N value);
 
-    protected abstract <N> ListContainer<V> createNewListContainer(@Nullable List<N> list);
+    /**
+     * Creates a new {@link ListContainer} with given value.
+     * @param list the list value
+     * @return a new {@link ListContainer}
+     * @param <N> the list-element type
+     */
+    protected abstract <N> ListContainer<N> createNewListContainer(@Nullable List<N> list);
 
+    /**
+     * This method throws an exception (likely a {@link NullPointerException}) given by
+     * {@link #requireNotNullException()} if {@link #isNull()} is {@code true}.
+     * @return this
+     */
     public @NotNull Container<V> requireNotNull() {
         if(isNull()) throw requireNotNullException();
         return this;
     }
 
-    public <E extends Throwable> @NotNull Container<V> requireNotNull(
-            @NotNull ExceptionSupplier<E> supplier
-    ) throws E {
+    /**
+     * This method throws an exception given by given {@code supplier} if {@link #isNull()} is {@code true}.
+     * @param supplier {@link ExceptionSupplier} to supply an exception.
+     * @return this
+     * @param <E> exception thrown if the value is {@code null}.
+     * @throws E if the value is {@code null} ({@link #get()} returns {@code null}).
+     */
+    public <E extends Throwable> @NotNull Container<V> requireNotNull(@NotNull ExceptionSupplier<E> supplier) throws E {
         if(isNull())
             throw supplier.supply(key());
         return this;
     }
 
+    /**
+     * This method throws an exception (likely a {@link NullPointerException}) given by
+     * {@link #requireNotNullException()} if {@link #exists()} is {@code false}.
+     * @return this
+     */
     public @NotNull Container<V> requireExists() {
         if(!exists())
             throw requireExistsException();
         return this;
     }
 
+    /**
+     * This method throws an exception given by given {@code supplier} if {@link #exists()} is {@code false}.
+     * @param supplier {@link ExceptionSupplier} to supply an exception.
+     * @return this
+     * @param <E> exception thrown if the value does not {@link #exists() exist}.
+     * @throws E if the value does not {@link #exists() exist}.
+     */
     public <E extends Throwable> @NotNull Container<V> requireExists(
             @NotNull ExceptionSupplier<E> supplier
     ) throws E {
@@ -77,11 +143,25 @@ public abstract class Container<V> implements OptionalValue<V> {
         return this;
     }
 
+    /**
+     * Consume {@link #value} by given {@code consumer}.
+     * <p>
+     *     This method is especially useful in combination with {@link #ifExists()} and {@link #ifNotNull()}.
+     * </p>
+     * @param consumer to process {@link #value}.
+     * @return this
+     */
     public @NotNull Container<V> process(@NotNull Consumer<V> consumer) {
         consumer.accept(get());
         return this;
     }
 
+    /**
+     * Casts the value to {@link C}.
+     * @return a new {@link Container} with the new cast value.
+     * @param <C> type to cast to.
+     * @throws ClassCastException if the value cannot be cast to {@link C}.
+     */
     public <C> @NotNull Container<C> cast() {
         //noinspection unchecked
         return createNewContainer((C) value);
@@ -99,10 +179,15 @@ public abstract class Container<V> implements OptionalValue<V> {
         return this;
     }
 
+    /**
+     * Casts the value to {@link List}&lt;?&gt; and returns a {@link ListContainer} with this list.
+     * @return {@link ListContainer} as specified above.
+     * @throws ClassCastException if the value is not a {@link List}&lt;?&gt;.
+     */
     public @NotNull ListContainer<?> asList() {
         if(isNull())
-            return new ListContainer<>(null, exists);
-        return new ListContainer<>((List<?>)value, exists);
+            return createNewListContainer(null);
+        return createNewListContainer((List<?>)value);
     }
 
     /**
@@ -155,23 +240,15 @@ public abstract class Container<V> implements OptionalValue<V> {
     }
 
     /**
-     * If the value does <b>not</b> {@link #exists() exist}, a new {@link NoActionContainer} will be returned.
-     * All Operations on this container will have no effect. This means:
-     * <ul>
-     *     <li>
-     *         {@link #get()} will throw a {@link NoActionException}.
-     *     </li>
-     *     <li>
-     *         {@link #process(Consumer)} will not execute the given {@link Consumer}.
-     *     </li>
-     *     <li>
-     *         {@link #requireNotNull()} or {@link #requireNotNull(ExceptionSupplier)} will never throw an exception.
-     *     </li>
-     * </ul>
      * <p>
-     *     If the value does {@link #exists() exist}, the {@link Container} itself (this) is returned.
+     * If the value does {@link #exists() exist}, the {@link Container} itself (this) is returned.
      * </p>
-     * @return {@link Container}
+     * <p>
+     * If the value does <b>not</b> {@link #exists() exist}, a new {@link NoActionContainer} will be returned.
+     * All Operations on a {@link NoActionContainer} will have no effect. For more information see {@link NoActionContainer}.
+     * </p>
+     *
+     * @return {@link Container} as described above.
      */
     public @NotNull Container<V> ifExists() {
         if(exists()) return this;
@@ -179,24 +256,13 @@ public abstract class Container<V> implements OptionalValue<V> {
     }
 
     /**
+     * <p>
      * If the value {@link #isNull() is null}, a new {@link NoActionContainer} will be returned.
      * All Operations on this container will have no effect. This means:
-     * <ul>
-     *     <li>
-     *         {@link #get()} will throw a {@link NoActionException}.
-     *     </li>
-     *     <li>
-     *         {@link #process(Consumer)} will not execute the given {@link Consumer}.
-     *     </li>
-     *     <li>
-     *         {@link #requireNotNull()} or {@link #requireNotNull(ExceptionSupplier)} will never throw an exception.
-     *     </li>
-     * </ul>
-     * <p>
-     *     If the value does {@link #exists() exist}, the {@link Container} itself (this) is returned.
      * </p>
      * <p>
-     *     This method should be mainly used in combination with {@link #process(Consumer)}.
+     * If the value does <b>not</b> {@link #exists() exist}, a new {@link NoActionContainer} will be returned.
+     * All Operations on a {@link NoActionContainer} will have no effect. For more information see {@link NoActionContainer}.
      * </p>
      * @return {@link Container}
      */

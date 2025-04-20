@@ -19,7 +19,9 @@ package de.linusdev.lutils.optional;
 import de.linusdev.lutils.result.Result;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
+@SuppressWarnings("unused")
 public interface OptionalValue<V> extends Result {
 
     /**
@@ -86,5 +88,95 @@ public interface OptionalValue<V> extends Result {
         if(index != 0)
             throw new IndexOutOfBoundsException(index);
         return get();
+    }
+
+    /**
+     * Casts this value to {@link Number} and calls {@link Number#byteValue()}.
+     * It should be ensured that {@link #isNull()} is {@code false} before calling this method.
+     */
+    default byte getAsByte() {
+        return this.<Number>getAs().byteValue();
+    }
+
+    /**
+     * Casts this value to {@link Number} and calls {@link Number#shortValue()}.
+     * It should be ensured that {@link #isNull()} is {@code false} before calling this method.
+     */
+    default short getAsShort() {
+        return this.<Number>getAs().shortValue();
+    }
+
+    /**
+     * Casts this value to {@link Number} and calls {@link Number#intValue()}.
+     * It should be ensured that {@link #isNull()} is {@code false} before calling this method.
+     */
+    default int getAsInt() {
+        return this.<Number>getAs().intValue();
+    }
+
+    /**
+     * Casts this value to {@link Number} and calls {@link Number#longValue()}.
+     * It should be ensured that {@link #isNull()} is {@code false} before calling this method.
+     */
+    default long getAsLong() {
+        return this.<Number>getAs().longValue();
+    }
+
+    /**
+     * Casts this value to {@link Number} and calls {@link Number#floatValue()}.
+     * It should be ensured that {@link #isNull()} is {@code false} before calling this method.
+     */
+    default float getAsFloat() {
+        return this.<Number>getAs().floatValue();
+    }
+
+    /**
+     * Casts this value to {@link Number} and calls {@link Number#doubleValue()} ()}.
+     * It should be ensured that {@link #isNull()} is {@code false} before calling this method.
+     */
+    default double getAsDouble() {
+        return this.<Number>getAs().doubleValue();
+    }
+
+    /**
+     * If {@link #isNull()} is {@code true}, it will return {@code null}. Otherwise, it returns {@link #getAsByte()}.
+     */
+    default @Nullable Byte getAsByteW() {
+        return isNull() ? null : getAsByte();
+    }
+
+    /**
+     * If {@link #isNull()} is {@code true}, it will return {@code null}. Otherwise, it returns {@link #getAsShort()}.
+     */
+    default @Nullable Short getAsShortW() {
+        return isNull() ? null : getAsShort();
+    }
+
+    /**
+     * If {@link #isNull()} is {@code true}, it will return {@code null}. Otherwise, it returns {@link #getAsInt()}.
+     */
+    default @Nullable Integer getAsIntW() {
+        return isNull() ? null : getAsInt();
+    }
+
+    /**
+     * If {@link #isNull()} is {@code true}, it will return {@code null}. Otherwise, it returns {@link #getAsLong()}.
+     */
+    default @Nullable Long getAsLongW() {
+        return isNull() ? null : getAsLong();
+    }
+
+    /**
+     * If {@link #isNull()} is {@code true}, it will return {@code null}. Otherwise, it returns {@link #getAsFloat()}.
+     */
+    default @Nullable Float getAsFloatW() {
+        return isNull() ? null : getAsFloat();
+    }
+
+    /**
+     * If {@link #isNull()} is {@code true}, it will return {@code null}. Otherwise, it returns {@link #getAsDouble()}.
+     */
+    default @Nullable Double getAsDoubleW() {
+        return isNull() ? null : getAsDouble();
     }
 }

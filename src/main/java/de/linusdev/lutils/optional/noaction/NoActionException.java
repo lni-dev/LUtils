@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package de.linusdev.lutils.optional;
+package de.linusdev.lutils.optional.noaction;
 
 import org.jetbrains.annotations.NotNull;
 
