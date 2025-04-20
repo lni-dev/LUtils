@@ -91,11 +91,11 @@ public class Bodies {
         }
 
         /**
-         * See {@link ResourceUtils#getURLConnectionOfResource(Class, String)}
+         * See {@link ResourceUtils#getURLConnectionOfResource(Class, String, boolean)}
          */
         public @NotNull Body ofResource(@Nullable Class<?> relClazz, @NotNull String path) {
             return new StreamURLConnectionBody(
-                    ResourceUtils.getURLConnectionOfResource(relClazz, path), contentType
+                    ResourceUtils.getURLConnectionOfResource(relClazz, path, false), contentType
             );
         }
 

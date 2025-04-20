@@ -17,9 +17,7 @@
 package de.linusdev.lutils.html.lhtml;
 
 
-import de.linusdev.lutils.html.HtmlAddable;
-import de.linusdev.lutils.html.HtmlAttribute;
-import de.linusdev.lutils.html.HtmlObject;
+import de.linusdev.lutils.html.*;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
@@ -57,9 +55,27 @@ public class LhtmlPlaceholder implements HtmlAddable<LhtmlPlaceholder>, LhtmlIde
     }
 
     @Override
-    public void _addAttribute(@NotNull HtmlAttribute attribute) {
+    public void _setAttribute(@NotNull HtmlAttribute attribute) {
         for (LhtmlPlaceholderElement element : elements) {
-            element.addAttribute(attribute);
+            element.setAttribute(attribute);
+        }
+    }
+
+    @Override
+    public @NotNull HtmlAttributeMap _getAttributeMap() {
+        throw new Error("This does not work here. overwrite calling methods instead");
+    }
+
+    public void addToAttribute(@NotNull HtmlAttributeType<?> type, String item) {
+        for (LhtmlPlaceholderElement element : elements) {
+            element.addToAttribute(type, item);
+        }
+    }
+
+    @Override
+    public void removeFromAttribute(@NotNull HtmlAttributeType<?> type, String item) {
+        for (LhtmlPlaceholderElement element : elements) {
+            element.removeFromAttribute(type, item);
         }
     }
 

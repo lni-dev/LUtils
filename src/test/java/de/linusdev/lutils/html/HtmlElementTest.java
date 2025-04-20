@@ -41,7 +41,7 @@ class HtmlElementTest {
         HtmlElement element = Html.buildElement(DIV, container -> {
             container.addElement(DIV, header -> {
                 header.addText("Header");
-                header.addAttribute(StandardHtmlAttributeTypes.CLASS, "test");
+                header.setAttribute(StandardHtmlAttributeTypes.CLASS, "test");
             });
             container.addElement(DIV, body -> {
                 body.addElement(P, p -> p.addText("Some Text in the body"));

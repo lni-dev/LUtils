@@ -16,6 +16,7 @@
 
 package de.linusdev.lutils.html;
 
+import de.linusdev.lutils.html.impl.StandardHtmlAttribute;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -33,6 +34,50 @@ public interface HtmlAttributeType<V> {
      */
     @NotNull String name();
 
+    /**
+     * Create a new attribute of this type with the {@link #defaultValue()}.
+     */
+    default @NotNull HtmlAttribute of() {
+        return new StandardHtmlAttribute(this, defaultValue());
+    }
+
+    /**
+     * Create a new attribute of this type with given {@code value}.
+     */
+    default @NotNull HtmlAttribute of(V value) {
+        return new StandardHtmlAttribute(this, convertValue(value));
+    }
+
+    /**
+     * Convert the value of given attribute to {@link V}.
+     */
     @Nullable V convertValue(@NotNull HtmlAttribute attribute);
 
+    /**
+     * Converts a value {@link V} to a string.
+     */
+    @Nullable String convertValue(V value);
+
+    /**
+     * The default value of attributes of this type as string.
+     */
+    default @Nullable String defaultValue() {
+        return null;
+    }
+
+    /**
+     * Adds given {@code item} to given attribute value {@code current}. Does not work on every type. Implementation depends on the
+     * attribute type.
+     */
+    default @Nullable String add(@Nullable String current, @NotNull String item) {
+        throw new UnsupportedOperationException();
+    }
+
+    /**
+     * Removes given {@code item} from given attribute value {@code current}. Does not work on every type. Implementation depends on the
+     * attribute type.
+     */
+    default @Nullable String remove(@Nullable String current, @NotNull String item) {
+        throw new UnsupportedOperationException();
+    }
 }

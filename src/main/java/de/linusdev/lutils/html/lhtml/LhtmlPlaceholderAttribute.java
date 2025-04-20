@@ -18,7 +18,10 @@ package de.linusdev.lutils.html.lhtml;
 
 import de.linusdev.lutils.html.HtmlAttribute;
 import de.linusdev.lutils.html.HtmlAttributeType;
+import de.linusdev.lutils.html.impl.StandardHtmlAttribute;
 import de.linusdev.lutils.other.str.ConstructableString;
+import de.linusdev.lutils.other.str.PartsString;
+import de.linusdev.lutils.other.str.StringUtils;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -47,7 +50,7 @@ public class LhtmlPlaceholderAttribute implements HtmlAttribute {
 
     /**
      * Must be called by the parent lhtml-element to the set replace-values map
-     * which will be used, when {@link #value} is {@link ConstructableString#construct(Map) constructed}.
+     * which will be used, when {@link #value} is {@link PartsString#construct(PartsString.Resolver) constructed}.
      * @param replaceValues the parent's replace-values map.
      */
     @ApiStatus.Internal
@@ -63,7 +66,15 @@ public class LhtmlPlaceholderAttribute implements HtmlAttribute {
     @Override
     public @Nullable String value() {
         assert isReplaceValuesNotNull();
-        return value.construct(replaceValues);
+        return value.construct(replaceValues::get);
+    }
+
+    @Override
+    public @NotNull HtmlAttribute setValue(@Nullable String value) {
+        ConstructableString str = StringUtils.computePossibleConstructableStringOfText(value);
+        if(str == null)
+            return new StandardHtmlAttribute(type, value);
+        return new LhtmlPlaceholderAttribute(type, str);
     }
 
     private boolean isReplaceValuesNotNull() {

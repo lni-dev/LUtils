@@ -27,6 +27,21 @@ public record StandardHtmlAttribute(
 ) implements HtmlAttribute {
 
     @Override
+    public @NotNull HtmlAttribute setValue(@Nullable String value) {
+        return new StandardHtmlAttribute(type, value);
+    }
+
+    @Override
+    public @NotNull HtmlAttribute addToValue(@NotNull String item) {
+        return new StandardHtmlAttribute(type, type.add(value, item));
+    }
+
+    @Override
+    public @NotNull HtmlAttribute removeFromValue(@NotNull String item) {
+        return new StandardHtmlAttribute(type, type.remove(value, item));
+    }
+
+    @Override
     public @NotNull HtmlAttribute copy() {
         return this; // fine because it is final
     }

@@ -16,11 +16,9 @@
 
 package de.linusdev.lutils.nat.struct.utils;
 
-import org.jetbrains.annotations.NotNull;
 import sun.misc.Unsafe;
 
 import java.lang.reflect.Field;
-import java.util.stream.Collectors;
 
 public class Utils {
 
@@ -36,13 +34,6 @@ public class Utils {
             throw new RuntimeException(e);
         }
 
-    }
-
-    public static @NotNull String indent(@NotNull String toIndent, @NotNull String indent) {
-        return toIndent
-                .lines()
-                .map(s -> indent + s)
-                .collect(Collectors.joining("\n", "", ""));
     }
 
 }

@@ -25,7 +25,7 @@ import de.linusdev.lutils.nat.struct.generator.StaticGenerator;
 import de.linusdev.lutils.nat.struct.info.StructureInfo;
 import de.linusdev.lutils.nat.struct.utils.BufferUtils;
 import de.linusdev.lutils.nat.struct.utils.SSMUtils;
-import de.linusdev.lutils.nat.struct.utils.Utils;
+import de.linusdev.lutils.other.str.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -272,7 +272,7 @@ public abstract class Structure implements NativeParsable {
                 getRequiredSize(),
                 getOffset(),
                 getOffset() + getRequiredSize(),
-                content == null ? "" : ("{\n" + Utils.indent(content, "    ") + "\n}")
+                content == null ? "" : ("{\n" + StringUtils.indent(content, "    ", true) + "\n}")
         );
     }
 
