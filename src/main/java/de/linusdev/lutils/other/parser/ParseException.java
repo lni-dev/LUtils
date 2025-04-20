@@ -22,6 +22,7 @@ import org.jetbrains.annotations.Nullable;
 /**
  * An exception thrown while parsing
  */
+@SuppressWarnings("unused")
 public class ParseException extends Exception {
 
     private final @Nullable ParseTracker tracker;
@@ -57,8 +58,13 @@ public class ParseException extends Exception {
         this.tracker = tracker;
     }
 
+    public ParseException(@Nullable ParseTracker tracker, @Nullable Throwable cause) {
+        super(cause);
+        this.tracker = tracker;
+    }
+
     public ParseException(@Nullable ParseTracker tracker, @Nullable String message) {
-        super();
+        super(message);
         this.tracker = tracker;
     }
 
