@@ -16,6 +16,7 @@
 
 package de.linusdev.lutils.net.http.path;
 
+import de.linusdev.lutils.optional.Container;
 import org.jetbrains.annotations.NotNull;
 
 import java.net.URI;
@@ -56,5 +57,12 @@ public class PathAndQuery {
 
     public @NotNull Map<String, String> getParameters() {
         return parameters;
+    }
+
+    public @NotNull Container<String> getParameter(@NotNull String key) {
+        String val = parameters.get(key);
+        if(val == null)
+            return Container.of();
+        return Container.of(val);
     }
 }
