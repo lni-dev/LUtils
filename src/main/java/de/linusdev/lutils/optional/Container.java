@@ -18,6 +18,7 @@ package de.linusdev.lutils.optional;
 
 import de.linusdev.lutils.interfaces.Converter;
 import de.linusdev.lutils.interfaces.ExceptionConverter;
+import de.linusdev.lutils.optional.impl.BasicContainer;
 import de.linusdev.lutils.optional.noaction.NoActionContainer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -53,6 +54,20 @@ import java.util.function.Consumer;
  */
 @SuppressWarnings("unused")
 public abstract class Container<V> implements OptionalValue<V> {
+
+    /**
+     * Creates a new {@link BasicContainer} with no key and existent value {@code value}.
+     */
+    public static <V> @NotNull Container<V> of(@Nullable V value) {
+        return new BasicContainer<>(null, true, value);
+    }
+
+    /**
+     * Creates a new {@link BasicContainer} with no key and a {@link #exists() non-existent} value.
+     */
+    public static <V> @NotNull Container<V> of() {
+        return new BasicContainer<>(null, false, null);
+    }
 
     protected final @Nullable Object key;
     protected final boolean exists;
