@@ -18,24 +18,33 @@ package de.linusdev.lutils.other.iterator;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.util.function.Function;
+import java.util.Iterator;
 
-@SuppressWarnings("unused")
-public class IteratorUtils {
+public class IterableArray<T> implements Iterable<T> {
 
-    public static <E> @NotNull EmptyIterator<E> emptyIterator() {
-        return new EmptyIterator<>();
+    private final T @NotNull [] array;
+
+    public IterableArray(T @NotNull [] array) {
+        this.array = array;
     }
 
-    public static <E> @NotNull SingleElementIterator<E> singleElementIterator(E element) {
-        return new SingleElementIterator<>(element);
+    @Override
+    public @NotNull Iterator<T> iterator() {
+        return new It();
     }
 
-    public static <R, E> @NotNull IteratorView<R, E> iteratorView(@NotNull Iterable<R> original, @NotNull Function<R, E> converter) {
-        return new IteratorView<>(original, converter);
-    }
+    private class It implements Iterator<T> {
 
-    public static <E> @NotNull IterableArray<E> iterableArray(E @NotNull [] array) {
-        return new IterableArray<>(array);
+        private int index = 0;
+
+        @Override
+        public boolean hasNext() {
+            return array.length > index;
+        }
+
+        @Override
+        public T next() {
+            return array[index++];
+        }
     }
 }
