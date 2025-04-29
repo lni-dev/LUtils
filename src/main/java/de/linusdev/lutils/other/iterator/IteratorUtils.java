@@ -38,4 +38,12 @@ public class IteratorUtils {
     public static <E> @NotNull IterableArray<E> iterableArray(E @NotNull [] array) {
         return new IterableArray<>(array);
     }
+
+    public static <E> @NotNull CombinedIterable<E> combine(@NotNull Iterable<E> iterable1, @NotNull Iterable<E> iterable2) {
+        return new CombinedIterable<>(iterable1, iterable2);
+    }
+
+    public static <E> @NotNull CombinedIterable<E> combine(@NotNull E[] array1, @NotNull E[] array2) {
+        return new CombinedIterable<>(new IterableArray<>(array1), new IterableArray<>(array2));
+    }
 }

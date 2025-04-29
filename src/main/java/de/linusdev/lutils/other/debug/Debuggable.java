@@ -77,7 +77,7 @@ public abstract class Debuggable {
         return getDebugInfoString(object, maxDepth, true);
     }
 
-    interface InfoString {
+    public interface InfoString {
 
         /**
          * Generates a human-readable string containing debug information about this object. Should have
