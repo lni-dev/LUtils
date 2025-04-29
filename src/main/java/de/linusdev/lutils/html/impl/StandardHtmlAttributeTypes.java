@@ -43,8 +43,9 @@ public class StandardHtmlAttributeTypes {
     public static final @NotNull StringType         TYPE             =   new StringType("type");
     public static final @NotNull StringType         AUTOCOMPLETE     =   new StringType("autocomplete");
     public static final @NotNull StringType         VALUE            =   new StringType("value");
-    public static final @NotNull StringType         NAME            =   new StringType("name");
-    public static final @NotNull StringType         CONTENT            =   new StringType("content");
+    public static final @NotNull StringType         NAME             =   new StringType("name");
+    public static final @NotNull StringType         CONTENT          =   new StringType("content");
+    public static final @NotNull StringType         STYLE            =   new StringType("style");
 
 
     public static final @NotNull NoValueType        OPEN             =   new NoValueType("open");
@@ -55,7 +56,7 @@ public class StandardHtmlAttributeTypes {
             CLASS,
 
             ID, HREF, SRC, REL, ONCLICK , TYPE, AUTOCOMPLETE, VALUE, ONSUBMIT, ACCEPT_CHARSET, NAME,
-            CONTENT, ON_MOUSE_ENTER, ON_MOUSE_LEAVE,
+            CONTENT, ON_MOUSE_ENTER, ON_MOUSE_LEAVE, STYLE,
 
             REQUIRED, OPEN
     };
@@ -94,6 +95,13 @@ public class StandardHtmlAttributeTypes {
         public @NotNull String convertValue(@NotNull HtmlAttribute attribute) {
             String val = attribute.value();
             return val == null ? "" : val;
+        }
+
+        @Override
+        public @Nullable String add(@Nullable String current, @NotNull String item) {
+            if(current == null)
+                return item;
+            return current + item;
         }
     }
 
