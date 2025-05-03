@@ -188,7 +188,7 @@ public interface Identifier extends Identifiable, Simplifiable {
      * The id is the actual unique id.
      * <br><br>
      * Only small letters, numbers, hyphens, slashes and underscores are allowed (Regex: {@value #ID_REGEX}). Underscores
-     * and slashes should only be used if necessary and hyphens should be preferred.
+     * and hyphens should only be used if necessary and underscores should be preferred.
      */
     @NotNull String id();
 
