@@ -134,4 +134,32 @@ public class LMath {
         return (minOut * (1d - pos)) + (maxOut * pos);
     }
 
+    /**
+     * Returns {@code true} if given {@code number} is even. That means {@code (number % 2) == 0}.
+     */
+    public static boolean isEven(int number) {
+        return (number & 0x1) == 0x0;
+    }
+
+    /**
+     * Returns {@code true} if given {@code number} is not even. That means {@code (number % 2) == 1}.
+     */
+    public static boolean isOdd(int number) {
+        return (number & 0x1) == 0x1;
+    }
+
+    /**
+     * Returns {@code true} if given {@code number} is even. That means {@code (number % 2) == 0}.
+     */
+    public static boolean isEven(long number) {
+        return (number & 0x1L) == 0x0L;
+    }
+
+    /**
+     * Returns {@code true} if given {@code number} is not even. That means {@code (number % 2) == 1}.
+     */
+    public static boolean isOdd(long number) {
+        return (number & 0x1L) == 0x1L;
+    }
+
 }

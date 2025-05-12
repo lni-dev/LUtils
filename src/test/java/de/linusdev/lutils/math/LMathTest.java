@@ -19,6 +19,7 @@ package de.linusdev.lutils.math;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class LMathTest {
 
@@ -128,5 +129,22 @@ class LMathTest {
         assertEquals(10.0, LMath.interpolate(1.0, 4.0,5.0, 15.0, 2.5));
         assertEquals( 5.0, LMath.interpolate(1.0, 4.0,5.0, 15.0, 1.0));
         assertEquals(15.0, LMath.interpolate(1.0, 4.0,5.0, 15.0, 4.0));
+    }
+
+    @Test
+    void isEven() {
+        assertTrue(LMath.isEven(0));
+        assertTrue(LMath.isEven(94));
+        assertTrue(LMath.isEven(-94));
+        assertTrue(LMath.isEven(0L));
+        assertTrue(LMath.isEven(94890138902222L));
+        assertTrue(LMath.isEven(-94890138902222L));
+
+        assertTrue(LMath.isOdd(1));
+        assertTrue(LMath.isOdd(95));
+        assertTrue(LMath.isOdd(-95));
+        assertTrue(LMath.isOdd(1L));
+        assertTrue(LMath.isOdd(94890138902223L));
+        assertTrue(LMath.isOdd(-94890138902223L));
     }
 }
