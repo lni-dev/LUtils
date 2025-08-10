@@ -16,16 +16,27 @@
 
 package de.linusdev.lutils.other.iterator;
 
+import de.linusdev.lutils.other.array.ArrayWrapper;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Iterator;
 
-public class IterableArrayDouble implements Iterable<Double> {
+public class IterableArrayDouble implements ArrayWrapper<Double> {
 
     private final double @NotNull [] array;
 
     public IterableArrayDouble(double @NotNull [] array) {
         this.array = array;
+    }
+
+    @Override
+    public int length() {
+        return array.length;
+    }
+
+    @Override
+    public Double get(int index) {
+        return array[index];
     }
 
     @Override

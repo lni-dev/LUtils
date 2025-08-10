@@ -16,11 +16,12 @@
 
 package de.linusdev.lutils.other.iterator;
 
+import de.linusdev.lutils.other.array.ArrayWrapper;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Iterator;
 
-public class IterableArrayInteger implements Iterable<Integer> {
+public class IterableArrayInteger implements ArrayWrapper<Integer> {
 
     private final int @NotNull [] array;
 
@@ -31,6 +32,16 @@ public class IterableArrayInteger implements Iterable<Integer> {
     @Override
     public @NotNull Iterator<Integer> iterator() {
         return new It();
+    }
+
+    @Override
+    public int length() {
+        return array.length;
+    }
+
+    @Override
+    public Integer get(int index) {
+        return array[index];
     }
 
     private class It implements Iterator<Integer> {

@@ -16,12 +16,13 @@
 
 package de.linusdev.lutils.other.iterator;
 
+import de.linusdev.lutils.other.array.ArrayWrapper;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Array;
 import java.util.Iterator;
 
-public class IterableReflectionArray implements Iterable<Object> {
+public class IterableReflectionArray implements ArrayWrapper<Object> {
 
     private final @NotNull Object array;
     private final int length;
@@ -31,6 +32,16 @@ public class IterableReflectionArray implements Iterable<Object> {
             throw new IllegalArgumentException("Given object is not an array.");
         this.array = array;
         this.length = Array.getLength(array);
+    }
+
+    @Override
+    public int length() {
+        return length;
+    }
+
+    @Override
+    public Object get(int index) {
+        return Array.get(array, index);
     }
 
     @Override

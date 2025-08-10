@@ -20,6 +20,9 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Function;
 
+/**
+ * @see de.linusdev.lutils.other.array.ArrayUtils
+ */
 @SuppressWarnings("unused")
 public class IteratorUtils {
 
@@ -35,31 +38,7 @@ public class IteratorUtils {
         return new IteratorView<>(original, converter);
     }
 
-    public static <E> @NotNull IterableArray<E> iterableArray(E @NotNull [] array) {
-        return new IterableArray<>(array);
-    }
-
-    public static @NotNull IterableArrayLong iterableArray(long @NotNull [] array) {
-        return new IterableArrayLong(array);
-    }
-
-    public static @NotNull IterableArrayInteger iterableArray(int @NotNull [] array) {
-        return new IterableArrayInteger(array);
-    }
-
-    public static @NotNull IterableArrayFloat iterableArray(float @NotNull [] array) {
-        return new IterableArrayFloat(array);
-    }
-
-    public static @NotNull IterableArrayDouble iterableArray(double @NotNull [] array) {
-        return new IterableArrayDouble(array);
-    }
-
     public static <E> @NotNull CombinedIterable<E> combine(@NotNull Iterable<E> iterable1, @NotNull Iterable<E> iterable2) {
         return new CombinedIterable<>(iterable1, iterable2);
-    }
-
-    public static <E> @NotNull CombinedIterable<E> combine(@NotNull E[] array1, @NotNull E[] array2) {
-        return new CombinedIterable<>(new IterableArray<>(array1), new IterableArray<>(array2));
     }
 }

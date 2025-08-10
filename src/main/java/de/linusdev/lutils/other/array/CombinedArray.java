@@ -14,48 +14,35 @@
  * limitations under the License.
  */
 
-package de.linusdev.lutils.other.iterator;
+package de.linusdev.lutils.other.array;
 
-import de.linusdev.lutils.other.array.ArrayWrapper;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Iterator;
+/**
+ * Combines two arrays into a single {@link ArrayWrapper}.
+ * @param <T> the element type
+ */
+public class CombinedArray<T> implements ArrayWrapper<T> {
 
-public class IterableArray<T> implements ArrayWrapper<T> {
+    private final @NotNull ArrayWrapper<T> array1;
+    private final @NotNull ArrayWrapper<T> array2;
+    private final int length;
 
-    private final T @NotNull [] array;
-
-    public IterableArray(T @NotNull [] array) {
-        this.array = array;
+    public CombinedArray(@NotNull ArrayWrapper<T> array1, @NotNull ArrayWrapper<T> array2) {
+        this.array1 = array1;
+        this.array2 = array2;
+        this.length = array1.length() + array2.length();
     }
 
     @Override
     public int length() {
-        return array.length;
+        return length;
     }
 
     @Override
     public T get(int index) {
-        return array[index];
-    }
-
-    @Override
-    public @NotNull Iterator<T> iterator() {
-        return new It();
-    }
-
-    private class It implements Iterator<T> {
-
-        private int index = 0;
-
-        @Override
-        public boolean hasNext() {
-            return array.length > index;
-        }
-
-        @Override
-        public T next() {
-            return array[index++];
-        }
+        if(index >= array1.length())
+            return array2.get(index - array1.length());
+        return array1.get(index);
     }
 }

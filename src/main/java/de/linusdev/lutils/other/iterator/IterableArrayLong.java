@@ -16,16 +16,27 @@
 
 package de.linusdev.lutils.other.iterator;
 
+import de.linusdev.lutils.other.array.ArrayWrapper;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Iterator;
 
-public class IterableArrayLong implements Iterable<Long> {
+public class IterableArrayLong implements ArrayWrapper<Long> {
 
     private final long @NotNull [] array;
 
     public IterableArrayLong(long @NotNull [] array) {
         this.array = array;
+    }
+
+    @Override
+    public int length() {
+        return array.length;
+    }
+
+    @Override
+    public Long get(int index) {
+        return array[index];
     }
 
     @Override
