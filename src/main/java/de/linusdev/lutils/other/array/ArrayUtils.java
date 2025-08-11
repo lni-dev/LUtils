@@ -19,6 +19,8 @@ package de.linusdev.lutils.other.array;
 import de.linusdev.lutils.other.iterator.*;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Objects;
+
 /**
  * @see de.linusdev.lutils.other.iterator.IteratorUtils
  */
@@ -51,6 +53,38 @@ public class ArrayUtils {
 
     public static <E> @NotNull CombinedArray<E> combine(@NotNull E[] array1, @NotNull E[] array2) {
         return new CombinedArray<>(iterableArray(array1), iterableArray(array2));
+    }
+
+    public static <E> void shallowClone(@NotNull ArrayWrapper<E> toClone, E @NotNull [] cloneInto) {
+        for (int i = 0; i < toClone.length(); i++) {
+            cloneInto[i] = toClone.get(i);
+        }
+    }
+
+    /**
+     * Checks the length of both arrays and compares every element with {@link Objects#equals(Object, Object)}. Thus,
+     * the following rules must hold if the arrays are considered equals:
+     * <ul>
+     *     <li>The length of both arrays must be the same.</li>
+     *     <li>{@code Objects.equals(array1.get(i), array2.get(i))} must be {@code true} for every index {@code i}.</li>
+     * </ul>
+     *
+     * @param array1 array
+     * @param array2 other array
+     * @return {@code true} if the arrays are considered equals as described above. Otherwise, {@code false}.
+     * @param <E> element type
+     */
+    public static <E> boolean equals(@NotNull ArrayWrapper<E> array1, @NotNull ArrayWrapper<E> array2) {
+
+        if(array1.length() != array2.length())
+            return false;
+
+        for (int i = 0; i < array1.length(); i++) {
+            if(!Objects.equals(array1.get(i), array2.get(i)))
+                return false;
+        }
+
+        return true;
     }
 
 }
