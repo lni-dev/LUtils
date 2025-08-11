@@ -36,6 +36,13 @@ public class WebSocketListener {
     private static final @NotNull AtomicInteger ID_SUPPLIER = new AtomicInteger(0);
 
     private final int id;
+    /**
+     * The maximum amount of retries before the listener will stop.
+     * This means after catching {@link #maxRetries} exceptions in a row without
+     * successfully {@link WebSocket#readFrame() reading a frame}, the listener thread will stop ({@link Listener#onListenerThreadDeath() onListenerThreadDeath} event will fire).
+     */
+    @SuppressWarnings("JavadocDeclaration")
+    private int maxRetries = 3;
 
     public WebSocketListener(
             @NotNull WebSocket webSocket,
@@ -43,6 +50,8 @@ public class WebSocketListener {
     ) {
         this.id = ID_SUPPLIER.incrementAndGet();
         new Thread(() -> {
+            listener.setSettings(this);
+            int tries = 0;
             while (!webSocket.isClosed()) {
                 try {
                     Frame frame = webSocket.readFrame();
@@ -52,10 +61,13 @@ public class WebSocketListener {
                     else
                         listener.onReceived(webSocket, frame);
 
-
+                    tries = 0;
                 } catch (SocketException se) {
 
                     if(webSocket.isClosed())
+                        break;
+
+                    if (tries++ >= maxRetries)
                         break;
 
                     if (se.getMessage().equals("An established connection was aborted by the software in your host machine")
@@ -70,7 +82,11 @@ public class WebSocketListener {
                     }
 
                     listener.onError(webSocket, se);
+                    tries++;
                 } catch (Throwable t) {
+                    if (tries++ >= maxRetries)
+                        break;
+
                     listener.onError(webSocket, t);
                 }
             }
@@ -80,12 +96,28 @@ public class WebSocketListener {
         },"web-socket-listener-" + id).start();
     }
 
+    /**
+     * Set {@link #maxRetries}. Default is 3.
+     * @param maxRetries the new max retries.
+     */
+    @SuppressWarnings("unused")
+    public void setMaxRetries(int maxRetries) {
+        this.maxRetries = maxRetries;
+    }
+
     @SuppressWarnings("unused")
     public int getId() {
         return id;
     }
 
     public interface Listener {
+        /**
+         * Used to adjust settings of this {@link WebSocketListener}. Called exactly once.
+         * @param self this {@link WebSocketListener}
+         * @see #setMaxRetries(int)
+         */
+        @SuppressWarnings("unused")
+        default void setSettings(@NotNull WebSocketListener self) {}
         void onReceived(@NotNull WebSocket webSocket, @NotNull Frame frame) throws IOException;
         void onError(@NotNull WebSocket webSocket, @NotNull Throwable error);
         default void onClose(@NotNull WebSocket webSocket, @NotNull CloseFrame frame) throws IOException {
