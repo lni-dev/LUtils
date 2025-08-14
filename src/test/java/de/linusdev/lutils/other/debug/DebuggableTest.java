@@ -16,6 +16,7 @@
 
 package de.linusdev.lutils.other.debug;
 
+import de.linusdev.lutils.other.array.ArrayUtils;
 import org.junit.jupiter.api.Test;
 
 import java.util.LinkedHashMap;
@@ -92,5 +93,15 @@ class DebuggableTest {
         );
 
 
+    }
+
+    @Test
+    void addListInline() {
+        assertEquals("""
+                Some String:\s
+                 * inline-list: [ 1, 2, 4, 5 ]""", new DebugInfoStringBuilder("Test", "Some String", 10)
+                .addListInline("inline-list", ArrayUtils.iterableArray(new int[]{1, 2, 4, 5}))
+                .build()
+        );
     }
 }

@@ -16,6 +16,7 @@
 
 package de.linusdev.lutils.other.debug;
 
+import de.linusdev.lutils.other.iterator.IteratorUtils;
 import de.linusdev.lutils.other.str.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -25,6 +26,7 @@ import java.lang.reflect.RecordComponent;
 import java.util.Map;
 import java.util.Objects;
 
+@SuppressWarnings("ClassCanBeRecord")
 public class DebugInfoStringBuilder {
 
     private final @NotNull StringBuilder sb;
@@ -60,6 +62,13 @@ public class DebugInfoStringBuilder {
         for (Object item : items) {
             sb.append("\n   - ").append(StringUtils.indent(Debuggable.getDebugInfoString(item, maxDepth-1),  "     ", false));
         }
+
+        return this;
+    }
+
+    public DebugInfoStringBuilder addListInline(@NotNull String name, @NotNull Iterable<?> items) {
+        if(maxDepth <= 0) return this;
+        sb.append("\n * ").append(name).append(": ").append(IteratorUtils.toString(items.iterator()));
 
         return this;
     }

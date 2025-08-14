@@ -18,6 +18,8 @@ package de.linusdev.lutils.other.iterator;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Iterator;
+import java.util.Objects;
 import java.util.function.Function;
 
 /**
@@ -40,5 +42,36 @@ public class IteratorUtils {
 
     public static <E> @NotNull CombinedIterable<E> combine(@NotNull Iterable<E> iterable1, @NotNull Iterable<E> iterable2) {
         return new CombinedIterable<>(iterable1, iterable2);
+    }
+
+    /**
+     * Creates a string in array format containing all items of given {@code it}.
+     * The string for each item will be created using {@link Objects#toString(Object)}. If an item-string contains
+     * multiple lines it will be cut off before the first line break and {@code ...} will be appended instead.
+     * @param it the iterator which should be converted to a string
+     * @return a string of the following form {@code [ item1, item2, item3 ]} as described above.
+     */
+    public static @NotNull String toString(@NotNull Iterator<?> it) {
+
+        StringBuilder sb = new StringBuilder("[ ");
+        boolean first = true;
+
+        while(it.hasNext()) {
+            Object item = it.next();
+
+            if(first) first = false;
+            else sb.append(", ");
+
+            String sItem = Objects.toString(item);
+
+            int nlIndex;
+            if((nlIndex = sItem.indexOf("\n")) != -1) {
+               sItem = sItem.substring(0, nlIndex) + " ...";
+            }
+
+            sb.append(sItem);
+        }
+
+        return sb.append(" ]").toString();
     }
 }
