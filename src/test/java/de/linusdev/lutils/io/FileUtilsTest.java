@@ -19,13 +19,13 @@ package de.linusdev.lutils.io;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.stream.Stream;
 
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 class FileUtilsTest {
 
@@ -46,5 +46,30 @@ class FileUtilsTest {
         Path testPath = Paths.get("dir/someFileName.notEnding.txt");
 
         assertEquals("txt", FileUtils.getFileEnding(testPath));
+    }
+
+    @Test
+    void deleteDirectoryRecursively() throws IOException {
+        Path tmp = Files.createTempDirectory("ddrtest");
+
+        Path fileOne = tmp.resolve("fileone.txt");
+        Files.createFile(fileOne);
+
+        Path dirOne = tmp.resolve("dirOne");
+        Files.createDirectory(dirOne);
+
+        Path fileTwo = dirOne.resolve("fileTwo.txt");
+        Files.createFile(fileTwo);
+
+        assertTrue(Files.exists(fileOne));
+        assertTrue(Files.isDirectory(dirOne));
+        assertTrue(Files.exists(fileTwo));
+
+        FileUtils.deleteDirectoryRecursively(tmp);
+
+        assertFalse(Files.exists(fileOne));
+        assertFalse(Files.isDirectory(dirOne));
+        assertFalse(Files.exists(fileTwo));
+        assertFalse(Files.exists(tmp));
     }
 }

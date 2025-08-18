@@ -20,9 +20,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
-import java.nio.file.FileVisitOption;
-import java.nio.file.Files;
-import java.nio.file.Path;
+import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.EnumSet;
 import java.util.List;
@@ -31,6 +29,42 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class FileUtils {
+
+    /**
+     * Deletes given file or directory. If it is a directory, it will be deleted recursively.
+     * @param dir file or directory to delete
+     * @throws IOException while deleting
+     */
+    public static void deleteDirectoryRecursively(
+            @NotNull Path dir
+    ) throws IOException {
+        if(!Files.isDirectory(dir))
+            Files.delete(dir);
+
+        Files.walkFileTree(dir, new FileVisitor<>() {
+            @Override
+            public @NotNull FileVisitResult preVisitDirectory(Path dir, @NotNull BasicFileAttributes attrs) {
+                return FileVisitResult.CONTINUE;
+            }
+
+            @Override
+            public @NotNull FileVisitResult visitFile(Path file, @NotNull BasicFileAttributes attrs) throws IOException {
+                Files.delete(file);
+                return FileVisitResult.CONTINUE;
+            }
+
+            @Override
+            public @NotNull FileVisitResult visitFileFailed(Path file, @NotNull IOException exc) {
+                return FileVisitResult.CONTINUE;
+            }
+
+            @Override
+            public @NotNull FileVisitResult postVisitDirectory(Path dir, @Nullable IOException exc) throws IOException {
+                Files.delete(dir);
+                return FileVisitResult.CONTINUE;
+            }
+        });
+    }
 
     public static @NotNull List<@NotNull Path> collectInFileTree(
             @NotNull Path start,

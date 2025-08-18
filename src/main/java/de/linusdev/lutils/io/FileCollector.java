@@ -44,24 +44,24 @@ public class FileCollector implements FileVisitor<Path> {
     }
 
     @Override
-    public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) {
+    public @NotNull FileVisitResult preVisitDirectory(Path dir, @NotNull BasicFileAttributes attrs) {
         return FileVisitResult.CONTINUE;
     }
 
     @Override
-    public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
+    public @NotNull FileVisitResult visitFile(Path file, @NotNull BasicFileAttributes attrs) {
         if(collectPredicate.test(file, attrs))
             collectedFiles.add(file);
         return FileVisitResult.CONTINUE;
     }
 
     @Override
-    public FileVisitResult visitFileFailed(Path file, IOException exc) {
+    public @NotNull FileVisitResult visitFileFailed(Path file, @NotNull IOException exc) {
         return FileVisitResult.CONTINUE;
     }
 
     @Override
-    public FileVisitResult postVisitDirectory(Path dir, @Nullable IOException exc) {
+    public @NotNull FileVisitResult postVisitDirectory(Path dir, @Nullable IOException exc) {
         return FileVisitResult.CONTINUE;
     }
 }
