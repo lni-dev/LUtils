@@ -50,7 +50,7 @@ public class FileUtils {
             Files.copy(source, target);
             return;
 
-        } else {
+        } else if (Files.isDirectory(target)) {
             try (var stream = Files.list(target)) {
                 if(stream.findAny().isPresent()) {
                     throw new FileAlreadyExistsException("Directory '" + target + "' is not empty.");
