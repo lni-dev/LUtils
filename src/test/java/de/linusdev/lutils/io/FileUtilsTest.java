@@ -72,4 +72,29 @@ class FileUtilsTest {
         assertFalse(Files.exists(fileTwo));
         assertFalse(Files.exists(tmp));
     }
+
+    @Test
+    void copyDirectoryRecursively() throws IOException {
+        Path tmp = Files.createTempDirectory("ddrtest");
+
+        Path fileOne = tmp.resolve("fileone.txt");
+        Files.createFile(fileOne);
+
+        Path dirOne = tmp.resolve("dirOne");
+        Files.createDirectory(dirOne);
+
+        Path fileTwo = dirOne.resolve("fileTwo.txt");
+        Files.createFile(fileTwo);
+
+        assertTrue(Files.exists(fileOne));
+        assertTrue(Files.isDirectory(dirOne));
+        assertTrue(Files.exists(fileTwo));
+
+        Path tmp2 = Files.createTempDirectory("ddrtest2");
+        FileUtils.copyDirectoryRecursively(tmp, tmp2);
+
+        assertTrue(Files.exists(tmp2.resolve("fileone.txt")));
+        assertTrue(Files.isDirectory(tmp2.resolve("dirOne")));
+        assertTrue(Files.exists(tmp2.resolve("dirOne").resolve("fileTwo.txt")));
+    }
 }

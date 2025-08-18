@@ -31,6 +31,58 @@ import java.util.regex.Pattern;
 public class FileUtils {
 
     /**
+     * Copies a file or directory.<br>
+     * If {@code source} is a file, {@code target} must not exist.<br>
+     * If {@code source} is a directory, {@code target} must not exist or be an empty directory.<br>
+     * @param source source file or directory
+     * @param target target location to copy to
+     * @throws IOException while copying or if the above restrictions are not met
+     */
+    public static void copyDirectoryRecursively(
+            @NotNull Path source,
+            @NotNull Path target
+    ) throws IOException {
+
+        if(Files.isRegularFile(source)) {
+            if(Files.exists(target)) {
+                throw new FileAlreadyExistsException("File '" + target + "' already exists.");
+            }
+            Files.copy(source, target);
+            return;
+
+        } else {
+            try (var stream = Files.list(target)) {
+                if(stream.findAny().isPresent()) {
+                    throw new FileAlreadyExistsException("Directory '" + target + "' is not empty.");
+                }
+            }
+
+        }
+
+        if(!Files.exists(target)) {
+            Files.createDirectory(target);
+        }
+
+        Files.walkFileTree(source,
+                new SimpleFileVisitor<>() {
+                    @Override
+                    public @NotNull FileVisitResult preVisitDirectory(@NotNull Path dir, @NotNull BasicFileAttributes attrs) throws IOException {
+                        var relPath = source.relativize(dir);
+                        if(!relPath.toString().isEmpty())
+                            Files.copy(dir, target.resolve(relPath), StandardCopyOption.COPY_ATTRIBUTES);
+                        return FileVisitResult.CONTINUE;
+                    }
+
+                    @Override
+                    public @NotNull FileVisitResult visitFile(@NotNull Path file, @NotNull BasicFileAttributes attrs) throws IOException {
+                        Files.copy(file, target.resolve(source.relativize(file)), StandardCopyOption.COPY_ATTRIBUTES);
+                        return FileVisitResult.CONTINUE;
+                    }
+                }
+        );
+    }
+
+    /**
      * Deletes given file or directory. If it is a directory, it will be deleted recursively.
      * @param dir file or directory to delete
      * @throws IOException while deleting
