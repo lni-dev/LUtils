@@ -125,11 +125,19 @@ public class SimpleHttpServer implements AsyncManager {
        return "http://localhost:" + serverSocket.getLocalPort();
     }
 
+    /**
+     * @return http://localhost:port/path
+     */
+    @SuppressWarnings({"unused", "JavadocLinkAsPlainText"})
+    public @NotNull String getUrl(@NotNull String path) {
+        return getUrl() + "/" + path;
+    }
+
     @SuppressWarnings("unused")
     public void openInBrowser(@NotNull String path) {
         if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
             try {
-                Desktop.getDesktop().browse(new URI("http://localhost:" + serverSocket.getLocalPort() + "/" + path));
+                Desktop.getDesktop().browse(new URI(getUrl(path)));
             } catch (IOException | URISyntaxException ignored) {}
         }
     }
