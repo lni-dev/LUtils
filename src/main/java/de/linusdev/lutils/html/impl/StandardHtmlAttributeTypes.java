@@ -37,6 +37,7 @@ public class StandardHtmlAttributeTypes {
     public static final @NotNull StringType         REL              =   new StringType("rel");
     public static final @NotNull StringType         ONCLICK          =   new StringType("onclick");
     public static final @NotNull StringType         ONSUBMIT         =   new StringType("onsubmit");
+    public static final @NotNull StringType         ONCHANGE         =   new StringType("onchange");
     public static final @NotNull StringType         ON_MOUSE_ENTER   =   new StringType("onmouseenter");
     public static final @NotNull StringType         ON_MOUSE_LEAVE   =   new StringType("onmouseleave");
     public static final @NotNull StringType         ACCEPT_CHARSET   =   new StringType("accept-charset");
@@ -56,7 +57,7 @@ public class StandardHtmlAttributeTypes {
             CLASS,
 
             ID, HREF, SRC, REL, ONCLICK , TYPE, AUTOCOMPLETE, VALUE, ONSUBMIT, ACCEPT_CHARSET, NAME,
-            CONTENT, ON_MOUSE_ENTER, ON_MOUSE_LEAVE, STYLE,
+            CONTENT, ON_MOUSE_ENTER, ON_MOUSE_LEAVE, STYLE, ONCHANGE,
 
             REQUIRED, OPEN
     };
