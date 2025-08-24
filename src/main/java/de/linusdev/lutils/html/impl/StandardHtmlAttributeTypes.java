@@ -51,6 +51,7 @@ public class StandardHtmlAttributeTypes {
 
     public static final @NotNull NoValueType        OPEN             =   new NoValueType("open");
     public static final @NotNull NoValueType        REQUIRED         =   new NoValueType("required");
+    public static final @NotNull NoValueType        SELECTED         =   new NoValueType("selected");
 
 
     public static final @NotNull HtmlAttributeType<?> @NotNull [] VALUES = new HtmlAttributeType[] {
@@ -59,7 +60,7 @@ public class StandardHtmlAttributeTypes {
             ID, HREF, SRC, REL, ONCLICK , TYPE, AUTOCOMPLETE, VALUE, ONSUBMIT, ACCEPT_CHARSET, NAME,
             CONTENT, ON_MOUSE_ENTER, ON_MOUSE_LEAVE, STYLE, ONCHANGE,
 
-            REQUIRED, OPEN
+            REQUIRED, OPEN, SELECTED
     };
 
     public static abstract class Type<V> implements HtmlAttributeType<V> {
