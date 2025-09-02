@@ -219,6 +219,7 @@ public abstract class Structure implements NativeParsable {
      * @param info the {@link StructureInfo} this structure instance should use.
      */
     protected final void setInfo(@NotNull StructureInfo info) {
+        assert info != null;
         if(this.info == info)
             return;
         this.info = info;

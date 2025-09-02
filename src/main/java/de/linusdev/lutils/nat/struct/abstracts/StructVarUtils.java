@@ -18,12 +18,14 @@ package de.linusdev.lutils.nat.struct.abstracts;
 
 import de.linusdev.lutils.nat.abi.ABI;
 import de.linusdev.lutils.nat.abi.OverwriteChildABI;
+import de.linusdev.lutils.nat.struct.annos.StructValue;
 import de.linusdev.lutils.nat.struct.info.StructVarInfo;
 import de.linusdev.lutils.nat.struct.info.StructureInfo;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.util.Arrays;
 
 public interface StructVarUtils {
@@ -34,6 +36,7 @@ public interface StructVarUtils {
             @Nullable OverwriteChildABI overwriteChildAbi,
             @NotNull StructVarResultCollector<T> collector
     ) {
+        assert assertNoPrivateStructValues(clazz);
         Field[] fields = clazz.getFields();
 
         StructVarInfo[] varInfos = new StructVarInfo[fields.length];
@@ -61,11 +64,27 @@ public interface StructVarUtils {
         );
     }
 
+    static boolean assertNoPrivateStructValues(@NotNull Class<?> clazz) {
+        Field[] fields = clazz.getDeclaredFields();
+
+        for (Field field : fields) {
+            if(Modifier.isPublic(field.getModifiers())) {
+                continue;
+            }
+
+            if(field.getAnnotation(StructValue.class) != null) {
+                throw new AssertionError("ComplexStructure '" + clazz.getCanonicalName() + "' contains non-public fields annotated with @StructValue.");
+            }
+        }
+
+        return true;
+    }
+
     @FunctionalInterface
     interface StructVarResultCollector<T> {
 
         T collect(
-                @NotNull StructVarInfo @NotNull[] varInfos,
+                @NotNull StructVarInfo @NotNull [] varInfos,
                 @NotNull StructureInfo @NotNull [] infos
         );
     }

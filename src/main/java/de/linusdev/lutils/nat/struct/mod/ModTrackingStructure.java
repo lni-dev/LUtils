@@ -27,11 +27,19 @@ import java.util.concurrent.locks.ReentrantLock;
 
 public abstract class ModTrackingStructure extends Structure {
 
+    /**
+     * Whether modifications to this structure should be tracked. Tracked modifications can be retrieved using
+     * {@link #handleModifications(ModificationsHandler) handleModifications}. This feature to avoid copying large structures
+     * that need to be synchronized to different locations after being modified.
+     */
     protected final boolean trackModifications;
     protected ReentrantLock modificationLock;
     protected final int modificationSplitOffset = 128;
     protected ModificationInfo modInfo = null;
 
+    /**
+     * @param trackModifications see {@link #trackModifications}
+     */
     protected ModTrackingStructure(boolean trackModifications) {
         this.trackModifications = trackModifications;
     }

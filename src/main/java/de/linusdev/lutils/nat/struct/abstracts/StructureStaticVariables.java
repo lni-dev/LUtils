@@ -16,6 +16,7 @@
 
 package de.linusdev.lutils.nat.struct.abstracts;
 
+import de.linusdev.lutils.nat.struct.StructureAllocationState;
 import de.linusdev.lutils.nat.struct.annos.StructValue;
 import de.linusdev.lutils.nat.struct.annos.StructureSettings;
 import de.linusdev.lutils.nat.struct.generator.StaticGenerator;
@@ -33,7 +34,7 @@ import java.nio.ByteBuffer;
  *     <li>{@link #INFO}</li>
  *     <li>{@link #GENERATOR}</li>
  * </ul>
- * Read more about the methods:
+ * Read more about the methods related to the {@link StructureAllocationState}:
  * <lu>
  *     <li>{@link #newUnallocated()}</li>
  *     <li>{@link #newAllocatable(StructValue)}</li>
@@ -70,7 +71,8 @@ public interface StructureStaticVariables {
     /**
      * This method can be optionally implemented.
      * <br><br>
-     * Creates a new instance of the structure, <b>without</b> generating its {@link Structure#info info}.
+     * Creates a new {@link StructureAllocationState#UNALLOCATED unallocated} instance of
+     * the structure, <b>without</b> generating its {@link Structure#info info}.
      * This is useful, if this structure will be used as an element in another parent structure.
      * This parent structure, will have to call {@link Structure#useBuffer(Structure, int, StructureInfo) useBuffer()} on its elements
      * @return a freshly created unallocated structure.
@@ -82,7 +84,7 @@ public interface StructureStaticVariables {
     /**
      * This method can be optionally implemented.
      * <br><br>
-     * Creates a new instance of the structure, <b>with</b>
+     * Creates a new {@link StructureAllocationState#ALLOCATABLE allocatable} instance of the structure, <b>with</b>
      * generating its {@link Structure#info info}. This means {@link Structure#allocate() allocate()} or {@link Structure#claimBuffer(ByteBuffer) claimBuffer()} must be called
      * afterward to use the structure. This is useful, if the buffer for the structure already exist and must be claimed
      * using {@link Structure#claimBuffer(ByteBuffer) claimBuffer()}.
@@ -95,7 +97,7 @@ public interface StructureStaticVariables {
     /**
      * This method can be optionally implemented.
      * <br><br>
-     * Creates a new instance of the structure, <b>with</b>
+     * Creates a new {@link StructureAllocationState#ALLOCATED allocated} instance of the structure, <b>with</b>
      * generating its {@link Structure#info info} and calling {@link Structure#allocate() allocate()}. This is useful, if a ready-to-use structure is
      * required.
      * @return a freshly created allocated structure.

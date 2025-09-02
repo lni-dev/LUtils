@@ -18,6 +18,7 @@ package de.linusdev.lutils.nat.struct.abstracts;
 
 import de.linusdev.lutils.nat.abi.ABI;
 import de.linusdev.lutils.nat.abi.OverwriteChildABI;
+import de.linusdev.lutils.nat.struct.StructureAllocationState;
 import de.linusdev.lutils.nat.struct.annos.RequirementType;
 import de.linusdev.lutils.nat.struct.annos.StructValue;
 import de.linusdev.lutils.nat.struct.annos.StructureSettings;
@@ -38,6 +39,34 @@ import java.util.HashMap;
 import java.util.Map;
 
 
+/**
+ * ComplexStructure allows easily creating structures containing only other already existing structures.
+ * All classes extending ComplexStructure already contain the required {@link StructureStaticVariables#GENERATOR Generator}
+ * to generate the correct {@link StructureInfo}.
+ * <br>
+ * How to use:<br>
+ * <ol>
+ *     <li>Create a new class extending ComplexStructure.</li>
+ *     <li>Create public final variables typed with Subclasses of {@link Structure}. This will be your structure elements</li>
+ *     <li>Annotate all variables which should be elements of your structure with {@link StructValue}</li>
+ *     <li>If you require a specific ordering, you should set each {@link StructValue#value()} to the index
+ *     of the element</li>
+ *     <li>
+ *         Create a constructor and call {@link #init(StructValue, boolean, Structure...) init}.
+ *         See documentation of {@link #init(StructValue, boolean, Structure...) init} and the
+ *         {@link #ComplexStructure(boolean) constructor} for more information.
+ *     </li>
+ *     <li>
+ *         Optionally add the static methods {@link StructureStaticVariables#newUnallocated() newUnallocated},
+ *         {@link StructureStaticVariables#newAllocatable(StructValue) newAllocatable} and
+ *         {@link StructureStaticVariables#newAllocated(StructValue)}.
+ *     </li>
+ * </ol>
+ * Example: {@link de.linusdev.lutils.nat.struct.examples.ExampleComplexStructure ExampleComplexStructure}. It is a
+ * good idea to copy this example class and adjust according to the steps above it.
+ *
+ *
+ */
 @StructureSettings(requiresCalculateInfoMethod = true, customLayoutOption = RequirementType.OPTIONAL)
 public abstract class ComplexStructure extends ModTrackingStructure {
 
@@ -46,12 +75,27 @@ public abstract class ComplexStructure extends ModTrackingStructure {
 
     protected Structure [] items;
 
+    /**
+     * Constructor for a Complex Structure.
+     * @param trackModifications see {@link #trackModifications}.
+     */
     public ComplexStructure(
             boolean trackModifications
     ) {
         super(trackModifications);
     }
 
+    /**
+     * Initialize this complex structure.
+     * @param structValue May optionally be passed if {@code generateInfo} is {@code true}. Will be used to create
+     *                    the {@link StructureInfo}.
+     * @param generateInfo Whether to already generate a {@link StructureInfo} for this instance. If {@code false} is
+     *                     passed this structure will be {@link StructureAllocationState#UNALLOCATED UNALLOCATED}.
+     *                     If {@code true} is passed this structure will be {@link StructureAllocationState#ALLOCATABLE ALLOCATABLE}.
+     * @param items A non-empty array may only be optionally passed if every element's {@link StructValue#value() index} is set. If
+     *              this is the case the array must contain each element at the correct index. The reason to pass this
+     *              parameter is only to improve performance.
+     */
     protected void init(
             @Nullable StructValue structValue,
             boolean generateInfo,

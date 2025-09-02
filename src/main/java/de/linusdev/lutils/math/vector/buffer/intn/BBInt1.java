@@ -21,6 +21,9 @@ import de.linusdev.lutils.nat.struct.abstracts.StructureStaticVariables;
 import de.linusdev.lutils.nat.struct.annos.StructValue;
 import org.jetbrains.annotations.Nullable;
 
+/**
+ * Byte buffer backed integer. See {@link #ELEMENT_NATIVE_TYPE} for the exact native type.
+ */
 public class BBInt1 extends BBIntN implements Int1 {
 
     public static final BBVectorGenerator GENERATOR = new BBVectorGenerator(MEMBER_COUNT, ELEMENT_NATIVE_TYPE);
