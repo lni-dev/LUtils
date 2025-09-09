@@ -133,16 +133,60 @@ public class FileUtils {
         return collector.getCollectedFiles();
     }
 
-    private static final @NotNull Pattern FILE_ENDING_PATTERN = Pattern.compile(".*\\.(?<end>[^.]+)$");
-    public static @Nullable String getFileEnding(@NotNull Path file) {
-        String name = file.getFileName().toString();
+    private static final @NotNull Pattern FILE_ENDING_PATTERN = Pattern.compile(".*\\.(?<end>[^./\\\\]+)$");
 
-        Matcher matcher = FILE_ENDING_PATTERN.matcher(name);
+    /**
+     * Get the file ending of given {@code file}.
+     * @param file the file
+     * @return the file ending or {@code null} if this file has no file ending.
+     */
+    public static @Nullable String getFileEnding(@NotNull Path file) {
+        return getFileEnding(file.toString());
+    }
+
+    /**
+     * Get the file ending of given {@code file}.
+     * @param filePath the path to the file as string
+     * @return the file ending or {@code null} if this file has no file ending.
+     */
+    public static @Nullable String getFileEnding(@NotNull String filePath) {
+        Matcher matcher = FILE_ENDING_PATTERN.matcher(filePath);
 
         if(!matcher.find())
             return null;
 
         return matcher.group("end");
+    }
+
+    /**
+     * Get the file name including the file ending of given {@code filePath}
+     * @param filePath the path to the file
+     * @return file name as described above.
+     */
+    public static @NotNull String getFileName(@NotNull String filePath) {
+        int index = filePath.lastIndexOf('/');
+        index = Math.max(index, filePath.lastIndexOf('\\'));
+
+        if(index == -1)
+            return filePath;
+
+        return filePath.substring(index + 1);
+    }
+
+    /**
+     * Get the path of the parent directory of given file. Ending in {@code /} or {@code \}.
+     * If {@code filePath} does not contain {@code /} or {@code \}, an empty string will be returned.
+     * @param filePath path to the file
+     * @return path of the parent directory or an empty string as described above.
+     */
+    public static @NotNull String getParentDirectory(@NotNull String filePath) {
+        int index = filePath.lastIndexOf('/');
+        index = Math.max(index, filePath.lastIndexOf('\\'));
+
+        if(index == -1)
+            return "";
+
+        return filePath.substring(0, index + 1);
     }
 
 }

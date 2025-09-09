@@ -46,6 +46,8 @@ class FileUtilsTest {
         Path testPath = Paths.get("dir/someFileName.notEnding.txt");
 
         assertEquals("txt", FileUtils.getFileEnding(testPath));
+        assertEquals("txt", FileUtils.getFileEnding("dir/.some/file.txt"));
+        assertNull(FileUtils.getFileEnding("dir/.some/fileNoEnding"));
     }
 
     @Test
@@ -96,5 +98,19 @@ class FileUtilsTest {
         assertTrue(Files.exists(tmp2.resolve("fileone.txt")));
         assertTrue(Files.isDirectory(tmp2.resolve("dirOne")));
         assertTrue(Files.exists(tmp2.resolve("dirOne").resolve("fileTwo.txt")));
+    }
+
+    @Test
+    void getFileNameTest() {
+        assertEquals("test", FileUtils.getFileName("test"));
+        assertEquals("test.txt", FileUtils.getFileName("dir/test.txt"));
+        assertEquals("test.txt", FileUtils.getFileName("spe/dir\\test.txt"));
+    }
+
+    @Test
+    void getParentDirTest() {
+        assertEquals("", FileUtils.getParentDirectory("test"));
+        assertEquals("dir/", FileUtils.getParentDirectory("dir/test.txt"));
+        assertEquals("spe/dir\\", FileUtils.getParentDirectory("spe/dir\\test.txt"));
     }
 }

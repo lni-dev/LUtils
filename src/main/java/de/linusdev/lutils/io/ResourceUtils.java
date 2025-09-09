@@ -158,6 +158,13 @@ public class ResourceUtils {
         public @NotNull InputStream openInputStream() throws IOException {
             return getURLConnection(false).getInputStream();
         }
+
+        /**
+         * The path that was used to create this connection.
+         */
+        public @NotNull String getPath() {
+            return path;
+        }
     }
 
 }

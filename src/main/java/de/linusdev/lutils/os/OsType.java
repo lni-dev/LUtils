@@ -21,10 +21,30 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Locale;
 
 public enum OsType {
-    LINUX("Linux", "linux"),
-    WINDOWS("Windows", "windows"),
-    UNKNOWN("Unknown")
-    ;
+    LINUX(
+            "Linux",
+            new String[] { "linux" },
+            new String[] { "lib" },
+            new String[] { "so" }
+    ),
+    WINDOWS(
+            "Windows",
+            new String[] { "windows" },
+            new String[] { "" },
+            new String[] { "dll" }
+    ),
+    MACOS(
+            "MacOS",
+            new String[] { "mac" },
+            new String[] { "lib" },
+            new String[] { "dylib", "jnilib" }
+    ),
+    UNKNOWN(
+            "Unknown",
+            new String[0],
+            new String[0],
+            new String[0]
+    );
 
     public static @NotNull OsType of(@NotNull String name) {
         name = name.toLowerCase(Locale.ROOT);
@@ -39,13 +59,30 @@ public enum OsType {
 
     private final @NotNull String name;
     private final @NotNull String @NotNull [] fixes;
+    private final @NotNull String @NotNull [] possibleNativeLibraryFilePrefixes;
+    private final @NotNull String @NotNull [] defaultNativeLibraryFileEnding;
 
-    OsType(@NotNull String name, @NotNull String @NotNull ... fix) {
+    OsType(
+            @NotNull String name,
+            @NotNull String @NotNull [] fix,
+            @NotNull String @NotNull [] possibleNativeLibraryFilePrefixes,
+            @NotNull String @NotNull [] defaultNativeLibraryFileEnding
+    ) {
         this.name = name;
         this.fixes = fix;
+        this.possibleNativeLibraryFilePrefixes = possibleNativeLibraryFilePrefixes;
+        this.defaultNativeLibraryFileEnding = defaultNativeLibraryFileEnding;
     }
 
     public @NotNull String getName() {
         return name;
+    }
+
+    public String @NotNull [] getPossibleNativeLibraryFilePrefixes() {
+        return possibleNativeLibraryFilePrefixes;
+    }
+
+    public String @NotNull [] getDefaultNativeLibraryFileEnding() {
+        return defaultNativeLibraryFileEnding;
     }
 }
