@@ -18,6 +18,7 @@ package de.linusdev.lutils.nat.loader;
 
 import de.linusdev.lutils.io.FileUtils;
 import de.linusdev.lutils.io.ResourceUtils;
+import de.linusdev.lutils.os.OsArchitectureType;
 import de.linusdev.lutils.os.OsType;
 import de.linusdev.lutils.os.OsUtils;
 import org.jetbrains.annotations.NotNull;
@@ -28,6 +29,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
 import java.util.logging.Logger;
 
 /**
@@ -43,23 +45,30 @@ public class ResourceNativeLibraryLoader {
 
     private final @NotNull List<ResourceUtils.StreamURLConnection> resources;
 
-    private static @NotNull ResourceUtils.StreamURLConnection findLib(@Nullable Class<?> caller, @NotNull String libPath) {
+    private static @NotNull ResourceUtils.StreamURLConnection findLib(@Nullable Class<?> caller, @NotNull String libPath, @NotNull String postfix) {
         ArrayList<String> triedPaths = new ArrayList<>();
 
-        String tried = libPath;
-        ResourceUtils.StreamURLConnection res = ResourceUtils.getURLConnectionOfResource(caller, libPath, true);
+        String lib = FileUtils.getFileName(libPath);
+
+        String tEnding;
+        if((tEnding = FileUtils.getFileEnding(libPath)) != null) {
+            lib = lib.substring(0, lib.length() - tEnding.length()) + postfix + tEnding;
+        } else {
+            lib = lib + postfix;
+        }
+        String path = FileUtils.getParentDirectory(libPath);
+
+        String tried = path + lib;
+        ResourceUtils.StreamURLConnection res = ResourceUtils.getURLConnectionOfResource(caller, tried, true);
 
         if(res != null)
             return res;
         triedPaths.add(tried);
 
-        String lib = FileUtils.getFileName(libPath);
-        String path = FileUtils.getParentDirectory(libPath);
-
-        if(FileUtils.getFileEnding(libPath) == null) {
+        if(FileUtils.getFileEnding(lib) == null) {
             for (String ending : OsUtils.CURRENT_OS.getDefaultNativeLibraryFileEnding()) {
 
-                tried = libPath + "." + ending;
+                tried = path + lib + "." + ending;
                 res = ResourceUtils.getURLConnectionOfResource(caller, tried, true);
 
                 if(res != null)
@@ -96,12 +105,19 @@ public class ResourceNativeLibraryLoader {
     /**
      * @param caller only needed if relative paths are passed
      * @param libPaths array of paths to the resource files. See {@link ResourceNativeLibraryLoader} for more information.
+     * @param archTypePostFixer postfix to add for the {@link OsUtils#CURRENT_ARCH current architecture}. {@code null}
+     *                          to add no arch type. Works even if file endings are passed in {@code libPaths}.
      */
-    public ResourceNativeLibraryLoader(@Nullable Class<?> caller, String ... libPaths) {
+    public ResourceNativeLibraryLoader(
+            @Nullable Class<?> caller,
+            @Nullable Function<OsArchitectureType, String> archTypePostFixer,
+            @NotNull String @NotNull ... libPaths
+    ) {
         this.resources = new ArrayList<>(libPaths.length);
 
+        String postfix = archTypePostFixer == null ? "" : archTypePostFixer.apply(OsUtils.CURRENT_ARCH);
         for (String libPath : libPaths) {
-            resources.add(findLib(caller, libPath));
+            resources.add(findLib(caller, libPath, postfix));
         }
     }
 
