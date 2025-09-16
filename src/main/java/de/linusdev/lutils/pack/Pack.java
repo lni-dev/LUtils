@@ -16,8 +16,6 @@
 
 package de.linusdev.lutils.pack;
 
-import de.linusdev.llog.LLog;
-import de.linusdev.llog.base.LogInstance;
 import de.linusdev.lutils.id.Identifier;
 import de.linusdev.lutils.pack.errors.PackLoadingException;
 import de.linusdev.lutils.version.Version;
@@ -67,8 +65,6 @@ public interface Pack {
         return hashcode;
     }
 
-    @NotNull LogInstance LOG = LLog.getLogInstance();
-
     /**
      * Loads this pack.
      * @see #isLoaded()
@@ -102,6 +98,7 @@ public interface Pack {
     /**
      * Description of the pack. May be displayed to the user.
      */
+    @SuppressWarnings("unused")
     @NotNull String description();
 
     /**

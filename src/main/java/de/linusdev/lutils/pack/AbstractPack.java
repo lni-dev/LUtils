@@ -83,7 +83,6 @@ public abstract class AbstractPack implements Pack {
         }
 
         loaded = true;
-        LOG.info("Loaded " + this);
     }
 
     @Override

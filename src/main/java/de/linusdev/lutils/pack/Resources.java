@@ -18,12 +18,11 @@ package de.linusdev.lutils.pack;
 
 import de.linusdev.data.entry.Entry;
 import de.linusdev.data.so.SOData;
-import de.linusdev.llog.LLog;
-import de.linusdev.llog.base.LogInstance;
 import de.linusdev.lutils.ansi.sgr.SGR;
 import de.linusdev.lutils.ansi.sgr.SGRParameters;
 import de.linusdev.lutils.id.Identifier;
 import de.linusdev.lutils.optional.Container;
+import de.linusdev.lutils.other.log.Logger;
 import de.linusdev.lutils.pack.errors.PackContentException;
 import de.linusdev.lutils.pack.errors.PackException;
 import de.linusdev.lutils.pack.item.Resource;
@@ -47,9 +46,10 @@ import static de.linusdev.lutils.pack.AbstractPack.JSON_PARSER;
  * resources.
  *
  */
+@SuppressWarnings("unused")
 public class Resources {
 
-    private final static @NotNull LogInstance LOG = LLog.getLogInstance();
+    private final static @NotNull Logger LOG = Logger.getLogger();
 
     private final static @NotNull ResourceCollection<?> DISCARDED_GROUP = new DiscardedGroup();
 

@@ -16,8 +16,7 @@
 
 package de.linusdev.lutils.pack.loader;
 
-import de.linusdev.llog.LLog;
-import de.linusdev.llog.base.LogInstance;
+import de.linusdev.lutils.other.log.Logger;
 import de.linusdev.lutils.pack.AbstractPack;
 import de.linusdev.lutils.pack.Pack;
 import de.linusdev.lutils.pack.ProcessingGroup;
@@ -37,9 +36,10 @@ import java.util.Set;
  * This class is used to load resources from {@link AbstractPack AbstractPacks} and store them in a {@link Resources}
  * instance.
  */
+@SuppressWarnings("unused")
 public class ResourcesLoader {
 
-    private final static @NotNull LogInstance LOG = LLog.getLogInstance();
+    private final static @NotNull Logger LOG = Logger.getLogger();
 
     private final @NotNull List<ProcessingGroup<?, ?>> processingGroups;
     private final @NotNull List<AbstractPack> defaultPacks;
@@ -131,7 +131,7 @@ public class ResourcesLoader {
             try {
                 availablePacks.addAll(provider.provide());
             } catch (PackException e) {
-                LOG.throwable("Pack provider '" + provider.name() + "' failed. Provider info: " + provider.debug_info_string(), e);
+                LOG.error("Pack provider '" + provider.name() + "' failed. Provider info: " + provider.debug_info_string(), e);
             }
         }
 
@@ -156,7 +156,7 @@ public class ResourcesLoader {
                 availablePack.load();
                 reporter.report(ProgressStage.LOADING_PACKS_METADATA, ++current, packCount);
             } catch (PackLoadingException e) {
-                LOG.throwable("Failed to load a custom pack! The pack cannot be enabled.", e);
+                LOG.error("Failed to load a custom pack! The pack cannot be enabled.", e);
                 toRemove.add(availablePack);
             }
         }
@@ -166,7 +166,7 @@ public class ResourcesLoader {
         // Check if all active packs are actually available
         for (AbstractPack activePack : activePacks) {
             if(!availablePacks.contains(activePack)) {
-                LOG.debug("Removing pack '" + activePack + "' from active packs, because it is not available anymore.");
+                LOG.warning("Removing pack '" + activePack + "' from active packs, because it is not available anymore.");
                 toRemove.add(activePack);
             }
 
@@ -206,7 +206,7 @@ public class ResourcesLoader {
             if(pack == null || !isActivePack) {
                 // An Unknown pack caused the error. Remove all active packs and try again.
                 activePacks.clear();
-                LOG.throwable(new Exception("Resource reload failed! ", e));
+                LOG.error("Resource reload failed! ", e);
                 LOG.info("Retrying with only default packs!");
                 reporter.report(ProgressStage.ERROR_RESTART, 0, 1);
                 _reload(reporter);
@@ -214,7 +214,7 @@ public class ResourcesLoader {
             }
 
             activePacks.remove(pack);
-            LOG.throwable(new Exception("Resource reload failed! ", e));
+            LOG.error("Resource reload failed! ", e);
             LOG.info("Retrying with pack '" + pack.name() + "' removed.");
             reporter.report(ProgressStage.ERROR_RESTART, 0, 1);
             _reload(reporter);
