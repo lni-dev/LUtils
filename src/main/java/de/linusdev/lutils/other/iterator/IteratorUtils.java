@@ -16,6 +16,7 @@
 
 package de.linusdev.lutils.other.iterator;
 
+import de.linusdev.lutils.collections.Entry;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Iterator;
@@ -32,7 +33,15 @@ public class IteratorUtils {
         return new EmptyIterator<>();
     }
 
-    public static <E> @NotNull SingleElementIterator<E> singleElementIterator(E element) {
+    public static <K, V> @NotNull EmptyBiIterator<K, V> emptyBiIterator() {
+        return new EmptyBiIterator<>();
+    }
+
+    public static <K, V> @NotNull SingleElementBiIterator<K, V> iteratorOf(@NotNull Entry<K, V> element) {
+        return new SingleElementBiIterator<>(element);
+    }
+
+    public static <E> @NotNull SingleElementIterator<E> iteratorOf(E element) {
         return new SingleElementIterator<>(element);
     }
 

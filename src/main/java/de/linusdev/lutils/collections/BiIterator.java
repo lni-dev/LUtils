@@ -23,6 +23,22 @@ import java.util.Iterator;
 
 public interface BiIterator<K, V> extends Iterator<Entry<K, V>> {
 
+    static <K, V> @NotNull BiIterator<K, V> of(@NotNull Iterable<Entry<K, V>> iterable) {
+        return new BiIterator<>() {
+            final Iterator<Entry<K, V>> it = iterable.iterator();
+
+            @Override
+            public @NotNull Entry<K, V> next() {
+                return it.next();
+            }
+
+            @Override
+            public boolean hasNext() {
+                return it.hasNext();
+            }
+        };
+    }
+
     @SuppressWarnings("unused")
     default <E extends Throwable> void forEachRemaining(@NotNull TBiConsumer<K, V, E> action) throws E {
         while (hasNext()) {

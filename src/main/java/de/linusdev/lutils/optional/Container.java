@@ -35,7 +35,7 @@ import java.util.function.Consumer;
  * The following code will throw an exception if the parent collection {@code data} did not contain a key "some_key"
  * or if its value was {@code null}. Otherwise, it will just print the value of "some_key":
  * <pre>{@code
- * data.getContainer("some_key")
+ * data.grab("some_key")
  *          .requireNotNull()
  *          .process((Object o) -> System.out.println("some_key: " + o));
  * }</pre>
@@ -44,7 +44,7 @@ import java.util.function.Consumer;
  * exist, but its value is {@code null}. And it will print the value of "some_key" if this exists and its value is not
  * {@code null}:
  * <pre>{@code
- * data.getContainer("some_key")
+ * data.grab("some_key")
  *          .ifExists()
  *          .requireNotNull()
  *          .process((Object o) -> System.out.println("some_key: " + o));
