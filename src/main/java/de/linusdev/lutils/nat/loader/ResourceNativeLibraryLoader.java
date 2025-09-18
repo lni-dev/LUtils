@@ -16,6 +16,11 @@
 
 package de.linusdev.lutils.nat.loader;
 
+import de.linusdev.lutils.async.Future;
+import de.linusdev.lutils.async.Nothing;
+import de.linusdev.lutils.async.completeable.CompletableFuture;
+import de.linusdev.lutils.async.error.ThrowableAsyncError;
+import de.linusdev.lutils.async.manager.AsyncManager;
 import de.linusdev.lutils.io.FileUtils;
 import de.linusdev.lutils.io.ResourceUtils;
 import de.linusdev.lutils.os.OsArchitectureType;
@@ -28,9 +33,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
-import java.util.logging.Logger;
 
 /**
  * Helper class to load native libraries from resource files.
@@ -43,7 +47,39 @@ import java.util.logging.Logger;
 @SuppressWarnings("unused")
 public class ResourceNativeLibraryLoader {
 
-    private final @NotNull List<ResourceUtils.StreamURLConnection> resources;
+    private static @Nullable Path TMP_DIR = null;
+    private static final @NotNull AtomicInteger EXPORTED_COUNT = new AtomicInteger(0);
+
+    /**
+     * Export a native library from resources to a temporary directory.
+     * @param caller only needed if a relative {@code libPath} is passed.
+     * @param archTypePostFixer postfix to add for the {@link OsUtils#CURRENT_ARCH current architecture}. {@code null}
+     *                          to add no arch type. Works even if file endings are passed in {@code libPaths}.
+     * @param libPath Path to the resource file. See {@link ResourceNativeLibraryLoader} for more information.
+     * @return A {@link Future} which will be completed once the library has been exported.
+     */
+    public static @NotNull Future<ExportedNativeLib, Nothing> export(
+            @Nullable Class<?> caller,
+            @Nullable Function<OsArchitectureType, String> archTypePostFixer,
+            @NotNull String libPath
+    ) {
+        var fut = CompletableFuture.<ExportedNativeLib, Nothing>create(AsyncManager.DEFAULT, false);
+
+        new Thread(() -> {
+            String postfix = archTypePostFixer == null ? "" : archTypePostFixer.apply(OsUtils.CURRENT_ARCH);
+            var resource = findLib(caller, libPath, postfix);
+
+            try {
+                Path file = getTmpDir().resolve(EXPORTED_COUNT.incrementAndGet() + "-" + FileUtils.getFileName(resource.getPath()));
+                Files.copy(resource.openInputStream(), file);
+                fut.complete(new ExportedNativeLib(file), Nothing.INSTANCE, null);
+            } catch (IOException e) {
+                fut.complete(null, Nothing.INSTANCE, new ThrowableAsyncError(e));
+            }
+        });
+
+        return fut;
+    }
 
     private static @NotNull ResourceUtils.StreamURLConnection findLib(@Nullable Class<?> caller, @NotNull String libPath, @NotNull String postfix) {
         ArrayList<String> triedPaths = new ArrayList<>();
@@ -102,46 +138,32 @@ public class ResourceNativeLibraryLoader {
         throw new Error("Could not find the resource '" + libPath + "'. Tried the following locations:" + sb);
     }
 
-    /**
-     * @param caller only needed if relative paths are passed
-     * @param libPaths array of paths to the resource files. See {@link ResourceNativeLibraryLoader} for more information.
-     * @param archTypePostFixer postfix to add for the {@link OsUtils#CURRENT_ARCH current architecture}. {@code null}
-     *                          to add no arch type. Works even if file endings are passed in {@code libPaths}.
-     */
-    public ResourceNativeLibraryLoader(
-            @Nullable Class<?> caller,
-            @Nullable Function<OsArchitectureType, String> archTypePostFixer,
-            @NotNull String @NotNull ... libPaths
-    ) {
-        this.resources = new ArrayList<>(libPaths.length);
-
-        String postfix = archTypePostFixer == null ? "" : archTypePostFixer.apply(OsUtils.CURRENT_ARCH);
-        for (String libPath : libPaths) {
-            resources.add(findLib(caller, libPath, postfix));
-        }
+    private static @NotNull Path getTmpDir() throws IOException {
+        if(TMP_DIR == null)
+            TMP_DIR = FileUtils.getTemporaryDirectory("de.linusdev.lutils", "native-lib-loader");
+        return TMP_DIR;
     }
 
-    /**
-     * Load the libraries. This will create a temporary directory to copy the libs to and then
-     * {@link System#load(String) load} them from there.
-     * @throws IOException If IO operations fail
-     */
-    public void load() throws IOException {
-        Path tmp = Files.createTempDirectory("lutils-native-lib-loader");
+    @SuppressWarnings("ClassCanBeRecord")
+    public static class ExportedNativeLib {
+        private final @NotNull Path libFile;
 
-        Logger.getLogger("ResourceLibraryLoader").config("Created temporary directory '" + tmp + "' for native libraries.");
-
-        int i = 0; // to avoid collisions
-        for (ResourceUtils.StreamURLConnection resource : resources) {
-            Path file = tmp.resolve(i++ + "-" + FileUtils.getFileName(resource.getPath()));
-            Files.copy(resource.openInputStream(), file);
-            System.load(file.toAbsolutePath().toString());
-            file.toFile().deleteOnExit();
+        public ExportedNativeLib(@NotNull Path libFile) {
+            this.libFile = libFile.toAbsolutePath();
         }
 
-        tmp.toFile().deleteOnExit();
+        /**
+         * Get the path to the exported library. Useful if you want to load the library yourself.
+         */
+        public @NotNull Path getLibFilePath() {
+            return libFile;
+        }
+
+        /**
+         * {@link System#load(String) Load} the library.
+         */
+        public void load() {
+            System.load(libFile.toString());
+        }
     }
-
-
-
 }

@@ -30,6 +30,12 @@ import java.util.regex.Pattern;
 
 public class FileUtils {
 
+    public static @NotNull Path getTemporaryDirectory(@NotNull String namespace, @NotNull String id) throws IOException {
+        // TODO: Create a dir with a specific very unique name. Clear this directory everytime.
+        // TODO: doc comment
+        return Files.createTempDirectory("lutils-temp-dir_" + namespace + "_" + id);
+    }
+
     /**
      * Copies a file or directory.<br>
      * If {@code source} is a file, {@code target} must not exist.<br>

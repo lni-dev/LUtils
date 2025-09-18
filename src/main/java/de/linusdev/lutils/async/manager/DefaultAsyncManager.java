@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2025 Linus Andera
+ * Copyright (c) 2025 Linus Andera
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,16 +19,19 @@ package de.linusdev.lutils.async.manager;
 import de.linusdev.lutils.async.Future;
 import de.linusdev.lutils.async.Task;
 import de.linusdev.lutils.async.exception.NonBlockingThreadException;
+import de.linusdev.lutils.other.log.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+class DefaultAsyncManager implements AsyncManager {
 
-public interface AsyncManager {
+    private final @NotNull Logger LOG = Logger.getLogger();
 
-    @NotNull AsyncManager DEFAULT = new DefaultAsyncManager();
+    @Override
+    public void checkThread() throws NonBlockingThreadException {  }
 
-    void checkThread() throws NonBlockingThreadException;
-
-    void onExceptionInListener(@NotNull Future<?, ?> future, @Nullable Task<?, ?> task, @NotNull Throwable throwable);
-
+    @Override
+    public void onExceptionInListener(@NotNull Future<?, ?> future, @Nullable Task<?, ?> task, @NotNull Throwable throwable) {
+        LOG.error("A future listener threw an uncaught exception", throwable);
+    }
 }
