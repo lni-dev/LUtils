@@ -16,10 +16,11 @@
 
 package de.linusdev.lutils.pack;
 
-import de.linusdev.data.entry.Entry;
-import de.linusdev.data.so.SOData;
 import de.linusdev.lutils.ansi.sgr.SGR;
 import de.linusdev.lutils.ansi.sgr.SGRParameters;
+import de.linusdev.lutils.collections.Entry;
+import de.linusdev.lutils.data.json.Json;
+import de.linusdev.lutils.data.json.JsonMapImpl;
 import de.linusdev.lutils.id.Identifier;
 import de.linusdev.lutils.optional.Container;
 import de.linusdev.lutils.other.log.Logger;
@@ -167,12 +168,12 @@ public class Resources {
             @NotNull ResourceCollection<?> resourceCollection
     ) throws PackContentException {
         try(var inGroup = pack.resolve(groupLocation)) {
-            SOData groupData = JSON_PARSER.parseStream(inGroup);
+            Json groupData = JSON_PARSER.parseStream(inGroup);
 
-            @Nullable SOData defaultItemData = groupData.getContainer("common").getAs();
+            @Nullable Json defaultItemData = groupData.grab("common").getAs();
 
-            Container<Object> continuationCon = groupData.getContainer("continuations");
-            Container<Object> arrayCon = groupData.getContainer("array");
+            Container<Object> continuationCon = groupData.grab("continuations");
+            Container<Object> arrayCon = groupData.grab("array");
 
             if(continuationCon.isNull() && arrayCon.isNull()) {
                 throw new IllegalArgumentException("File '" + groupLocation + "' in pack '" + pack.name() + "' is missing both 'array' and 'continuations', but at least one must be present.");
@@ -189,13 +190,14 @@ public class Resources {
                 addedSomething = true;
                 if(item instanceof String itemLocation) {
                     // Another location
-                    SOData jItem = null;
+                    Json jItem = null;
                     try(var inItem = pack.resolve(itemLocation)) {
                         jItem = JSON_PARSER.parseStream(inItem);
 
                         if(defaultItemData != null) {
+                            // We can safely cast to JsonMapImpl since we defined the used implementation in JSON_PARSER.
                             for (Entry<String, Object> entry : defaultItemData)
-                                jItem.add(entry.getKey(), entry.getValue());
+                                ((JsonMapImpl) jItem).add(entry.getKey(), entry.getValue());
                         }
 
                         group._addToResourceCollection(resourceCollection, jItem, pack);
@@ -206,11 +208,12 @@ public class Resources {
                     }
                 } else {
                     // It is the item
-                    SOData jItem = (SOData) item;
+                    Json jItem = (Json) item;
                     try {
                         if(defaultItemData != null) {
+                            // We can safely cast to JsonMapImpl since we defined the used implementation in JSON_PARSER.
                             for (Entry<String, Object> entry : defaultItemData)
-                                jItem.add(entry.getKey(), entry.getValue());
+                                ((JsonMapImpl) jItem).add(entry.getKey(), entry.getValue());
                         }
 
                         group._addToResourceCollection(resourceCollection, jItem, pack);

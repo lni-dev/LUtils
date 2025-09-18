@@ -17,7 +17,7 @@
 package de.linusdev.lutils.optional;
 
 import de.linusdev.lutils.interfaces.Converter;
-import de.linusdev.lutils.interfaces.ExceptionConverter;
+import de.linusdev.lutils.interfaces.TConverter;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -63,7 +63,9 @@ public abstract class ListContainer<V> implements OptionalValue<List<V>> {
 
     @Override
     public List<V> get() {
-        return list;
+        //noinspection UnnecessaryLocalVariable: Stop static analysers to infer nullability on the return value.
+        var l = list;
+        return l;
     }
 
     @Override
@@ -106,12 +108,12 @@ public abstract class ListContainer<V> implements OptionalValue<List<V>> {
      * @return a new {@link ListContainer} containing the {@link List} of {@link R}.
      * @param <C> type to cast to.
      * @param <R> type to convert to.
-     * @param <E> exception type of your {@link ExceptionConverter}.
+     * @param <E> exception type of your {@link TConverter}.
      * @throws ClassCastException if any element inside this container's list cannot be cast to {@link C}.
      * @throws E if your converter throws this exception.
      */
     @SuppressWarnings("unchecked")
-    public  <C, R, E extends Throwable> @NotNull ListContainer<R> castAndConvertE(@NotNull ExceptionConverter<C, R, E> converter) throws E {
+    public  <C, R, E extends Throwable> @NotNull ListContainer<R> castAndConvertE(@NotNull TConverter<C, R, E> converter) throws E {
         if(isNull()) return createNew(null);
 
         List<V> list = get();

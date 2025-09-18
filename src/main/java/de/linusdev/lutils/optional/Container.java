@@ -17,7 +17,7 @@
 package de.linusdev.lutils.optional;
 
 import de.linusdev.lutils.interfaces.Converter;
-import de.linusdev.lutils.interfaces.ExceptionConverter;
+import de.linusdev.lutils.interfaces.TConverter;
 import de.linusdev.lutils.optional.impl.BasicContainer;
 import de.linusdev.lutils.optional.noaction.NoActionContainer;
 import org.jetbrains.annotations.NotNull;
@@ -65,8 +65,22 @@ public abstract class Container<V> implements OptionalValue<V> {
     /**
      * Creates a new {@link BasicContainer} with no key and a {@link #exists() non-existent} value.
      */
-    public static <V> @NotNull Container<V> of() {
+    public static <V> @NotNull Container<V> nonExistent() {
         return new BasicContainer<>(null, false, null);
+    }
+
+    /**
+     * Creates a new {@link BasicContainer} with given {@code key} and existent value {@code value}.
+     */
+    public static <V> @NotNull Container<V> of(@NotNull Object key, @Nullable V value) {
+        return new BasicContainer<>(key,true, value);
+    }
+
+    /**
+     * Creates a new {@link BasicContainer} with given {@code key} and a {@link #exists() non-existent} value.
+     */
+    public static <V> @NotNull Container<V> nonExistent(@NotNull Object key) {
+        return new BasicContainer<>(key,false, null);
     }
 
     protected final @Nullable Object key;
@@ -233,13 +247,13 @@ public abstract class Container<V> implements OptionalValue<V> {
 
     /**
      * Converts the value with given {@code converter}. The converter can throw an exception.
-     * @param converter the converter to {@link ExceptionConverter#convert(Object)} from {@link V} to {@link R}.
+     * @param converter the converter to {@link TConverter#convert(Object)} from {@link V} to {@link R}.
      * @return a new {@link Container} with the new cast and converted value.
      * @param <R> type to {@link Converter#convert(Object)} to.
      * @param <E> exception your converter may throw.
      * @throws E if your converter throws this exception
      */
-    public  <R, E extends Throwable> @NotNull Container<R> convertE(@NotNull ExceptionConverter<V, R, E> converter) throws E {
+    public  <R, E extends Throwable> @NotNull Container<R> convertE(@NotNull TConverter<V, R, E> converter) throws E {
         return createNewContainer(converter.convert(get()));
     }
 
@@ -258,7 +272,7 @@ public abstract class Container<V> implements OptionalValue<V> {
 
     /**
      * Casts the value to {@link C} and converts it with given {@code converter}. The converter can throw an exception.
-     * @param converter the converter to {@link ExceptionConverter#convert(Object)} from {@link C} to {@link R}.
+     * @param converter the converter to {@link TConverter#convert(Object)} from {@link C} to {@link R}.
      * @return a new {@link Container} with the new cast and converted value.
      * @param <C> type to cast to.
      * @param <R> type to {@link Converter#convert(Object)} to.
@@ -266,7 +280,7 @@ public abstract class Container<V> implements OptionalValue<V> {
      * @throws E if your converter throws this exception
      */
     @SuppressWarnings("unchecked")
-    public  <C, R, E extends Throwable> @NotNull Container<R> castAndConvertE(@NotNull ExceptionConverter<C, R, E> converter) throws E {
+    public  <C, R, E extends Throwable> @NotNull Container<R> castAndConvertE(@NotNull TConverter<C, R, E> converter) throws E {
         return createNewContainer(converter.convert((C) get()));
     }
 

@@ -17,19 +17,19 @@
 package de.linusdev.lutils.data.impl;
 
 import de.linusdev.lutils.collections.BiIterator;
-import de.linusdev.lutils.data.Data;
+import de.linusdev.lutils.data.DataBuilder;
 import de.linusdev.lutils.other.iterator.IteratorUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class EmptyData implements Data {
+public class EmptyData implements DataBuilder {
     @Override
-    public @NotNull Data add(@NotNull String key, @Nullable Object value) {
+    public @NotNull DataBuilder add(@NotNull String key, @Nullable Object value) {
         throw new UnsupportedOperationException("Cannot add to an empty data!");
     }
 
     @Override
-    public @NotNull Data put(@NotNull String key, @Nullable Object value) {
+    public @NotNull DataBuilder put(@NotNull String key, @Nullable Object value) {
         throw new UnsupportedOperationException("Cannot put to an empty data!");
     }
 
@@ -39,7 +39,7 @@ public class EmptyData implements Data {
     }
 
     @Override
-    public @Nullable Data remove(@NotNull String key) {
+    public @Nullable DataBuilder remove(@NotNull String key) {
         return this;
     }
 

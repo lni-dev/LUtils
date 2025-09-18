@@ -17,7 +17,7 @@
 package de.linusdev.lutils.optional.noaction;
 
 import de.linusdev.lutils.interfaces.Converter;
-import de.linusdev.lutils.interfaces.ExceptionConverter;
+import de.linusdev.lutils.interfaces.TConverter;
 import de.linusdev.lutils.optional.ListContainer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -58,7 +58,7 @@ public class NoActionListContainer<T> extends ListContainer<T> {
     }
 
     @Override
-    public @NotNull <C, R, E extends Throwable> ListContainer<R> castAndConvertE(@NotNull ExceptionConverter<C, R, E> converter) {
+    public @NotNull <C, R, E extends Throwable> ListContainer<R> castAndConvertE(@NotNull TConverter<C, R, E> converter) {
         return createNew(null);
     }
 

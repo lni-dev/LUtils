@@ -16,7 +16,7 @@
 
 package de.linusdev.lutils.pack.errors;
 
-import de.linusdev.data.so.SOData;
+import de.linusdev.lutils.data.json.Json;
 import de.linusdev.lutils.other.str.StringUtils;
 import de.linusdev.lutils.pack.AbstractPack;
 import org.jetbrains.annotations.NotNull;
@@ -31,12 +31,12 @@ public class PackContentException extends PackException {
         super(pack, "Error while reading/parsing file '" + file + "' from pack '" + pack +  "'.", cause);
     }
 
-    public PackContentException(@NotNull AbstractPack pack, @NotNull String file, @NotNull SOData itemInJson, @NotNull Throwable cause) {
+    public PackContentException(@NotNull AbstractPack pack, @NotNull String file, @NotNull Json itemInJson, @NotNull Throwable cause) {
         super(pack,
                 "Error while parsing item '"
-                        + itemInJson.getContainer("id").orDefaultIfNull("unknown id").get()
+                        + itemInJson.grab("id").orDefaultIfNull("unknown id").get()
                         + "' from file '" + file + "' from pack '" + pack + "'. Item Json:\n"
-                        + StringUtils.indent(itemInJson.toJsonString().toString(), "        ", true)
+                        + StringUtils.indent(itemInJson.toString(), "        ", true)
                 , cause
         );
     }

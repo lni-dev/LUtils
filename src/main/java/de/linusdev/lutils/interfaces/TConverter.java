@@ -20,8 +20,9 @@ package de.linusdev.lutils.interfaces;
  *
  * @param <C> convertible to convert
  * @param <R> result type to convert to
+ * @param <E> possible exception while converting
  */
-public interface ExceptionConverter<C, R, E extends Throwable> {
+public interface TConverter<C, R, E extends Throwable> {
 
     /**
      * converts from {@link C} to {@link R}

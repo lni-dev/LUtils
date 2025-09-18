@@ -19,41 +19,52 @@ package de.linusdev.lutils.data.impl;
 import de.linusdev.lutils.collections.BiIterator;
 import de.linusdev.lutils.collections.Entry;
 import de.linusdev.lutils.collections.EntryImpl;
-import de.linusdev.lutils.data.Data;
+import de.linusdev.lutils.data.DataBuilder;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Iterator;
-import java.util.Map;
+import java.util.List;
 
 @SuppressWarnings("ClassCanBeRecord")
-public class DataMapImpl implements Data {
+public class DataBuilderListImpl implements DataBuilder {
 
-    private final @NotNull Map<String, Object> entries;
+    protected final @NotNull List<Entry<String, Object>> entries;
 
-    public DataMapImpl(@NotNull Map<String, Object> entries) {
+    public DataBuilderListImpl(@NotNull List<Entry<String, Object>> entries) {
         this.entries = entries;
     }
 
     @Override
-    public @NotNull Data add(@NotNull String key, @Nullable Object value) {
-        entries.put(key, value);
+    public @NotNull DataBuilder add(@NotNull String key, @Nullable Object value) {
+        entries.add(new EntryImpl<>(key, value));
         return this;
     }
 
     @Override
-    public @NotNull Data put(@NotNull String key, @Nullable Object value) {
+    public @NotNull DataBuilder put(@NotNull String key, @Nullable Object value) {
+        remove(key);
         return add(key, value);
     }
 
     @Override
     public Object get(@NotNull String key) {
-        return entries.get(key);
+        for (Entry<String, Object> entry : entries) {
+            if(key.equals(entry.getKey()))
+                return entry.getValue();
+        }
+        return null;
     }
 
     @Override
-    public @Nullable Data remove(@NotNull String key) {
-        entries.remove(key);
+    public @Nullable DataBuilder remove(@NotNull String key) {
+        for (int i = 0; i < entries.size(); i++) {
+            Entry<String, Object> entry = entries.get(i);
+            if(key.equals(entry.getKey())) {
+                entries.remove(i);
+                return this;
+            }
+        }
+
         return this;
     }
 
@@ -64,19 +75,6 @@ public class DataMapImpl implements Data {
 
     @Override
     public @NotNull BiIterator<String, Object> iterator() {
-        return new BiIterator<>() {
-            final Iterator<Map.Entry<String, Object>> it = entries.entrySet().iterator();
-
-            @Override
-            public @NotNull Entry<String, Object> next() {
-                var entry = it.next();
-                return new EntryImpl<>(entry.getKey(), entry.getValue());
-            }
-
-            @Override
-            public boolean hasNext() {
-                return it.hasNext();
-            }
-        };
+        return BiIterator.of(entries);
     }
 }

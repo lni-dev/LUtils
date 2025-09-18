@@ -62,7 +62,7 @@ public class PathAndQuery {
     public @NotNull Container<String> getParameter(@NotNull String key) {
         String val = parameters.get(key);
         if(val == null)
-            return Container.of();
+            return Container.nonExistent();
         return Container.of(val);
     }
 }

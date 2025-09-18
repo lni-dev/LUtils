@@ -16,8 +16,9 @@
 
 package de.linusdev.lutils.pack;
 
-import de.linusdev.data.parser.JsonParser;
-import de.linusdev.data.so.SOData;
+import de.linusdev.lutils.data.json.Json;
+import de.linusdev.lutils.data.json.JsonMapImpl;
+import de.linusdev.lutils.data.json.parser.JsonParser;
 import de.linusdev.lutils.id.Identifier;
 import de.linusdev.lutils.other.parser.ParseException;
 import de.linusdev.lutils.pack.errors.PackLoadingException;
@@ -42,7 +43,7 @@ import java.util.Map;
 public abstract class AbstractPack implements Pack {
 
     final static @NotNull JsonParser JSON_PARSER = new JsonParser()
-            .setDataSupplier(() -> SOData.newHashMapData(16))
+            .setJsonBuilderSupplier(() -> new JsonMapImpl(new HashMap<>()))
             .setAllowComments(true, (parser, str) -> {});
 
     private String name;
@@ -54,15 +55,15 @@ public abstract class AbstractPack implements Pack {
 
     public void load() throws PackLoadingException {
         try(InputStream infoIn = resolve(infoFileName())) {
-            SOData packInfo = JSON_PARSER.parseStream(infoIn);
+            Json packInfo = JSON_PARSER.parseStream(infoIn);
 
-            this.name = packInfo.getContainer("name").requireNotNull().getAs();
-            this.id = PackIdUtils.ofData(packInfo, PackIdType.TYPE);
-            this.description = packInfo.getContainer("description").requireNotNull().getAs();
-            this.version = packInfo.getContainer("version").requireNotNull().<String, Version>castAndConvert(Version::of).get();
+            this.name = packInfo.grab("name").requireNotNull().getAs();
+            this.id = PackIdUtils.ofJson(packInfo, PackIdType.TYPE);
+            this.description = packInfo.grab("description").requireNotNull().getAs();
+            this.version = packInfo.grab("version").requireNotNull().<String, Version>castAndConvert(Version::of).get();
             this.inventory = new HashMap<>();
 
-            SOData inventory = packInfo.getAsAndRequireNotNull("inventory", (data, key) -> { throw new NullPointerException(); });
+            Json inventory = packInfo.grab("inventory").requireNotNull().getAs();
 
             for (PackGroup<?, ?> allowedGroup : allowedInventoryGroups()) {
                 String groupLocation = inventory.getAs(allowedGroup.name());

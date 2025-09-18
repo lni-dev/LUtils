@@ -16,7 +16,7 @@
 
 package de.linusdev.lutils.pack;
 
-import de.linusdev.data.so.SOData;
+import de.linusdev.lutils.data.json.Json;
 import de.linusdev.lutils.id.Identifier;
 import de.linusdev.lutils.id.IdentifierType;
 import org.jetbrains.annotations.NotNull;
@@ -24,15 +24,15 @@ import org.jetbrains.annotations.Nullable;
 
 public class PackIdUtils {
 
-    public static @NotNull Identifier ofData(@NotNull SOData data, @Nullable IdentifierType expectedType) {
-        String id = data.getContainer("id").requireNotNull(key -> new NullPointerException("Field 'id' is required.")).getAs();
+    public static @NotNull Identifier ofJson(@NotNull Json data, @Nullable IdentifierType expectedType) {
+        String id = data.grab("id").requireNotNull(key -> new NullPointerException("Field 'id' is required.")).getAs();
 
         if(Identifier.isValidIdentifier(id)) {
             return expectedType == null ? Identifier.ofString(id) : Identifier.ofStringEnforceType(id, expectedType);
         }
 
-        String type = data.getContainer("type").orDefaultIfNull("").getAs();
-        String namespace = data.getContainer("namespace").orDefaultIfNull("").getAs();
+        String type = data.grab("type").orDefaultIfNull("").getAs();
+        String namespace = data.grab("namespace").orDefaultIfNull("").getAs();
         id = type + ":" + namespace + ":" + id;
 
         Identifier.assertValidIdentifier(id);

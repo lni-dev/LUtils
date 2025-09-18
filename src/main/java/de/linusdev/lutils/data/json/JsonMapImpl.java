@@ -16,16 +16,18 @@
 
 package de.linusdev.lutils.data.json;
 
+import de.linusdev.lutils.collections.BiIterator;
+import de.linusdev.lutils.collections.Entry;
+import de.linusdev.lutils.collections.EntryImpl;
 import de.linusdev.lutils.optional.Container;
 import de.linusdev.lutils.optional.impl.BasicContainer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Iterator;
 import java.util.Map;
 
 public class JsonMapImpl implements Json, JsonBuilder {
-
-    protected static final @NotNull Object NULL_PLACEHOLDER = new Object();
 
     protected @NotNull Map<String, Object> entries;
 
@@ -38,31 +40,64 @@ public class JsonMapImpl implements Json, JsonBuilder {
     }
 
     @Override
+    public Object _get(@NotNull String key) {
+        return entries.get(key);
+    }
+
+    @Override
     public Object get(@NotNull String key) {
         Object value = internalGet(key);
-        if(value == NULL_PLACEHOLDER)
+        if(value == NULL)
             return null;
         return value;
     }
 
     @Override
-    public Container<Object> grab(@NotNull String key) {
+    public @NotNull Container<Object> grab(@NotNull String key) {
         Object value = internalGet(key);
         return new BasicContainer<>(
                 key,
                 value != null,
-                value == NULL_PLACEHOLDER ? null : value
+                value == NULL ? null : value
         );
     }
 
     @Override
     public @NotNull JsonBuilder add(@NotNull String key, @Nullable Object value) {
-        entries.put(key, value == null ? NULL_PLACEHOLDER : value);
+        entries.put(key, value == null ? NULL : value);
         return this;
     }
 
     @Override
     public @NotNull Json build() {
         return this;
+    }
+
+    @Override
+    public @NotNull BiIterator<String, Object> iterator() {
+        return new BiIterator<>() {
+            final Iterator<Map.Entry<String, Object>> it = entries.entrySet().iterator();
+
+            @Override
+            public @NotNull Entry<String, Object> next() {
+                Map.Entry<String, Object> entry = it.next();
+                return new EntryImpl<>(entry.getKey(), entry.getValue());
+            }
+
+            @Override
+            public boolean hasNext() {
+                return it.hasNext();
+            }
+        };
+    }
+
+    @Override
+    public int size() {
+        return entries.size();
+    }
+
+    @Override
+    public String toString() {
+        return Json.toString(this);
     }
 }

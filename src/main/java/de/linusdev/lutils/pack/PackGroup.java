@@ -16,7 +16,7 @@
 
 package de.linusdev.lutils.pack;
 
-import de.linusdev.data.so.SOData;
+import de.linusdev.lutils.data.json.Json;
 import de.linusdev.lutils.interfaces.TriConsumer;
 import de.linusdev.lutils.pack.item.Resource;
 import de.linusdev.lutils.pack.item.ResourceCollection;
@@ -36,7 +36,7 @@ public abstract class PackGroup<G extends ResourceCollection<I>, I extends Resou
 
     public static <I extends Resource> @NotNull PackGroup<ResourceMap<I>, I> newIdMapGroup(
             @NotNull String name,
-            @NotNull BiFunction<AbstractPack, SOData, I> converter,
+            @NotNull BiFunction<AbstractPack, Json, I> converter,
             @NotNull TriConsumer<ResourceBoundValidationResultBuilder, Resources, I> validator
     ) {
         return new PackGroup<>(name) {
@@ -52,7 +52,7 @@ public abstract class PackGroup<G extends ResourceCollection<I>, I extends Resou
             }
 
             @Override
-            public void addToResourceCollection(@NotNull ResourceMap<I> collection, @NotNull SOData data, @NotNull AbstractPack source) {
+            public void addToResourceCollection(@NotNull ResourceMap<I> collection, @NotNull Json data, @NotNull AbstractPack source) {
                 collection.put(converter.apply(source, data));
             }
         };
@@ -68,10 +68,10 @@ public abstract class PackGroup<G extends ResourceCollection<I>, I extends Resou
      * @param data the resource parsed from json
      * @param source the {@link AbstractPack} the resource is from
      */
-    public abstract void addToResourceCollection(@NotNull G collection, @NotNull SOData data, @NotNull AbstractPack source);
+    public abstract void addToResourceCollection(@NotNull G collection, @NotNull Json data, @NotNull AbstractPack source);
 
     @ApiStatus.Internal
-    void _addToResourceCollection(@NotNull ResourceCollection<?> collection, @NotNull SOData data, @NotNull AbstractPack source) {
+    void _addToResourceCollection(@NotNull ResourceCollection<?> collection, @NotNull Json data, @NotNull AbstractPack source) {
         //noinspection unchecked
         addToResourceCollection((G) collection, data, source);
     }

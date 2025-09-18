@@ -18,6 +18,7 @@ package de.linusdev.lutils.data.json.parser;
 
 import de.linusdev.lutils.collections.Entry;
 import de.linusdev.lutils.data.Data;
+import de.linusdev.lutils.data.DataBuilder;
 import de.linusdev.lutils.data.Datable;
 import de.linusdev.lutils.data.ParseType;
 import de.linusdev.lutils.data.json.Json;
@@ -39,11 +40,11 @@ import java.util.function.Supplier;
 
 /**
  *
- * This class is used to parse {@link Data} to a json-string and json-string to {@link Json}.
+ * This class is used to parse {@link DataBuilder} to a json-string and json-string to {@link Json}.
  *
  * <br><br>
  *
- * <a style="margin-bottom:0; padding-bottom:0; font-size:10px">{@link Data} to json-string can parse:</a>
+ * <a style="margin-bottom:0; padding-bottom:0; font-size:10px">{@link DataBuilder} to json-string can parse:</a>
  * <ul>
  *     <li>
  *         {@link Boolean}, {@link Byte}, {@link Short}, {@link Integer}, {@link Long}, {@link Float}, {@link Double}, {@link String},
@@ -159,9 +160,9 @@ public class JsonParser {
     }
 
     /**
-     * When this parser reads a json-object, this {@link Supplier} is used to create a new {@link SOData} object.<br>
-     * Default: {@code SOData::newOrderedDataWithUnknownSize}
-     * @param jsonBuilderSupplier {@link Supplier} to supply with {@link SOData}
+     * When this parser reads a json-object, this {@link Supplier} is used to create a new {@link Json} object.<br>
+     * Default: {@code new JsonMapImpl(new HashMap<>())}
+     * @param jsonBuilderSupplier {@link Supplier} to supply with {@link Json}
      */
     @Contract("_ -> this")
     public @NotNull JsonParser setJsonBuilderSupplier(@NotNull Supplier<JsonBuilder> jsonBuilderSupplier) {
@@ -171,9 +172,9 @@ public class JsonParser {
 
     /**
      * If the json to read, does not start with a json-object, but instead with a json-array, the array will be available
-     * with this key in the returned {@link SOData}.<br>
+     * with this key in the returned {@link Json}.<br>
      * Default: {@value #DEFAULT_ARRAY_WRAPPER_KEY}
-     * @param arrayWrapperKey key to use when wrapping the array in a {@link SOData}
+     * @param arrayWrapperKey key to use when wrapping the array in a {@link Json}
      */
     @Contract("_ -> this")
     public @NotNull JsonParser setArrayWrapperKey(@NotNull String arrayWrapperKey) {
@@ -238,11 +239,11 @@ public class JsonParser {
     \* ================================================================================================= */
 
     /**
-     * parses the content of given stream to a {@link SOData}.<br>
+     * parses the content of given stream to a {@link Json}.<br>
      * The stream will be {@link InputStream#close() closed} after parsing finished.<br>
-     * If only an empty string is being read (for example "" or "   "), an empty {@link SOData} will be returned.<br>
+     * If only an empty string is being read (for example "" or "   "), an empty {@link Json} will be returned.<br>
      * @param stream the stream to read the json from
-     * @return parsed {@link SOData}
+     * @return parsed {@link Json}
      * @throws IOException while parsing
      * @throws ParseException while parsing
      */
@@ -257,12 +258,12 @@ public class JsonParser {
     }
 
     /**
-     * parses the content of given reader to a {@link SOData}.<br>
+     * parses the content of given reader to a {@link Json}.<br>
      * The reader should not be wrapped in a {@link BufferedReader}, as this method does this.<br>
      * The reader will be {@link Reader#close() closed} after parsing finished.<br>
-     * If only an empty string is being read (for example "" or "   "), an empty {@link SOData} will be returned.<br>
+     * If only an empty string is being read (for example "" or "   "), an empty {@link Json} will be returned.<br>
      * @param reader the reader to read the json from
-     * @return parsed {@link SOData}
+     * @return parsed {@link Json}
      * @throws IOException while parsing
      * @throws ParseException while parsing
      */
@@ -277,9 +278,9 @@ public class JsonParser {
     }
 
     /**
-     * Creates a {@link StringReader} of given {@code json} and passes it to {@link #parse(de.linusdev.data.parser.JsonReader, ParseTracker)}.
+     * Creates a {@link StringReader} of given {@code json} and passes it to {@link #parse(JsonReader, ParseTracker)}.
      * @param json the json to parse
-     * @return parsed {@link SOData}
+     * @return parsed {@link Json}
      * @throws IOException while parsing
      * @throws ParseException while parsing
      */
@@ -295,13 +296,13 @@ public class JsonParser {
 
     /**
      * <p>
-     *     parses a json-object or a json-array (will be wrapped with {@link #arrayWrapperKey}) to a {@link SOData}.
+     *     parses a json-object or a json-array (will be wrapped with {@link #arrayWrapperKey}) to a {@link Json}.
      *     <br><br>
-     *     If only an empty string is being read (for example "" or "   ") and empty {@link SOData} will be returned.
+     *     If only an empty string is being read (for example "" or "   ") and empty {@link Json} will be returned.
      * </p>
      *
      * @param reader to read from
-     * @return parsed {@link SOData}
+     * @return parsed {@link Json}
      * @throws IOException while parsing
      * @throws ParseException while parsing
      */
@@ -386,10 +387,10 @@ public class JsonParser {
     }
 
     /**
-     * Parses a json-object to a {@link SOData}
+     * Parses a json-object to a {@link Json}
      * @param reader to read from
      * @param tracker {@link ParseTracker}
-     * @return parsed {@link SOData}
+     * @return parsed {@link Json}
      * @throws IOException while parsing
      * @throws ParseException while parsing
      */
@@ -428,10 +429,10 @@ public class JsonParser {
     }
 
     /**
-     * Parses a json-value to {@link String}, {@link SOData}, {@link List}, {@link Boolean}, {@link Number} or {@code null}
+     * Parses a json-value to {@link String}, {@link Json}, {@link List}, {@link Boolean}, {@link Number} or {@code null}
      * @param reader to read from
      * @param tracker {@link ParseTracker}
-     * @return {@link String}, {@link SOData}, {@link List}, {@link Boolean}, {@link Number} or {@code null}
+     * @return {@link String}, {@link Json}, {@link List}, {@link Boolean}, {@link Number} or {@code null}
      * @throws IOException while parsing
      * @throws ParseException while parsing
      */
@@ -460,7 +461,7 @@ public class JsonParser {
 
     /**
      * Parses a json-array to a {@link List} of {@link Object}.<br>
-     * The elements of the returned list are parsed with {@link #parseJsonValue(de.linusdev.data.parser.JsonReader, ParseTracker)}.
+     * The elements of the returned list are parsed with {@link #parseJsonValue(JsonReader, ParseTracker)}.
      * @param reader to read from
      * @param tracker {@link ParseTracker}
      * @return {@link List} of {@link Object}
@@ -503,7 +504,7 @@ public class JsonParser {
 
     /**
      *
-     * @param data {@link AbstractData} to write to a {@link StringBuffer}
+     * @param data {@link Data} to write to a {@link StringBuffer}
      * @return {@link StringBuffer#toString()}
      */
     public @NotNull String writeDataToString(@Nullable Data data) {
@@ -512,7 +513,7 @@ public class JsonParser {
 
     /**
      *
-     * @param data {@link AbstractData} to write to a {@link StringBuffer}
+     * @param data {@link Data} to write to a {@link StringBuffer}
      * @return {@link StringBuffer}
      */
     public @NotNull StringBuilder writeDataToStringBuilder(@Nullable Data data){
@@ -528,7 +529,7 @@ public class JsonParser {
 
     /**
      *
-     * @param data {@link AbstractData} to write. {@code null} will write an empty Data: "{}"
+     * @param data {@link Data} to write. {@code null} will write an empty Data: "{}"
      * @param writer {@link Writer} to write to
      * @throws IOException {@link IOException} while writing
      */
@@ -542,7 +543,7 @@ public class JsonParser {
             @NotNull SpaceOffsetTracker offset,
             @Nullable Data data
     ) throws IOException {
-        if (data == null) data = Data.empty();
+        if (data == null) data = DataBuilder.empty();
         if(data.parseType() == ParseType.NORMAL) {
             writer.append((char) CURLY_BRACKET_OPEN_CHAR);
             offset.add();

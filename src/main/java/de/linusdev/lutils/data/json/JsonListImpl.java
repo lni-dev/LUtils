@@ -16,6 +16,7 @@
 
 package de.linusdev.lutils.data.json;
 
+import de.linusdev.lutils.collections.BiIterator;
 import de.linusdev.lutils.collections.Entry;
 import de.linusdev.lutils.optional.Container;
 import de.linusdev.lutils.optional.impl.BasicContainer;
@@ -32,6 +33,15 @@ public class JsonListImpl implements Json {
     }
 
     @Override
+    public Object _get(@NotNull String key) {
+        for (Entry<String, Object> entry : entries) {
+            if(key.equals(entry.key()))
+                return entry.value() == null ? Json.NULL : entry.value();
+        }
+        return null;
+    }
+
+    @Override
     public Object get(@NotNull String key) {
         for (Entry<String, Object> entry : entries) {
             if(key.equals(entry.key()))
@@ -41,7 +51,7 @@ public class JsonListImpl implements Json {
     }
 
     @Override
-    public Container<Object> grab(@NotNull String key) {
+    public @NotNull Container<Object> grab(@NotNull String key) {
         for (Entry<String, Object> entry : entries) {
             if(key.equals(entry.key())) {
                 if(entry.value() == null)
@@ -52,5 +62,20 @@ public class JsonListImpl implements Json {
         }
 
         return new BasicContainer<>(key, false, null);
+    }
+
+    @Override
+    public @NotNull BiIterator<String, Object> iterator() {
+        return BiIterator.of(this.entries);
+    }
+
+    @Override
+    public String toString() {
+        return Json.toString(this);
+    }
+
+    @Override
+    public int size() {
+        return entries.size();
     }
 }

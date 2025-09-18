@@ -19,7 +19,7 @@ package de.linusdev.lutils.data.impl;
 import de.linusdev.lutils.collections.BiIterator;
 import de.linusdev.lutils.collections.EntryImpl;
 import de.linusdev.lutils.data.ContentOnlyData;
-import de.linusdev.lutils.data.Data;
+import de.linusdev.lutils.data.DataBuilder;
 import de.linusdev.lutils.other.iterator.IteratorUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -27,12 +27,12 @@ import org.jetbrains.annotations.Nullable;
 public record DataWrapper(@Nullable Object wrappedValue) implements ContentOnlyData {
 
     @Override
-    public @NotNull Data add(@NotNull String key, @Nullable Object value) {
+    public @NotNull DataBuilder add(@NotNull String key, @Nullable Object value) {
         throw new UnsupportedOperationException("Cannot add to a data wrapper");
     }
 
     @Override
-    public @NotNull Data put(@NotNull String key, @Nullable Object value) {
+    public @NotNull DataBuilder put(@NotNull String key, @Nullable Object value) {
         throw new UnsupportedOperationException("Cannot put on a data wrapper");
     }
 
@@ -42,7 +42,7 @@ public record DataWrapper(@Nullable Object wrappedValue) implements ContentOnlyD
     }
 
     @Override
-    public @Nullable Data remove(@NotNull String key) {
+    public @Nullable DataBuilder remove(@NotNull String key) {
         throw new UnsupportedOperationException("Cannot remove from a data wrapper");
     }
 

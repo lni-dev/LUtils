@@ -27,7 +27,7 @@ import org.jetbrains.annotations.Nullable;
  * An interface to a {@link ValidationResultBuilder} where the error source is a fixed resource.
  * Additionally, this class adds a lot of convenience methods to ease validation.
  */
-@SuppressWarnings("ClassCanBeRecord")
+@SuppressWarnings({"ClassCanBeRecord", "UnusedReturnValue"})
 public class ResourceBoundValidationResultBuilder {
 
     protected final @NotNull ValidationResultBuilder parent;

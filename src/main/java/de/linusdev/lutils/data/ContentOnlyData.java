@@ -18,7 +18,7 @@ package de.linusdev.lutils.data;
 
 import org.jetbrains.annotations.NotNull;
 
-public interface ContentOnlyData extends Data {
+public interface ContentOnlyData extends DataBuilder {
 
     @Override
     default @NotNull ParseType parseType() {

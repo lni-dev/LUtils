@@ -24,14 +24,6 @@ public class ParseHelper {
 
     public static final String[] ESCAPE_PRE_ZEROS = {"", "0", "00", "000", "0000"};
 
-    public static void escape2(@NotNull String s, @NotNull StringBuilder str) {
-        try {
-            escape2(s, (Appendable) str);
-        } catch (IOException ignored) {
-            //will never happen, because StringBuilder does not throw this Exception
-        }
-    }
-
     @SuppressWarnings("UnnecessaryUnicodeEscape")
     public static void escape2(@NotNull String s, @NotNull Appendable str) throws IOException {
         for (int i = 0; i < s.length(); i++) {
