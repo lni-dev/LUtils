@@ -70,7 +70,7 @@ public class ResourceNativeLibraryLoader {
             var resource = findLib(caller, libPath, postfix);
 
             try {
-                Path file = getTmpDir().resolve(EXPORTED_COUNT.incrementAndGet() + "-" + FileUtils.getFileName(resource.getPath()));
+                Path file = getTmpDir().resolve(EXPORTED_COUNT.getAndIncrement() + "-" + FileUtils.getFileName(resource.getPath()));
                 Files.copy(resource.openInputStream(), file);
                 fut.complete(new ExportedNativeLib(file), Nothing.INSTANCE, null);
             } catch (IOException e) {
