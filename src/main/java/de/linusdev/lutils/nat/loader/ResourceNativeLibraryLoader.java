@@ -76,7 +76,7 @@ public class ResourceNativeLibraryLoader {
             } catch (IOException e) {
                 fut.complete(null, Nothing.INSTANCE, new ThrowableAsyncError(e));
             }
-        });
+        }).start();
 
         return fut;
     }
