@@ -90,7 +90,7 @@ public class NoActionContainer<O> extends Container<O> {
     }
 
     @Override
-    public @NotNull <E extends Throwable> Container<O> requireNotNull(@NotNull ExceptionSupplier<E> supplier) {
+    public @NotNull <E extends Throwable> Container<O> requireNotNull(@NotNull ExceptionSupplier<E, Object> supplier) {
         return this;
     }
 
@@ -105,7 +105,7 @@ public class NoActionContainer<O> extends Container<O> {
     }
 
     @Override
-    public @NotNull <E extends Throwable> Container<O> requireExists(@NotNull ExceptionSupplier<E> supplier) {
+    public @NotNull <E extends Throwable> Container<O> requireExists(@NotNull ExceptionSupplier<E, Object> supplier) {
         return this;
     }
 

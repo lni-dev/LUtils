@@ -19,17 +19,17 @@ package de.linusdev.lutils.data;
 import org.jetbrains.annotations.ApiStatus;
 
 /**
- * How a {@link AbstractData} will be parsed depends on its {@link ParseType}
+ * How a {@link Data} will be parsed depends on its {@link ParseType}
  */
 @ApiStatus.Internal
 public enum ParseType {
     /**
-     * {@link AbstractData} will be parsed to a normal json-object
+     * {@link Data} will be parsed to a normal json-object
      */
     NORMAL,
 
     /**
-     * only the entries of the {@link AbstractData} will be parsed. That means the entry will not be wrapped by
+     * only the entries of the {@link Data} will be parsed. That means the entry will not be wrapped by
      * a json-object. If more than one entry is present, they will be separated by a comma.
      */
     CONTENT_ONLY,

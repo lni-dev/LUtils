@@ -156,7 +156,7 @@ public abstract class Container<V> implements OptionalValue<V> {
      * @param <E> exception thrown if the value is {@code null}.
      * @throws E if the value is {@code null} ({@link #get()} returns {@code null}).
      */
-    public <E extends Throwable> @NotNull Container<V> requireNotNull(@NotNull ExceptionSupplier<E> supplier) throws E {
+    public <E extends Throwable> @NotNull Container<V> requireNotNull(@NotNull ExceptionSupplier<E, Object> supplier) throws E {
         if(isNull())
             throw supplier.supply(key());
         return this;
@@ -181,7 +181,7 @@ public abstract class Container<V> implements OptionalValue<V> {
      * @throws E if the value does not {@link #exists() exist}.
      */
     public <E extends Throwable> @NotNull Container<V> requireExists(
-            @NotNull ExceptionSupplier<E> supplier
+            @NotNull ExceptionSupplier<E, Object> supplier
     ) throws E {
         if(!exists())
             throw supplier.supply(key());
@@ -220,6 +220,19 @@ public abstract class Container<V> implements OptionalValue<V> {
      */
     public @NotNull Container<V> orDefaultIfNull(V defaultValue) {
         if(isNull())
+            return createNewContainer(defaultValue);
+        return this;
+    }
+
+    /**
+     * If the key/value does not {@link #exists() exist} a new container with given {@code defaultValue} will be returned.
+     * Otherwise, the container itself will be returned.
+     * @param defaultValue default value.
+     * @return this or new container with given {@code defaultValue}.
+     * @see #orDefaultIfNull(Object) use orDefaultIfNull() if a non-null value is required.
+     */
+    public @NotNull Container<V> orDefaultIfNonExistent(V defaultValue) {
+        if(!exists())
             return createNewContainer(defaultValue);
         return this;
     }

@@ -48,4 +48,11 @@ public interface Data extends BiIterable<String, Object>, Datable {
         return this;
     }
 
+    /**
+     * @return {@code true} if this data does not contain any entries, {@code false} otherwise.
+     */
+    default boolean isEmpty() {
+        return size() == 0;
+    }
+
 }

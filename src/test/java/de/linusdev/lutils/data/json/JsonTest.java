@@ -36,47 +36,47 @@ class JsonTest {
     }
 
     @Test
-    void getAndConvert() throws IOException, ParseException {
+    void convert() throws IOException, ParseException {
         Json json = JsonParser.DEFAULT_INSTANCE.parseString("{\"test\": \"some string\", \"null\": null}");
 
         assertEquals(
                 "SOME STRING",
-                json.getAndConvert("test", (String s) -> s.toUpperCase(Locale.ROOT), "a", "b")
+                json.convert("test", (String s) -> s.toUpperCase(Locale.ROOT), "a", "b")
         );
 
         assertEquals(
                 "DOES NOT EXIST",
-                json.getAndConvert("test2", JsonTest::toUpperCase, "DOES NOT EXIST", "b")
+                json.convert("test2", JsonTest::toUpperCase, "DOES NOT EXIST", "b")
         );
 
         assertEquals(
                 "NULL",
-                json.<String, String, RuntimeException>getAndConvert("null", String::toUpperCase, "DOES NOT EXIST", "NULL")
+                json.<String, String, RuntimeException>convert("null", String::toUpperCase, "DOES NOT EXIST", "NULL")
         );
 
         assertEquals(
                 "SOME STRING",
-                json.getAndConvert("test", (String s) -> s.toUpperCase(Locale.ROOT), "a")
+                json.convert("test", (String s) -> s.toUpperCase(Locale.ROOT), "a")
         );
 
         assertEquals(
                 "DOES NOT EXIST",
-                json.getAndConvert("test2", JsonTest::toUpperCase, "DOES NOT EXIST")
+                json.convert("test2", JsonTest::toUpperCase, "DOES NOT EXIST")
         );
 
-        assertNull(json.getAndConvert("null", JsonTest::toUpperCase, "DOES NOT EXIST"));
+        assertNull(json.convert("null", JsonTest::toUpperCase, "DOES NOT EXIST"));
 
         assertEquals(
                 "SOME STRING",
-                json.getAndConvert("test", (String s) -> s.toUpperCase(Locale.ROOT))
+                json.convert("test", (String s) -> s.toUpperCase(Locale.ROOT))
         );
 
-        assertNull(json.getAndConvert("test2", JsonTest::toUpperCase));
-        assertNull(json.getAndConvert("null", JsonTest::toUpperCase));
+        assertNull(json.convert("test2", JsonTest::toUpperCase));
+        assertNull(json.convert("null", JsonTest::toUpperCase));
 
         assertEquals(
                 "SOME STRING",
-                json.getAndConvert("test", (String s) -> s.toUpperCase(Locale.ROOT), "a", "b")
+                json.convert("test", (String s) -> s.toUpperCase(Locale.ROOT), "a", "b")
         );
 
         assertEquals(
