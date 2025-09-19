@@ -23,9 +23,10 @@ import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.util.Locale;
+import java.util.NoSuchElementException;
+import java.util.concurrent.atomic.AtomicBoolean;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 class JsonTest {
 
@@ -89,5 +90,123 @@ class JsonTest {
                 json.getAndConvertOrDefault("null", JsonTest::toUpperCase, "DOES NOT EXIST OR NULL")
         );
 
+    }
+
+    @Test
+    void isNull() throws IOException, ParseException {
+        Json json = JsonParser.DEFAULT_INSTANCE.parseString("{\"test\": \"some string\", \"null\": null}");
+
+        assertThrows(NoSuchElementException.class, () -> json.isNull("key does not exist :)"));
+        assertTrue(json.isNull("null"));
+        assertFalse(json.isNull("test"));
+
+    }
+
+    @Test
+    void getAs() throws IOException, ParseException {
+        Json json = JsonParser.DEFAULT_INSTANCE.parseString("{\"test\": \"some string\", \"null\": null}");
+
+        assertEquals("some string", json.getAs("test"));
+        assertNull(json.getAs("null"));
+        assertNull(json.getAs("does not exist"));
+
+        assertEquals("some string", json.getAs("test", "defaultIfAbsent"));
+        assertNull(json.getAs("null", "defaultIfAbsent"));
+        assertEquals("defaultIfAbsent", json.getAs("does not exist", "defaultIfAbsent"));
+
+        assertEquals("some string", json.getAs("test", "defaultIfAbsent", "defaultIfNull"));
+        assertEquals("defaultIfNull",json.getAs("null", "defaultIfAbsent", "defaultIfNull"));
+        assertEquals("defaultIfAbsent", json.getAs("does not exist", "defaultIfAbsent", "defaultIfNull"));
+
+        assertDoesNotThrow(() -> json.requireNotNullAndGetAs("test"));
+        assertThrows(NullPointerException.class, () -> json.requireNotNullAndGetAs("null"));
+        assertThrows(NullPointerException.class, () -> json.requireNotNullAndGetAs("does not exist"));
+
+    }
+
+    @Test
+    void process() throws IOException, ParseException {
+        Json json = JsonParser.DEFAULT_INSTANCE.parseString("{\"test\": \"some string\", \"null\": null}");
+
+        AtomicBoolean processed = new AtomicBoolean(false);
+
+
+        json.process("test", (String str) ->  {
+            processed.set(true);
+            assertEquals("some string", str);
+        });
+        assertTrue(processed.getAndSet(false));
+
+        json.process("null", (String str) ->  {
+            processed.set(true);
+            assertNull(str);
+        });
+        assertTrue(processed.getAndSet(false));
+
+        json.process("doesNotExist", (String str) ->  {
+            processed.set(true);
+            assertNull(str);
+        });
+        assertTrue(processed.getAndSet(false));
+
+
+
+
+        json.processIfNotNull("test", (String str) ->  {
+            processed.set(true);
+            assertEquals("some string", str);
+        });
+        assertTrue(processed.getAndSet(false));
+
+        json.processIfNotNull("null", (String str) -> processed.set(true));
+        assertFalse(processed.getAndSet(false));
+
+        json.processIfNotNull("doesNotExist", (String str) -> processed.set(true));
+        assertFalse(processed.getAndSet(false));
+
+
+
+
+        json.processIfExistent("test", (String str) ->  {
+            processed.set(true);
+            assertEquals("some string", str);
+        });
+        assertTrue(processed.getAndSet(false));
+
+        json.processIfExistent("null", (String str) ->  {
+            processed.set(true);
+            assertNull(str);
+        });
+        assertTrue(processed.getAndSet(false));
+
+        json.processIfExistent("doesNotExist", (String str) -> processed.set(true));
+        assertFalse(processed.getAndSet(false));
+    }
+
+    @Test
+    void requireNotNullAndConvert() throws IOException, ParseException {
+        Json json = JsonParser.DEFAULT_INSTANCE.parseString("{\"test\": \"some string\", \"null\": null}");
+
+        assertEquals("SOME STRING", json.requireNotNullAndConvert("test", JsonTest::toUpperCase));
+        assertThrows(NullPointerException.class, () -> json.requireNotNullAndConvert("null", JsonTest::toUpperCase));
+        assertThrows(NullPointerException.class, () -> json.requireNotNullAndConvert("does not exist", JsonTest::toUpperCase));
+    }
+
+    @Test
+    void requireNotNullAndProcess() throws IOException, ParseException {
+        Json json = JsonParser.DEFAULT_INSTANCE.parseString("{\"test\": \"some string\", \"null\": null}");
+        AtomicBoolean processed = new AtomicBoolean(false);
+
+        json.requireNotNullAndProcess("test", (String str) -> {
+            assertEquals("some string", str);
+            processed.set(true);
+        });
+        assertTrue(processed.getAndSet(false));
+
+        assertThrows(NullPointerException.class, () -> json.requireNotNullAndProcess("null", (String str) -> processed.set(true)));
+        assertFalse(processed.getAndSet(false));
+
+        assertThrows(NullPointerException.class, () -> json.requireNotNullAndProcess("does not exist", (String str) -> processed.set(true)));
+        assertFalse(processed.getAndSet(false));
     }
 }

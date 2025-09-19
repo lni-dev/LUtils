@@ -40,11 +40,19 @@ import java.util.function.Supplier;
 
 /**
  *
- * This class is used to parse {@link DataBuilder} to a json-string and json-string to {@link Json}.
+ * This class is used to parse {@link Data} to a json-string and json-string to {@link Json}.
  *
- * <br><br>
+ * <p>
+ *     Parse {@link Data} to json-string using {@link #writeData(Appendable, Data)}, {@link #writeDataToString(Data)}
+ *     or {@link #writeDataToStringBuilder(Data)}.
+ * </p>
  *
- * <a style="margin-bottom:0; padding-bottom:0; font-size:10px">{@link DataBuilder} to json-string can parse:</a>
+ * <p>
+ *     Parse json-string to {@link Json} to using {@link #parseReader(Reader)}, {@link #parseStream(InputStream)}
+ *     or {@link #parseString(String)}.
+ * </p>
+ *
+ * <h3>{@link DataBuilder} to json-string can parse:</h3>
  * <ul>
  *     <li>
  *         {@link Boolean}, {@link Byte}, {@link Short}, {@link Integer}, {@link Long}, {@link Float}, {@link Double}, {@link String},
@@ -63,8 +71,8 @@ import java.util.function.Supplier;
  *         using {@link Objects#toString(Object)}.
  *     </li>
  * </ul>
- * <br>
- * <a style="margin-bottom:0; padding-bottom:0; font-size:10px">json-string to {@link Json} can parse:</a>
+ *
+ * <h3>Json-string to {@link Json} can parse:</h3>
  * <ul>
  *     <li style="padding-top:0">
  *         false/true to {@link Boolean} (ignores case)
@@ -73,23 +81,23 @@ import java.util.function.Supplier;
  *         null to {@code null} (ignores case)
  *     </li>
  *     <li>
- *         Integer Numbers (1, 4, 5, ...) to {@link Long} <br>
+ *         Integer Numbers (1, 4, 5, ...) to {@link Long}
  *     </li>
  *     <li>
- *         Decimal Numbers (5.6, ...) to {@link Double} <br>
+ *         Decimal Numbers (5.6, ...) to {@link Double}
  *     </li>
  *     <li>
  *         "strings" to {@link String}
  *     </li>
  *     <li>
- *         Arrays ([...]) to {@link ArrayList<Object>}&lt;Object&gt;
+ *         Arrays ([...]) to {@link ArrayList ArrayList&lt;Object&gt;}
  *     </li>
  *     <li>
  *         any other values are not supported and will most likely cause a {@link ParseException}
  *     </li>
  * </ul>
- <br>
- * <a style="margin-bottom:0; padding-bottom:0; font-size:10px">when parsing json-string to {@link Json}:</a>
+ *
+ * <h3>When parsing json-string to {@link Json}:</h3>
  * <ul>
  *     <li style="padding-top:0">
  *         an empty json-string, for example "" or "   ", will be parsed to an empty {@link Json}
@@ -99,7 +107,6 @@ import java.util.function.Supplier;
  *         The array will be accessible with the {@link #arrayWrapperKey}. see {@link #setArrayWrapperKey(String)}
  *         and {@link #DEFAULT_ARRAY_WRAPPER_KEY}
  *     </li>
- *
  * </ul>
  */
 @SuppressWarnings("unused")

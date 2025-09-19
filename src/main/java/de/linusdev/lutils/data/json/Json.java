@@ -17,6 +17,7 @@
 package de.linusdev.lutils.data.json;
 
 import de.linusdev.lutils.data.Data;
+import de.linusdev.lutils.data.json.parser.JsonParser;
 import de.linusdev.lutils.interfaces.Converter;
 import de.linusdev.lutils.interfaces.TConsumer;
 import de.linusdev.lutils.interfaces.TConverter;
@@ -31,6 +32,9 @@ import java.util.NoSuchElementException;
 
 /**
  * A Json object whose values can be retrieved using the corresponding keys.
+ * <br><br>
+ * To obtain a json instance use {@link JsonParser}.
+ * <br><br>
  * It provides many functions to conveniently access the keys and values of this json. None of these methods
  * will modify this json instance:
  * <ul>
@@ -548,7 +552,7 @@ public interface Json extends Data {
      * Same as {@link #requireNotNullAndProcess(String, TConsumer, ExceptionSupplier)} with a {@link NullPointerException} supplier.
      */
     @Contract("_, _ -> this")
-    default <C, R, TP extends Throwable> @NotNull Json requireNotNullAndProcess(
+    default <C, TP extends Throwable> @NotNull Json requireNotNullAndProcess(
             @NotNull String key,
             @NotNull TConsumer<C, TP> consumer
     ) throws NullPointerException, TP {

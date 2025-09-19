@@ -27,7 +27,14 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Map;
 
+/**
+ * Builder to build a {@link Data}. There is no actual build method. Instead, the builder itself
+ * is also the {@link Data}.
+ */
+@SuppressWarnings("UnusedReturnValue")
 public interface DataBuilder extends Data {
 
     /* ================================================================================================= *\
@@ -36,21 +43,82 @@ public interface DataBuilder extends Data {
     |                                                                                                     |
     \* ================================================================================================= */
 
+    /**
+     * <p>
+     *     This will create a new {@link DataBuilder} which will keep the order in which the elements are added.
+     *     This {@link DataBuilder} will be backed by a {@link ArrayList} with given {@code expectedCapacity}.<br>
+     *     This is useful for {@link DataBuilder data objects} with known sizes or for {@link DataBuilder data objects} with small
+     *     sizes.
+     * </p>
+     * <p>
+     *     The {@link DataBuilder#get(String) get} and {@link DataBuilder#remove(String) remove} methods of the returned
+     *     {@link DataBuilder} will be in O(n) (very slow), but the {@link DataBuilder#add(String, Object) add} methods will be in O(1).
+     * </p>
+     * @param expectedCapacity the initialCapacity of the {@link ArrayList}, which will back the {@link DataBuilder}
+     * @return {@link DataBuilder} backed by an {@link ArrayList}.
+     */
     @Contract("_ -> new")
-    static @NotNull DataBuilder ordered(int expectedCapacity) {
+    static @NotNull DataBuilder orderedKnownSize(int expectedCapacity) {
         return new DataBuilderListImpl(new ArrayList<>(expectedCapacity));
     }
 
+    /**
+     * <p>
+     *     This will create a new {@link DataBuilder} which will keep the order the elements are added.
+     *     This {@link DataBuilder} will be backed by a backed by a {@link LinkedList}.<br>
+     *     This is useful for {@link DataBuilder data objects} with large unknown sizes.
+     * </p>
+     * <p>
+     *     The {@link DataBuilder#get(String) get} and {@link DataBuilder#remove(String) remove} methods of the returned
+     *     {@link DataBuilder} will be in O(n) (very slow), but the {@link DataBuilder#add(String, Object) add} methods
+     *     will be in O(1).
+     * </p>
+     * @return {@link DataBuilder} backed by a {@link LinkedList}.
+     * @see #orderedKnownSize(int) for very small (less than 10 elemets) you should generrally use the
+     * ArrayList implemenation
+     * @see #unorderedMapBacked(int) if you intend to use get or remove methods you should use the map implementation
+     */
     @Contract(" -> new")
-    static @NotNull DataBuilder unordered() {
-        return new DataBuilderMapImpl(new HashMap<>());
+    static @NotNull DataBuilder orderedDynamicSize() {
+        return new DataBuilderListImpl(new LinkedList<>());
     }
 
+    /**
+     * This will create a new {@link DataBuilder} which is backed by a {@link HashMap}. This should be
+     * used if the {@link DataBuilder} will be read from using {@link DataBuilder#get(String) get} or
+     * {@link DataBuilder#remove(String) remove}.
+     * @param initialCapacity the initialCapacity of the {@link HashMap} which will back the {@link DataBuilder}
+     * @return {@link DataBuilder} backed by a {@link HashMap}.
+     */
+    @Contract("_ -> new")
+    static @NotNull DataBuilder unorderedMapBacked(int initialCapacity) {
+        return new DataBuilderMapImpl(new HashMap<>(initialCapacity));
+    }
+
+    /**
+     * Create a {@link DataBuilder} of given {@code map}. The {@link DataBuilder} will have the
+     * same content as given map.
+     * @return New {@link DataBuilder} backed by given map.
+     */
+    static @NotNull DataBuilder ofMap(@NotNull Map<String, Object> map) {
+        return new DataBuilderMapImpl(map);
+    }
+
+    /**
+     * Creates an empty {@link DataBuilder}. Adding to an empty {@link DataBuilder} will throw an exception.
+     */
     @Contract(" -> new")
     static @NotNull DataBuilder empty() {
         return new EmptyData();
     }
 
+    /**
+     * Wrap given {@code object}. This can be used if a value or an
+     * object should be parsed directly. See {@link ParseType#CONTENT_ONLY}.
+     * @param object object to wrap
+     * @return {@link DataWrapper} wrapping given object
+     * @see DataWrapper
+     */
     @Contract("_ -> new")
     static @NotNull DataBuilder wrap(@Nullable Object object) {
         return new DataWrapper(object);

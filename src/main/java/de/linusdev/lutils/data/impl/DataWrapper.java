@@ -24,7 +24,11 @@ import de.linusdev.lutils.other.iterator.IteratorUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public record DataWrapper(@Nullable Object wrappedValue) implements ContentOnlyData {
+/**
+ * A {@link ContentOnlyData} containing a {@link #wrappedValue single value}.
+ * @param wrappedValue the contained value.
+ */
+public record DataWrapper(@Nullable Object wrappedValue) implements DataBuilder, ContentOnlyData {
 
     @Override
     public @NotNull DataBuilder add(@NotNull String key, @Nullable Object value) {

@@ -18,8 +18,14 @@ package de.linusdev.lutils.data;
 
 import org.jetbrains.annotations.Nullable;
 
+/**
+ * An object that can be converted to a {@link Data} using {@link #getData()}.
+ */
 public interface Datable {
 
+    /**
+     * A {@link Data} representing this instance.
+     */
     @Nullable Data getData();
 
 }

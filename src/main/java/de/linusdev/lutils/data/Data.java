@@ -21,6 +21,9 @@ import de.linusdev.lutils.data.json.parser.JsonParser;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+/**
+ * An object containing data. Can be parsed to a json-string using {@link JsonParser}.
+ */
 public interface Data extends BiIterable<String, Object>, Datable {
 
     /**

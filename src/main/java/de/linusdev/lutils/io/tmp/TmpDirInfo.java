@@ -40,7 +40,7 @@ public record TmpDirInfo(
 
     @Override
     public @NotNull Data getData() {
-        return DataBuilder.ordered(2)
+        return DataBuilder.orderedKnownSize(2)
                 .add("created", created)
                 .add("delete", delete)
                 .add("deleteAfter", deleteAfter);
