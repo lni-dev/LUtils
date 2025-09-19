@@ -16,6 +16,7 @@
 
 package de.linusdev.lutils.io;
 
+import de.linusdev.lutils.io.tmp.TmpDir;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -24,16 +25,71 @@ import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 import java.util.function.BiPredicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class FileUtils {
 
-    public static @NotNull Path getTemporaryDirectory(@NotNull String namespace, @NotNull String id) throws IOException {
-        // TODO: Create a dir with a specific very unique name. Clear this directory everytime.
-        // TODO: doc comment
-        return Files.createTempDirectory("lutils-temp-dir_" + namespace + "_" + id);
+    /**
+     * The temporary directory of the OS.
+     */
+    public static @NotNull Path getTemporaryDirectory() {
+        return Paths.get(System.getProperty("java.io.tmpdir"));
+    }
+
+    private static boolean tmpDirsChecked = false;
+
+    public static synchronized @NotNull TmpDir getTemporaryDirectory(
+            @NotNull String id,
+            long deleteAfter,
+            @NotNull TimeUnit deleteAfterTimeUnit
+    ) throws IOException {
+        Path lutilsDir = getTemporaryDirectory().resolve("de.linusdev.lutils");
+
+        if(!Files.exists(lutilsDir))
+            Files.createDirectory(lutilsDir);
+
+        if(!Files.isDirectory(lutilsDir))
+            throw new Error("Lutils dir '" + lutilsDir + "' cannot be created.");
+
+        if(!tmpDirsChecked) {
+            tmpDirsChecked = true;
+
+            // Start checking which old tmp dirs can be deleted.
+            try(var dirs = Files.list(lutilsDir)) {
+                dirs.forEach(path -> {
+                    if(!Files.isDirectory(path))
+                        return;
+
+                    TmpDir tmpDir;
+                    try {
+                        tmpDir = new TmpDir(path);
+                    } catch (IOException e) {
+                        // This is not a valid tmp dir, delete it
+                        try {
+                            FileUtils.deleteDirectoryRecursively(path);
+                        } catch (IOException ignored) {
+                            // Cannot be deleted -> Ignore
+                        }
+
+                        return;
+                    }
+
+                    try {
+                        tmpDir.deleteIfItShouldBeDeleted();
+                    } catch (IOException e) {
+                        // Cannot be deleted -> Ignore
+                    }
+                });
+            }
+        }
+
+        Path tmpDir = lutilsDir.resolve(id + "_" + UUID.randomUUID());
+        Files.createDirectory(tmpDir);
+        return new TmpDir(tmpDir, deleteAfterTimeUnit.toMillis(deleteAfter));
     }
 
     /**

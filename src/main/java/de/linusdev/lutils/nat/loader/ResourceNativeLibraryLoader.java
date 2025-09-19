@@ -23,6 +23,7 @@ import de.linusdev.lutils.async.error.ThrowableAsyncError;
 import de.linusdev.lutils.async.manager.AsyncManager;
 import de.linusdev.lutils.io.FileUtils;
 import de.linusdev.lutils.io.ResourceUtils;
+import de.linusdev.lutils.io.tmp.TmpDir;
 import de.linusdev.lutils.os.OsArchitectureType;
 import de.linusdev.lutils.os.OsType;
 import de.linusdev.lutils.os.OsUtils;
@@ -33,6 +34,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 
@@ -139,8 +141,12 @@ public class ResourceNativeLibraryLoader {
     }
 
     private static @NotNull Path getTmpDir() throws IOException {
-        if(TMP_DIR == null)
-            TMP_DIR = FileUtils.getTemporaryDirectory("de.linusdev.lutils", "native-lib-loader");
+        if(TMP_DIR == null) {
+            TmpDir tmpDir = FileUtils.getTemporaryDirectory("native-lib-loader", 1, TimeUnit.DAYS);
+            TMP_DIR = tmpDir.getPath();
+            tmpDir.deleteOnExit();
+        }
+
         return TMP_DIR;
     }
 
