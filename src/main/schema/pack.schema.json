@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://linusdev.de/lutils/schemas/pack.schema.json",
+  "title": "Pack",
+  "description": "A pack",
+  "type": "object",
+  "patternProperties": {
+    "^description$": {
+      "description": "The description of the pack",
+      "type": "string"
+    }
+  },
+  "properties": {
+    "name": {
+      "description": "The name of the pack",
+      "type": "string"
+    },
+    "version": {
+      "description": "The version of the pack",
+      "type": "string",
+      "pattern": "((?<prefix>.+)-)?(?<version>\\d+.\\d+.\\d+)(-(?<postfix>[^-:]+))?(:(?<typeAppendix>.+))?"
+    },
+    "inventory": {
+      "description": "The contents of the pack",
+      "type": "object",
+      "patternProperties": {
+        "^.": { "type": "string" }
+      }
+    }
+  },
+  "required": [ "name", "description", "version", "inventory" ]
+}
+
