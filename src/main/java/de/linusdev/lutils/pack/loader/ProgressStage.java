@@ -19,7 +19,7 @@ package de.linusdev.lutils.pack.loader;
 import de.linusdev.lutils.pack.Group;
 import de.linusdev.lutils.pack.ProcessingGroup;
 import de.linusdev.lutils.pack.Resources;
-import de.linusdev.lutils.pack.item.ResourceCollection;
+import de.linusdev.lutils.pack.resource.ResourceCollection;
 import de.linusdev.lutils.pack.validation.ValidationResultBuilder;
 
 public enum ProgressStage {

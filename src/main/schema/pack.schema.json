@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://linusdev.de/lutils/schemas/pack.schema.json",
+  "$id": "https://raw.githubusercontent.com/lni-dev/LUtils/refs/heads/master/src/main/schema/pack.schema.json",
   "title": "Pack",
   "description": "A pack",
   "type": "object",

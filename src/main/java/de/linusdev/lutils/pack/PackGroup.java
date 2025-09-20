@@ -18,9 +18,9 @@ package de.linusdev.lutils.pack;
 
 import de.linusdev.lutils.data.json.Json;
 import de.linusdev.lutils.interfaces.TriConsumer;
-import de.linusdev.lutils.pack.item.Resource;
-import de.linusdev.lutils.pack.item.ResourceCollection;
 import de.linusdev.lutils.pack.map.ResourceMap;
+import de.linusdev.lutils.pack.resource.Resource;
+import de.linusdev.lutils.pack.resource.ResourceCollection;
 import de.linusdev.lutils.pack.validation.ResourceBoundValidationResultBuilder;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
@@ -31,10 +31,21 @@ import java.util.function.BiFunction;
  * A Group which is filled by {@link AbstractPack AbstractPacks}.
  * @param <G> The resource collection type of this group.
  * @param <I> The resource type of this group.
+ * @see #newResourceMapGroup(String, BiFunction, TriConsumer)
+ * @see Group
  */
 public abstract class PackGroup<G extends ResourceCollection<I>, I extends Resource> extends Group<G, I> {
 
-    public static <I extends Resource> @NotNull PackGroup<ResourceMap<I>, I> newIdMapGroup(
+    /**
+     * Create a new group with a {@link ResourceMap} as {@link ResourceCollection}.
+     * @param name the group name
+     * @param converter the converter to convert the resource from {@link Json} to {@link I}.
+     * @param validator validate the resource
+     *                  (See {@link Group#validateItem(ResourceBoundValidationResultBuilder, Resources, Resource) validateItem()}).
+     * @return A new group as described above.
+     * @param <I> the resource type.
+     */
+    public static <I extends Resource> @NotNull PackGroup<ResourceMap<I>, I> newResourceMapGroup(
             @NotNull String name,
             @NotNull BiFunction<AbstractPack, Json, I> converter,
             @NotNull TriConsumer<ResourceBoundValidationResultBuilder, Resources, I> validator

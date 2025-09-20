@@ -19,7 +19,7 @@ package de.linusdev.lutils.pack.validation;
 import de.linusdev.lutils.id.Identifier;
 import de.linusdev.lutils.pack.Group;
 import de.linusdev.lutils.pack.Pack;
-import de.linusdev.lutils.pack.item.Resource;
+import de.linusdev.lutils.pack.resource.Resource;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

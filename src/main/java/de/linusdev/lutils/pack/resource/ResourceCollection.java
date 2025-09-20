@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package de.linusdev.lutils.pack.item;
+package de.linusdev.lutils.pack.resource;
 
 import de.linusdev.lutils.id.Identifier;
 import de.linusdev.lutils.optional.Container;

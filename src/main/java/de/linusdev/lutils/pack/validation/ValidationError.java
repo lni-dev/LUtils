@@ -16,7 +16,7 @@
 
 package de.linusdev.lutils.pack.validation;
 
-import de.linusdev.lutils.pack.item.Resource;
+import de.linusdev.lutils.pack.resource.Resource;
 import org.jetbrains.annotations.NotNull;
 
 /**

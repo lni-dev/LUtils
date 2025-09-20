@@ -17,8 +17,8 @@
 package de.linusdev.lutils.pack.map;
 
 import de.linusdev.lutils.id.Identifier;
-import de.linusdev.lutils.pack.item.Resource;
-import de.linusdev.lutils.pack.item.ResourceCollection;
+import de.linusdev.lutils.pack.resource.Resource;
+import de.linusdev.lutils.pack.resource.ResourceCollection;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
@@ -26,6 +26,10 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.function.Supplier;
 
+/**
+ * Basic {@link ResourceCollection} implementation.
+ * @param <R> resource type
+ */
 public class ResourceMap<R extends Resource> implements ResourceCollection<R> {
 
     private final @NotNull HashMap<String, R> values = new HashMap<>();

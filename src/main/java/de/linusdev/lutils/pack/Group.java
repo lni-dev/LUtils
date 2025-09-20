@@ -16,8 +16,8 @@
 
 package de.linusdev.lutils.pack;
 
-import de.linusdev.lutils.pack.item.Resource;
-import de.linusdev.lutils.pack.item.ResourceCollection;
+import de.linusdev.lutils.pack.resource.Resource;
+import de.linusdev.lutils.pack.resource.ResourceCollection;
 import de.linusdev.lutils.pack.validation.ResourceBoundValidationResultBuilder;
 import de.linusdev.lutils.pack.validation.ValidationResultBuilder;
 import org.jetbrains.annotations.NotNull;
