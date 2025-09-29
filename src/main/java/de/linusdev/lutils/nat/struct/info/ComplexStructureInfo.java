@@ -65,7 +65,8 @@ public class ComplexStructureInfo extends StructureInfo {
     protected final @NotNull ABI abi;
 
     /**
-     * information about values inside the structure
+     * information about values inside the structure. Ordered array. The order is the
+     * order of the structure.
      */
     protected final @NotNull StructVarInfo @NotNull [] childrenInfo;
 

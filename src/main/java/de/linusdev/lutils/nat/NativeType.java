@@ -26,6 +26,11 @@ public enum NativeType {
         public @NotNull MemorySizeable getMemorySizeable(@NotNull Types types) {
             return types.integer();
         }
+
+        @Override
+        public Class<?> correspondingJavaType() {
+            return int.class;
+        }
     },
 
     INT8 {
@@ -34,12 +39,22 @@ public enum NativeType {
         public MemorySizeable getMemorySizeable(@NotNull Types types) {
             return types.int8();
         }
+
+        @Override
+        public Class<?> correspondingJavaType() {
+            return byte.class;
+        }
     },
     INT16 {
         @Override
         @NotNull
         public MemorySizeable getMemorySizeable(@NotNull Types types) {
             return types.int16();
+        }
+
+        @Override
+        public Class<?> correspondingJavaType() {
+            return short.class;
         }
     },
     INT32 {
@@ -48,12 +63,22 @@ public enum NativeType {
         public MemorySizeable getMemorySizeable(@NotNull Types types) {
             return types.int32();
         }
+
+        @Override
+        public Class<?> correspondingJavaType() {
+            return int.class;
+        }
     },
     INT64 {
         @Override
         @NotNull
         public MemorySizeable getMemorySizeable(@NotNull Types types) {
             return types.int64();
+        }
+
+        @Override
+        public Class<?> correspondingJavaType() {
+            return long.class;
         }
     },
     FLOAT32 {
@@ -62,12 +87,22 @@ public enum NativeType {
         public MemorySizeable getMemorySizeable(@NotNull Types types) {
             return types.float32();
         }
+
+        @Override
+        public Class<?> correspondingJavaType() {
+            return float.class;
+        }
     },
     FLOAT64 {
         @Override
         @NotNull
         public MemorySizeable getMemorySizeable(@NotNull Types types) {
             return types.float64();
+        }
+
+        @Override
+        public Class<?> correspondingJavaType() {
+            return double.class;
         }
     },
     POINTER {
@@ -76,7 +111,18 @@ public enum NativeType {
         public MemorySizeable getMemorySizeable(@NotNull Types types) {
             return types.pointer();
         }
+
+        @Override
+        public Class<?> correspondingJavaType() {
+            return long.class;
+        }
     };
 
     public abstract @NotNull MemorySizeable getMemorySizeable(@NotNull Types types);
+
+    /**
+     * Corresponding Java type for given type. May be wrong on {@link #POINTER} and {@link #INTEGER} depending on
+     * the {@link de.linusdev.lutils.nat.abi.ABI ABI} used.
+     */
+    public abstract Class<?> correspondingJavaType();
 }
