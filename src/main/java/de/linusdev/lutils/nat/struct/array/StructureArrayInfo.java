@@ -41,4 +41,12 @@ public class StructureArrayInfo extends ArrayInfo {
         this.elementClass = elementClass;
         this.elementInfo = elementInfo;
     }
+
+    public @NotNull Class<?> getElementClass() {
+        return elementClass;
+    }
+
+    public @NotNull StructureInfo getElementInfo() {
+        return elementInfo;
+    }
 }
