@@ -261,6 +261,16 @@ public interface JavaClass {
             public @NotNull JavaClass @NotNull [] getGenerics() {
                 return generics;
             }
+
+            @Override
+            public boolean isArray() {
+                return old.isArray();
+            }
+
+            @Override
+            public boolean isPrimitive() {
+                return old.isPrimitive();
+            }
         };
     }
 
@@ -270,6 +280,41 @@ public interface JavaClass {
         } catch (ClassNotFoundException e) {
             return null;
         }
+    }
+
+    default @NotNull JavaClass asArray() {
+        JavaClass old = this;
+        return new JavaClass() {
+            @Override
+            public @NotNull JavaPackage getPackage() {
+                return old.getPackage();
+            }
+
+            @Override
+            public @NotNull String getName() {
+                return old.getName();
+            }
+
+            @Override
+            public boolean hasGenerics() {
+                return old.hasGenerics();
+            }
+
+            @Override
+            public @NotNull JavaClass @NotNull [] getGenerics() {
+                return old.getGenerics();
+            }
+
+            @Override
+            public boolean isArray() {
+                return true;
+            }
+
+            @Override
+            public boolean isPrimitive() {
+                return old.isPrimitive();
+            }
+        };
     }
 
 }
