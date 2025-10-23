@@ -20,6 +20,7 @@ import de.linusdev.lutils.codegen.c.CPPFileGenerator;
 import de.linusdev.lutils.codegen.java.JavaFileGenerator;
 import de.linusdev.lutils.codegen.java.JavaPackage;
 import de.linusdev.lutils.codegen.java.JavaSourceGeneratorHelper;
+import de.linusdev.lutils.codegen.res.ResourceFileGenerator;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -44,6 +45,7 @@ public class SourceGenerator {
     private @NotNull JavaPackage javaBasePackage = new JavaPackage(new String[]{});
     private final @NotNull List<JavaFileGenerator> javaFiles = new ArrayList<>();
     private final @NotNull List<CPPFileGenerator> cppFiles = new ArrayList<>();
+    private final @NotNull List<ResourceFileGenerator> resFiles = new ArrayList<>();
 
     public SourceGenerator(@NotNull Path sourceFolder) {
         this.sourceFolder = sourceFolder;
@@ -60,6 +62,15 @@ public class SourceGenerator {
     public @NotNull CPPFileGenerator addCFile() {
         var file = new CPPFileGenerator();
         cppFiles.add(file);
+        return file;
+    }
+
+    public @NotNull ResourceFileGenerator addResourceFile(@NotNull String path, @NotNull String name, @NotNull String fileEnding) {
+        var file = new ResourceFileGenerator();
+        file.setName(name);
+        file.setFileEnding(fileEnding);
+        file.setPath(path);
+        resFiles.add(file);
         return file;
     }
     
@@ -106,6 +117,10 @@ public class SourceGenerator {
         return sourceFolder.resolve("cpp");
     }
 
+    public @NotNull Path getResourcePath() {
+        return sourceFolder.resolve("resources");
+    }
+
     public void write() throws IOException {
         if(!javaFiles.isEmpty()) {
             Path javaSourcePath = getJavaSourcePath();
@@ -148,6 +163,27 @@ public class SourceGenerator {
             }
 
 
+        }
+
+        if(!resFiles.isEmpty()) {
+            Path resPath = getResourcePath();
+            Files.createDirectories(resPath);
+
+            for (ResourceFileGenerator file : resFiles) {
+                Path resFilePackagePath = resPath.resolve(file.getPath());
+                Path resFilePath = resFilePackagePath.resolve(file.getName() + "." + file.getFileEnding());
+
+                Files.createDirectories(resFilePackagePath);
+                try(Writer writer = Files.newBufferedWriter(
+                        resFilePath,
+                        StandardCharsets.UTF_8,
+                        StandardOpenOption.TRUNCATE_EXISTING,
+                        StandardOpenOption.CREATE
+                )) {
+                    file.write(writer);
+                }
+
+            }
         }
     }
 }
