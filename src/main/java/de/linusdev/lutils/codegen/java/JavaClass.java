@@ -76,7 +76,15 @@ public interface JavaClass {
 
             @Override
             public @NotNull String getName() {
-                return clazz.isArray() ? clazz.getComponentType().getSimpleName() : clazz.getSimpleName();
+                String prefix = "";
+
+                Class<?> enclose = clazz.getEnclosingClass();
+                while(enclose != null) {
+                    prefix = enclose.getSimpleName() + "." + prefix;
+                    enclose = enclose.getEnclosingClass();
+                }
+
+                return prefix + (clazz.isArray() ? clazz.getComponentType().getSimpleName() : clazz.getSimpleName());
             }
 
             @Override
