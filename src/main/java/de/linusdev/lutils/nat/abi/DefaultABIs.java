@@ -102,6 +102,7 @@ public enum DefaultABIs implements ABI, Types {
 
     /**
      * @see <a href="https://learn.microsoft.com/en-us/cpp/build/x64-software-conventions?view=msvc-170">MSVC x64 software conventions</a>
+     * @see DefaultABIOverwrites#MSVC_X64
      */
     MSVC_X64 {
         private final @NotNull MemorySizeable POINTER64 = MemorySizeable.of(8);
@@ -234,6 +235,7 @@ public enum DefaultABIs implements ABI, Types {
 
     /**
      * Used for OPEN_CL, but structure code in OpenCL must be generated with {@link de.linusdev.lutils.nat.struct.generator.StructCodeGenerator StructCodeGenerator}.
+     * @see DefaultABIOverwrites#CVG4J_OPEN_CL
      */
     CVG4J_OPEN_CL {
         private final @NotNull MemorySizeable POINTER64 = MemorySizeable.of(8);
