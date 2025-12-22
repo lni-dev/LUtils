@@ -95,7 +95,9 @@ public abstract class Container<V> implements OptionalValue<V> {
 
     @Override
     public V get() {
-        return value;
+        //noinspection UnnecessaryLocalVariable: Disable IDE saying return value might be null.
+        V tmp = value;
+        return tmp;
     }
 
     @Override
@@ -144,7 +146,7 @@ public abstract class Container<V> implements OptionalValue<V> {
      * {@link #requireNotNullException()} if {@link #isNull()} is {@code true}.
      * @return this
      */
-    public @NotNull Container<V> requireNotNull() {
+    public @NotNull Container<@NotNull V> requireNotNull() {
         if(isNull()) throw requireNotNullException();
         return this;
     }
@@ -156,7 +158,7 @@ public abstract class Container<V> implements OptionalValue<V> {
      * @param <E> exception thrown if the value is {@code null}.
      * @throws E if the value is {@code null} ({@link #get()} returns {@code null}).
      */
-    public <E extends Throwable> @NotNull Container<V> requireNotNull(@NotNull ExceptionSupplier<E, Object> supplier) throws E {
+    public <E extends Throwable> @NotNull Container<@NotNull V> requireNotNull(@NotNull ExceptionSupplier<E, Object> supplier) throws E {
         if(isNull())
             throw supplier.supply(key());
         return this;
