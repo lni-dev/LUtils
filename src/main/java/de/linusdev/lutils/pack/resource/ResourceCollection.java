@@ -18,6 +18,7 @@ package de.linusdev.lutils.pack.resource;
 
 import de.linusdev.lutils.id.Identifier;
 import de.linusdev.lutils.optional.Container;
+import de.linusdev.lutils.optional.ExceptionSupplier;
 import de.linusdev.lutils.optional.impl.BasicContainer;
 import de.linusdev.lutils.pack.Group;
 import org.jetbrains.annotations.ApiStatus;
@@ -38,8 +39,31 @@ public interface ResourceCollection<R extends Resource> extends Iterable<R>{
     @Nullable R get(@NotNull Identifier id);
 
     /**
+     * Require that {@link #get(Identifier) get} with given {@code id} is not {@code null}.
+     * @param id the id of the resource
+     * @param exSupp supplier for exceptions
+     * @return {@link #get(Identifier)}
+     * @param <T> Your exception type
+     * @throws T if given {@link #get(Identifier) get} with given {@code id} is {@code null}.
+     */
+    default <T extends Throwable> @NotNull R requireNotNullAndGet(@NotNull Identifier id, @NotNull ExceptionSupplier<T, Identifier> exSupp) throws T {
+        R value = get(id);
+        if(value == null)
+            throw exSupp.supply(id);
+
+        return value;
+    }
+
+    /**
+     * Same as {@link #requireNotNullAndGet(Identifier, ExceptionSupplier)} with a {@link NullPointerException} supplier.
+     */
+    default @NotNull R requireNotNullAndGet(@NotNull Identifier id) throws NullPointerException {
+        return requireNotNullAndGet(id, ExceptionSupplier.ID_TO_NULL_POINTER_EXCEPTION_SUPPLIER);
+    }
+
+    /**
      * {@link #get(Identifier)} wrapped by a {@link Container}. The container's value exists, if {@link #get(Identifier) get()}
-     * returns {@code null}.
+     * does not return {@code null}.
      */
     default @NotNull Container<R> grab(@NotNull Identifier id) {
         R resource = get(id);

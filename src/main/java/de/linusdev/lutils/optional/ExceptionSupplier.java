@@ -16,6 +16,7 @@
 
 package de.linusdev.lutils.optional;
 
+import de.linusdev.lutils.id.Identifier;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -24,6 +25,10 @@ public interface ExceptionSupplier<E extends Throwable, K> {
     @NotNull
     ExceptionSupplier<NullPointerException, String> STR_TO_NULL_POINTER_EXCEPTION_SUPPLIER =
             (key) -> new NullPointerException("Value of key '" + key + "' is null.");
+
+    @NotNull
+    ExceptionSupplier<NullPointerException, Identifier> ID_TO_NULL_POINTER_EXCEPTION_SUPPLIER =
+            (id) -> new NullPointerException("Value of key '" + (id == null ? null : id.getAsString()) + "' is null.");
 
     @NotNull E supply(@Nullable K key);
 }

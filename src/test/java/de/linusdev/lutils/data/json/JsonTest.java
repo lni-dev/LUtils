@@ -209,4 +209,23 @@ class JsonTest {
         assertThrows(NullPointerException.class, () -> json.requireNotNullAndProcess("does not exist", (String str) -> processed.set(true)));
         assertFalse(processed.getAndSet(false));
     }
+
+    public record A(String a, int b, long c){}
+    public record B(A a, String b){}
+
+    @Test
+    void toRecordTest() throws IOException, ParseException {
+        Json json = JsonParser.DEFAULT_INSTANCE.parseString("""
+                {
+                    "a": { "a": "test", "b": 12, "c": 99999999999 },
+                    "b": "b!"
+                }
+                """);
+
+        B res = json.toRecord(B.class);
+        assertEquals("b!", res.b());
+        assertEquals("test", res.a().a());
+        assertEquals(12, res.a().b());
+        assertEquals(99999999999L, res.a().c());
+    }
 }

@@ -63,8 +63,8 @@ public abstract class PackGroup<G extends ResourceCollection<I>, I extends Resou
             }
 
             @Override
-            public void addToResourceCollection(@NotNull ResourceMap<I> collection, @NotNull Json data, @NotNull AbstractPack source) {
-                collection.put(converter.apply(source, data));
+            public void addToResourceCollection(@NotNull ResourceMap<I> collection, @NotNull Json json, @NotNull AbstractPack source) {
+                collection.put(converter.apply(source, json));
             }
         };
     }
@@ -74,16 +74,16 @@ public abstract class PackGroup<G extends ResourceCollection<I>, I extends Resou
     }
 
     /**
-     * Add the resource represented by {@code data} to the resource collection of this group.
+     * Add the resource represented by {@code json} to the resource collection of this group.
      * @param collection the resource collection of this group
-     * @param data the resource parsed from json
+     * @param json the resource parsed from json
      * @param source the {@link AbstractPack} the resource is from
      */
-    public abstract void addToResourceCollection(@NotNull G collection, @NotNull Json data, @NotNull AbstractPack source);
+    public abstract void addToResourceCollection(@NotNull G collection, @NotNull Json json, @NotNull AbstractPack source);
 
     @ApiStatus.Internal
-    void _addToResourceCollection(@NotNull ResourceCollection<?> collection, @NotNull Json data, @NotNull AbstractPack source) {
+    void _addToResourceCollection(@NotNull ResourceCollection<?> collection, @NotNull Json json, @NotNull AbstractPack source) {
         //noinspection unchecked
-        addToResourceCollection((G) collection, data, source);
+        addToResourceCollection((G) collection, json, source);
     }
 }
