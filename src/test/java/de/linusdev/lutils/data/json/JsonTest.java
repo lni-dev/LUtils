@@ -16,6 +16,7 @@
 
 package de.linusdev.lutils.data.json;
 
+import de.linusdev.lutils.data.DataBuilder;
 import de.linusdev.lutils.data.json.parser.JsonParser;
 import de.linusdev.lutils.other.parser.ParseException;
 import org.jetbrains.annotations.Nullable;
@@ -227,5 +228,20 @@ class JsonTest {
         assertEquals("test", res.a().a());
         assertEquals(12, res.a().b());
         assertEquals(99999999999L, res.a().c());
+    }
+
+    @Test
+    void conversionTest() {
+        DataBuilder data = DataBuilder.orderedKnownSize(3)
+                .add("integer", 1)
+                .add("bool", true)
+                .add("data", DataBuilder.orderedKnownSize(1).add("test", "test"));
+
+        Json json = JsonParser.DEFAULT_INSTANCE.convertDataToJson(data);
+
+        assertEquals(1L, json.get("integer"));
+        assertEquals(true, json.get("bool"));
+        assertInstanceOf(Json.class, json.get("data"));
+        assertEquals("test", json.<Json>getAs("data").get("test"));
     }
 }

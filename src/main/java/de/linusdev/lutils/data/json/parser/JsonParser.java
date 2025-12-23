@@ -21,6 +21,7 @@ import de.linusdev.lutils.data.Data;
 import de.linusdev.lutils.data.DataBuilder;
 import de.linusdev.lutils.data.Datable;
 import de.linusdev.lutils.data.ParseType;
+import de.linusdev.lutils.data.impl.DataWrapper;
 import de.linusdev.lutils.data.json.Json;
 import de.linusdev.lutils.data.json.JsonBuilder;
 import de.linusdev.lutils.data.json.JsonMapImpl;
@@ -35,6 +36,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.*;
 import java.util.*;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 
@@ -81,16 +83,16 @@ import java.util.function.Supplier;
  *         null to {@code null} (ignores case)
  *     </li>
  *     <li>
- *         Integer Numbers (1, 4, 5, ...) to {@link Long}
+ *         Integer Numbers (1, 4, 5, ...) to {@link Long} (see {@link #setIdentifyNumberValues(boolean) identifyNumberValues})
  *     </li>
  *     <li>
- *         Decimal Numbers (5.6, ...) to {@link Double}
+ *         Decimal Numbers (5.6, ...) to {@link Double} (see {@link #setIdentifyNumberValues(boolean) identifyNumberValues})
  *     </li>
  *     <li>
  *         "strings" to {@link String}
  *     </li>
  *     <li>
- *         Arrays ([...]) to {@link ArrayList ArrayList&lt;Object&gt;}
+ *         Arrays ([...]) to {@link List List&lt;Object&gt;} (see {@link #setListSupplier(Function) setListSupplier()})
  *     </li>
  *     <li>
  *         any other values are not supported and will most likely cause a {@link ParseException}
@@ -143,6 +145,8 @@ public class JsonParser {
     private @NotNull String indent = "\t";
 
     private @NotNull Supplier<JsonBuilder> jsonBuilderSupplier = () -> new JsonMapImpl(new HashMap<>());
+    private @NotNull Function<Integer, List<Object>> listSupplier = size -> size == null ? new LinkedList<>() : new ArrayList<>(size);
+
     private @NotNull String arrayWrapperKey = DEFAULT_ARRAY_WRAPPER_KEY;
     private boolean allowNewLineInStrings = true;
     private boolean identifyNumberValues = false;
@@ -174,6 +178,17 @@ public class JsonParser {
     @Contract("_ -> this")
     public @NotNull JsonParser setJsonBuilderSupplier(@NotNull Supplier<JsonBuilder> jsonBuilderSupplier) {
         this.jsonBuilderSupplier = jsonBuilderSupplier;
+        return this;
+    }
+
+    /**
+     * When this parser reads a json-list, this {@link Supplier} is used to create a new {@link List} object.<br>
+     * Default: {@code size -> size == null ? new LinkedList<>() : new ArrayList<>(size);}
+     * @param listSupplier {@link Supplier} to supply with {@link List}
+     */
+    @Contract("_ -> this")
+    public @NotNull JsonParser setListSupplier(@NotNull Function<Integer, List<Object>> listSupplier) {
+        this.listSupplier = listSupplier;
         return this;
     }
 
@@ -478,7 +493,7 @@ public class JsonParser {
     private @NotNull List<Object> parseJsonArray(@NotNull JsonReader reader, @NotNull ParseTracker tracker) throws IOException, ParseException {
         int i = 0;
         boolean valueParsed = false;
-        LinkedList<Object> list = new LinkedList<>();
+        List<Object> list =listSupplier.apply(null);
 
         while(i != -1){
             i = parsePossibleComment(reader.read(tracker), reader, tracker);
@@ -500,6 +515,141 @@ public class JsonParser {
         }
 
         throw new UnexpectedEndException(tracker);
+    }
+
+    /* ================================================================================================= *\
+    |                                                                                                     |
+    |                                     Data to Json (Not String-Json)                                  |
+    |                                                                                                     |
+    \* ================================================================================================= */
+
+    /**
+     * This function converts an object as if it was converted during parsing: {@code parseString(writeDataToString(data))}.
+     * {@link ParseType#CONTENT_ONLY CONTENT_ONLY}-{@link Data} is not supported except {@link DataWrapper}.
+     * @param obj the object to convert
+     * @return the converted object
+     */
+    @Contract("null -> null; !null -> !null")
+    public @Nullable Object convertObjectToJsonValidObject(@Nullable Object obj) {
+        if(obj == null)
+            return null;
+
+        if(obj instanceof Json json)
+            return json;
+
+        if(obj instanceof DataWrapper wrapper) {
+            return convertObjectToJsonValidObject(wrapper.wrappedValue());
+        }
+
+        if(obj instanceof Datable datable)
+            return convertDataToJson(datable.getData());
+
+        if (obj instanceof Simplifiable simple)
+            return simple.simplify();
+
+        if (obj instanceof String || obj instanceof Boolean)
+            return obj;
+
+        if(obj instanceof Integer || obj instanceof Byte || obj instanceof Short) {
+            if(identifyNumberValues) {
+                return obj;
+            } else {
+                return ((Number) obj).longValue();
+            }
+        }
+
+        if(obj instanceof Double || obj instanceof Float) {
+            if(identifyNumberValues) {
+                return obj;
+            } else {
+                return ((Number) obj).doubleValue();
+            }
+        }
+
+        if (obj instanceof Collection<?> collection) {
+            ArrayList<Object> list = new ArrayList<>(collection.size());
+
+            for (Object o : collection)
+                list.add(convertObjectToJsonValidObject(o));
+
+            return list;
+        }
+
+        if (obj instanceof Map<?,?> map) {
+            JsonBuilder jsonBuilder = jsonBuilderSupplier.get();
+            for (Map.Entry<?, ?> entry : map.entrySet())
+                jsonBuilder.add(Objects.toString(entry.getKey()), convertObjectToJsonValidObject(entry.getValue()));
+        }
+
+        if (obj instanceof Object[])
+            return obj;
+
+        if (obj.getClass().isArray()) {
+            if (obj instanceof byte[] a) {
+                List<Object> list = listSupplier.apply(a.length);
+                for (int i = 0; i < a.length; i++) list.set(i, a[i]) ;
+                return list;
+
+            } else if (obj instanceof short[] a) {
+                List<Object> list = listSupplier.apply(a.length);
+                for (int i = 0; i < a.length; i++) list.set(i, a[i]) ;
+                return list;
+
+            } else if (obj instanceof int[] a) {
+                List<Object> list = listSupplier.apply(a.length);
+                for (int i = 0; i < a.length; i++) list.set(i, a[i]) ;
+                return list;
+
+            } else if (obj instanceof long[] a) {
+                List<Object> list = listSupplier.apply(a.length);
+                for (int i = 0; i < a.length; i++) list.set(i, a[i]) ;
+                return list;
+
+            } else if (obj instanceof float[] a) {
+                List<Object> list = listSupplier.apply(a.length);
+                for (int i = 0; i < a.length; i++) list.set(i, a[i]) ;
+                return list;
+
+            } else if (obj instanceof double[] a) {
+                List<Object> list = listSupplier.apply(a.length);
+                for (int i = 0; i < a.length; i++) list.set(i, a[i]) ;
+                return list;
+            }
+        }
+
+        return obj.toString();
+    }
+
+    /**
+     * Convert a {@link Data} to {@link Json}. This method behaves exactly as {@code parseString(writeDataToString(data))}.
+     * <br>
+     * Limitations: {@link ParseType#CONTENT_ONLY CONTENT_ONLY}-{@link Data} is not supported.
+     * @param data {@link Data} to convert.
+     * @return {@link Json} as described above.
+     */
+    @Contract("null -> null; !null -> !null")
+    public @Nullable Json convertDataToJson(@Nullable Data data) {
+        if(data == null)
+            return null;
+
+        if(data instanceof Json json)
+            return json;
+
+        JsonBuilder jsonBuilder = jsonBuilderSupplier.get();
+
+        if(data.parseType() == ParseType.NORMAL) {
+            for (Entry<String, Object> entry : data) {
+                String key = entry.getKey();
+                Object value = entry.getValue();
+
+                jsonBuilder.add(key, convertObjectToJsonValidObject(value));
+            }
+
+        } else if (data.parseType() == ParseType.CONTENT_ONLY) {
+            throw new IllegalStateException("Cannot convert content only data.");
+        }
+
+        return jsonBuilder.build();
     }
 
     /* ================================================================================================= *\
