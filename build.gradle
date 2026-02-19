@@ -78,7 +78,7 @@ mavenPublishing {
     publishToMavenCentral(true)
 
     signAllPublications()
-    coordinates("de.linusdev.lutils", "lutils", "$lutils_version")
+    coordinates("de.linusdev", "lutils", "$lutils_version")
     pom {
         name = 'LUtils'
         description = 'Utils Library'
