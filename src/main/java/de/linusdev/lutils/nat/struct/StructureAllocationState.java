@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025 Linus Andera
+ * Copyright (c) 2025-2026 Linus Andera
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,7 +41,7 @@ public enum StructureAllocationState {
     /**
      * This structure has an {@link Structure#getInfo() info} but {@link Structure#isInitialised() is <b>not</b> backed by byte buffer}.
      * This means the structure is ready to be {@link Structure#allocate() allocated} or
-     * {@link Structure#claimBuffer(ByteBuffer) an already existing allocation can be assigned}.
+     * {@link Structure#claimMemory(ByteBuffer) an already existing allocation can be assigned}.
      */
     ALLOCATABLE,
     /**

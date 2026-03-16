@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024-2025 Linus Andera
+ * Copyright (c) 2024-2026 Linus Andera
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,7 +39,7 @@ public class NativeUInt8Array extends NativeInt8Array {
     }
 
     /**
-     * @see StructureStaticVariables#newAllocatable(StructValue)
+     * @see StructureStaticVariables#newAllocatable(ABI, int[], Class[]) 
      */
     public static NativeUInt8Array newAllocatable(@NotNull StructValue structValue) {
         return new NativeUInt8Array(structValue, true);

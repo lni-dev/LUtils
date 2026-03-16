@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024-2025 Linus Andera
+ * Copyright (c) 2024-2026 Linus Andera
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,47 +19,27 @@ package de.linusdev.lutils.math.vector.buffer;
 import de.linusdev.lutils.math.vector.Vector;
 import de.linusdev.lutils.nat.NativeType;
 import de.linusdev.lutils.nat.abi.ABI;
-import de.linusdev.lutils.nat.abi.OverwriteChildABI;
 import de.linusdev.lutils.nat.struct.abstracts.Structure;
 import de.linusdev.lutils.nat.struct.annos.RequirementType;
-import de.linusdev.lutils.nat.struct.annos.StructValue;
-import de.linusdev.lutils.nat.struct.annos.StructureSettings;
-import de.linusdev.lutils.nat.struct.generator.Language;
-import de.linusdev.lutils.nat.struct.generator.StaticGenerator;
+import de.linusdev.lutils.nat.struct.generator.SimpleStaticGenerator;
 import de.linusdev.lutils.nat.struct.generator.StructCodeGenerator;
 import de.linusdev.lutils.nat.struct.info.ArrayInfo;
 import de.linusdev.lutils.nat.struct.info.StructureInfo;
-import de.linusdev.lutils.nat.struct.utils.SSMUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-@StructureSettings(requiresCalculateInfoMethod = true, customLayoutOption = RequirementType.OPTIONAL)
 public abstract class BBVector extends Structure implements Vector {
 
     protected final @NotNull BBVectorGenerator generator;
     protected ArrayInfo.ArrayPositionFunction positions;
 
-    public BBVector(
-            @NotNull BBVectorGenerator generator,
-            boolean generateInfo,
-            @Nullable StructValue structValue
-    ) {
+    public BBVector(@NotNull BBVectorGenerator generator, @Nullable ABI abi) {
+        super(abi);
         this.generator = generator;
-        if(generateInfo) {
-            setInfo(SSMUtils.getInfo(
-                    this.getClass(),
-                    structValue,
-                    null,
-                    null,
-                    null,
-                    null,
-                    generator
-            ));
-        }
     }
 
     /**
-     * position of given {@code index} in {@link #byteBuf}
+     * position of given {@code index} in {@link #nativeMem}
      */
     protected int posInBuf(int index) {
         return positions.position(index);
@@ -67,11 +47,7 @@ public abstract class BBVector extends Structure implements Vector {
 
     @Override
     protected @Nullable StructureInfo generateInfo() {
-        return SSMUtils.getInfo(
-                this.getClass(),
-                null, null, null, null, null,
-                generator
-        );
+        return generator.calculateInfo(this.getClass(), abi, null, null);
     }
 
     @Override
@@ -101,40 +77,29 @@ public abstract class BBVector extends Structure implements Vector {
         return false;
     }
 
-    public static class BBVectorGenerator implements StaticGenerator {
+    public static class BBVectorGenerator extends SimpleStaticGenerator {
 
         private final int elementCount;
         private final @NotNull NativeType type;
 
         public BBVectorGenerator(int elementCount, @NotNull NativeType type) {
+            super(RequirementType.NOT_SUPPORTED, RequirementType.NOT_SUPPORTED);
             this.elementCount = elementCount;
             this.type = type;
         }
 
+
         @Override
-        public @NotNull StructureInfo calculateInfo(
-                @NotNull Class<?> selfClazz,
-                @Nullable StructValue structValue,
-                @NotNull StructValue @NotNull [] elementsStructValue,
-                @NotNull ABI abi,
-                @Nullable OverwriteChildABI overwriteChildAbi
-        ) {
+        public @NotNull StructureInfo calculateInfoChecked(@NotNull Class<?> selfClazz, @NotNull ABI abi, int[] length, @NotNull Class<?>[] elementTypes) {
             return BBVectorInfo.create(abi, elementCount, type);
         }
 
         @Override
         public @NotNull StructCodeGenerator codeGenerator() {
-            return new StructCodeGenerator() {
-                @Override
-                public @NotNull String getStructTypeName(
-                        @NotNull Language language,
-                        @NotNull Class<?> selfClazz,
-                        @NotNull StructureInfo info
-                ) {
-                    BBVectorInfo bbInfo = (BBVectorInfo) info;
+            return (language, selfClazz, info) -> {
+                BBVectorInfo bbInfo = (BBVectorInfo) info;
 
-                    return language.getNativeTypeName(bbInfo.getType()) + bbInfo.getLength();
-                }
+                return language.getNativeTypeName(bbInfo.getType()) + bbInfo.getLength();
             };
         }
     }

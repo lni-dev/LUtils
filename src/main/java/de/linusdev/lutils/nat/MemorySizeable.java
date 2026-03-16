@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024-2025 Linus Andera
+ * Copyright (c) 2024-2026 Linus Andera
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,10 +23,10 @@ import org.jetbrains.annotations.NotNull;
  */
 public interface MemorySizeable {
 
-    static @NotNull MemorySizeable of(int size, int alignment) {
+    static @NotNull MemorySizeable of(long size, int alignment) {
         return new MemorySizeable() {
             @Override
-            public int getRequiredSize() {
+            public long getRequiredSize() {
                 return size;
             }
 
@@ -37,10 +37,10 @@ public interface MemorySizeable {
         };
     }
 
-    static @NotNull MemorySizeable of(int size) {
+    static @NotNull MemorySizeable of(long size) {
         return new MemorySizeable() {
             @Override
-            public int getRequiredSize() {
+            public long getRequiredSize() {
                 return size;
             }
 
@@ -55,7 +55,7 @@ public interface MemorySizeable {
      * Required size in bytes including padding.
      * @return the size in bytes required by this object in memory
      */
-    int getRequiredSize();
+    long getRequiredSize();
 
     /**
      * The recommended alignment of this object in memory.

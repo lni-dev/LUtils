@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024-2025 Linus Andera
+ * Copyright (c) 2024-2026 Linus Andera
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,30 +19,17 @@ package de.linusdev.lutils.math.vector.buffer.doublen;
 import de.linusdev.lutils.math.vector.Vector;
 import de.linusdev.lutils.math.vector.abstracts.doublen.DoubleN;
 import de.linusdev.lutils.math.vector.buffer.BBVector;
-import de.linusdev.lutils.nat.struct.abstracts.Structure;
-import de.linusdev.lutils.nat.struct.annos.StructValue;
-import de.linusdev.lutils.nat.struct.info.StructureInfo;
+import de.linusdev.lutils.nat.abi.ABI;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public abstract class BBDoubleN extends BBVector implements DoubleN {
 
     public BBDoubleN(
-            @NotNull BBVectorGenerator generator,
-            boolean generateInfo,
-            @Nullable StructValue structValue
+            @Nullable ABI abi,
+            @NotNull BBVectorGenerator generator
     ) {
-        super(generator, generateInfo, structValue);
-    }
-
-
-    @Override
-    protected void useBuffer(
-            @NotNull Structure mostParentStructure,
-            int offset,
-            @NotNull StructureInfo info
-            ) {
-        super.useBuffer(mostParentStructure, offset, info);
+        super(generator, abi);
     }
 
     @Override
@@ -55,12 +42,12 @@ public abstract class BBDoubleN extends BBVector implements DoubleN {
 
     @Override
     public double get(int index) {
-        return byteBuf.getDouble(posInBuf(index));
+        return nativeMem.getDouble(posInBuf(index));
     }
 
     @Override
     public void put(int index, double value) {
-        byteBuf.putDouble(posInBuf(index), value);
+        nativeMem.setDouble(posInBuf(index), value);
     }
 
 }

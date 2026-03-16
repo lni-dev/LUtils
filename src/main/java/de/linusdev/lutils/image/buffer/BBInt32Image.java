@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024-2025 Linus Andera
+ * Copyright (c) 2024-2026 Linus Andera
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,16 +20,12 @@ import de.linusdev.lutils.image.Image;
 import de.linusdev.lutils.image.ImageSize;
 import de.linusdev.lutils.image.PixelFormat;
 import de.linusdev.lutils.nat.abi.ABI;
-import de.linusdev.lutils.nat.abi.OverwriteChildABI;
 import de.linusdev.lutils.nat.struct.abstracts.Structure;
 import de.linusdev.lutils.nat.struct.abstracts.StructureStaticVariables;
 import de.linusdev.lutils.nat.struct.annos.RequirementType;
-import de.linusdev.lutils.nat.struct.annos.SVWrapper;
-import de.linusdev.lutils.nat.struct.annos.StructValue;
-import de.linusdev.lutils.nat.struct.annos.StructureSettings;
+import de.linusdev.lutils.nat.struct.generator.SimpleStaticGenerator;
 import de.linusdev.lutils.nat.struct.generator.StaticGenerator;
 import de.linusdev.lutils.nat.struct.info.StructureInfo;
-import de.linusdev.lutils.nat.struct.utils.SSMUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -39,27 +35,15 @@ import java.nio.ByteOrder;
  * Buffer backed int32 image. Stores pixel data row major in given {@link #pixelFormat} format
  * in little endian byte order.
  */
-@StructureSettings(
-        requiresCalculateInfoMethod = true,
-        customLengthOption = RequirementType.REQUIRED
-)
+@SuppressWarnings("IntegerMultiplicationImplicitCastToLong")
 public class BBInt32Image extends Structure implements Image {
 
-    public final static @NotNull StaticGenerator GENERATOR = new StaticGenerator() {
+    public final static @NotNull StaticGenerator GENERATOR = new SimpleStaticGenerator(
+            RequirementType.REQUIRED, RequirementType.NOT_SUPPORTED
+    ) {
         @Override
-        public @NotNull StructureInfo calculateInfo(
-                @NotNull Class<?> selfClazz,
-                @Nullable StructValue structValue,
-                @NotNull StructValue @NotNull [] elementsStructValue,
-                @NotNull ABI abi,
-                @NotNull OverwriteChildABI overwriteChildAbi
-        ) {
-            assert structValue != null;
-            int width = structValue.length()[0];
-            int height = structValue.length()[1];
-
-
-            return new BBImageInfo(4, false, width, height, 4, 0, 0);
+        public @NotNull StructureInfo calculateInfoChecked(@NotNull Class<?> selfClazz, @NotNull ABI abi, int[] length, @NotNull Class<?>[] elementTypes) {
+            return new BBImageInfo(4, false, length[0], length[1], 4, 0, 0);
         }
     };
 
@@ -68,31 +52,23 @@ public class BBInt32Image extends Structure implements Image {
      * @see #pixelFormat
      */
     public static @NotNull BBInt32Image newUnallocated(@NotNull PixelFormat<Integer> pixelFormat) {
-        return new BBInt32Image(null, false, pixelFormat);
+        return new BBInt32Image(pixelFormat);
     }
 
     /**
-     * @see StructureStaticVariables#newAllocatable(StructValue)
+     * @see StructureStaticVariables#newAllocatable(ABI, int[], Class[]) 
      * @see #pixelFormat
      */
-    public static @NotNull BBInt32Image newAllocatable(@NotNull StructValue structValue, @NotNull PixelFormat<Integer> pixelFormat) {
-        return new BBInt32Image(structValue, true, pixelFormat);
+    public static @NotNull BBInt32Image newAllocatable(@Nullable ABI abi, @NotNull PixelFormat<Integer> pixelFormat, int width, int height) {
+        return new BBInt32Image(abi, pixelFormat, width, height);
     }
 
     /**
-     * @see StructureStaticVariables#newAllocatable(StructValue)
+     * @see StructureStaticVariables#newAllocatable(ABI, int[], Class[]) 
      * @see #pixelFormat
      */
-    public static @NotNull BBInt32Image newAllocatable(@NotNull ImageSize size, @NotNull PixelFormat<Integer> pixelFormat) {
-        return new BBInt32Image(SVWrapper.imageSize(size), true, pixelFormat);
-    }
-
-    /**
-     * @see StructureStaticVariables#newAllocated(StructValue)
-     * @see #pixelFormat
-     */
-    public static @NotNull BBInt32Image newAllocated(@NotNull StructValue structValue, @NotNull PixelFormat<Integer> pixelFormat) {
-        return allocate(new BBInt32Image(structValue, true, pixelFormat));
+    public static @NotNull BBInt32Image newAllocatable(@Nullable ABI abi, @NotNull PixelFormat<Integer> pixelFormat, @NotNull ImageSize size) {
+        return new BBInt32Image(abi, pixelFormat, size.getWidth(), size.getHeight());
     }
 
     private int width = 0;
@@ -104,28 +80,21 @@ public class BBInt32Image extends Structure implements Image {
      */
     private final @NotNull PixelFormat<Integer> pixelFormat;
 
-    protected BBInt32Image(
-            @Nullable StructValue structValue,
-            boolean generateInfo,
-            @NotNull PixelFormat<Integer> pixelFormat
-    ) {
+    protected BBInt32Image(@NotNull PixelFormat<Integer> pixelFormat) {
+        super(null);
         this.pixelFormat = pixelFormat;
-        assert !generateInfo || structValue != null;
+    }
 
-        if(generateInfo) {
-            setInfo(SSMUtils.getInfo(
-                    this.getClass(),
-                    structValue,
-                    null, null, null, null,
-                    GENERATOR
-            ));
-        }
+    protected BBInt32Image(@Nullable ABI abi, @NotNull PixelFormat<Integer> pixelFormat, int width, int height) {
+        super(abi);
+        this.pixelFormat = pixelFormat;
+        setInfo(GENERATOR.calculateInfo(this.getClass(), abi, new int[]{width, height}, null));
     }
 
     @Override
     protected void useBuffer(@NotNull Structure mostParentStructure, int offset, @NotNull StructureInfo info) {
         super.useBuffer(mostParentStructure, offset, info);
-        byteBuf.order(ByteOrder.LITTLE_ENDIAN); // Byte order for this class is always little endian
+        assert nativeMem.byteOrder() == ByteOrder.LITTLE_ENDIAN; // Byte order for this class is always little endian
     }
 
     @Override
@@ -155,7 +124,7 @@ public class BBInt32Image extends Structure implements Image {
     public int getPixelAsRGBA(int x, int y) {
         assert x < width;
         assert y < height;
-        return pixelFormat.toR8G8B8A8_SRGB(fixEndianness(byteBuf.getInt((y * width + x) * pixelSize)));
+        return pixelFormat.toR8G8B8A8_SRGB(fixEndianness(nativeMem.getInt(( y * width + x) * pixelSize)));
     }
 
     public int fixEndianness(int rgba) {
@@ -166,7 +135,7 @@ public class BBInt32Image extends Structure implements Image {
     public void setPixelAsRGBA(int x, int y, int rgba) {
         assert x < width;
         assert y < height;
-        byteBuf.putInt((y * getWidth() + x) * pixelSize, fixEndianness(pixelFormat.from(PixelFormat.R8G8B8A8_SRGB, rgba)));
+        nativeMem.setInt((y * getWidth() + x) * pixelSize, fixEndianness(pixelFormat.from(PixelFormat.R8G8B8A8_SRGB, rgba)));
     }
 
     @Override

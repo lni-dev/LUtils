@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2025 Linus Andera
+ * Copyright (c) 2023-2026 Linus Andera
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,13 +16,12 @@
 
 package de.linusdev.lutils.nat.struct.mod;
 
+import de.linusdev.lutils.nat.abi.ABI;
 import de.linusdev.lutils.nat.struct.abstracts.Structure;
-import de.linusdev.lutils.nat.struct.info.StructureInfo;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.nio.ByteBuffer;
 import java.util.concurrent.locks.ReentrantLock;
 
 public abstract class ModTrackingStructure extends Structure {
@@ -33,34 +32,21 @@ public abstract class ModTrackingStructure extends Structure {
      * that need to be synchronized to different locations after being modified.
      */
     protected final boolean trackModifications;
-    protected ReentrantLock modificationLock;
+    protected final ReentrantLock modificationLock;
     protected final int modificationSplitOffset = 128;
     protected ModificationInfo modInfo = null;
 
     /**
      * @param trackModifications see {@link #trackModifications}
      */
-    protected ModTrackingStructure(boolean trackModifications) {
+    protected ModTrackingStructure(@Nullable ABI abi, boolean trackModifications) {
+        super(abi);
         this.trackModifications = trackModifications;
+        this.modificationLock = trackModifications ? new ReentrantLock() : null;
     }
 
     @Override
-    protected void useBuffer(
-            @NotNull Structure mostParentStructure,
-            int offset,
-            @NotNull StructureInfo info
-    ) {
-        super.useBuffer(mostParentStructure, offset, info);
-    }
-
-    @Override
-    public void claimBuffer(@NotNull ByteBuffer buffer) {
-        super.claimBuffer(buffer);
-        this.modificationLock = new ReentrantLock();
-    }
-
-    @Override
-    protected void onModification(int offset, int size) {
+    protected void onModification(long offset, long size) {
         if(trackModifications) {
             modificationLock.lock();
 

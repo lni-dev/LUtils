@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024-2025 Linus Andera
+ * Copyright (c) 2024-2026 Linus Andera
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,7 +36,7 @@ public class NativeInt64Array extends NativePrimitiveTypeArray<Long> {
     }
 
     /**
-     * @see StructureStaticVariables#newAllocatable(StructValue)
+     * @see StructureStaticVariables#newAllocatable(ABI, int[], Class[]) 
      */
     public static NativeInt64Array newAllocatable(@NotNull StructValue structValue) {
         return new NativeInt64Array(structValue, true);

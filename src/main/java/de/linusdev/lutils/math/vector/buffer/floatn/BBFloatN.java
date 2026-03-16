@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2025 Linus Andera
+ * Copyright (c) 2023-2026 Linus Andera
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,30 +19,14 @@ package de.linusdev.lutils.math.vector.buffer.floatn;
 import de.linusdev.lutils.math.vector.Vector;
 import de.linusdev.lutils.math.vector.abstracts.floatn.FloatN;
 import de.linusdev.lutils.math.vector.buffer.BBVector;
-import de.linusdev.lutils.nat.struct.abstracts.Structure;
-import de.linusdev.lutils.nat.struct.annos.StructValue;
-import de.linusdev.lutils.nat.struct.info.StructureInfo;
+import de.linusdev.lutils.nat.abi.ABI;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public abstract class BBFloatN extends BBVector implements FloatN {
 
-    public BBFloatN(
-            @NotNull BBVectorGenerator generator,
-            boolean generateInfo,
-            @Nullable StructValue structValue
-    ) {
-        super(generator, generateInfo, structValue);
-    }
-
-
-    @Override
-    protected void useBuffer(
-            @NotNull Structure mostParentStructure,
-            int offset,
-            @NotNull StructureInfo info
-    ) {
-        super.useBuffer(mostParentStructure, offset, info);
+    public BBFloatN(@NotNull BBVectorGenerator generator, @Nullable ABI abi) {
+        super(generator, abi);
     }
 
     @Override
@@ -55,12 +39,12 @@ public abstract class BBFloatN extends BBVector implements FloatN {
 
     @Override
     public float get(int index) {
-        return byteBuf.getFloat(posInBuf(index));
+        return nativeMem.getFloat(posInBuf(index));
     }
 
     @Override
     public void put(int index, float value) {
-        byteBuf.putFloat(posInBuf(index), value);
+        nativeMem.setFloat(posInBuf(index), value);
     }
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024-2025 Linus Andera
+ * Copyright (c) 2024-2026 Linus Andera
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,13 +17,11 @@
 package de.linusdev.lutils.nat.struct.info;
 
 import de.linusdev.lutils.nat.abi.ABI;
-import de.linusdev.lutils.nat.abi.OverwriteChildABI;
 import de.linusdev.lutils.nat.struct.abstracts.ComplexStructure;
 import de.linusdev.lutils.nat.struct.abstracts.StructVarUtils;
 import de.linusdev.lutils.nat.struct.abstracts.Structure;
 import de.linusdev.lutils.nat.struct.annos.StructValue;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 /**
  * Additional to the information contained in {@link StructureInfo}, this class also contains information about
@@ -39,11 +37,10 @@ public class ComplexStructureInfo extends StructureInfo {
      */
     public static @NotNull ComplexStructureInfo generateFromStructVars(
             @NotNull Class<?> clazz,
-            @NotNull ABI abi,
-            @Nullable OverwriteChildABI overwriteChildAbi
+            @NotNull ABI abi
     ) {
         return StructVarUtils.getStructVars(
-                clazz, abi, overwriteChildAbi,
+                clazz, abi,
                 (varInfos, infos) -> {
                     StructureInfo info = abi.calculateStructureLayout(false, infos);
 
@@ -59,10 +56,6 @@ public class ComplexStructureInfo extends StructureInfo {
         );
     }
 
-    /**
-     * {@link ABI} used to create this info.
-     */
-    protected final @NotNull ABI abi;
 
     /**
      * information about values inside the structure. Ordered array. The order is the
@@ -77,16 +70,8 @@ public class ComplexStructureInfo extends StructureInfo {
             int[] sizes, @NotNull ABI abi,
             @NotNull StructVarInfo @NotNull [] infos
     ) {
-        super(alignment, compress, size, sizes);
-        this.abi = abi;
+        super(abi, alignment, compress, size, sizes);
         this.childrenInfo = infos;
-    }
-
-    /**
-     * @see #abi
-     */
-    public @NotNull ABI getABI() {
-        return abi;
     }
 
     /**
@@ -98,7 +83,7 @@ public class ComplexStructureInfo extends StructureInfo {
 
     /**
      * Gets all children through reflection. This should be used sparsely. But it is required if this {@link StructureInfo}
-     * was automatically generated (see {@link #generateFromStructVars(Class, ABI, OverwriteChildABI)}) with no {@link StructValue#value() element order} specified.
+     * was automatically generated (see {@link #generateFromStructVars(Class, ABI)}) with no {@link StructValue#value() element order} specified.
      * @param instance instance of the {@link ComplexStructure} this info belongs to
      * @return children {@link Structure} array
      */

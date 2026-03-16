@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024-2025 Linus Andera
+ * Copyright (c) 2024-2026 Linus Andera
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,7 +36,7 @@ public class NativeFloat32Array extends NativePrimitiveTypeArray<Float> {
     }
 
     /**
-     * @see StructureStaticVariables#newAllocatable(StructValue)
+     * @see StructureStaticVariables#newAllocatable(ABI, int[], Class[]) 
      */
     public static NativeFloat32Array newAllocatable(@NotNull StructValue structValue) {
         return new NativeFloat32Array(structValue, true);

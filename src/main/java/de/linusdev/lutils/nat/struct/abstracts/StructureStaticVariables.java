@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024-2025 Linus Andera
+ * Copyright (c) 2024-2026 Linus Andera
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,14 +16,16 @@
 
 package de.linusdev.lutils.nat.struct.abstracts;
 
+import de.linusdev.lutils.nat.abi.ABI;
 import de.linusdev.lutils.nat.struct.StructureAllocationState;
+import de.linusdev.lutils.nat.struct.annos.Struct;
 import de.linusdev.lutils.nat.struct.annos.StructValue;
-import de.linusdev.lutils.nat.struct.annos.StructureSettings;
 import de.linusdev.lutils.nat.struct.generator.StaticGenerator;
 import de.linusdev.lutils.nat.struct.generator.StructCodeGenerator;
 import de.linusdev.lutils.nat.struct.info.StructureInfo;
 import de.linusdev.lutils.nat.struct.utils.SSMUtils;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.nio.ByteBuffer;
 
@@ -50,15 +52,7 @@ public interface StructureStaticVariables {
 
     /**
      * This {@code public static final} variable is required if
-     * {@link StructureSettings#requiresCalculateInfoMethod()} is set
-     * to {@code false}. The variable must not be {@code null} (unlike this example).
-     */
-    @SuppressWarnings("unused")
-    public static final @NotNull StructureInfo INFO = null;
-
-    /**
-     * This {@code public static final} variable is required if
-     * {@link StructureSettings#requiresCalculateInfoMethod()} is set
+     * {@link Struct#requiresCalculateInfoMethod()} is set
      * to {@code true}. The variable must not be {@code null} (unlike this example). It can also be
      * present, if an {@link StructCodeGenerator} shall be provided (see {@link StaticGenerator#codeGenerator() here}).
      * <br><br>
@@ -85,24 +79,12 @@ public interface StructureStaticVariables {
      * This method can be optionally implemented.
      * <br><br>
      * Creates a new {@link StructureAllocationState#ALLOCATABLE allocatable} instance of the structure, <b>with</b>
-     * generating its {@link Structure#info info}. This means {@link Structure#allocate() allocate()} or {@link Structure#claimBuffer(ByteBuffer) claimBuffer()} must be called
+     * generating its {@link Structure#info info}. This means {@link Structure#allocate() allocate()} or {@link Structure#claimMemory(ByteBuffer) claimBuffer()} must be called
      * afterward to use the structure. This is useful, if the buffer for the structure already exist and must be claimed
-     * using {@link Structure#claimBuffer(ByteBuffer) claimBuffer()}.
+     * using {@link Structure#claimMemory(ByteBuffer) claimBuffer()}.
      * @return a freshly created allocatable structure.
      */
-    public static @NotNull Structure newAllocatable(StructValue structValue) {
-        throw new UnsupportedOperationException("example only");
-    }
-
-    /**
-     * This method can be optionally implemented.
-     * <br><br>
-     * Creates a new {@link StructureAllocationState#ALLOCATED allocated} instance of the structure, <b>with</b>
-     * generating its {@link Structure#info info} and calling {@link Structure#allocate() allocate()}. This is useful, if a ready-to-use structure is
-     * required.
-     * @return a freshly created allocated structure.
-     */
-    public static @NotNull Structure newAllocated(StructValue structValue) {
+    public static @NotNull Structure newAllocatable(@Nullable ABI abi, int @Nullable [] length, @NotNull Class<?> @Nullable [] elementTypes) {
         throw new UnsupportedOperationException("example only");
     }
 

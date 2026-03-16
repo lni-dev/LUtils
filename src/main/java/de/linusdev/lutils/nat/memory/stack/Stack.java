@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024-2025 Linus Andera
+ * Copyright (c) 2024-2026 Linus Andera
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,14 +18,14 @@ package de.linusdev.lutils.nat.memory.stack;
 
 import de.linusdev.lutils.math.vector.buffer.intn.BBInt1;
 import de.linusdev.lutils.math.vector.buffer.intn.BBUInt1;
+import de.linusdev.lutils.nat.abi.ABI;
 import de.linusdev.lutils.nat.memory.DirectMemoryManager;
+import de.linusdev.lutils.nat.memory.NativeMemBuffer;
 import de.linusdev.lutils.nat.pointer.BBPointer64;
 import de.linusdev.lutils.nat.pointer.BBTypedPointer64;
 import de.linusdev.lutils.nat.string.NullTerminatedUTF8String;
 import de.linusdev.lutils.nat.struct.UStructSupplier;
 import de.linusdev.lutils.nat.struct.abstracts.Structure;
-import de.linusdev.lutils.nat.struct.annos.SVWrapper;
-import de.linusdev.lutils.nat.struct.annos.StructValue;
 import de.linusdev.lutils.nat.struct.array.StructureArray;
 import org.jetbrains.annotations.NotNull;
 
@@ -34,12 +34,12 @@ import java.nio.ByteBuffer;
 public interface Stack extends DirectMemoryManager {
 
     /**
-     * Pushes given {@code structure}) onto this stack and allocates it (calls {@link Structure#claimBuffer(ByteBuffer) claimBuffer}). The stack
+     * Pushes given {@code structure}) onto this stack and allocates it (calls {@link Structure#claimMemory(NativeMemBuffer, long) claimMemory}). The stack
      * must respect the alignment requirements of given {@code structure}. The stack must also ensure, that all bytes, the structure will use are set to
-     * zero before {@link Structure#claimBuffer(ByteBuffer) claimBuffer} is called.
+     * zero before {@link Structure#claimMemory(NativeMemBuffer, long) claimMemory} is called.
      * <br><br>
      * For each push call should exist a {@link #pop()} call later.
-     * @param structure unallocated {@link Structure}, which should use a part of this stack as its {@link Structure#getByteBuffer() buffer}.
+     * @param structure unallocated {@link Structure}, which should use a part of this stack as its {@link Structure#getNativeMemBuffer() native memory}.
      * @return allocated {@link Structure}
      * @param <T> structure type
      */
@@ -104,7 +104,7 @@ public interface Stack extends DirectMemoryManager {
     @NotNull PopPoint popPoint();
 
     /**
-     * Creates a new {@link BBUInt1} using {@link BBUInt1#newAllocatable(StructValue) BBUInt1.newAllocatable(null)} and
+     * Creates a new {@link BBUInt1} using {@link BBUInt1#newAllocatable(de.linusdev.lutils.nat.abi.ABI) BBUInt1.newAllocatable(null)} and
      * {@link #push(Structure) pushes} it onto this stack.
      * @return pushed {@link BBUInt1}
      */
@@ -113,7 +113,7 @@ public interface Stack extends DirectMemoryManager {
     }
 
     /**
-     * Creates a new {@link BBInt1} using {@link BBInt1#newAllocatable(StructValue) BBInt1.newAllocatable(null)} and
+     * Creates a new {@link BBInt1} using {@link BBInt1#newAllocatable(ABI) BBInt1.newAllocatable(null)} and
      * {@link #push(Structure) pushes} it onto this stack.
      * @return pushed {@link BBInt1}
      */
@@ -133,32 +133,26 @@ public interface Stack extends DirectMemoryManager {
 
     /**
      * Creates a new {@link StructureArray} using
-     * {@link StructureArray#newAllocatable(boolean, StructValue, StructValue, UStructSupplier)
-     * StructureArray.newAllocatable(false, SVWrapper.of(size, elementClazz), null, creator)} and
+     * {@link StructureArray#newAllocatable(boolean, ABI, int, Class, UStructSupplier) StructureArray.newAllocatable(false, null, size, elementClazz, creator)} and
      * {@link #push(Structure) pushes} it onto this stack.
      *
      * @param size array length
      * @param elementClazz class of {@link T}
-     * @param creator see {@link StructureArray#newAllocated(int, Class, UStructSupplier) newAllocated()}
+     * @param creator see {@link StructureArray#newAllocatable(boolean, ABI, int, Class, UStructSupplier) newAllocatable()}
      * @return pushed {@link StructureArray}
      */
     default <T extends Structure> @NotNull StructureArray<T> pushArray(
             int size,
-            @NotNull Class<?> elementClazz,
+            @NotNull Class<? extends Structure> elementClazz,
             @NotNull UStructSupplier<T> creator
     ) {
-        StructureArray<T> array = StructureArray.newAllocatable(
-                false, 
-                SVWrapper.of(size, elementClazz), 
-                null, 
-                creator
-        );
+        StructureArray<T> array = StructureArray.newAllocatable(false, null, size, elementClazz, creator);
 
         return push(array);
     }
 
     /**
-     * Creates a new {@link BBPointer64} using {@link BBPointer64#newAllocatable(StructValue) BBPointer64.newAllocatable(null)} and
+     * Creates a new {@link BBPointer64} using {@link BBPointer64#newAllocatable(ABI) BBPointer64.newAllocatable(null)} and
      * {@link #push(Structure) pushes} it onto this stack.
      * @return pushed {@link BBPointer64}
      */
@@ -167,7 +161,7 @@ public interface Stack extends DirectMemoryManager {
     }
 
     /**
-     * Creates a new {@link BBTypedPointer64} using {@link BBTypedPointer64#newAllocatable1(StructValue) BBPointer64.newAllocatable1(null)} and
+     * Creates a new {@link BBTypedPointer64} using {@link BBTypedPointer64#newAllocatable1(ABI) BBPointer64.newAllocatable1(null)} and
      * {@link #push(Structure) pushes} it onto this stack.
      * @return pushed {@link BBTypedPointer64}
      */
@@ -182,6 +176,6 @@ public interface Stack extends DirectMemoryManager {
      * @param alignment alignment of the required byte buffer
      * @return {@link ByteBuffer} with given {@code size} and aligned to given {@code alignment}
      */
-    @NotNull ByteBuffer pushByteBuffer(int size, int alignment);
+    @NotNull NativeMemBuffer pushNativeMemBuffer(long size, int alignment);
 
 }

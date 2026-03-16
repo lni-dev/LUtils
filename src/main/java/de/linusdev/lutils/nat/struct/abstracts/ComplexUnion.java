@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024-2025 Linus Andera
+ * Copyright (c) 2024-2026 Linus Andera
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,10 +17,9 @@
 package de.linusdev.lutils.nat.struct.abstracts;
 
 import de.linusdev.lutils.nat.abi.ABI;
-import de.linusdev.lutils.nat.abi.OverwriteChildABI;
 import de.linusdev.lutils.nat.struct.annos.RequirementType;
+import de.linusdev.lutils.nat.struct.annos.Struct;
 import de.linusdev.lutils.nat.struct.annos.StructValue;
-import de.linusdev.lutils.nat.struct.annos.StructureSettings;
 import de.linusdev.lutils.nat.struct.generator.StaticGenerator;
 import de.linusdev.lutils.nat.struct.info.ComplexUnionInfo;
 import de.linusdev.lutils.nat.struct.info.StructVarInfo;
@@ -34,7 +33,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.HashMap;
 import java.util.Map;
 
-@StructureSettings(requiresCalculateInfoMethod = true, customLayoutOption = RequirementType.OPTIONAL)
+@Struct(requiresCalculateInfoMethod = true, customLayoutOption = RequirementType.OPTIONAL)
 public abstract class ComplexUnion extends ModTrackingStructure {
 
     @SuppressWarnings("unused") // accessed via reflection
@@ -114,8 +113,7 @@ public abstract class ComplexUnion extends ModTrackingStructure {
                 @NotNull Class<?> selfClazz,
                 @Nullable StructValue structValue,
                 @NotNull StructValue @NotNull [] elementsStructValue,
-                @NotNull ABI abi,
-                @Nullable OverwriteChildABI overwriteChildAbi
+                @Nullable ABI abi
         ) {
             synchronized (INFO_MAP_LOCK) {
                 ClassAndAbi key = new ClassAndAbi(selfClazz, abi);

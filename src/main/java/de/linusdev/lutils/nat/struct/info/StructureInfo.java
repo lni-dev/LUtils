@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024-2025 Linus Andera
+ * Copyright (c) 2024-2026 Linus Andera
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 package de.linusdev.lutils.nat.struct.info;
 
 import de.linusdev.lutils.nat.MemorySizeable;
+import de.linusdev.lutils.nat.abi.ABI;
 import de.linusdev.lutils.nat.struct.abstracts.Structure;
 import org.jetbrains.annotations.NotNull;
 
@@ -38,7 +39,7 @@ public class StructureInfo implements MemorySizeable {
     /**
      * @see #getRequiredSize()
      */
-    protected final int size;
+    protected final long size;
 
     /**
      * array of item sizes. Always alternating between padding and item.
@@ -47,7 +48,9 @@ public class StructureInfo implements MemorySizeable {
      * Layout: <br>
      * [0]: pad, [1]: size, [2]: pad, [3]: size, [4]: pad, [5]: size, ...
      */
-    protected final int @NotNull [] sizes;
+    protected final long @NotNull [] sizes;
+
+    protected final @NotNull ABI abi;
 
     /**
      * Manually create {@link StructureInfo}.
@@ -57,10 +60,11 @@ public class StructureInfo implements MemorySizeable {
      * @param size size of the actual {@link Structure} (without any padding)
      * @param postPadding padding after the {@link Structure}
      */
-    public StructureInfo(int alignment, boolean compressed, int prePadding, int size, int postPadding) {
+    public StructureInfo(@NotNull ABI abi, int alignment, boolean compressed, int prePadding, long size, int postPadding) {
+        this.abi = abi;
         this.alignment = alignment;
         this.compressed = compressed;
-        this.sizes = new int[]{prePadding, size, postPadding};
+        this.sizes = new long[]{prePadding, size, postPadding};
         this.size = prePadding + size + postPadding;
     }
 
@@ -71,7 +75,8 @@ public class StructureInfo implements MemorySizeable {
      * @param size size of the actual {@link Structure} (without any padding)
      * @param sizes array of item sizes. see {@link #sizes}
      */
-    public StructureInfo(int alignment, boolean compressed, int size, int @NotNull [] sizes) {
+    public StructureInfo(@NotNull ABI abi, int alignment, boolean compressed, long size, long @NotNull [] sizes) {
+        this.abi = abi;
         this.alignment = alignment;
         this.compressed = compressed;
         this.sizes = sizes;
@@ -79,7 +84,7 @@ public class StructureInfo implements MemorySizeable {
     }
 
     @Override
-    public int getRequiredSize() {
+    public long getRequiredSize() {
         return size;
     }
 
@@ -100,8 +105,15 @@ public class StructureInfo implements MemorySizeable {
     /**
      * @return {@link #sizes}
      */
-    public int @NotNull [] getSizes() {
+    public long @NotNull [] getSizes() {
         return sizes;
+    }
+
+    /**
+     * The {@link ABI} used to create this info.
+     */
+    public @NotNull ABI getAbi() {
+        return abi;
     }
 
     @Override

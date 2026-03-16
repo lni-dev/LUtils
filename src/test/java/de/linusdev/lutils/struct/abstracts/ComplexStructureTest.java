@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025 Linus Andera
+ * Copyright (c) 2025-2026 Linus Andera
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,12 +25,10 @@ import de.linusdev.lutils.math.vector.buffer.intn.BBInt1;
 import de.linusdev.lutils.math.vector.buffer.longn.BBLong1;
 import de.linusdev.lutils.nat.abi.ABI;
 import de.linusdev.lutils.nat.abi.DefaultABIs;
-import de.linusdev.lutils.nat.abi.OverwriteChildABI;
 import de.linusdev.lutils.nat.array.NativeFloat32Array;
 import de.linusdev.lutils.nat.array.NativeFloat64Array;
 import de.linusdev.lutils.nat.struct.abstracts.ComplexStructure;
 import de.linusdev.lutils.nat.struct.annos.StructValue;
-import de.linusdev.lutils.nat.struct.annos.StructureLayoutSettings;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -71,10 +69,6 @@ public class ComplexStructureTest {
         }
     }
 
-    @StructureLayoutSettings(
-            value = DefaultABIs.CVG4J_OPEN_CL,
-            overwriteChildrenABI = OverwriteChildABI.FORCE_OVERWRITE
-    )
     public static class TestOpenCLStruct extends ComplexStructure {
 
         public final @StructValue(5) BBFloat4 a = BBFloat4.newUnallocated();
@@ -94,7 +88,6 @@ public class ComplexStructureTest {
         }
     }
 
-    @StructureLayoutSettings(value = DefaultABIs.MSVC_X64)
     public static class TestOpenCLStruct2 extends ComplexStructure {
 
         public final @StructValue(0) BBFloat1 b = BBFloat1.newUnallocated();
@@ -108,10 +101,6 @@ public class ComplexStructureTest {
         }
     }
 
-    @StructureLayoutSettings(
-            selectorMethodClass = Test3Struct.class,
-            selectorMethodName = "abiSelectorTestMethod"
-    )
     public static class Test3Struct extends ComplexStructure {
 
         public static ABI abiSelectorTestMethod() {

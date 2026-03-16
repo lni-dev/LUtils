@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024-2025 Linus Andera
+ * Copyright (c) 2024-2026 Linus Andera
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,8 +17,8 @@
 package de.linusdev.lutils.math.vector.buffer.intn;
 
 import de.linusdev.lutils.math.vector.abstracts.intn.Int3;
+import de.linusdev.lutils.nat.abi.ABI;
 import de.linusdev.lutils.nat.struct.abstracts.StructureStaticVariables;
-import de.linusdev.lutils.nat.struct.annos.StructValue;
 import org.jetbrains.annotations.Nullable;
 
 public class BBInt3 extends BBIntN implements Int3 {
@@ -29,27 +29,17 @@ public class BBInt3 extends BBIntN implements Int3 {
      * @see StructureStaticVariables#newUnallocated()
      */
     public static BBInt3 newUnallocated() {
-        return new BBInt3(false, null);
+        return new BBInt3(null);
     }
 
     /**
-     * @see StructureStaticVariables#newAllocatable(StructValue) 
+     * @see StructureStaticVariables#newAllocatable(ABI, int[], Class[])  
      */
-    public static BBInt3 newAllocatable(@Nullable StructValue structValue) {
-        return new BBInt3(true, structValue);
+    public static BBInt3 newAllocatable(@Nullable ABI abi) {
+        return new BBInt3(abi);
     }
 
-    /**
-     * @see StructureStaticVariables#newAllocated(StructValue) 
-     */
-    public static BBInt3 newAllocated(@Nullable StructValue structValue) {
-        BBInt3 ret = newAllocatable(structValue);
-        ret.allocate();
-        return ret;
-    }
-
-
-    protected BBInt3(boolean generateInfo, @Nullable StructValue structValue) {
-        super(GENERATOR, generateInfo, structValue);
+    protected BBInt3(@Nullable ABI abi) {
+        super(GENERATOR, abi);
     }
 }

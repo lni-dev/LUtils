@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025 Linus Andera
+ * Copyright (c) 2025-2026 Linus Andera
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,16 +16,13 @@
 
 package de.linusdev.lutils.nat.integer;
 
-import de.linusdev.lutils.nat.abi.DefaultABIs;
 import de.linusdev.lutils.nat.struct.annos.SVWrapper;
-import de.linusdev.lutils.nat.struct.annos.StructureLayoutSettings;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class NativeIntegerTest {
 
-    @StructureLayoutSettings(DefaultABIs.MSVC_X64)
     public static class TestMSVC_X64Layout{}
 
     @Test

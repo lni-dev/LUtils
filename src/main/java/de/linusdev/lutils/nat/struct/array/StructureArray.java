@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2025 Linus Andera
+ * Copyright (c) 2023-2026 Linus Andera
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,62 +17,55 @@
 package de.linusdev.lutils.nat.struct.array;
 
 import de.linusdev.lutils.nat.abi.ABI;
-import de.linusdev.lutils.nat.abi.OverwriteChildABI;
 import de.linusdev.lutils.nat.array.NativeArray;
+import de.linusdev.lutils.nat.memory.NativeMemAllocator;
+import de.linusdev.lutils.nat.memory.NativeMemBuffer;
 import de.linusdev.lutils.nat.struct.UStructSupplier;
 import de.linusdev.lutils.nat.struct.abstracts.Structure;
 import de.linusdev.lutils.nat.struct.abstracts.StructureStaticVariables;
-import de.linusdev.lutils.nat.struct.annos.*;
+import de.linusdev.lutils.nat.struct.annos.RequirementType;
 import de.linusdev.lutils.nat.struct.generator.Language;
+import de.linusdev.lutils.nat.struct.generator.SimpleStaticGenerator;
 import de.linusdev.lutils.nat.struct.generator.StaticGenerator;
 import de.linusdev.lutils.nat.struct.generator.StructCodeGenerator;
 import de.linusdev.lutils.nat.struct.info.ArrayInfo;
 import de.linusdev.lutils.nat.struct.info.StructureInfo;
 import de.linusdev.lutils.nat.struct.mod.ModTrackingStructure;
-import de.linusdev.lutils.nat.struct.utils.BufferUtils;
 import de.linusdev.lutils.nat.struct.utils.SSMUtils;
 import de.linusdev.lutils.other.str.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.util.Arrays;
 import java.util.Iterator;
 
-@StructureSettings(
-        requiresCalculateInfoMethod = true,
-        customLengthOption = RequirementType.REQUIRED,
-        customElementTypesOption = RequirementType.REQUIRED,
-        customLayoutOption = RequirementType.OPTIONAL
-)
 public class StructureArray<T extends Structure> extends ModTrackingStructure implements NativeArray<T> {
 
-    @SuppressWarnings("unused")
-    public static final @NotNull StaticGenerator GENERATOR = new StaticGenerator() {
+    public static final @NotNull StaticGenerator GENERATOR = new SimpleStaticGenerator(
+            RequirementType.REQUIRED, RequirementType.REQUIRED
+    ) {
 
         @Override
-        public @NotNull StructureInfo calculateInfo(
+        public @NotNull StructureInfo calculateInfoChecked(
                 @NotNull Class<?> selfClazz,
-                @Nullable StructValue structValue,
-                @NotNull StructValue @NotNull [] elementsStructValue,
                 @NotNull ABI abi,
-                @Nullable OverwriteChildABI overwriteChildAbi
+                int[] length,
+                @NotNull Class<?>[] elementTypes
         ) {
-            assert structValue != null; // ensured through the @StructureSettings annotation
 
             StructureInfo elementInfo = SSMUtils.getInfo(
-                    structValue.elementType()[0],
-                    elementsStructValue.length == 0 ? null : elementsStructValue[0],
                     null,
+                    elementTypes[0],
                     abi,
-                    overwriteChildAbi,
-                    null,
-                    null
+                    length.length > 1 ? Arrays.copyOfRange(length, 1, length.length) : null,
+                    elementTypes.length > 1 ? Arrays.copyOfRange(elementTypes, 1, elementTypes.length) : null
             );
 
             ArrayInfo info = abi.calculateArrayLayout(
                     false,
                     elementInfo,
-                    structValue.length()[0],
+                    length[0],
                     -1
             );
 
@@ -84,7 +77,7 @@ public class StructureArray<T extends Structure> extends ModTrackingStructure im
                     info.getLength(),
                     info.getStride(),
                     info.getPositions(),
-                    structValue.elementType()[0],
+                    elementTypes[0],
                     elementInfo
             );
         }
@@ -96,7 +89,7 @@ public class StructureArray<T extends Structure> extends ModTrackingStructure im
                 public @NotNull String getStructTypeName(@NotNull Language language, @NotNull Class<?> selfClazz, @NotNull StructureInfo info) {
                     StructureArrayInfo arrayInfo = (StructureArrayInfo) info;
                     StructureInfo elementInfo = arrayInfo.elementInfo;
-                    StaticGenerator elementGenerator = SSMUtils.getGenerator(arrayInfo.elementClass, null);
+                    StaticGenerator elementGenerator = SSMUtils.getGenerator(arrayInfo.elementClass);
                     //noinspection DataFlowIssue
                     return elementGenerator.codeGenerator().getStructTypeName(language, arrayInfo.elementClass, elementInfo) + "[]";
                 }
@@ -105,7 +98,7 @@ public class StructureArray<T extends Structure> extends ModTrackingStructure im
                 public @NotNull String getStructVarDef(@NotNull Language language, @NotNull Class<?> selfClazz, @NotNull StructureInfo info, @NotNull String varName) {
                     StructureArrayInfo arrayInfo = (StructureArrayInfo) info;
                     StructureInfo elementInfo = arrayInfo.elementInfo;
-                    StaticGenerator elementGenerator = SSMUtils.getGenerator(arrayInfo.elementClass, null);
+                    StaticGenerator elementGenerator = SSMUtils.getGenerator(arrayInfo.elementClass);
 
                     //noinspection DataFlowIssue
                     return elementGenerator.codeGenerator().getStructTypeName(language, arrayInfo.elementClass, elementInfo) + " " + varName
@@ -117,7 +110,7 @@ public class StructureArray<T extends Structure> extends ModTrackingStructure im
 
     /**
      * Creates an unallocated {@link StructureArray}, whose {@link #info} must be supplied when {@link #useBuffer(Structure, int, StructureInfo)}
-     * is called. A call to {@link #allocate()} is not supported.
+     * is called. A call to {@link NativeMemAllocator#allocate(Structure) allocate} is not supported.
      * @param trackModifications see {@link #trackModifications}
      * @param creator see {@link #creator}
      * @return unallocated {@link StructureArray} as described above.
@@ -133,106 +126,70 @@ public class StructureArray<T extends Structure> extends ModTrackingStructure im
     }
 
     /**
-     * Creates an allocated {@link StructureArray}.
+     * Creates an allocatable {@link StructureArray}.
+     * It can be allocated using {@link NativeMemAllocator#allocate(Structure) allocate} or {@link #claimMemory(NativeMemBuffer)}
      * @param trackModifications see {@link #trackModifications}
-     * @param structValue {@link StructValue} annotation supplying required information as described by {@link StructureArray}. See {@link SVWrapper}.
-     * @param elementStructValue {@link StructValue} annotation supplying required information for each element. See {@link SVWrapper}.
+     * @param abi the {@link ABI} to use for this structure
+     * @param length the length of the array
+     * @param elementType the element type of the array
      * @param creator  see {@link #creator}
-     * @return allocated {@link StructureArray} as described above.
+     * @return allocatable {@link StructureArray} as described above.
      * @param <T> element type
-     * @see StructureStaticVariables#newAllocated(StructValue) 
+     * @see StructureStaticVariables#newAllocatable(ABI, int[], Class[])  
      */
-    public static <T extends Structure> @NotNull StructureArray<T> newAllocated(
+    public static <T extends Structure> @NotNull StructureArray<T> newAllocatable(
             boolean trackModifications,
-            @NotNull StructValue structValue,
-            @Nullable StructValue elementStructValue,
-            @NotNull UStructSupplier<T> creator
-    ) {
-        StructureArray<T> struct = new StructureArray<>(
-                trackModifications,
-                structValue,
-                elementStructValue,
-                creator
-        );
-        struct.allocate();
-        return struct;
-    }
-
-    /**
-     * Creates an allocated {@link StructureArray}. Calls {@link #newAllocated(boolean, StructValue, StructValue, UStructSupplier)}
-     * with {@code trackModifications = false} and {@code elementStructValue = null}
-     * @param length array length
-     * @param elementClass class of {@link T}
-     * @param creator  see {@link #creator}
-     * @return allocated {@link StructureArray} as described above.
-     * @param <T> element type
-     * @see StructureStaticVariables#newAllocated(StructValue)
-     */
-    public static <T extends Structure> @NotNull StructureArray<T> newAllocated(
+            @Nullable ABI abi,
             int length,
-            Class<?> elementClass,
+            @NotNull Class<? extends Structure> elementType,
             @NotNull UStructSupplier<T> creator
     ) {
-        return newAllocated(
-                false,
-                SVWrapper.of(length, elementClass),
-                null,
-                creator
-        );
+        return new StructureArray<>(trackModifications, abi, new int[]{length}, new Class<?>[]{elementType}, creator);
     }
 
     /**
      * Creates an allocatable {@link StructureArray}.
-     * It can be allocated using {@link #allocate()} or {@link #claimBuffer(ByteBuffer)}
+     * It can be allocated using {@link NativeMemAllocator#allocate(Structure)} or {@link #claimMemory(NativeMemBuffer)}
      * @param trackModifications see {@link #trackModifications}
-     * @param structValue {@link StructValue} annotation supplying required information as described by {@link StructureArray}. See {@link SVWrapper}.
-     * @param elementStructValue {@link StructValue} annotation supplying required information for each element. See {@link SVWrapper}.
+     * @param abi the {@link ABI} to use for this structure
+     * @param length Array containing length information. First index must be the length of this array. The following indexes are passed
+     *               to the elements of this array when creating their {@link StructureInfo}.
+     * @param elementType Array containing element type information. First index must be the element type of this array. The following indexes are passed
+     *                    to the elements of this array when creating their {@link StructureInfo}.
      * @param creator  see {@link #creator}
      * @return allocatable {@link StructureArray} as described above.
      * @param <T> element type
-     * @see StructureStaticVariables#newAllocatable(StructValue) 
+     * @see StructureStaticVariables#newAllocatable(ABI, int[], Class[])
      */
     public static <T extends Structure> @NotNull StructureArray<T> newAllocatable(
             boolean trackModifications,
-            @NotNull StructValue structValue,
-            @Nullable StructValue elementStructValue,
+            @Nullable ABI abi,
+            int @NotNull [] length,
+            @NotNull Class<?> @NotNull [] elementType,
             @NotNull UStructSupplier<T> creator
     ) {
-        return new StructureArray<>(
-                trackModifications,
-                structValue,
-                elementStructValue,
-                creator
-        );
+        return new StructureArray<>(trackModifications, abi, length, elementType, creator);
     }
 
     /**
-     * requires {@link BufferUtils#setByteBufferFromPointerMethod(BufferUtils.ByteBufferFromPointerMethod)} to be set.
      * @param trackModifications see {@link #trackModifications}
-     * @param elementClazz clazz of array elements
+     * @param elementType clazz of array elements
      * @param length array length
      * @param pointer pointer to the native array
      * @param creator see {@link #creator}
      * @return {@link StructureArray} backed by given pointer
      * @param <T> array element type
      */
-    @SuppressWarnings("unused") // Cannot be tested without native library
     public static <T extends Structure> @NotNull StructureArray<T> ofPointer(
             boolean trackModifications,
-            @NotNull Class<?> elementClazz,
+            @Nullable ABI abi,
+            @NotNull Class<? extends Structure> elementType,
             int length,
             long pointer,
             @NotNull UStructSupplier<T> creator
     ) {
-        StructureArray<T> sArray = StructureArray.newAllocatable(
-                trackModifications,
-                SVWrapper.of(length, elementClazz),
-                null,
-                creator
-        );
-
-        sArray.claimBuffer(BufferUtils.getByteBufferFromPointer(pointer, sArray.getRequiredSize()));
-
+        StructureArray<T> sArray = StructureArray.newAllocatable(trackModifications, abi, length, elementType, creator);
+        sArray.claimMemory(NativeMemBuffer.of(pointer, sArray.getRequiredSize(), ByteOrder.nativeOrder()));
         return sArray;
     }
 
@@ -240,49 +197,52 @@ public class StructureArray<T extends Structure> extends ModTrackingStructure im
     private ArrayInfo.ArrayPositionFunction positions;
 
     private StructureInfo elementInfo;
-    private Structure [] items;
+    private Structure @Nullable [] items;
     private int size;
 
     /**
      * @see #newUnallocated(boolean, UStructSupplier)
      */
-    protected StructureArray(
-            boolean trackModifications,
-            @NotNull UStructSupplier<T> creator
-    ) {
-        super(trackModifications);
+    protected StructureArray(boolean trackModifications, @NotNull UStructSupplier<T> creator) {
+        super(null, trackModifications);
         this.creator = creator;
     }
 
     /**
      * Creates an allocatable struct-array
-     * @see #newAllocated(boolean, StructValue, StructValue, UStructSupplier)
-     * @see #newAllocatable(boolean, StructValue, StructValue, UStructSupplier)
+     * @see #newAllocatable(boolean, ABI, int[], Class[], UStructSupplier)
+     * @see #newAllocatable(boolean, ABI, int, Class, UStructSupplier) 
      */
     protected StructureArray(
             boolean trackModifications,
-            @NotNull StructValue structValue,
-            @Nullable StructValue elementStructValue,
+            @Nullable ABI abi,
+            int @NotNull [] length,
+            @NotNull Class<?> @NotNull [] elementType,
             @NotNull UStructSupplier<T> creator
     ) {
-        super(trackModifications);
-        setInfo(SSMUtils.getInfo(
-                this.getClass(),
-                structValue,
-                elementStructValue == null ? null : new ElementsStructValueWrapper(new StructValue[]{elementStructValue}),
-                null,
-                null,
-                null,
-                GENERATOR
-        ));
+        super(abi, trackModifications);
+        setInfo(GENERATOR.calculateInfo(this.getClass(), abi, length, elementType));
         this.elementInfo = getInfo().elementInfo;
         this.size = getInfo().getLength();
-        this.items = new Structure[size];
         this.creator = creator;
     }
 
+    /**
+     * Start Caching the {@link Structure} instances of elements inside {@link #items}.
+     */
+    public void enableCaching() {
+        this.items = new Structure[size];
+    }
+
+    /**
+     * Set given {@code struct} to the native memory represented by given {@code index}. If {@link #enableCaching() caching}
+     * is enabled, {@code struct} will be stored in {@link #items} for future retrieves using {@link #get(int)} or {@link #getOrNull(int)}.
+     * @param index index to set.  Must be greater than 0 and smaller then {@link #length()}.
+     * @param struct to set at index. Must unallocated!
+     */
     public void set(int index, @NotNull T struct) {
-        items[index] = struct;
+        if(items != null)
+            items[index] = struct;
         callUseBufferOf(
                 struct,
                 this.mostParentStructure,
@@ -294,7 +254,7 @@ public class StructureArray<T extends Structure> extends ModTrackingStructure im
     @Override
     protected void useBuffer(
             @NotNull Structure mostParentStructure,
-            int offset,
+            long offset,
             @NotNull StructureInfo info
     ) {
         super.useBuffer(mostParentStructure, offset, info);
@@ -302,8 +262,6 @@ public class StructureArray<T extends Structure> extends ModTrackingStructure im
 
         this.elementInfo = aInfo.elementInfo;
         this.size = aInfo.getLength();
-        this.items = new Structure[size];
-
     }
 
     @Override
@@ -324,33 +282,51 @@ public class StructureArray<T extends Structure> extends ModTrackingStructure im
     }
 
     /**
-     * Similar to {@link #getOrNull(int)}, but if the item at {@code index} is still {@code null},
+     * If {@link #enableCaching() caching} is disabled a new {@link T} instance will be returned, representing given index.
+     * <br><br>
+     * If {@link #enableCaching() caching} is enabled this method is similar to {@link #getOrNull(int)}, but if the item at {@code index} is still {@code null},
      * a new item will be {@link UStructSupplier#supply() created}.
      * @see #getOrNull(int)
      */
     @Override
     @SuppressWarnings("unchecked")
     public @NotNull T get(int index) {
-        if(items[index] == null) {
-            Structure item = (items[index] = creator.supply());
+        T item;
+        if(items == null || items[index] == null) {
+            item = creator.supply();
             callUseBufferOf(
                     item,
                     this.mostParentStructure,
                     this.offset + positions.position(index),
                     elementInfo
             );
-            return (T) item;
+
+            if(items != null)
+                items[index] = item;
+
+        } else {
+            item = (T) items[index];
         }
 
-        return (T) items[index];
+        return item;
+    }
+
+    /**
+     * Set the native memory used by given {@code struct} to the memory represented by given {@code index}.
+     */
+    public @NotNull T get(int index, @NotNull T struct) {
+        callUseBufferOf(struct, this.mostParentStructure, this.offset + positions.position(index), elementInfo);
+        return struct;
     }
 
     /**
      * Returns the item at given {@code index} or {@code null} if no item has been {@link #set(int, Structure)}
-     * or {@link #get(int)} at given {@code index} before.
+     * or {@link #get(int)} at given {@code index} before. Only works if {@link #enableCaching() caching} is enabled.
      */
     @SuppressWarnings("unchecked")
     public T getOrNull(int index) {
+        if(items == null)
+            throw new IllegalStateException("Caching must be enabled for this method.");
         return (T) items[index];
     }
 
@@ -362,10 +338,8 @@ public class StructureArray<T extends Structure> extends ModTrackingStructure im
      */
     public @NotNull NativeArrayView<T> getView(int startIndex, int length) {
         int byteIndex = positions.position(startIndex);
-        return new NativeArrayView<>(this,
-                byteBuf.slice(byteIndex, positions.position(startIndex + length) - byteIndex),
-                startIndex, length
-        );
+        int byteLength = positions.position(startIndex + length) - byteIndex;
+        return new NativeArrayView<>(this, nativeMem, startIndex, length, offset + byteIndex, byteLength);
     }
 
     @Override
@@ -393,9 +367,9 @@ public class StructureArray<T extends Structure> extends ModTrackingStructure im
         sb.append("stride=").append(getInfo().getStride()).append("\n");
         sb.append("items={\n");
 
-        int index = 0;
-        for (Structure item : items) {
-            sb.append(StringUtils.indent(index + " (offsetStart=" + (offset + positions.position(index++)) + "): " + item, "    ", true)).append(",\n");
+        for (int i = 0; i < size; i++) {
+            Structure item = items == null ? null : items[i];
+            sb.append(StringUtils.indent(i + " (offsetStart=" + (offset + positions.position(i)) + "): " + item, "    ", true)).append(",\n");
         }
 
         sb.append("}");

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024-2025 Linus Andera
+ * Copyright (c) 2024-2026 Linus Andera
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,20 +17,16 @@
 package de.linusdev.lutils.nat.struct.abstracts;
 
 import de.linusdev.lutils.nat.NativeParsable;
-import de.linusdev.lutils.nat.struct.annos.StructValue;
-import de.linusdev.lutils.nat.struct.annos.StructureLayoutSettings;
-import de.linusdev.lutils.nat.struct.annos.StructureSettings;
+import de.linusdev.lutils.nat.abi.ABI;
+import de.linusdev.lutils.nat.memory.NMemInfo;
+import de.linusdev.lutils.nat.memory.NativeMemBuffer;
 import de.linusdev.lutils.nat.struct.generator.Language;
 import de.linusdev.lutils.nat.struct.generator.StaticGenerator;
 import de.linusdev.lutils.nat.struct.info.StructureInfo;
-import de.linusdev.lutils.nat.struct.utils.BufferUtils;
 import de.linusdev.lutils.nat.struct.utils.SSMUtils;
 import de.linusdev.lutils.other.str.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 
 /**
  * Class to support native structs.
@@ -42,26 +38,10 @@ import java.nio.ByteOrder;
  * create an instance of the structure:
  * <ul>
  *     <li>{@link StructureStaticVariables#newUnallocated() newUnallocated()}</li>
- *     <li>{@link StructureStaticVariables#newAllocatable(StructValue) newAllocatable(StructValue)}</li>
- *     <li>{@link StructureStaticVariables#newAllocated(StructValue) newAllocated(StructValue)}</li>
+ *     <li>{@link StructureStaticVariables#newAllocatable(ABI, int[], Class[])  newAllocatable(StructValue)}</li>
  * </ul>
  **/
-@StructureLayoutSettings
-@StructureSettings
 public abstract class Structure implements NativeParsable {
-
-    /**
-     * Same as {@link #allocate()}, but this makes code a bit cleaner as it can be written in a single line.
-     * (Please add receiver functions to Java!)
-     * @param structure {@link Structure} to allocate
-     * @return allocated structure
-     * @throws IllegalStateException see {@link #allocate()}
-     * @param <S> structure type
-     */
-    public static <S extends Structure> @NotNull S allocate(@NotNull S structure) {
-        structure.allocate();
-        return structure;
-    }
 
     /**
      * Creates a union with given structure {@code actual}.
@@ -71,7 +51,7 @@ public abstract class Structure implements NativeParsable {
      * if track modifications is enabled.
      * @param view {@link S} that can be allocated. Must not already be allocated.
      * @param actual allocated {@link Structure}.
-     * @return {@code view} now backed by the {@link #getByteBuffer() byte buffer} of {@code actual}
+     * @return {@code view} now backed by the {@link #getNativeMemBuffer() buffer} of {@code actual}
      * @param <S> your struct type (required for return type only)
      */
     public static <S extends Structure>  @NotNull S unionWith(@NotNull S view, @NotNull Structure actual) {
@@ -92,8 +72,8 @@ public abstract class Structure implements NativeParsable {
             @NotNull Language language,
             @NotNull Class<? extends Structure> structClass
     ) {
-        StaticGenerator generator = SSMUtils.getGenerator(structClass, null);
-        StructureInfo info = SSMUtils.getInfo(structClass, null, null, null, null, null, generator);
+        StaticGenerator generator = SSMUtils.getGenerator(structClass);
+        StructureInfo info = SSMUtils.getInfo(generator, structClass, null, null,  null);
 
         //noinspection DataFlowIssue
         String code = generator.codeGenerator().generateStructCode(language, structClass, info);
@@ -111,9 +91,14 @@ public abstract class Structure implements NativeParsable {
      * @see #onSetInfo(StructureInfo)
      */
     private StructureInfo info;
-    protected ByteBuffer byteBuf;
-    protected int offset;
+    protected NativeMemBuffer nativeMem;
+    protected long offset;
     protected volatile boolean modified;
+    protected ABI abi;
+
+    public Structure(@Nullable ABI abi) {
+        this.abi = abi;
+    }
 
     /**
      * Set this {@link Structure} to be a child of {@code mostParentStructure}.
@@ -123,50 +108,42 @@ public abstract class Structure implements NativeParsable {
      */
     protected void useBuffer(
             @NotNull Structure mostParentStructure,
-            int offset,
+            long offset,
             @NotNull StructureInfo info
     ) {
+        if(this.abi == null)
+            this.abi = info.getAbi();
+        else if(!this.abi.equals(info.getAbi()))
+            throw new IllegalStateException("ABI mismatch. ABI passed to useBuffer is '" + info.getAbi().identifier() + "', but ABI passed in constructor is '" + this.abi.identifier() + "'.");
+
         setInfo(info);
 
         this.mostParentStructure = mostParentStructure;
         this.offset = offset;
-        this.byteBuf = offset == 0 ?
-                mostParentStructure.getByteBuffer().order(ByteOrder.nativeOrder()) :
-                mostParentStructure.getByteBuffer().slice(offset, getRequiredSize()).order(ByteOrder.nativeOrder());
+        this.nativeMem = mostParentStructure.nativeMem;
     }
 
     /**
-     * Call {@link #useBuffer(Structure, int, StructureInfo) usebuffer(...)} of {@code structure}
+     * Call {@link #useBuffer(Structure, long, StructureInfo) usebuffer(...)} of {@code structure}
      */
     protected void callUseBufferOf(
             @NotNull Structure structure,
             @NotNull Structure mostParentStructure,
-            int offset,
+            long offset,
             @NotNull StructureInfo info
     ) {
         structure.useBuffer(mostParentStructure, offset, info);
     }
 
     /**
-     * Will set the {@link ByteOrder} to native order.
      * The most parental structure will be {@code this}.
-     * @param buffer {@link ByteBuffer} to claim. It's limit and position will be ignored.
+     * @param buffer {@link NativeMemBuffer} to claim.
      * @throws IllegalStateException if this structure cannot claim a buffer in its current state. For example,
      * because it was created with not enough information to create its {@link #info}.
      */
-    public void claimBuffer(@NotNull ByteBuffer buffer) {
-        this.byteBuf = buffer.order(ByteOrder.nativeOrder());
-        useBuffer(this,0, isInfoAvailable());
-    }
-
-    /**
-     * Creates an 8 byte aligned direct byte buffer and calls {@link #useBuffer(Structure, int, StructureInfo) useBuffer(...)}.
-     * @throws IllegalStateException if this structure cannot be allocated in its current state. For example,
-     * because it was created with not enough information to create its {@link #info}.
-     */
-    public void allocate() {
-        setInfo(isInfoAvailable()); // make sure info is stored, if it is generated.
-        claimBuffer(BufferUtils.create64BitAligned(getRequiredSize()));
+    public void claimMemory(@NotNull NativeMemBuffer buffer, long offset) {
+        this.nativeMem = buffer;
+        useBuffer(this, offset, isInfoAvailable());
     }
 
     /**
@@ -238,7 +215,7 @@ public abstract class Structure implements NativeParsable {
     }
 
     @Override
-    public int getRequiredSize() {
+    public long getRequiredSize() {
         return getInfo().getRequiredSize();
     }
 
@@ -246,18 +223,18 @@ public abstract class Structure implements NativeParsable {
      * Offset in the byte buffer of the {@link #mostParentStructure most parental structure}.
      * @return offset in bytes
      */
-    public int getOffset() {
+    public long getOffset() {
         return offset;
     }
 
     @Override
-    public ByteBuffer getByteBuffer() {
-        return byteBuf;
+    public NMemInfo getNativeMemBuffer() {
+        return new NMemInfo(nativeMem, offset);
     }
 
     @Override
     public boolean isInitialised() {
-        return byteBuf != null;
+        return nativeMem != null;
     }
 
     /**
@@ -288,7 +265,7 @@ public abstract class Structure implements NativeParsable {
      * @param offset region start
      * @param size region size
      */
-    public void modified(int offset, int size) {
+    public void modified(long offset, long size) {
         mostParentStructure.onModification(offset, size);
     }
 
@@ -307,7 +284,7 @@ public abstract class Structure implements NativeParsable {
     }
 
     /**
-     * Will be {@code true} after a call to {@link #modified(int, int)}. Will be reset by {@link #unmodified()}.
+     * Will be {@code true} after a call to {@link #modified(long, long)}. Will be reset by {@link #unmodified()}.
      * Note that modifications are only tracked on the most parental structure. The return value of this method is undefined,
      * if it is not the most parental structure.
      * @return whether this {@link Structure} has been modified.
@@ -317,16 +294,16 @@ public abstract class Structure implements NativeParsable {
     }
 
     /**
-     * Called on the most parental structure if on it or any of its children {@link #modified(int, int)} is called.
+     * Called on the most parental structure if on it or any of its children {@link #modified(long, long)} is called.
      * @param offset modified region start
      * @param size modified region size
      */
-    protected void onModification(int offset, int size) {
+    protected void onModification(long offset, long size) {
         modified = true;
     }
 
     /**
-     * Will never be {@code null} after either {@link #claimBuffer(ByteBuffer)} or {@link #useBuffer(Structure, int, StructureInfo)}
+     * Will never be {@code null} after either {@link #claimMemory(NativeMemBuffer, long)} or {@link #useBuffer(Structure, long, StructureInfo)}
      * has been called.
      * @return the most parental structure.
      */

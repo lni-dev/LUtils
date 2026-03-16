@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024-2025 Linus Andera
+ * Copyright (c) 2024-2026 Linus Andera
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,8 +17,8 @@
 package de.linusdev.lutils.nat.enums;
 
 import de.linusdev.lutils.math.vector.buffer.intn.BBInt1;
+import de.linusdev.lutils.nat.abi.ABI;
 import de.linusdev.lutils.nat.struct.abstracts.StructureStaticVariables;
-import de.linusdev.lutils.nat.struct.annos.StructValue;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -33,34 +33,18 @@ public class NativeEnumValue32<M extends NativeEnumMember32> extends BBInt1 impl
      * @see StructureStaticVariables#newUnallocated()
      */
     public static <T extends NativeEnumMember32> NativeEnumValue32<T> newUnallocatedT()  {
-        return new NativeEnumValue32<>(false, null);
+        return new NativeEnumValue32<>(null);
     }
 
     /**
-     * @see StructureStaticVariables#newAllocatable(StructValue) 
+     * @see StructureStaticVariables#newAllocatable(ABI, int[], Class[])  
      */
-    public static <T extends NativeEnumMember32> NativeEnumValue32<T> newAllocatableT(
-            @Nullable StructValue structValue
-    )  {
-        return new NativeEnumValue32<>(true, structValue);
+    public static <T extends NativeEnumMember32> NativeEnumValue32<T> newAllocatableT(@Nullable ABI abi)  {
+        return new NativeEnumValue32<>(abi);
     }
 
-    /**
-     * @see StructureStaticVariables#newAllocated(StructValue) 
-     */
-    public static <T extends NativeEnumMember32> NativeEnumValue32<T> newAllocatedT(
-            @Nullable StructValue structValue
-    )  {
-        NativeEnumValue32<T> ret = newAllocatableT(structValue);
-        ret.allocate();
-        return ret;
-    }
-
-    protected NativeEnumValue32(
-            boolean generateInfo,
-            @Nullable StructValue structValue
-    ) {
-        super(generateInfo, structValue);
+    protected NativeEnumValue32(@Nullable ABI abi) {
+        super(abi);
     }
 
     @Override

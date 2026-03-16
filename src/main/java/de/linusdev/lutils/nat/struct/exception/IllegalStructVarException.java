@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2025 Linus Andera
+ * Copyright (c) 2023-2026 Linus Andera
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,16 +23,15 @@ import java.lang.reflect.Field;
 public class IllegalStructVarException extends RuntimeException {
 
     private final @NotNull Field field;
-    private final @NotNull String message;
 
-    public IllegalStructVarException(@NotNull Field field, @NotNull String message) {
+    public IllegalStructVarException(@NotNull Field field, @NotNull Throwable cause) {
+        super(cause);
         this.field = field;
-        this.message = message;
     }
 
     @Override
     public String getMessage() {
         return "Field '" + field.getType().getSimpleName() + " " +
-                field.getName() + "' in structure " + field.getDeclaringClass().getCanonicalName() + " is not a valid struct value: " + message;
+                field.getName() + "' in structure " + field.getDeclaringClass().getCanonicalName() + " is not a valid struct value.";
     }
 }

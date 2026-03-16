@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024-2025 Linus Andera
+ * Copyright (c) 2024-2026 Linus Andera
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,9 +17,7 @@
 package de.linusdev.lutils.nat.struct.info;
 
 import de.linusdev.lutils.nat.abi.ABI;
-import de.linusdev.lutils.nat.abi.OverwriteChildABI;
 import de.linusdev.lutils.nat.struct.abstracts.Structure;
-import de.linusdev.lutils.nat.struct.annos.ElementsStructValue;
 import de.linusdev.lutils.nat.struct.annos.StructValue;
 import de.linusdev.lutils.nat.struct.exception.IllegalStructVarException;
 import de.linusdev.lutils.nat.struct.utils.SSMUtils;
@@ -32,16 +30,26 @@ public class StructVarInfo {
 
     public static @Nullable StructVarInfo ofField(
             @NotNull Field field,
-            @Nullable ABI parentAbi,
-            @Nullable OverwriteChildABI overwriteChildAbi
+            @Nullable ABI abi
     ) {
         @NotNull Class<?> fieldClass = field.getType();
         StructValue sv = field.getAnnotation(StructValue.class);
-        ElementsStructValue esv = field.getAnnotation(ElementsStructValue.class);
 
         if(sv == null) return null;
 
-        StructureInfo info = SSMUtils.getInfo(fieldClass, sv, esv, parentAbi, overwriteChildAbi, field, null);
+        int @Nullable [] length = sv.length();
+        length = length[0] == -1 ? null : length;
+
+        @NotNull Class<?> @Nullable [] elementTypes = sv.elementType();
+        elementTypes = Structure.class.equals(elementTypes[0]) ? null : elementTypes;
+
+        StructureInfo info;
+        try {
+            info = SSMUtils.getInfo(null, fieldClass, abi, length, elementTypes);
+        } catch (Throwable t) {
+            throw new IllegalStructVarException(field, t);
+        }
+
         //noinspection unchecked: Checked in above method
         return new StructVarInfo(sv, (Class<? extends Structure>) fieldClass, field.getName(), info, field);
     }
@@ -85,7 +93,7 @@ public class StructVarInfo {
         try {
             return (Structure) field.get(instance);
         } catch (IllegalAccessException e) {
-            throw (IllegalStructVarException) new IllegalStructVarException(field, "Cannot access field.").initCause(e);
+            throw new IllegalStructVarException(field, e);
         }
     }
 }

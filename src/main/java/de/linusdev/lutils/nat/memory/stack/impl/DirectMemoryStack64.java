@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024-2025 Linus Andera
+ * Copyright (c) 2024-2026 Linus Andera
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,28 +17,19 @@
 package de.linusdev.lutils.nat.memory.stack.impl;
 
 import de.linusdev.lutils.nat.abi.ABI;
-import de.linusdev.lutils.nat.abi.OverwriteChildABI;
+import de.linusdev.lutils.nat.abi.DefaultABIs;
+import de.linusdev.lutils.nat.memory.NativeMemBuffer;
 import de.linusdev.lutils.nat.memory.stack.PopPoint;
 import de.linusdev.lutils.nat.memory.stack.SafePoint;
 import de.linusdev.lutils.nat.memory.stack.Stack;
 import de.linusdev.lutils.nat.size.Size;
 import de.linusdev.lutils.nat.struct.abstracts.Structure;
-import de.linusdev.lutils.nat.struct.annos.RequirementType;
-import de.linusdev.lutils.nat.struct.annos.StructValue;
-import de.linusdev.lutils.nat.struct.annos.StructureSettings;
 import de.linusdev.lutils.nat.struct.generator.StaticGenerator;
 import de.linusdev.lutils.nat.struct.info.StructureInfo;
-import de.linusdev.lutils.nat.struct.utils.BufferUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 
-@StructureSettings(
-        requiresCalculateInfoMethod = true,
-        customLengthOption = RequirementType.OPTIONAL
-)
 public class DirectMemoryStack64 extends Structure implements Stack {
 
     public static final int DEFAULT_MEMORY_SIZE = 1024 * 1024; // 1 MiB
@@ -55,9 +46,10 @@ public class DirectMemoryStack64 extends Structure implements Stack {
         this(DEFAULT_MEMORY_SIZE);
     }
 
-    public DirectMemoryStack64(int size) {
-        setInfo(new StructureInfo(ALIGNMENT, false, 0, size, 0));
-        allocate();
+    public DirectMemoryStack64(long size) {
+        super(null);
+        setInfo(new StructureInfo(DefaultABIs.MSVC_X64, ALIGNMENT, false, 0, size, 0));
+        //TODO allocate
         this.address = getPointer();
         this.stackPointers = new StackPointerQueue(address);
     }
@@ -67,13 +59,13 @@ public class DirectMemoryStack64 extends Structure implements Stack {
         long stackPointer = stackPointers.getStackPointer();
 
         StructureInfo info = structure.getOrGenerateInfo();
-        int size = info.getRequiredSize();
+        long size = info.getRequiredSize();
         int alignment = info.getAlignment();
         int alignmentFix = stackPointer % alignment == 0 ? 0 : (int) (alignment - (stackPointer % alignment));
+        long offset = (stackPointer - address) + alignmentFix;
 
-        ByteBuffer subBuf = byteBuf.slice((int) ((stackPointer - address) + alignmentFix), size);
-        BufferUtils.fill(subBuf, (byte) 0);
-        structure.claimBuffer(subBuf);
+        nativeMem.fill(offset, size, (byte) 0);
+        structure.claimMemory(nativeMem, offset);
 
         stackPointers.push(size + alignmentFix);
 
@@ -81,15 +73,11 @@ public class DirectMemoryStack64 extends Structure implements Stack {
     }
 
     @Override
-    public @NotNull ByteBuffer pushByteBuffer(int size, int alignment) {
+    public @NotNull NativeMemBuffer pushNativeMemBuffer(long size, int alignment) {
         long stackPointer = stackPointers.getStackPointer();
-
         int alignmentFix = stackPointer % alignment == 0 ? 0 : (int) (alignment - (stackPointer % alignment));
-        ByteBuffer newBuf = byteBuf.slice((int) ((stackPointer - address) + alignmentFix), size).order(ByteOrder.nativeOrder());
 
-        stackPointers.push(size + alignmentFix);
-
-        return newBuf;
+        return NativeMemBuffer.of(stackPointer + alignmentFix, size, nativeMem.byteOrder());
     }
 
     @Override
@@ -109,7 +97,7 @@ public class DirectMemoryStack64 extends Structure implements Stack {
 
     @Override
     public long memorySize() {
-        return byteBuf.capacity();
+        return nativeMem.size();
     }
 
     @Override
@@ -138,12 +126,11 @@ public class DirectMemoryStack64 extends Structure implements Stack {
 
     // Only for completion's Sake. Cannot actually be called, as no unallocated Stack can be created.
     public static final StaticGenerator GENERATOR = new StaticGenerator() {
+
         @Override
-        public @NotNull StructureInfo calculateInfo(
-                @NotNull Class<?> selfClazz, @Nullable StructValue structValue, @NotNull StructValue @NotNull [] elementsStructValue, @NotNull ABI abi, @NotNull OverwriteChildABI overwriteChildAbi
-        ) {
-            int size = structValue != null && structValue.length().length > 0 ? structValue.length()[0] : DEFAULT_MEMORY_SIZE;
-            return new StructureInfo(8, false, size, new int[]{0, size, 0});
+        public @NotNull StructureInfo calculateInfo(@NotNull Class<?> selfClazz, @Nullable ABI abi, int @Nullable [] length, @NotNull Class<?> @Nullable [] elementTypes) {
+            int size = length == null ? DEFAULT_MEMORY_SIZE : length[0];
+            return new StructureInfo(DefaultABIs.DEFAULT, 8, false, size, new long[]{0, size, 0});
         }
     };
 }

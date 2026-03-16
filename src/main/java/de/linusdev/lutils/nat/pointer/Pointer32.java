@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024-2025 Linus Andera
+ * Copyright (c) 2024-2026 Linus Andera
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,5 +21,14 @@ public interface Pointer32 {
     int get();
 
     void set(int pointer);
+
+    /**
+     *
+     * @return {@code true} if this pointer points to null (0), {@code false} otherwise
+     */
+    @SuppressWarnings("unused")
+    default boolean isNullPtr() {
+        return get() == 0;
+    }
 
 }

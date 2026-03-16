@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024-2025 Linus Andera
+ * Copyright (c) 2024-2026 Linus Andera
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,8 +17,8 @@
 package de.linusdev.lutils.math.vector.buffer.longn;
 
 import de.linusdev.lutils.math.vector.abstracts.longn.Long1;
+import de.linusdev.lutils.nat.abi.ABI;
 import de.linusdev.lutils.nat.struct.abstracts.StructureStaticVariables;
-import de.linusdev.lutils.nat.struct.annos.StructValue;
 import org.jetbrains.annotations.Nullable;
 
 public class BBLong1 extends BBLongN implements Long1 {
@@ -29,27 +29,18 @@ public class BBLong1 extends BBLongN implements Long1 {
      * @see StructureStaticVariables#newUnallocated()
      */
     public static BBLong1 newUnallocated() {
-        return new BBLong1(false, null);
+        return new BBLong1(null);
     }
 
     /**
-     * @see StructureStaticVariables#newAllocatable(StructValue) 
+     * @see StructureStaticVariables#newAllocatable(ABI, int[], Class[])  
      */
-    public static BBLong1 newAllocatable(@Nullable StructValue structValue) {
-        return new BBLong1(true, structValue);
-    }
-
-    /**
-     * @see StructureStaticVariables#newAllocated(StructValue) 
-     */
-    public static BBLong1 newAllocated(@Nullable StructValue structValue) {
-        BBLong1 ret = newAllocatable(structValue);
-        ret.allocate();
-        return ret;
+    public static BBLong1 newAllocatable(@Nullable ABI abi) {
+        return new BBLong1(abi);
     }
 
 
-    protected BBLong1(boolean generateInfo, @Nullable StructValue structValue) {
-        super(GENERATOR, generateInfo, structValue);
+    protected BBLong1(@Nullable ABI abi) {
+        super(GENERATOR, abi);
     }
 }

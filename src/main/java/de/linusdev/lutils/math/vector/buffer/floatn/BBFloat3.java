@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2025 Linus Andera
+ * Copyright (c) 2023-2026 Linus Andera
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,8 +18,8 @@ package de.linusdev.lutils.math.vector.buffer.floatn;
 
 
 import de.linusdev.lutils.math.vector.abstracts.floatn.Float3;
+import de.linusdev.lutils.nat.abi.ABI;
 import de.linusdev.lutils.nat.struct.abstracts.StructureStaticVariables;
-import de.linusdev.lutils.nat.struct.annos.StructValue;
 import org.jetbrains.annotations.Nullable;
 
 @SuppressWarnings("unused")
@@ -31,27 +31,19 @@ public class BBFloat3 extends BBFloatN implements Float3 {
      * @see StructureStaticVariables#newUnallocated()
      */
     public static BBFloat3 newUnallocated() {
-        return new BBFloat3(false, null);
+        return new BBFloat3(null);
     }
 
     /**
-     * @see StructureStaticVariables#newAllocatable(StructValue) 
+     * @see StructureStaticVariables#newAllocatable(ABI, int[], Class[])
      */
-    public static BBFloat3 newAllocatable(@Nullable StructValue structValue) {
-        return new BBFloat3(true, structValue);
-    }
-
-    /**
-     * @see StructureStaticVariables#newAllocated(StructValue) 
-     */
-    public static BBFloat3 newAllocated(@Nullable StructValue structValue) {
-        BBFloat3 ret = newAllocatable(structValue);
-        ret.allocate();
-        return ret;
+    public static BBFloat3 newAllocatable(@Nullable ABI abi) {
+        return new BBFloat3(abi);
     }
 
 
-    protected BBFloat3(boolean generateInfo, @Nullable StructValue structValue) {
-        super(GENERATOR, generateInfo, structValue);
+
+    protected BBFloat3(@Nullable ABI abi) {
+        super(GENERATOR, abi);
     }
 }

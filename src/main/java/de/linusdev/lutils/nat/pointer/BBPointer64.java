@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024-2025 Linus Andera
+ * Copyright (c) 2024-2026 Linus Andera
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,8 +17,8 @@
 package de.linusdev.lutils.nat.pointer;
 
 import de.linusdev.lutils.math.vector.buffer.longn.BBLong1;
+import de.linusdev.lutils.nat.abi.ABI;
 import de.linusdev.lutils.nat.struct.abstracts.StructureStaticVariables;
-import de.linusdev.lutils.nat.struct.annos.StructValue;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -30,34 +30,18 @@ public class BBPointer64 extends BBLong1 implements Pointer64{
      * @see StructureStaticVariables#newUnallocated()
      */
     public static BBPointer64 newUnallocated()  {
-        return new BBPointer64(false, null);
+        return new BBPointer64(null);
     }
 
     /**
-     * @see StructureStaticVariables#newAllocatable(StructValue) 
+     * @see StructureStaticVariables#newAllocatable(ABI, int[], Class[])  
      */
-    public static BBPointer64 newAllocatable(
-            @Nullable StructValue structValue
-    )  {
-        return new BBPointer64(true, structValue);
+    public static BBPointer64 newAllocatable(@Nullable ABI abi)  {
+        return new BBPointer64(abi);
     }
 
-    /**
-     * @see StructureStaticVariables#newAllocated(StructValue) 
-     */
-    public static BBPointer64 newAllocated(
-            @Nullable StructValue structValue
-    )  {
-        BBPointer64 ret = newAllocatable(structValue);
-        ret.allocate();
-        return ret;
-    }
-
-    protected BBPointer64(
-            boolean generateInfo,
-            @Nullable StructValue structValue
-    ) {
-        super(generateInfo, structValue);
+    protected BBPointer64(@Nullable ABI abi) {
+        super(abi);
     }
 
     @Override

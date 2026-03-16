@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2025 Linus Andera
+ * Copyright (c) 2023-2026 Linus Andera
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,12 +17,10 @@
 package de.linusdev.lutils.nat.struct.abstracts;
 
 import de.linusdev.lutils.nat.abi.ABI;
-import de.linusdev.lutils.nat.abi.OverwriteChildABI;
-import de.linusdev.lutils.nat.struct.StructureAllocationState;
 import de.linusdev.lutils.nat.struct.annos.RequirementType;
 import de.linusdev.lutils.nat.struct.annos.StructValue;
-import de.linusdev.lutils.nat.struct.annos.StructureSettings;
 import de.linusdev.lutils.nat.struct.generator.Language;
+import de.linusdev.lutils.nat.struct.generator.SimpleStaticGenerator;
 import de.linusdev.lutils.nat.struct.generator.StaticGenerator;
 import de.linusdev.lutils.nat.struct.generator.StructCodeGenerator;
 import de.linusdev.lutils.nat.struct.info.ComplexStructureInfo;
@@ -52,14 +50,13 @@ import java.util.Map;
  *     <li>If you require a specific ordering, you should set each {@link StructValue#value()} to the index
  *     of the element</li>
  *     <li>
- *         Create a constructor and call {@link #init(StructValue, boolean, Structure...) init}.
- *         See documentation of {@link #init(StructValue, boolean, Structure...) init} and the
- *         {@link #ComplexStructure(boolean) constructor} for more information.
+ *         Create a constructor and call {@link #init(Structure...) init}.
+ *         See documentation of {@link #init(Structure...) init} and the
+ *         {@link #ComplexStructure(ABI, boolean) constructor} for more information.
  *     </li>
  *     <li>
- *         Optionally add the static methods {@link StructureStaticVariables#newUnallocated() newUnallocated},
- *         {@link StructureStaticVariables#newAllocatable(StructValue) newAllocatable} and
- *         {@link StructureStaticVariables#newAllocated(StructValue)}.
+ *         Optionally add the static methods {@link StructureStaticVariables#newUnallocated() newUnallocated} and
+ *         {@link StructureStaticVariables#newAllocatable(ABI, int[], Class[])  newAllocatable}.
  *     </li>
  * </ol>
  * Example: {@link de.linusdev.lutils.nat.struct.examples.ExampleComplexStructure ExampleComplexStructure}. It is a
@@ -67,7 +64,6 @@ import java.util.Map;
  *
  *
  */
-@StructureSettings(requiresCalculateInfoMethod = true, customLayoutOption = RequirementType.OPTIONAL)
 public abstract class ComplexStructure extends ModTrackingStructure {
 
     @SuppressWarnings("unused") // accessed via reflection
@@ -79,44 +75,25 @@ public abstract class ComplexStructure extends ModTrackingStructure {
      * Constructor for a Complex Structure.
      * @param trackModifications see {@link #trackModifications}.
      */
-    public ComplexStructure(
-            boolean trackModifications
-    ) {
-        super(trackModifications);
+    public ComplexStructure(@Nullable ABI abi, boolean trackModifications) {
+        super(abi, trackModifications);
     }
 
     /**
-     * Initialize this complex structure.
-     * @param structValue May optionally be passed if {@code generateInfo} is {@code true}. Will be used to create
-     *                    the {@link StructureInfo}.
-     * @param generateInfo Whether to already generate a {@link StructureInfo} for this instance. If {@code false} is
-     *                     passed this structure will be {@link StructureAllocationState#UNALLOCATED UNALLOCATED}.
-     *                     If {@code true} is passed this structure will be {@link StructureAllocationState#ALLOCATABLE ALLOCATABLE}.
+     * Initialise this complex structure.
      * @param items A non-empty array may only be optionally passed if every element's {@link StructValue#value() index} is set. If
      *              this is the case the array must contain each element at the correct index. The reason to pass this
      *              parameter is only to improve performance.
      */
-    protected void init(
-            @Nullable StructValue structValue,
-            boolean generateInfo,
-            @Nullable Structure @NotNull ... items
-    ) {
+    protected void init(@Nullable Structure @NotNull ... items) {
         if(items.length != 0)
             this.items = items;
-        if(generateInfo) {
-            setInfo(SSMUtils.getInfo(
-                    this.getClass(),
-                    structValue,
-                    null, null, null, null,
-                    GENERATOR
-            ));
-        }
     }
 
     @Override
     protected void useBuffer(
             @NotNull Structure mostParentStructure,
-            int offset,
+            long offset,
             @NotNull StructureInfo info
     ) {
         super.useBuffer(mostParentStructure, offset, info);
@@ -151,11 +128,7 @@ public abstract class ComplexStructure extends ModTrackingStructure {
 
     @Override
     protected @Nullable StructureInfo generateInfo() {
-        return SSMUtils.getInfo(
-                this.getClass(),
-                null, null, null, null, null,
-                GENERATOR
-        );
+        return GENERATOR.calculateInfo(this.getClass(), abi, null, null);
     }
 
     @Override
@@ -184,24 +157,27 @@ public abstract class ComplexStructure extends ModTrackingStructure {
         return toString(GENERATOR.codeGenerator().getStructTypeName(Language.OPEN_CL, getClass(), cInfo), sb.toString());
     }
 
-    private static class ComplexStructureGenerator implements StaticGenerator {
+    private static class ComplexStructureGenerator extends SimpleStaticGenerator {
         private final @NotNull Map<ClassAndAbi, ComplexStructureInfo> INFO_MAP = new HashMap<>();
         private final @NotNull Object INFO_MAP_LOCK = new Object();
 
+        protected ComplexStructureGenerator() {
+            super(RequirementType.NOT_SUPPORTED, RequirementType.NOT_SUPPORTED);
+        }
+
         @Override
-        public @NotNull StructureInfo calculateInfo(
+        public @NotNull StructureInfo calculateInfoChecked(
                 @NotNull Class<?> selfClazz,
-                @Nullable StructValue structValue,
-                @NotNull StructValue @NotNull [] elementsStructValue,
                 @NotNull ABI abi,
-                @Nullable OverwriteChildABI overwriteChildAbi
+                int[] length,
+                @NotNull Class<?>[] elementTypes
         ) {
             synchronized (INFO_MAP_LOCK) {
                 ClassAndAbi key = new ClassAndAbi(selfClazz, abi);
                 ComplexStructureInfo info = INFO_MAP.get(key);
 
                 if(info == null) {
-                    info = ComplexStructureInfo.generateFromStructVars(selfClazz, abi, overwriteChildAbi);
+                    info = ComplexStructureInfo.generateFromStructVars(selfClazz, abi);
                     INFO_MAP.put(key, info);
                 }
 
@@ -233,7 +209,7 @@ public abstract class ComplexStructure extends ModTrackingStructure {
                         String text;
                         if((((i-1) % 2) == 0)) {
                             StructVarInfo childInfo = childrenInfo[(i - 1)/2];
-                            StaticGenerator childGenerator = SSMUtils.getGenerator(childInfo.getClazz(), null);
+                            StaticGenerator childGenerator = SSMUtils.getGenerator(childInfo.getClazz());
                             //noinspection DataFlowIssue: Experimental
                             text = childGenerator.codeGenerator().getStructVarDef(language, childInfo.getClazz(), childInfo.getInfo(), childInfo.getVarName());
                         } else {

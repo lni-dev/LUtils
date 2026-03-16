@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2025 Linus Andera
+ * Copyright (c) 2023-2026 Linus Andera
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,7 +47,7 @@ public @interface StructValue {
      * If the annotated variable's type is a structure, which may vary in length,
      * this can be used to define that length.
      * <br><br>
-     * The structure must {@link StructureSettings#customLengthOption() support or require} this field for
+     * The structure must support or require this field for
      * it to be set to any value different from the default value.
      * @return int array containing the fixed length(s)
      */
@@ -57,25 +57,10 @@ public @interface StructValue {
      * If the annotated variable's type is a structure, which may have varying element types,
      * this can be used to define these element types.
      * <br><br>
-     * The structure must {@link StructureSettings#customElementTypesOption() support or require} this field for
+     * The structure must support or require this field for
      * it to be set to any value different from the default value.
      * @return {@link Class} array containing the element types
      */
     @NotNull Class<?> @NotNull [] elementType() default Structure.class;
-
-    /**
-     * If the annotated variable's type is a structure, which layout should be different,
-     * than the default layout of the structure. The given class must be annotated with {@link StructureLayoutSettings}
-     * defining the new structure layout.
-     * <br><br>
-     * The structure must {@link StructureSettings#customLayoutOption() support or require} this field for
-     * it to be set to any value different from the default value.
-     * <br><br>
-     * The {@link de.linusdev.lutils.nat.abi.DefaultABIs DefaultABIs} also have
-     * {@link de.linusdev.lutils.nat.abi.DefaultABIOverwrites DefaultABIOverwrites} available, which are annotated with {@link StructureLayoutSettings}
-     * and have the corresponding ABI set.
-     * @return {@link Class} which is annotated with {@link StructureLayoutSettings}.
-     */
-    @NotNull Class<?> overwriteStructureLayout() default Structure.class;
 
 }

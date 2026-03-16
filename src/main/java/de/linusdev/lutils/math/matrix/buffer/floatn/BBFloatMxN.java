@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2025 Linus Andera
+ * Copyright (c) 2023-2026 Linus Andera
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,50 +19,34 @@ package de.linusdev.lutils.math.matrix.buffer.floatn;
 import de.linusdev.lutils.math.matrix.Matrix;
 import de.linusdev.lutils.math.matrix.abstracts.floatn.FloatMxN;
 import de.linusdev.lutils.math.matrix.buffer.BBMatrix;
-import de.linusdev.lutils.nat.struct.abstracts.Structure;
-import de.linusdev.lutils.nat.struct.annos.StructValue;
-import de.linusdev.lutils.nat.struct.info.StructureInfo;
+import de.linusdev.lutils.nat.abi.ABI;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public abstract class BBFloatMxN extends BBMatrix implements FloatMxN {
 
-    protected BBFloatMxN(
-            @NotNull BBMatrixGenerator generator,
-            boolean generateInfo,
-            @Nullable StructValue structValue
-    ) {
-        super(generator, generateInfo, structValue);
-    }
-
-
-    @Override
-    public void useBuffer(
-            @NotNull Structure mostParentStructure,
-            int offset,
-            @NotNull StructureInfo info
-    ) {
-        super.useBuffer(mostParentStructure, offset, info);
+    protected BBFloatMxN(@NotNull BBMatrixGenerator generator, @Nullable ABI abi) {
+        super(generator, abi);
     }
 
     @Override
     public float get(int y, int x) {
-        return byteBuf.getFloat(posInBuf(y, x));
+        return nativeMem.getFloat(posInBuf(y, x));
     }
 
     @Override
     public void put(int y, int x, float value) {
-        byteBuf.putFloat(posInBuf(y, x), value);
+        nativeMem.setFloat(posInBuf(y, x), value);
     }
 
     @Override
     public float get(int index) {
-        return byteBuf.getFloat(posInBuf(index));
+        return nativeMem.getFloat(posInBuf(index));
     }
 
     @Override
     public void put(int index, float value) {
-        byteBuf.putFloat(posInBuf(index), value);
+        nativeMem.setFloat(posInBuf(index), value);
     }
 
     @Override

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024-2025 Linus Andera
+ * Copyright (c) 2024-2026 Linus Andera
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,8 +17,8 @@
 package de.linusdev.lutils.math.vector.buffer.shortn;
 
 import de.linusdev.lutils.math.vector.UnsignedVector;
+import de.linusdev.lutils.nat.abi.ABI;
 import de.linusdev.lutils.nat.struct.abstracts.StructureStaticVariables;
-import de.linusdev.lutils.nat.struct.annos.StructValue;
 import org.jetbrains.annotations.Nullable;
 
 public class BBUShort1 extends BBShort1 implements UnsignedVector {
@@ -27,27 +27,18 @@ public class BBUShort1 extends BBShort1 implements UnsignedVector {
      * @see StructureStaticVariables#newUnallocated()
      */
     public static BBUShort1 newUnallocated() {
-        return new BBUShort1(false, null);
+        return new BBUShort1(null);
     }
 
     /**
-     * @see StructureStaticVariables#newAllocatable(StructValue) 
+     * @see StructureStaticVariables#newAllocatable(ABI, int[], Class[])  
      */
-    public static BBUShort1 newAllocatable(@Nullable StructValue structValue) {
-        return new BBUShort1(true, structValue);
+    public static BBUShort1 newAllocatable(@Nullable ABI abi) {
+        return new BBUShort1(abi);
     }
 
-    /**
-     * @see StructureStaticVariables#newAllocated(StructValue) 
-     */
-    public static BBUShort1 newAllocated(@Nullable StructValue structValue) {
-        BBUShort1 ret = newAllocatable(structValue);
-        ret.allocate();
-        return ret;
-    }
-
-    protected BBUShort1(boolean generateInfo, @Nullable StructValue structValue) {
-        super(generateInfo, structValue);
+    protected BBUShort1(@Nullable ABI abi) {
+        super(abi);
     }
 
 }

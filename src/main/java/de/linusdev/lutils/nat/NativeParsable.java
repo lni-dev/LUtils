@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024-2025 Linus Andera
+ * Copyright (c) 2024-2026 Linus Andera
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,31 +16,32 @@
 
 package de.linusdev.lutils.nat;
 
-import de.linusdev.lutils.nat.struct.utils.BufferUtils;
-
-import java.nio.ByteBuffer;
+import de.linusdev.lutils.nat.memory.NMemInfo;
+import de.linusdev.lutils.nat.memory.NativeMemBuffer;
 
 public interface NativeParsable extends MemorySizeable {
 
+
+
     /**
-     * Whether this {@link NativeParsable} is already backed by a {@link #getByteBuffer() buffer}.
+     * Whether this {@link NativeParsable} is already backed by a {@link #getNativeMemBuffer() buffer}.
      * @return {@code true} if initialised
      */
     boolean isInitialised();
 
     /**
-     * The {@link ByteBuffer} containing the native data. May not be {@code null} if
+     * The {@link NativeMemBuffer} containing the native data. May not be {@code null} if
      * {@link #isInitialised()} is {@code true}.
-     * @return {@link ByteBuffer}
+     * @return {@link NativeMemBuffer}
      */
-    ByteBuffer getByteBuffer();
+    NMemInfo getNativeMemBuffer();
 
     /**
      * Get the pointer to the buffer of this NativeParsable as long.
-     * @return pointer to {@link #getByteBuffer()}
+     * @return pointer to {@link #getNativeMemBuffer()}
      */
     default long getPointer() {
-        ByteBuffer buffer = getByteBuffer();
-        return buffer == null ? 0L : BufferUtils.getHeapAddress(buffer);
+        NMemInfo info = getNativeMemBuffer();
+        return info.nativeMemBuffer().address() + info.offest();
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024-2026 Linus Andera
+ * Copyright (c) 2023-2026 Linus Andera
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,24 +14,18 @@
  * limitations under the License.
  */
 
-package de.linusdev.lutils.nat.abi;
+package de.linusdev.lutils.nat.struct.annos;
 
-import org.jetbrains.annotations.NotNull;
+import de.linusdev.lutils.nat.struct.abstracts.Structure;
+
+import java.lang.annotation.*;
 
 /**
- * @see #MSVC_X64
- * @see #CVG4J_OPEN_CL
+ * Marks this class as a {@link Structure}.
  */
-@SuppressWarnings("unused")
-public class DefaultABIOverwrites {
-
-    public static final @NotNull Class<?> MSVC_X64 = Ows.MSVC_X64.class;
-    public static final @NotNull Class<?> CVG4J_OPEN_CL = Ows.CVG4J_OPEN_CL.class;
-
-    public static class Ows {
-        public static class MSVC_X64 {}
-
-        public static class CVG4J_OPEN_CL {}
-    }
-
-}
+@Retention(RetentionPolicy.RUNTIME)
+@Inherited
+@Target(ElementType.TYPE)
+@Documented
+@Deprecated
+public @interface Struct {}

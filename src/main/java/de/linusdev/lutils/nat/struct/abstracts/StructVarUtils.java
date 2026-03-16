@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024-2025 Linus Andera
+ * Copyright (c) 2024-2026 Linus Andera
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,12 +17,10 @@
 package de.linusdev.lutils.nat.struct.abstracts;
 
 import de.linusdev.lutils.nat.abi.ABI;
-import de.linusdev.lutils.nat.abi.OverwriteChildABI;
 import de.linusdev.lutils.nat.struct.annos.StructValue;
 import de.linusdev.lutils.nat.struct.info.StructVarInfo;
 import de.linusdev.lutils.nat.struct.info.StructureInfo;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
@@ -33,7 +31,6 @@ public interface StructVarUtils {
     static <T> T getStructVars(
             @NotNull Class<?> clazz,
             @NotNull ABI abi,
-            @Nullable OverwriteChildABI overwriteChildAbi,
             @NotNull StructVarResultCollector<T> collector
     ) {
         assert assertNoPrivateStructValues(clazz);
@@ -44,7 +41,7 @@ public interface StructVarUtils {
         int size = 0;
 
         for(Field field : fields) {
-            StructVarInfo info = StructVarInfo.ofField(field, abi, overwriteChildAbi);
+            StructVarInfo info = StructVarInfo.ofField(field, abi);
 
             if(info == null) continue;
 

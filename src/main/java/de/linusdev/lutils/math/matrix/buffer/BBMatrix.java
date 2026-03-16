@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024-2025 Linus Andera
+ * Copyright (c) 2024-2026 Linus Andera
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,21 +21,16 @@ import de.linusdev.lutils.math.matrix.MatrixMemoryLayout;
 import de.linusdev.lutils.math.vector.buffer.BBVectorInfo;
 import de.linusdev.lutils.nat.NativeType;
 import de.linusdev.lutils.nat.abi.ABI;
-import de.linusdev.lutils.nat.abi.OverwriteChildABI;
 import de.linusdev.lutils.nat.struct.abstracts.Structure;
 import de.linusdev.lutils.nat.struct.annos.RequirementType;
-import de.linusdev.lutils.nat.struct.annos.StructValue;
-import de.linusdev.lutils.nat.struct.annos.StructureSettings;
 import de.linusdev.lutils.nat.struct.generator.Language;
-import de.linusdev.lutils.nat.struct.generator.StaticGenerator;
+import de.linusdev.lutils.nat.struct.generator.SimpleStaticGenerator;
 import de.linusdev.lutils.nat.struct.generator.StructCodeGenerator;
 import de.linusdev.lutils.nat.struct.info.ArrayInfo;
 import de.linusdev.lutils.nat.struct.info.StructureInfo;
-import de.linusdev.lutils.nat.struct.utils.SSMUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-@StructureSettings(requiresCalculateInfoMethod = true, customLayoutOption = RequirementType.OPTIONAL)
 public abstract class BBMatrix extends Structure implements Matrix {
 
     protected final @NotNull BBMatrixGenerator generator;
@@ -44,32 +39,21 @@ public abstract class BBMatrix extends Structure implements Matrix {
 
     protected BBMatrix(
             @NotNull BBMatrixGenerator generator,
-            boolean generateInfo,
-            @Nullable StructValue structValue
+            @Nullable ABI abi
     ) {
+        super(abi);
         this.generator = generator;
-        if(generateInfo) {
-            setInfo(SSMUtils.getInfo(
-                    this.getClass(),
-                    structValue,
-                    null,
-                    null,
-                    null,
-                    null,
-                    generator
-            ));
-        }
     }
 
     /**
-     * position of given {@code x} and {@code y} in {@link #byteBuf}
+     * position of given {@code x} and {@code y} in {@link #nativeMem}
      */
     protected int posInBuf(int y, int x) {
         return positions.position(positionToIndex(y, x));
     }
 
     /**
-     * position of given {@code index} in {@link #byteBuf}
+     * position of given {@code index} in {@link #nativeMem}
      */
     protected int posInBuf(int index) {
         return positions.position(index);
@@ -77,11 +61,7 @@ public abstract class BBMatrix extends Structure implements Matrix {
 
     @Override
     protected @Nullable StructureInfo generateInfo() {
-        return SSMUtils.getInfo(
-                this.getClass(),
-                null, null, null, null, null,
-                generator
-        );
+        return generator.calculateInfo(this.getClass(), abi, null, null);
     }
 
     @Override
@@ -131,26 +111,21 @@ public abstract class BBMatrix extends Structure implements Matrix {
         this.memoryLayout = memoryLayout;
     }
 
-    public static class BBMatrixGenerator implements StaticGenerator {
+    public static class BBMatrixGenerator extends SimpleStaticGenerator {
 
         private final int width;
         private final int height;
         private final @NotNull NativeType type;
 
         public BBMatrixGenerator(int width, int height, @NotNull NativeType type) {
+            super(RequirementType.NOT_SUPPORTED, RequirementType.NOT_SUPPORTED);
             this.width = width;
             this.height = height;
             this.type = type;
         }
 
         @Override
-        public @NotNull StructureInfo calculateInfo(
-                @NotNull Class<?> selfClazz,
-                @Nullable StructValue structValue,
-                @NotNull StructValue @NotNull [] elementsStructValue,
-                @NotNull ABI abi,
-                @Nullable OverwriteChildABI overwriteChildAbi
-        ) {
+        public @NotNull StructureInfo calculateInfoChecked(@NotNull Class<?> selfClazz, @NotNull ABI abi, int[] length, @NotNull Class<?>[] elementTypes) {
             return BBMatrixInfo.create(abi, width, height, type);
         }
 

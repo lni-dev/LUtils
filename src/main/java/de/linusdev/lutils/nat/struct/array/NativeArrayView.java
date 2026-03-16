@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024-2025 Linus Andera
+ * Copyright (c) 2024-2026 Linus Andera
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,8 @@
 package de.linusdev.lutils.nat.struct.array;
 
 import de.linusdev.lutils.nat.array.NativeArray;
+import de.linusdev.lutils.nat.memory.NMemInfo;
+import de.linusdev.lutils.nat.memory.NativeMemBuffer;
 import de.linusdev.lutils.nat.struct.abstracts.Structure;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Range;
@@ -27,39 +29,43 @@ public class NativeArrayView<T extends Structure> implements NativeArray<T> {
 
     private final @NotNull NativeArray<T> original;
 
-    private final @NotNull ByteBuffer backingBuffer;
-    private final int offset;
+    private final @NotNull NativeMemBuffer nativeMemory;
+    private final int offsetInArray;
     private final int length;
+
+    private final long byteOffset;
+    private final long byteLength;
 
     /**
      *
      * @param original array to view on
      * @param backingBuffer {@link ByteBuffer} backing this view. This buffer must start at the location of
      *                                        {@code original.get(offset)} and end before {@code original.get(offset + length)}.
-     * @param offset startIndex (inclusive) to the first element of type {@link T} this view views on.
+     * @param offsetInArray startIndex (inclusive) to the first element of type {@link T} this view views on.
      * @param length length for how many elements of type {@link T} this view views on.
      */
     public NativeArrayView(
             @NotNull NativeArray<T> original,
-            @NotNull ByteBuffer backingBuffer,
-            int offset,
-            int length
+            @NotNull NativeMemBuffer backingBuffer,
+            int offsetInArray,
+            int length, long byteOffset, long byteLength
     ) {
         this.original = original;
-        this.backingBuffer = backingBuffer;
-        this.offset = offset;
+        this.nativeMemory = backingBuffer;
+        this.offsetInArray = offsetInArray;
         this.length = length;
+        this.byteOffset = byteOffset;
+        this.byteLength = byteLength;
     }
-
 
     @Override
     public T get(@Range(from = 0, to = Integer.MAX_VALUE) int index) {
-        return original.get(offset + index);
+        return original.get(offsetInArray + index);
     }
 
     @Override
     public void set(int index, T item) {
-        original.set(offset + index, item);
+        original.set(offsetInArray + index, item);
     }
 
     @Override
@@ -73,13 +79,13 @@ public class NativeArrayView<T extends Structure> implements NativeArray<T> {
     }
 
     @Override
-    public ByteBuffer getByteBuffer() {
-        return backingBuffer;
+    public NMemInfo getNativeMemBuffer() {
+        return new NMemInfo(nativeMemory, byteOffset);
     }
 
     @Override
-    public int getRequiredSize() {
-        return backingBuffer.capacity();
+    public long getRequiredSize() {
+        return byteLength;
     }
 
     @Override

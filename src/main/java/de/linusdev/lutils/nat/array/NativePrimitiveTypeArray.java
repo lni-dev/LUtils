@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024-2025 Linus Andera
+ * Copyright (c) 2024-2026 Linus Andera
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,11 +18,10 @@ package de.linusdev.lutils.nat.array;
 
 import de.linusdev.lutils.nat.NativeType;
 import de.linusdev.lutils.nat.abi.ABI;
-import de.linusdev.lutils.nat.abi.OverwriteChildABI;
 import de.linusdev.lutils.nat.struct.abstracts.Structure;
 import de.linusdev.lutils.nat.struct.annos.RequirementType;
+import de.linusdev.lutils.nat.struct.annos.Struct;
 import de.linusdev.lutils.nat.struct.annos.StructValue;
-import de.linusdev.lutils.nat.struct.annos.StructureSettings;
 import de.linusdev.lutils.nat.struct.generator.StaticGenerator;
 import de.linusdev.lutils.nat.struct.info.ArrayInfo;
 import de.linusdev.lutils.nat.struct.info.StructureInfo;
@@ -32,7 +31,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.nio.ByteBuffer;
 
-@StructureSettings(
+@Struct(
         requiresCalculateInfoMethod = true,
         customLengthOption = RequirementType.REQUIRED,
         customLayoutOption = RequirementType.OPTIONAL
@@ -42,7 +41,7 @@ public abstract class NativePrimitiveTypeArray<T> extends Structure implements N
     /**
      * Function to calculate the position for an element at a specific index.
      * Will always be not {@code null} after {@link #useBuffer(Structure, int, StructureInfo)} has been called.
-     * That means, this struct must be {@link #allocate() allocated}, {@link #claimBuffer(ByteBuffer) claimed a buffer}
+     * That means, this struct must be {@link #allocate() allocated}, {@link #claimMemory(ByteBuffer) claimed a buffer}
      * or {@link #useBuffer(Structure, int, StructureInfo) usebuffer called}.
      */
     protected ArrayInfo.ArrayPositionFunction positions;
@@ -119,8 +118,7 @@ public abstract class NativePrimitiveTypeArray<T> extends Structure implements N
                 @NotNull Class<?> selfClazz,
                 @Nullable StructValue structValue,
                 @NotNull StructValue @NotNull [] elementsStructValue,
-                @NotNull ABI abi,
-                @Nullable OverwriteChildABI overwriteChildAbi
+                @Nullable ABI abi
         ) {
             assert structValue != null; // required per StructureSettings annotation.
 

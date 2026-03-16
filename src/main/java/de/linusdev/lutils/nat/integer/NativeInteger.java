@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024-2025 Linus Andera
+ * Copyright (c) 2024-2026 Linus Andera
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,24 +18,21 @@ package de.linusdev.lutils.nat.integer;
 
 import de.linusdev.lutils.nat.MemorySizeable;
 import de.linusdev.lutils.nat.abi.ABI;
-import de.linusdev.lutils.nat.abi.OverwriteChildABI;
 import de.linusdev.lutils.nat.struct.abstracts.Structure;
 import de.linusdev.lutils.nat.struct.abstracts.StructureStaticVariables;
 import de.linusdev.lutils.nat.struct.annos.RequirementType;
+import de.linusdev.lutils.nat.struct.annos.Struct;
 import de.linusdev.lutils.nat.struct.annos.StructValue;
-import de.linusdev.lutils.nat.struct.annos.StructureLayoutSettings;
-import de.linusdev.lutils.nat.struct.annos.StructureSettings;
 import de.linusdev.lutils.nat.struct.generator.StaticGenerator;
 import de.linusdev.lutils.nat.struct.info.StructureInfo;
 import de.linusdev.lutils.nat.struct.utils.SSMUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-@StructureSettings(
+@Struct(
         requiresCalculateInfoMethod = true,
         customLayoutOption = RequirementType.OPTIONAL
 )
-@StructureLayoutSettings
 public class NativeInteger extends Structure {
 
     @SuppressWarnings("unused") // accessed via reflection
@@ -45,8 +42,7 @@ public class NativeInteger extends Structure {
                 @NotNull Class<?> selfClazz,
                 @Nullable StructValue structValue,
                 @NotNull StructValue @NotNull [] elementsStructValue,
-                @NotNull ABI abi,
-                @NotNull OverwriteChildABI overwriteChildAbi
+                @Nullable ABI abi
         ) {
             MemorySizeable memorySizeable = abi.types().integer();
             return new StructureInfo(
@@ -67,9 +63,9 @@ public class NativeInteger extends Structure {
     }
 
     /**
-     * @see StructureStaticVariables#newAllocatable(StructValue)
+     * @see StructureStaticVariables#newAllocatable(ABI, int[], Class[]) 
      */
-    public static NativeInteger newAllocatable(@Nullable StructValue structValue) {
+    public static NativeInteger newAllocatable(@Nullable ABI abi) {
         return new NativeInteger(true, structValue);
     }
 
@@ -83,7 +79,7 @@ public class NativeInteger extends Structure {
     }
 
 
-    protected NativeInteger(boolean generateInfo, @Nullable StructValue structValue) {
+    protected NativeInteger(@Nullable ABI abi) {
         if(generateInfo) {
             setInfo(SSMUtils.getInfo(
                     this.getClass(),

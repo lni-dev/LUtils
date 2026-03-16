@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025 Linus Andera
+ * Copyright (c) 2025-2026 Linus Andera
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,9 +36,9 @@ public class ExampleComplexStructure extends ComplexStructure {
     }
 
     /**
-     * @see StructureStaticVariables#newAllocatable(StructValue)
+     * @see StructureStaticVariables#newAllocatable(ABI, int[], Class[]) 
      */
-    public static @NotNull ExampleComplexStructure newAllocatable(@Nullable StructValue structValue) {
+    public static @NotNull ExampleComplexStructure newAllocatable(@Nullable ABI abi) {
         return new ExampleComplexStructure(false, null, true);
     }
 
