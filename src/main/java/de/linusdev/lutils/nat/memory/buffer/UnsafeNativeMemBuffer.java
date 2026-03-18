@@ -18,18 +18,13 @@ package de.linusdev.lutils.nat.memory.buffer;
 
 import de.linusdev.lutils.nat.memory.NativeMemBuffer;
 import org.jetbrains.annotations.NotNull;
-import sun.misc.Unsafe;
 
 import java.nio.ByteOrder;
 
-@SuppressWarnings("ClassCanBeRecord")
+import static de.linusdev.lutils.nat.struct.utils.Utils.UNSAFE;
+
+@SuppressWarnings("removal")
 public class UnsafeNativeMemBuffer implements NativeMemBuffer {
-
-    private static final @NotNull Unsafe UNSAFE;
-
-    static {
-        UNSAFE = Unsafe.getUnsafe();
-    }
 
     private final long address;
     private final long size;
@@ -124,6 +119,13 @@ public class UnsafeNativeMemBuffer implements NativeMemBuffer {
     @Override
     public void fill(long index, long size, byte value) {
         UNSAFE.setMemory(address + index, size, value);
+    }
+
+    private static final long BYTE_ARRAY_BASE_OFFSET = UNSAFE.arrayBaseOffset(byte[].class);
+
+    @Override
+    public void fill(long index, byte[] values, long srcOffset, long srcLength) {
+        UNSAFE.copyMemory(values, BYTE_ARRAY_BASE_OFFSET + srcOffset, null, address, srcLength);
     }
 
     @Override

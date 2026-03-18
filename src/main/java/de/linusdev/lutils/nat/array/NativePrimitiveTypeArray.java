@@ -18,50 +18,41 @@ package de.linusdev.lutils.nat.array;
 
 import de.linusdev.lutils.nat.NativeType;
 import de.linusdev.lutils.nat.abi.ABI;
+import de.linusdev.lutils.nat.memory.NativeMemBuffer;
 import de.linusdev.lutils.nat.struct.abstracts.Structure;
 import de.linusdev.lutils.nat.struct.annos.RequirementType;
-import de.linusdev.lutils.nat.struct.annos.Struct;
-import de.linusdev.lutils.nat.struct.annos.StructValue;
+import de.linusdev.lutils.nat.struct.generator.SimpleStaticGenerator;
 import de.linusdev.lutils.nat.struct.generator.StaticGenerator;
 import de.linusdev.lutils.nat.struct.info.ArrayInfo;
 import de.linusdev.lutils.nat.struct.info.StructureInfo;
-import de.linusdev.lutils.nat.struct.utils.SSMUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.nio.ByteBuffer;
-
-@Struct(
-        requiresCalculateInfoMethod = true,
-        customLengthOption = RequirementType.REQUIRED,
-        customLayoutOption = RequirementType.OPTIONAL
-)
 public abstract class NativePrimitiveTypeArray<T> extends Structure implements NativeArray<T> {
 
     /**
      * Function to calculate the position for an element at a specific index.
-     * Will always be not {@code null} after {@link #useBuffer(Structure, int, StructureInfo)} has been called.
-     * That means, this struct must be {@link #allocate() allocated}, {@link #claimMemory(ByteBuffer) claimed a buffer}
-     * or {@link #useBuffer(Structure, int, StructureInfo) usebuffer called}.
+     * Will always be not {@code null} after {@link #useBuffer(Structure, long, StructureInfo)} has been called.
+     * That means, this struct must be {@link de.linusdev.lutils.nat.memory.NativeMemAllocator#allocate(Structure) allocated},
+     * {@link #claimMemory(NativeMemBuffer, long) claimed a buffer}
+     * or {@link #useBuffer(Structure, long, StructureInfo) usebuffer called}.
      */
     protected ArrayInfo.ArrayPositionFunction positions;
 
     protected NativePrimitiveTypeArray(
-            @Nullable StructValue structValue,
-            boolean generateInfo,
-            @NotNull StaticGenerator generator
+            @NotNull StaticGenerator generator,
+            @Nullable ABI abi
     ) {
-        if(generateInfo) {
-            setInfo(SSMUtils.getInfo(
-                    this.getClass(),
-                    structValue,
-                    null,
-                    null,
-                    null,
-                    null,
-                    generator
-            ));
-        }
+        super(abi);
+    }
+
+    protected NativePrimitiveTypeArray(
+            @NotNull StaticGenerator generator,
+            @Nullable ABI abi,
+            int length
+    ) {
+        super(abi);
+        setInfo(generator.calculateInfo(this.getClass(), abi, new int[]{length}, null));
     }
 
     @Override
@@ -70,7 +61,7 @@ public abstract class NativePrimitiveTypeArray<T> extends Structure implements N
     }
 
     @Override
-    protected void useBuffer(@NotNull Structure mostParentStructure, int offset, @NotNull StructureInfo info) {
+    protected void useBuffer(@NotNull Structure mostParentStructure, long offset, @NotNull StructureInfo info) {
         super.useBuffer(mostParentStructure, offset, info);
         positions = getInfo().getPositions();
     }
@@ -105,29 +96,18 @@ public abstract class NativePrimitiveTypeArray<T> extends Structure implements N
         return toString( getClass().getSimpleName(), sb.toString());
     }
 
-    public static class PrimitiveArrayStaticGenerator implements StaticGenerator {
+    public static class PrimitiveArrayStaticGenerator extends SimpleStaticGenerator {
 
         private final NativeType nativeType;
 
         public PrimitiveArrayStaticGenerator(NativeType nativeType) {
+            super(RequirementType.REQUIRED, RequirementType.NOT_SUPPORTED);
             this.nativeType = nativeType;
         }
 
         @Override
-        public @NotNull StructureInfo calculateInfo(
-                @NotNull Class<?> selfClazz,
-                @Nullable StructValue structValue,
-                @NotNull StructValue @NotNull [] elementsStructValue,
-                @Nullable ABI abi
-        ) {
-            assert structValue != null; // required per StructureSettings annotation.
-
-            return abi.calculateArrayLayout(
-                    false,
-                    nativeType.getMemorySizeable(abi.types()),
-                    structValue.length()[0],
-                    -1
-            );
+        public @NotNull StructureInfo calculateInfoChecked(@NotNull Class<?> selfClazz, @NotNull ABI abi, int[] length, @NotNull Class<?>[] elementTypes) {
+            return abi.calculateArrayLayout(false, nativeType.getMemorySizeable(abi.types()), length[0], -1L);
         }
     }
 }

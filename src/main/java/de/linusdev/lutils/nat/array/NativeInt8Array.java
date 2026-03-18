@@ -17,8 +17,8 @@
 package de.linusdev.lutils.nat.array;
 
 import de.linusdev.lutils.nat.NativeType;
+import de.linusdev.lutils.nat.abi.ABI;
 import de.linusdev.lutils.nat.struct.abstracts.StructureStaticVariables;
-import de.linusdev.lutils.nat.struct.annos.StructValue;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Range;
@@ -32,38 +32,36 @@ public class NativeInt8Array extends NativePrimitiveTypeArray<Byte> {
      * @see StructureStaticVariables#newUnallocated()
      */
     public static NativeInt8Array newUnallocated() {
-        return new NativeInt8Array(null, false);
+        return new NativeInt8Array(null);
     }
 
     /**
      * @see StructureStaticVariables#newAllocatable(ABI, int[], Class[]) 
      */
-    public static NativeInt8Array newAllocatable(@NotNull StructValue structValue) {
-        return new NativeInt8Array(structValue, true);
-    }
-
-    /**
-     * @see StructureStaticVariables#newAllocated(StructValue)
-     */
-    public static NativeInt8Array newAllocated(@NotNull StructValue structValue) {
-        NativeInt8Array ret = newAllocatable(structValue);
-        ret.allocate();
-        return ret;
+    public static NativeInt8Array newAllocatable(@Nullable ABI abi, int length) {
+        return new NativeInt8Array(abi, length);
     }
 
     protected NativeInt8Array(
-            @Nullable StructValue structValue,
-            boolean generateInfo
+            @Nullable ABI abi,
+            int length
     ) {
-        super(structValue, generateInfo, GENERATOR);
+        super(GENERATOR, abi, length);
     }
+
+    protected NativeInt8Array(
+            @Nullable ABI abi
+    ) {
+        super(GENERATOR, abi);
+    }
+
     @Override
     public Byte get(@Range(from = 0, to = Integer.MAX_VALUE) int index) {
         return getInt8(index);
     }
 
     public byte getInt8(@Range(from = 0, to = Integer.MAX_VALUE) int index) {
-        return byteBuf.get(positions.position(index));
+        return nativeMem.getByte(positions.position(index));
     }
 
     @Override
@@ -72,13 +70,11 @@ public class NativeInt8Array extends NativePrimitiveTypeArray<Byte> {
     }
 
     public void setInt8(int index, byte item) {
-        byteBuf.put(positions.position(index), item);
+        nativeMem.setByte(positions.position(index), item);
     }
 
-    public void set(byte @NotNull [] value) {
-        byteBuf.clear();
-        byteBuf.put(value);
-        byteBuf.clear();
+    public void set(byte @NotNull [] values) {
+        nativeMem.fill(values);
     }
 
 }

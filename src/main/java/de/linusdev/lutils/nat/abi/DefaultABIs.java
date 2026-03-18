@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024-2025 Linus Andera
+ * Copyright (c) 2024-2026 Linus Andera
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -85,7 +85,7 @@ public enum DefaultABIs implements ABI, Types {
         }
 
         @Override
-        public @NotNull ArrayInfo calculateArrayLayout(boolean compress, @NotNull MemorySizeable children, int length, int stride) {
+        public @NotNull ArrayInfo calculateArrayLayout(boolean compress, @NotNull MemorySizeable children, int length, long stride) {
             return _DEFAULT.calculateArrayLayout(compress, children, length, stride);
         }
 
@@ -129,17 +129,18 @@ public enum DefaultABIs implements ABI, Types {
         ) {
 
             int alignment = 1;
-            int[] sizes = new int[children.length * 2 + 1];
+            long[] sizes = new long[children.length * 2 + 1];
             int padding = 0;
-            int position = 0;
+            long position = 0;
+            int offset;
 
             for(int i = 0; i < children.length; ) {
                 MemorySizeable child = children[i];
 
                 if ((position % child.getAlignment()) != 0 && !compress) {
-                    int offset = (child.getAlignment() - (position % child.getAlignment()));
+                    offset = Math.toIntExact((child.getAlignment() - (position % child.getAlignment())));
                     position += offset;
-                    padding += offset;
+                    padding += Math.toIntExact(offset);
                     continue;
                 }
 
@@ -160,7 +161,7 @@ public enum DefaultABIs implements ABI, Types {
             }
             else sizes[sizes.length - 1] = 0;
 
-            return new StructureInfo(alignment, compress, position, sizes);
+            return new StructureInfo(this, alignment, compress, position, sizes);
         }
 
         @Override
@@ -171,7 +172,7 @@ public enum DefaultABIs implements ABI, Types {
 
             int alignment = 1;
             int[] positions = new int[children.length];
-            int size = 0;
+            long size = 0;
             int postPadding = 0;
 
             for(int i = 0; i < children.length; i++) {
@@ -186,9 +187,10 @@ public enum DefaultABIs implements ABI, Types {
                 alignment = 1;
 
             if(size % alignment != 0)
-                postPadding = (alignment - (size % alignment));
+                postPadding = Math.toIntExact((alignment - (size % alignment)));
 
             return new UnionInfo(
+                    this,
                     alignment, compress,
                     0, size, postPadding,
                     positions
@@ -200,7 +202,7 @@ public enum DefaultABIs implements ABI, Types {
                 boolean compress,
                 @NotNull MemorySizeable children,
                 int length,
-                int stride
+                long stride
         ) {
             int alignment = children.getAlignment();
 
@@ -215,12 +217,13 @@ public enum DefaultABIs implements ABI, Types {
                 }
             }
 
-            int finalStride = stride;
+            long finalStride = stride;
             return new ArrayInfo(
+                    this,
                     alignment,
                     compress,
                     stride * length,
-                    new int[]{0, stride * length, 0},
+                    new long[]{0, stride * length, 0},
                     length,
                     stride,
                     index -> index * finalStride
@@ -277,18 +280,19 @@ public enum DefaultABIs implements ABI, Types {
                 @NotNull MemorySizeable @NotNull ... children
         ) {
             int alignment = getBiggestStructAlignment(4, 16, children);
-            int[] sizes = new int[children.length * 2 + 1];
+            long[] sizes = new long[children.length * 2 + 1];
             int padding = 0;
-            int position = 0;
+            long position = 0;
+            int offset;
 
             for(int i = 0; i < children.length; ) {
                 MemorySizeable structure = children[i];
                 if((position % alignment) == 0 || alignment - (position % alignment) >= structure.getRequiredSize()) {
 
-                    int itemSize = structure.getRequiredSize();
+                    long itemSize = structure.getRequiredSize();
                     int itemAlignment = structure.getAlignment();
                     if(!compress && (position % itemAlignment) != 0) {
-                        int offset = (itemAlignment - (position % itemAlignment));
+                        offset = Math.toIntExact((itemAlignment - (position % itemAlignment)));
                         position += offset;
                         padding += offset;
                         continue;
@@ -300,7 +304,7 @@ public enum DefaultABIs implements ABI, Types {
                     padding = 0;
                     i++;
                 } else {
-                    int offset = (alignment - (position % alignment));
+                    offset = Math.toIntExact((alignment - (position % alignment)));
                     position += offset;
                     padding += offset;
                 }
@@ -312,7 +316,7 @@ public enum DefaultABIs implements ABI, Types {
             }
             else sizes[sizes.length - 1] = 0;
 
-            return new StructureInfo(alignment, compress, position, sizes);
+            return new StructureInfo(this, alignment, compress, position, sizes);
         }
 
         @Override
@@ -321,7 +325,7 @@ public enum DefaultABIs implements ABI, Types {
         }
 
         @Override
-        public @NotNull ArrayInfo calculateArrayLayout(boolean compress, @NotNull MemorySizeable children, int length, int stride) {
+        public @NotNull ArrayInfo calculateArrayLayout(boolean compress, @NotNull MemorySizeable children, int length, long stride) {
             return MSVC_X64.calculateArrayLayout(
                     compress,
                     children,
@@ -338,7 +342,7 @@ public enum DefaultABIs implements ABI, Types {
             // "For 3-component vector data types, the size of the data type is 4 * sizeof(component). This means
             // that a 3-component vector data type will be aligned to a 4 * sizeof(component) boundary."
 
-            int componentSize = componentType.getMemorySizeable(this).getRequiredSize();
+            int componentSize = Math.toIntExact(componentType.getMemorySizeable(this).getRequiredSize());
             int originalSize = componentSize * length;
             int size = originalSize;
 
@@ -348,13 +352,14 @@ public enum DefaultABIs implements ABI, Types {
             }
 
             return new ArrayInfo(
+                    this,
                     size,
                     false,
                     size,
-                    new int[]{0, originalSize, size-originalSize},
+                    new long[]{0, originalSize, size-originalSize},
                     length,
                     componentSize,
-                    index -> index * componentSize
+                    index -> (long) index * componentSize
             );
         }
 

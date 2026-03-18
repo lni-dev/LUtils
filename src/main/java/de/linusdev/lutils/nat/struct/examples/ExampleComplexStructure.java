@@ -18,6 +18,7 @@ package de.linusdev.lutils.nat.struct.examples;
 
 import de.linusdev.lutils.math.vector.buffer.intn.BBInt1;
 import de.linusdev.lutils.math.vector.buffer.intn.BBInt4;
+import de.linusdev.lutils.nat.abi.ABI;
 import de.linusdev.lutils.nat.struct.abstracts.ComplexStructure;
 import de.linusdev.lutils.nat.struct.abstracts.StructureStaticVariables;
 import de.linusdev.lutils.nat.struct.annos.StructValue;
@@ -32,23 +33,14 @@ public class ExampleComplexStructure extends ComplexStructure {
      * @see StructureStaticVariables#newUnallocated() 
      */
     public static @NotNull ExampleComplexStructure newUnallocated() {
-        return new ExampleComplexStructure(false, null, false);
+        return new ExampleComplexStructure(null);
     }
 
     /**
      * @see StructureStaticVariables#newAllocatable(ABI, int[], Class[]) 
      */
     public static @NotNull ExampleComplexStructure newAllocatable(@Nullable ABI abi) {
-        return new ExampleComplexStructure(false, null, true);
-    }
-
-    /**
-     * @see StructureStaticVariables#newAllocated(StructValue) 
-     */
-    public static @NotNull ExampleComplexStructure newAllocated(@Nullable StructValue structValue) {
-        ExampleComplexStructure struct = new ExampleComplexStructure(false, structValue, true);
-        struct.allocate();
-        return struct;
+        return new ExampleComplexStructure(abi);
     }
 
     /**
@@ -63,8 +55,8 @@ public class ExampleComplexStructure extends ComplexStructure {
     @StructValue(value = 1, length = 5, elementType = BBInt4.class)
     public final @NotNull StructureArray<BBInt4> someIntVectorArray = StructureArray.newUnallocated(false, BBInt4::newUnallocated);
 
-    public ExampleComplexStructure(boolean trackModifications, @Nullable StructValue structValue, boolean generateInfo) {
-        super(trackModifications);
-        init(structValue, generateInfo, someInt, someIntVectorArray);
+    public ExampleComplexStructure(@Nullable ABI abi) {
+        super(abi, false);
+        init(someInt, someIntVectorArray);
     }
 }

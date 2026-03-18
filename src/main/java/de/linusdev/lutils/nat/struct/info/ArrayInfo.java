@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024-2025 Linus Andera
+ * Copyright (c) 2024-2026 Linus Andera
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package de.linusdev.lutils.nat.struct.info;
 
+import de.linusdev.lutils.nat.abi.ABI;
 import org.jetbrains.annotations.NotNull;
 
 public class ArrayInfo extends StructureInfo {
@@ -29,7 +30,7 @@ public class ArrayInfo extends StructureInfo {
      * The stride (size of one element including padding) of the array or {@code -1}
      * if stride varies for different positions.
      */
-    protected final int stride;
+    protected final long stride;
 
     /**
      * The position in bytes of each array element.
@@ -39,23 +40,24 @@ public class ArrayInfo extends StructureInfo {
 
     /**
      *
-     * @param alignment see {@link StructureInfo#StructureInfo(int, boolean, int, int[])}
-     * @param compressed see {@link StructureInfo#StructureInfo(int, boolean, int, int[])}
-     * @param size see {@link StructureInfo#StructureInfo(int, boolean, int, int[])}
-     * @param sizes see {@link StructureInfo#StructureInfo(int, boolean, int, int[])}
+     * @param alignment see {@link StructureInfo#StructureInfo(ABI, int, boolean, long, long[]) StructureInfo}
+     * @param compressed see {@link StructureInfo#StructureInfo(ABI, int, boolean, long, long[]) StructureInfo}
+     * @param size see {@link StructureInfo#StructureInfo(ABI, int, boolean, long, long[]) StructureInfo}
+     * @param sizes see {@link StructureInfo#StructureInfo(ABI, int, boolean, long, long[]) StructureInfo}
      * @param length see {@link #length}
      * @param positions see {@link #positions}
      */
     public ArrayInfo(
+            @NotNull ABI abi,
             int alignment,
             boolean compressed,
-            int size,
-            int @NotNull [] sizes,
+            long size,
+            long @NotNull [] sizes,
             int length,
-            int stride,
+            long stride,
             @NotNull ArrayPositionFunction positions
     ) {
-        super(alignment, compressed, size, sizes);
+        super(abi, alignment, compressed, size, sizes);
         this.length = length;
         this.stride = stride;
         this.positions = positions;
@@ -78,7 +80,7 @@ public class ArrayInfo extends StructureInfo {
     /**
      * @see #stride
      */
-    public int getStride() {
+    public long getStride() {
         return stride;
     }
 
@@ -92,6 +94,6 @@ public class ArrayInfo extends StructureInfo {
          * @param index the index of the element, whose starting position shall be acquired.
          * @return starting position (in number of bytes) of element with given {@code index}.
          */
-        int position(int index);
+        long position(int index);
     }
 }

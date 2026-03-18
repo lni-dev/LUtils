@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024-2025 Linus Andera
+ * Copyright (c) 2024-2026 Linus Andera
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package de.linusdev.lutils.nat.struct.info;
 
+import de.linusdev.lutils.nat.abi.ABI;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -30,12 +31,13 @@ public class UnionInfo extends StructureInfo {
     protected final int @NotNull [] positions;
 
     public UnionInfo(
+            @NotNull ABI abi,
             int alignment,
             boolean compressed,
-            int prePadding, int size, int postPadding,
+            int prePadding, long size, int postPadding,
             int @NotNull [] positions
     ) {
-        super(alignment, compressed, prePadding, size, postPadding);
+        super(abi, alignment, compressed, prePadding, size, postPadding);
         this.positions = positions;
     }
 

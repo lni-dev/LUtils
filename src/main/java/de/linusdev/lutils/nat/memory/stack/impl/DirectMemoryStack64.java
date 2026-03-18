@@ -18,6 +18,8 @@ package de.linusdev.lutils.nat.memory.stack.impl;
 
 import de.linusdev.lutils.nat.abi.ABI;
 import de.linusdev.lutils.nat.abi.DefaultABIs;
+import de.linusdev.lutils.nat.memory.AllocatedMemory;
+import de.linusdev.lutils.nat.memory.NativeMemAllocator;
 import de.linusdev.lutils.nat.memory.NativeMemBuffer;
 import de.linusdev.lutils.nat.memory.stack.PopPoint;
 import de.linusdev.lutils.nat.memory.stack.SafePoint;
@@ -30,12 +32,13 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 
-public class DirectMemoryStack64 extends Structure implements Stack {
+public class DirectMemoryStack64 extends Structure implements Stack, AutoCloseable {
 
     public static final int DEFAULT_MEMORY_SIZE = 1024 * 1024; // 1 MiB
     public static final int ALIGNMENT = 8;
 
     private final long address;
+    private final AllocatedMemory allocatedMem;
     protected final @NotNull StackPointerQueue stackPointers;
 
     public DirectMemoryStack64(@NotNull Size size) {
@@ -49,7 +52,8 @@ public class DirectMemoryStack64 extends Structure implements Stack {
     public DirectMemoryStack64(long size) {
         super(null);
         setInfo(new StructureInfo(DefaultABIs.MSVC_X64, ALIGNMENT, false, 0, size, 0));
-        //TODO allocate
+        this.allocatedMem = NativeMemAllocator.DEFAULT_ALLOCATOR.allocate(size);
+        claimMemory(allocatedMem, 0);
         this.address = getPointer();
         this.stackPointers = new StackPointerQueue(address);
     }
@@ -77,7 +81,9 @@ public class DirectMemoryStack64 extends Structure implements Stack {
         long stackPointer = stackPointers.getStackPointer();
         int alignmentFix = stackPointer % alignment == 0 ? 0 : (int) (alignment - (stackPointer % alignment));
 
-        return NativeMemBuffer.of(stackPointer + alignmentFix, size, nativeMem.byteOrder());
+        NativeMemBuffer subBuffer = NativeMemBuffer.of(stackPointer + alignmentFix, size, nativeMem.byteOrder());
+        subBuffer.fill((byte) 0);
+        return subBuffer;
     }
 
     @Override
@@ -133,4 +139,9 @@ public class DirectMemoryStack64 extends Structure implements Stack {
             return new StructureInfo(DefaultABIs.DEFAULT, 8, false, size, new long[]{0, size, 0});
         }
     };
+
+    @Override
+    public void close() {
+        allocatedMem.close();
+    }
 }

@@ -54,6 +54,16 @@ public interface NativeMemBuffer {
 
     void fill(long index, long size, byte value);
 
+    default void fill(byte value) {
+        fill(0, size(), value);
+    }
+
+    void fill(long index, byte[] values, long srcOffset, long srcLength);
+
+    default void fill(byte[] values) {
+        fill(0, values, 0, Math.min(values.length, size()));
+    }
+
     @NotNull ByteOrder byteOrder();
 
 }

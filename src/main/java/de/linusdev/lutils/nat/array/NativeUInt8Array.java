@@ -17,8 +17,8 @@
 package de.linusdev.lutils.nat.array;
 
 import de.linusdev.lutils.nat.NativeType;
+import de.linusdev.lutils.nat.abi.ABI;
 import de.linusdev.lutils.nat.struct.abstracts.StructureStaticVariables;
-import de.linusdev.lutils.nat.struct.annos.StructValue;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Range;
@@ -35,38 +35,30 @@ public class NativeUInt8Array extends NativeInt8Array {
      * @see StructureStaticVariables#newUnallocated()
      */
     public static NativeUInt8Array newUnallocated() {
-        return new NativeUInt8Array(null, false);
+        return new NativeUInt8Array(null);
     }
 
     /**
      * @see StructureStaticVariables#newAllocatable(ABI, int[], Class[]) 
      */
-    public static NativeUInt8Array newAllocatable(@NotNull StructValue structValue) {
-        return new NativeUInt8Array(structValue, true);
+    public static NativeUInt8Array newAllocatable(@NotNull ABI abi, int length) {
+        return new NativeUInt8Array(abi, length);
     }
 
-    /**
-     * @see StructureStaticVariables#newAllocated(StructValue)
-     */
-    public static NativeUInt8Array newAllocated(@NotNull StructValue structValue) {
-        NativeUInt8Array ret = newAllocatable(structValue);
-        ret.allocate();
-        return ret;
+    protected NativeUInt8Array(@Nullable ABI abi, int length) {
+        super(abi, length);
     }
 
-    protected NativeUInt8Array(
-            @Nullable StructValue structValue,
-            boolean generateInfo
-    ) {
-        super(structValue, generateInfo);
+    protected NativeUInt8Array(@Nullable ABI abi) {
+        super(abi);
     }
 
     public byte getUInt8(@Range(from = 0, to = Integer.MAX_VALUE) int index) {
-        return byteBuf.get(positions.position(index));
+        return nativeMem.getByte(positions.position(index));
     }
 
     public void setUInt8(int index, byte item) {
-        byteBuf.put(positions.position(index), item);
+        nativeMem.setByte(positions.position(index), item);
     }
 
 }

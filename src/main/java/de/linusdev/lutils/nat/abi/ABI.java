@@ -82,7 +82,7 @@ public interface ABI {
             boolean compress,
             @NotNull MemorySizeable children,
             int length,
-            int stride
+            long stride
     );
 
     /**

@@ -23,7 +23,6 @@ import de.linusdev.lutils.nat.struct.abstracts.StructVarUtils;
 import de.linusdev.lutils.nat.struct.abstracts.Structure;
 import de.linusdev.lutils.nat.struct.annos.StructValue;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 public class ComplexUnionInfo extends UnionInfo {
 
@@ -35,11 +34,10 @@ public class ComplexUnionInfo extends UnionInfo {
      */
     public static @NotNull ComplexUnionInfo generateFromStructVars(
             @NotNull Class<?> clazz,
-            @NotNull ABI abi,
-            @Nullable OverwriteChildABI overwriteChildAbi
+            @NotNull ABI abi
     ) {
         return StructVarUtils.getStructVars(
-                clazz, abi, overwriteChildAbi,
+                clazz, abi,
                 (varInfos, infos) -> {
                     UnionInfo info = abi.calculateUnionLayout(false, infos);
                     return new ComplexUnionInfo(info, abi, varInfos);
