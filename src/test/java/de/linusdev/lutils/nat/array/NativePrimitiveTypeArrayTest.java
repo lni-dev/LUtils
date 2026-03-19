@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025 Linus Andera
+ * Copyright (c) 2025-2026 Linus Andera
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,17 +16,17 @@
 
 package de.linusdev.lutils.nat.array;
 
-import de.linusdev.lutils.nat.struct.annos.SVWrapper;
 import de.linusdev.lutils.nat.struct.info.ArrayInfo;
 import org.junit.jupiter.api.Test;
 
+import static de.linusdev.lutils.nat.memory.Allocators.allocManaged;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class NativePrimitiveTypeArrayTest {
 
     @Test
     public void testFloat32Array() {
-        NativeFloat32Array array = NativeFloat32Array.newAllocated(SVWrapper.length(10));
+        NativeFloat32Array array = allocManaged(NativeFloat32Array.newAllocatable(null, 10));
 
         assertEquals(10, array.length());
         assertEquals(10 * 4, array.getRequiredSize());
@@ -47,7 +47,7 @@ class NativePrimitiveTypeArrayTest {
 
     @Test
     public void testFloat64Array() {
-        NativeFloat64Array array = NativeFloat64Array.newAllocated(SVWrapper.length(10));
+        NativeFloat64Array array = allocManaged(NativeFloat64Array.newAllocatable(null, 10));
 
         assertEquals(10, array.length());
         assertEquals(10 * 8, array.getRequiredSize());
@@ -68,7 +68,7 @@ class NativePrimitiveTypeArrayTest {
 
     @Test
     public void testInt32Array() {
-        NativeInt32Array array = NativeInt32Array.newAllocated(SVWrapper.length(10));
+        NativeInt32Array array = allocManaged(NativeInt32Array.newAllocatable(null, 10));
 
         assertEquals(10, array.length());
         assertEquals(10 * 4, array.getRequiredSize());
@@ -89,7 +89,7 @@ class NativePrimitiveTypeArrayTest {
 
     @Test
     public void testInt8Array() {
-        NativeInt8Array array = NativeInt8Array.newAllocated(SVWrapper.length(10));
+        NativeInt8Array array = allocManaged(NativeInt8Array.newAllocatable(null, 10));
 
         assertEquals(10, array.length());
         assertEquals(10, array.getRequiredSize());
@@ -109,7 +109,7 @@ class NativePrimitiveTypeArrayTest {
 
     @Test
     public void testUInt8Array() {
-        NativeUInt8Array array = NativeUInt8Array.newAllocated(SVWrapper.length(10));
+        NativeUInt8Array array = allocManaged(NativeUInt8Array.newAllocatable(null, 10));
 
         assertEquals(10, array.length());
         assertEquals(10, array.getRequiredSize());
@@ -129,12 +129,12 @@ class NativePrimitiveTypeArrayTest {
 
     @Test
     void getPositions() {
-        NativeInt32Array array = NativeInt32Array.newAllocated(SVWrapper.length(10));
+        NativeInt32Array array = allocManaged(NativeInt32Array.newAllocatable(null, 10));
 
         ArrayInfo.ArrayPositionFunction positionFunction = array.getPositions();
 
         for (int i = 1; i < array.length(); i++) {
-            assertEquals( i*4 , positionFunction.position(i));
+            assertEquals( i* 4L, positionFunction.position(i));
         }
 
     }

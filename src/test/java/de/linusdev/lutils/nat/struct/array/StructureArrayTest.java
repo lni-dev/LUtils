@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025 Linus Andera
+ * Copyright (c) 2025-2026 Linus Andera
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package de.linusdev.lutils.nat.struct.array;
 import de.linusdev.lutils.math.vector.buffer.intn.BBInt1;
 import org.junit.jupiter.api.Test;
 
+import static de.linusdev.lutils.nat.memory.Allocators.allocManaged;
 import static org.junit.jupiter.api.Assertions.*;
 
 class StructureArrayTest {
@@ -26,7 +27,7 @@ class StructureArrayTest {
     @Test
     void test() {
 
-        StructureArray<BBInt1> array = StructureArray.newAllocated(12, BBInt1.class, BBInt1::newUnallocated);
+        StructureArray<BBInt1> array = allocManaged(StructureArray.newAllocatable(12, BBInt1.class, BBInt1::newUnallocated));
 
         assertNull(array.getOrNull(0));
         assertNotNull(array.get(0));

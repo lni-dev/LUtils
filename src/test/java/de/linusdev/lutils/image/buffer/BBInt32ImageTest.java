@@ -24,7 +24,7 @@ import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 
-import static de.linusdev.lutils.nat.memory.Allocators.allocate;
+import static de.linusdev.lutils.nat.memory.Allocators.allocOwned;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -41,7 +41,7 @@ class BBInt32ImageTest {
 
         @NotNull BBInt32Image bufferBackedImage = BBInt32Image.newAllocatable(null, PixelFormat.A8R8G8B8_SRGB, read);
 
-        try (var _ = allocate(bufferBackedImage)) {
+        try (var _ = allocOwned(bufferBackedImage)) {
             assertEquals(read.getHeight(), bufferBackedImage.getHeight());
             assertEquals(read.getWidth(), bufferBackedImage.getWidth());
             assertEquals(4, bufferBackedImage.getAlignment());

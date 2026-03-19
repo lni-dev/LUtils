@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025 Linus Andera
+ * Copyright (c) 2025-2026 Linus Andera
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,19 +27,21 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.stream.Stream;
 
+import static de.linusdev.lutils.nat.memory.Allocators.allocManaged;
 import static org.junit.jupiter.api.Assertions.*;
 
 class ShortNTest {
 
     private static Stream<Arguments> provideBBVectors() {
         return Stream.of(
-                Arguments.of(BBShort1.newAllocated(null), 1, 2 )
+                Arguments.of(BBShort1.newAllocatable(null), 1, 2 )
         );
     }
 
     @ParameterizedTest
     @MethodSource("provideBBVectors")
     public void testBufferBacked(@NotNull BBShortN vector, int memberCount, int size) {
+        allocManaged(vector);
         assertTrue(vector.isInitialised());
 
         assertTrue(vector.isBufferBacked());
@@ -75,8 +77,7 @@ class ShortNTest {
 
     @Test
     public void unsignedTest() {
-        BBUShort1 vector = BBUShort1.newAllocatable(null);
-        vector.allocate();
+        BBUShort1 vector = allocManaged(BBUShort1.newAllocatable(null));
 
         assertTrue(vector.areComponentsUnsigned());
     }

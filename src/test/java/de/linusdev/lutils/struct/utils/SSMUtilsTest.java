@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025 Linus Andera
+ * Copyright (c) 2025-2026 Linus Andera
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,8 +17,8 @@
 package de.linusdev.lutils.struct.utils;
 
 import de.linusdev.lutils.math.vector.buffer.floatn.BBFloat1;
+import de.linusdev.lutils.nat.abi.ABI;
 import de.linusdev.lutils.nat.pointer.BBTypedPointer64;
-import de.linusdev.lutils.nat.struct.annos.StructValue;
 import de.linusdev.lutils.nat.struct.utils.SSMUtils;
 import org.junit.jupiter.api.Test;
 
@@ -39,18 +39,9 @@ class SSMUtilsTest {
     @Test
     void getNewAllocatableMethod() throws NoSuchMethodException {
         var method = SSMUtils.getNewAllocatableMethod(BBFloat1.class);
-        assertEquals(BBFloat1.class.getMethod("newAllocatable", StructValue.class) , method.getMethod());
+        assertEquals(BBFloat1.class.getMethod("newAllocatable", ABI.class) , method.getMethod());
 
         method = SSMUtils.getNewAllocatableMethod(BBTypedPointer64.class);
-        assertEquals(BBTypedPointer64.class.getMethod("newAllocatable1", StructValue.class), method.getMethod());
-    }
-
-    @Test
-    void getNewAllocatedMethod() throws NoSuchMethodException {
-        var method = SSMUtils.getNewAllocatedMethod(BBFloat1.class);
-        assertEquals(BBFloat1.class.getMethod("newAllocated", StructValue.class) , method.getMethod());
-
-        method = SSMUtils.getNewAllocatedMethod(BBTypedPointer64.class);
-        assertEquals(BBTypedPointer64.class.getMethod("newAllocated1", StructValue.class), method.getMethod());
+        assertEquals(BBTypedPointer64.class.getMethod("newAllocatable1", ABI.class), method.getMethod());
     }
 }

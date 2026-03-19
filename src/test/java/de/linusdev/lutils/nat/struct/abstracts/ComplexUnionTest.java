@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025 Linus Andera
+ * Copyright (c) 2025-2026 Linus Andera
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,22 +22,10 @@ import de.linusdev.lutils.math.vector.buffer.intn.BBInt4;
 import de.linusdev.lutils.nat.struct.annos.StructValue;
 import org.junit.jupiter.api.Test;
 
+import static de.linusdev.lutils.nat.memory.Allocators.allocManaged;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class ComplexUnionTest {
-
-    public static class TestStruct extends ComplexStructure {
-
-        public final @StructValue BBInt1 a = BBInt1.newUnallocated();
-        public final @StructValue BBInt1 b = BBInt1.newUnallocated();
-        public final @StructValue BBInt1 c = BBInt1.newUnallocated();
-
-        public TestStruct() {
-            super(false);
-            init(null, true);
-            allocate();
-        }
-    }
 
     public static class TestUnion1 extends ComplexUnion {
 
@@ -46,9 +34,9 @@ class ComplexUnionTest {
         public final @StructValue BBInt4 c = BBInt4.newUnallocated();
 
         public TestUnion1() {
-            super(false);
-            init(null, true);
-            allocate();
+            super(null, false);
+            init();
+            allocManaged(this);
         }
     }
 

@@ -19,7 +19,6 @@ package de.linusdev.lutils.nat.array;
 import de.linusdev.lutils.nat.NativeType;
 import de.linusdev.lutils.nat.abi.ABI;
 import de.linusdev.lutils.nat.struct.abstracts.StructureStaticVariables;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Range;
 
@@ -38,7 +37,7 @@ public class NativeFloat32Array extends NativePrimitiveTypeArray<Float> {
     /**
      * @see StructureStaticVariables#newAllocatable(ABI, int[], Class[]) 
      */
-    public static NativeFloat32Array newAllocatable(@NotNull ABI abi, int length) {
+    public static NativeFloat32Array newAllocatable(@Nullable ABI abi, int length) {
         return new NativeFloat32Array(abi, length);
     }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025 Linus Andera
+ * Copyright (c) 2025-2026 Linus Andera
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,22 +25,24 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.stream.Stream;
 
+import static de.linusdev.lutils.nat.memory.Allocators.allocManaged;
 import static org.junit.jupiter.api.Assertions.*;
 
 class IntNTest {
 
     private static Stream<Arguments> provideBBVectors() {
         return Stream.of(
-                Arguments.of(BBInt1.newAllocated(null), 1, 4 ),
-                Arguments.of(BBInt2.newAllocated(null), 2, 8 ),
-                Arguments.of(BBInt3.newAllocated(null), 3, 12),
-                Arguments.of(BBInt4.newAllocated(null), 4, 16)
+                Arguments.of(BBInt1.newAllocatable(null), 1, 4 ),
+                Arguments.of(BBInt2.newAllocatable(null), 2, 8 ),
+                Arguments.of(BBInt3.newAllocatable(null), 3, 12),
+                Arguments.of(BBInt4.newAllocatable(null), 4, 16)
         );
     }
 
     @ParameterizedTest
     @MethodSource("provideBBVectors")
     public void testBufferBacked(@NotNull BBIntN vector, int memberCount, int size) {
+        allocManaged(vector);
         assertTrue(vector.isInitialised());
 
         assertTrue(vector.isBufferBacked());
@@ -61,8 +63,7 @@ class IntNTest {
 
     @Test
     public void unsignedTest() {
-        BBUInt1 uInt = BBUInt1.newAllocatable(null);
-        uInt.allocate();
+        BBUInt1 uInt = allocManaged(BBUInt1.newAllocatable(null));
 
         assertTrue(uInt.areComponentsUnsigned());
     }

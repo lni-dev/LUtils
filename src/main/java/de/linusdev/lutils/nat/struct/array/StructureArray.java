@@ -111,7 +111,7 @@ public class StructureArray<T extends Structure> extends ModTrackingStructure im
 
     /**
      * Creates an unallocated {@link StructureArray}, whose {@link #info} must be supplied when {@link #useBuffer(Structure, long, StructureInfo)}
-     * is called. A call to {@link NativeMemAllocator#allocate(Structure) allocate} is not supported.
+     * is called. A call to {@link NativeMemAllocator#allocOwned(Structure) allocate} is not supported.
      * @param trackModifications see {@link #trackModifications}
      * @param creator see {@link #creator}
      * @return unallocated {@link StructureArray} as described above.
@@ -128,7 +128,7 @@ public class StructureArray<T extends Structure> extends ModTrackingStructure im
 
     /**
      * Creates an allocatable {@link StructureArray}.
-     * It can be allocated using {@link NativeMemAllocator#allocate(Structure) allocate} or {@link #claimMemory(NativeMemBuffer, long)}
+     * It can be allocated using {@link NativeMemAllocator#allocOwned(Structure) allocate} or {@link #claimMemory(NativeMemBuffer, long)}
      * @param trackModifications see {@link #trackModifications}
      * @param abi the {@link ABI} to use for this structure
      * @param length the length of the array
@@ -149,8 +149,20 @@ public class StructureArray<T extends Structure> extends ModTrackingStructure im
     }
 
     /**
+     * Same as {@link #newAllocatable(boolean, ABI, int, Class, UStructSupplier)} but with {@code trackModifications}
+     * set to {@code false} and {@code abi} set to {@code null}.
+     */
+    public static <T extends Structure> @NotNull StructureArray<T> newAllocatable(
+            int length,
+            @NotNull Class<? extends Structure> elementType,
+            @NotNull UStructSupplier<T> creator
+    ) {
+        return new StructureArray<>(false, null, new int[]{length}, new Class<?>[]{elementType}, creator);
+    }
+
+    /**
      * Creates an allocatable {@link StructureArray}.
-     * It can be allocated using {@link NativeMemAllocator#allocate(Structure)} or {@link #claimMemory(NativeMemBuffer, long)}
+     * It can be allocated using {@link NativeMemAllocator#allocOwned(Structure)} or {@link #claimMemory(NativeMemBuffer, long)}
      * @param trackModifications see {@link #trackModifications}
      * @param abi the {@link ABI} to use for this structure
      * @param length Array containing length information. First index must be the length of this array. The following indexes are passed

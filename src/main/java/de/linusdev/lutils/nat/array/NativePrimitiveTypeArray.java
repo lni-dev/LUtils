@@ -33,7 +33,7 @@ public abstract class NativePrimitiveTypeArray<T> extends Structure implements N
     /**
      * Function to calculate the position for an element at a specific index.
      * Will always be not {@code null} after {@link #useBuffer(Structure, long, StructureInfo)} has been called.
-     * That means, this struct must be {@link de.linusdev.lutils.nat.memory.NativeMemAllocator#allocate(Structure) allocated},
+     * That means, this struct must be {@link de.linusdev.lutils.nat.memory.NativeMemAllocator#allocOwned(Structure) allocated},
      * {@link #claimMemory(NativeMemBuffer, long) claimed a buffer}
      * or {@link #useBuffer(Structure, long, StructureInfo) usebuffer called}.
      */

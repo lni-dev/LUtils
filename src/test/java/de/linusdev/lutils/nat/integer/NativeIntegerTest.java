@@ -16,18 +16,16 @@
 
 package de.linusdev.lutils.nat.integer;
 
-import de.linusdev.lutils.nat.struct.annos.SVWrapper;
+import de.linusdev.lutils.nat.abi.DefaultABIs;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class NativeIntegerTest {
 
-    public static class TestMSVC_X64Layout{}
-
     @Test
     public void testMSVC_X64() {
-        NativeInteger integer = NativeInteger.newAllocated(SVWrapper.overwriteLayout(TestMSVC_X64Layout.class));
+        NativeInteger integer = NativeInteger.newAllocatable(DefaultABIs.MSVC_X64);
 
         assertEquals(4, integer.getInfo().getRequiredSize());
         assertEquals(4, integer.getInfo().getAlignment());

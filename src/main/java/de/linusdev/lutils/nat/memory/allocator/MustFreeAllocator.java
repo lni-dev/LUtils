@@ -38,9 +38,10 @@ public abstract class MustFreeAllocator implements NativeMemAllocator {
 
     static {
         boolean doCleanup = false;
-        //noinspection ConstantValue,AssertWithSideEffects:
-        assert !(doCleanup = true); // automatically enable cleaner if assertions are enabled.
+        // noinspection AssertWithSideEffects:
+        assert (doCleanup = true); // automatically enable cleaner if assertions are enabled.
 
+        //noinspection ConstantValue
         if(doCleanup) {
             DEBUG_CLEANER = Cleaner.create();
         }
@@ -55,19 +56,19 @@ public abstract class MustFreeAllocator implements NativeMemAllocator {
     }
 
     @Override
-    public @NotNull AllocatedMemory allocate(long size) {
+    public @NotNull AllocatedMemory allocOwned(long size) {
         long address = allocateInternal(size);
         return new ManualMemory(address, size, ByteOrder.nativeOrder(), null);
     }
 
     @Override
-    public @NotNull AllocatedMemory allocate(long size, @NotNull Identifier debugId) {
+    public @NotNull AllocatedMemory allocOwned(long size, @NotNull Identifier debugId) {
         long address = allocateInternal(size);
         return new ManualMemory(address, size, ByteOrder.nativeOrder(), debugId);
     }
 
     @Override
-    public @NotNull NativeMemBuffer allocateManaged(long size) {
+    public @NotNull NativeMemBuffer allocManaged(long size) {
         long address = allocateInternal(size);
         return new AutoMemory(address, size, ByteOrder.nativeOrder(), this);
     }

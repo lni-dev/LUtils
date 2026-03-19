@@ -31,6 +31,7 @@ import de.linusdev.lutils.nat.struct.abstracts.ComplexStructure;
 import de.linusdev.lutils.nat.struct.annos.StructValue;
 import org.junit.jupiter.api.Test;
 
+import static de.linusdev.lutils.nat.memory.Allocators.allocManaged;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class ComplexStructureTest {
@@ -44,10 +45,10 @@ public class ComplexStructureTest {
         NativeFloat64Array dArray = NativeFloat64Array.newUnallocated();
 
         public TestStruct(boolean trackModifications, boolean allocateBuffer) {
-            super(trackModifications);
-            init(null, true);
+            super(null, trackModifications);
+            init();
             if(allocateBuffer)
-                allocate();
+                allocManaged(this);
         }
     }
 
@@ -62,10 +63,10 @@ public class ComplexStructureTest {
         public final @StructValue(0) BBFloat4x4 f = BBFloat4x4.newUnallocated();
 
         public Test2Struct(boolean trackModifications, boolean allocateBuffer) {
-            super(trackModifications);
-            init(null, true);
+            super(null, trackModifications);
+            init();
             if(allocateBuffer)
-                allocate();
+                allocManaged(this);
         }
     }
 
@@ -81,10 +82,10 @@ public class ComplexStructureTest {
         public final @StructValue(6) TestOpenCLStruct2 g = new TestOpenCLStruct2(false, false);
 
         public TestOpenCLStruct(boolean trackModifications, boolean allocateBuffer) {
-            super(trackModifications);
-            init(null, true);
+            super(null, trackModifications);
+            init();
             if(allocateBuffer)
-                allocate();
+                allocManaged(this);
         }
     }
 
@@ -94,10 +95,10 @@ public class ComplexStructureTest {
         public final @StructValue(1) BBFloat4 a = BBFloat4.newUnallocated();
 
         public TestOpenCLStruct2(boolean trackModifications, boolean allocateBuffer) {
-            super(trackModifications);
-            init(null, false);
+            super(null, trackModifications);
+            init();
             if(allocateBuffer)
-                allocate();
+                allocManaged(this);
         }
     }
 
@@ -112,10 +113,10 @@ public class ComplexStructureTest {
         public final @StructValue(2) BBInt1 c = BBInt1.newUnallocated();
 
         public Test3Struct(boolean trackModifications, boolean allocateBuffer) {
-            super(trackModifications);
-            init(null, true);
+            super(null, trackModifications);
+            init();
             if(allocateBuffer)
-                allocate();
+                allocManaged(this);
         }
     }
 
@@ -175,9 +176,9 @@ public class ComplexStructureTest {
 
         var info = test3Struct.getInfo();
 
-        assertEquals(DefaultABIs.MSVC_X64, info.getABI());
+        assertEquals(DefaultABIs.MSVC_X64, info.getAbi());
         assertEquals(8, info.getAlignment());
         assertEquals(24, info.getRequiredSize());
-        assertArrayEquals(new int[]{0, 4, 4, 8, 0, 4, 4}, info.getSizes());
+        assertArrayEquals(new long[]{0, 4, 4, 8, 0, 4, 4}, info.getSizes());
     }
 }

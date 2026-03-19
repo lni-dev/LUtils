@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025 Linus Andera
+ * Copyright (c) 2025-2026 Linus Andera
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,13 +26,14 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.stream.Stream;
 
+import static de.linusdev.lutils.nat.memory.Allocators.allocManaged;
 import static org.junit.jupiter.api.Assertions.*;
 
 class DoubleNTest {
 
     private static Stream<Arguments> provideBBVectors() {
         return Stream.of(
-                Arguments.of(BBDouble1.newAllocated(null), 1, 8 )
+                Arguments.of(allocManaged(BBDouble1.newAllocatable(null)), 1, 8 )
         );
     }
 
@@ -73,7 +74,7 @@ class DoubleNTest {
 
     @Test
     public void testView() {
-        Double1 vector = BBDouble1.newAllocated(null);
+        Double1 vector = allocManaged(BBDouble1.newAllocatable(null));
         vector.set(0);
         Double1 factorView = vector.createFactorizedView(2.0);
         Double1 view = Double1.createView(vector, new int[]{0});

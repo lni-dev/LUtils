@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025 Linus Andera
+ * Copyright (c) 2025-2026 Linus Andera
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,18 +16,19 @@
 
 package de.linusdev.lutils.nat.string;
 
-import de.linusdev.lutils.nat.struct.annos.SVWrapper;
 import org.junit.jupiter.api.Test;
 
 import java.nio.BufferOverflowException;
 
+import static de.linusdev.lutils.nat.memory.Allocators.allocManaged;
 import static org.junit.jupiter.api.Assertions.*;
 
 class NullTerminatedUTF8StringTest {
 
     @Test
     void test() {
-        NullTerminatedUTF8String string = NullTerminatedUTF8String.newAllocated(SVWrapper.length(50));
+        NullTerminatedUTF8String string = NullTerminatedUTF8String.newAllocatable(null, 50);
+        allocManaged(string);
 
         assertEquals(50, string.length());
 
@@ -49,7 +50,8 @@ class NullTerminatedUTF8StringTest {
 
     @Test
     void ofString() {
-        NullTerminatedUTF8String string = NullTerminatedUTF8String.newAllocated("Test");
+        NullTerminatedUTF8String string = NullTerminatedUTF8String.newAllocatable(null, "Test");
+        allocManaged(string);
 
         assertEquals("Test", string.get());
 
@@ -57,10 +59,10 @@ class NullTerminatedUTF8StringTest {
 
     @Test
     void ofStringAllocatable() {
-        NullTerminatedUTF8String string = NullTerminatedUTF8String.newAllocatable("Test");
+        NullTerminatedUTF8String string = NullTerminatedUTF8String.newAllocatable(null, "Test");
 
         assertFalse(string.isInitialised());
-        string.allocate();
+        allocManaged(string);
         assertTrue(string.isInitialised());
         assertEquals("Test", string.get());
 

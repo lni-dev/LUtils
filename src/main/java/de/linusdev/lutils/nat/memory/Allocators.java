@@ -29,16 +29,16 @@ public interface Allocators {
 
     NativeMemAllocator DEFAULT_ALLOCATOR = MALLOC_ALLOCATOR;
 
-    static AllocatedMemory allocate(@NotNull Structure structure, @NotNull Identifier debugId) {
-        return DEFAULT_ALLOCATOR.allocate(structure, debugId);
+    static AllocatedMemory allocOwned(@NotNull Structure structure, @NotNull Identifier debugId) {
+        return DEFAULT_ALLOCATOR.allocOwned(structure, debugId);
     }
 
-    static AllocatedMemory allocate(@NotNull Structure structure) {
-        return DEFAULT_ALLOCATOR.allocate(structure);
+    static AllocatedMemory allocOwned(@NotNull Structure structure) {
+        return DEFAULT_ALLOCATOR.allocOwned(structure);
     }
 
-    static <T extends Structure> @NotNull T allocateManaged(@NotNull T structure) {
-        DEFAULT_ALLOCATOR.allocateManaged(structure);
+    static <T extends Structure> @NotNull T allocManaged(@NotNull T structure) {
+        DEFAULT_ALLOCATOR.allocManaged(structure);
         return structure;
     }
 

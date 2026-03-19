@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025 Linus Andera
+ * Copyright (c) 2025-2026 Linus Andera
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ import de.linusdev.lutils.nat.string.NullTerminatedUTF8String;
 import de.linusdev.lutils.nat.struct.array.StructureArray;
 import org.junit.jupiter.api.Test;
 
+import static de.linusdev.lutils.nat.memory.Allocators.allocManaged;
 import static org.junit.jupiter.api.Assertions.*;
 
 class Pointer64Test {
@@ -31,14 +32,14 @@ class Pointer64Test {
         assertTrue(pointer64.isNullPtr());
         assertEquals(Pointer64.NULL_POINTER, Pointer64.refL(null));
 
-        NullTerminatedUTF8String str = NullTerminatedUTF8String.newAllocated("Test");
+        NullTerminatedUTF8String str = allocManaged(NullTerminatedUTF8String.newAllocatable(null, "Test"));
         pointer64.set(str.getPointer());
         assertFalse(pointer64.isNullPtr());
         assertEquals(str.getPointer(), pointer64.get());
         assertEquals(str.getPointer(), Pointer64.refL(str));
 
 
-        str = NullTerminatedUTF8String.newAllocated("Test2");
+        str = allocManaged(NullTerminatedUTF8String.newAllocatable(null, "Test2"));
         pointer64 = Pointer64.of(str);
         assertEquals(str.getPointer(), pointer64.get());
 
@@ -55,7 +56,7 @@ class Pointer64Test {
         assertTrue(pOther.isNullPtr());
 
 
-        StructureArray<BBUInt1> array = StructureArray.newAllocated(2, BBUInt1.class, BBUInt1::newUnallocated);
+        StructureArray<BBUInt1> array = allocManaged(StructureArray.newAllocatable(2, BBUInt1.class, BBUInt1::newUnallocated));
         TypedPointer64<BBUInt1> pArray = TypedPointer64.ofArray(array);
 
         assertEquals(array.getPointer(), pArray.get());
@@ -67,8 +68,8 @@ class Pointer64Test {
 
     @Test
     void testOfArray() {
-        var array = StructureArray.newAllocated(4, BBUInt1.class, BBUInt1::newUnallocated);
-        TypedPointer64<BBUInt1> pointer = BBTypedPointer64.newAllocated1(null);
+        var array = allocManaged(StructureArray.newAllocatable(4, BBUInt1.class, BBUInt1::newUnallocated));
+        TypedPointer64<BBUInt1> pointer = allocManaged(BBTypedPointer64.newAllocatable1(null));
         pointer.setOfArray(array);
 
         assertEquals(array.getPointer(), array.get(0).getPointer());

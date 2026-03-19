@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025 Linus Andera
+ * Copyright (c) 2025-2026 Linus Andera
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,19 +18,21 @@ package de.linusdev.lutils.struct.abstracts;
 
 import de.linusdev.lutils.math.vector.buffer.intn.BBInt2;
 import de.linusdev.lutils.math.vector.buffer.longn.BBLong1;
+import de.linusdev.lutils.nat.abi.DefaultABIs;
 import de.linusdev.lutils.nat.struct.abstracts.Structure;
 import de.linusdev.lutils.nat.struct.generator.Language;
 import de.linusdev.lutils.nat.struct.info.StructureInfo;
 import de.linusdev.lutils.nat.struct.utils.SSMUtils;
 import org.junit.jupiter.api.Test;
 
+import static de.linusdev.lutils.nat.memory.Allocators.allocManaged;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class StructureTest {
 
     @Test
     void unionWith() {
-        BBInt2 int2 = BBInt2.newAllocated(null);
+        BBInt2 int2 = allocManaged(BBInt2.newAllocatable(null));
         BBLong1 long1 = Structure.unionWith(BBLong1.newAllocatable(null), int2);
 
         int2.x(0x1001);
@@ -58,10 +60,10 @@ class StructureTest {
         System.out.println(gen);
 
         StructureInfo info = SSMUtils.getInfo(
+                null,
                 ComplexStructureTest.TestOpenCLStruct.class,
-                null, null,
-                null, null,
-                null, null
+                DefaultABIs.CVG4J_OPEN_CL, null,
+                null
         );
 
         assertEquals("typedef struct __attribute__((packed)) {\n" +
@@ -79,10 +81,10 @@ class StructureTest {
 
 
         StructureInfo msvcStructInfo = SSMUtils.getInfo( // generated with MSVC
+                null,
                 ComplexStructureTest.TestOpenCLStruct2.class,
-                null, null,
-                null, null,
-                null, null
+                DefaultABIs.MSVC_X64, null,
+                null
         );
 
         assertEquals(20, msvcStructInfo.getRequiredSize()); // MSVC Size, but in OPENCL it must be 32

@@ -17,32 +17,90 @@
 package de.linusdev.lutils.nat.memory;
 
 import de.linusdev.lutils.id.Identifier;
+import de.linusdev.lutils.nat.abi.ABI;
 import de.linusdev.lutils.nat.struct.abstracts.Structure;
 import org.jetbrains.annotations.NotNull;
 
 public interface NativeMemAllocator {
 
-    @NotNull AllocatedMemory allocate(long size);
+    /**
+     * Allocate memory of {@code size}. Memory allocated with this function must be explicitly freed
+     * using the {@link AllocatedMemory#close() close} method.
+     * @param size the amount of memory to allocate in bytes
+     * @return Freshly allocated memory
+     */
+    @NotNull AllocatedMemory allocOwned(long size);
 
-    @NotNull AllocatedMemory allocate(long size, @NotNull Identifier debugId);
+    /**
+     * Allocate memory of {@code size}. Memory allocated with this function must be explicitly freed
+     * using the {@link AllocatedMemory#close() close} method.
+     * @param size the amount of memory to allocate in bytes
+     * @param debugId identifier for the returned memory, which may be useful when receiving memory leak errors.
+     * @return Freshly allocated memory
+     */
+    @NotNull AllocatedMemory allocOwned(long size, @NotNull Identifier debugId);
 
-    default @NotNull AllocatedMemory allocate(@NotNull Structure structure) {
-        AllocatedMemory buffer = allocate(structure.getRequiredSize());
+    /**
+     * Same as {@link #allocOwned(long)} but the memory will immediately be
+     * {@link Structure#claimMemory(NativeMemBuffer, long) claimed} by given {@code structure}.
+     * <br><br>
+     * Allocate memory of {@code size}. Memory allocated with this function must be explicitly freed
+     * using the {@link AllocatedMemory#close() close} method.
+     * <br><br>
+     * The size of the memory is the {@link Structure#getRequiredSize() size of given structure}.
+     * @param structure a {@link de.linusdev.lutils.nat.struct.abstracts.StructureStaticVariables#newAllocatable(ABI, int[], Class[]) allocatable}
+     *                  structure
+     * @return Freshly allocated memory
+     */
+    default @NotNull AllocatedMemory allocOwned(@NotNull Structure structure) {
+        AllocatedMemory buffer = allocOwned(structure.getRequiredSize());
         structure.claimMemory(buffer, 0);
         return buffer;
     }
 
-    default @NotNull AllocatedMemory allocate(@NotNull Structure structure, @NotNull Identifier debugId) {
-        AllocatedMemory buffer = allocate(structure.getRequiredSize(), debugId);
+    /**
+     * Same as {@link #allocOwned(long, Identifier)} but the memory will immediately be
+     * {@link Structure#claimMemory(NativeMemBuffer, long) claimed} by given {@code structure}.
+     * <br><br>
+     * Allocate memory of {@code size}. Memory allocated with this function must be explicitly freed
+     * using the {@link AllocatedMemory#close() close} method.
+     * <br><br>
+     * The size of the memory is the {@link Structure#getRequiredSize() size of given structure}.
+     * @param structure a {@link de.linusdev.lutils.nat.struct.abstracts.StructureStaticVariables#newAllocatable(ABI, int[], Class[]) allocatable}
+     *                  structure
+     * @param debugId identifier for the returned memory, which may be useful when receiving memory leak errors.
+     * @return Freshly allocated memory
+     */
+    default @NotNull AllocatedMemory allocOwned(@NotNull Structure structure, @NotNull Identifier debugId) {
+        AllocatedMemory buffer = allocOwned(structure.getRequiredSize(), debugId);
         structure.claimMemory(buffer, 0);
         return buffer;
     }
 
-    @NotNull NativeMemBuffer allocateManaged(long size);
+    /**
+     * Allocated memory of given {@code size}. Memory allocated with this function will be freed automatically using
+     * a {@link java.lang.ref.Cleaner cleaner}.
+     * @param size the amount of memory to allocate in bytes
+     * @return Freshly allocated memory.
+     */
+    @NotNull NativeMemBuffer allocManaged(long size);
 
+
+    /**
+     * Same as {@link #allocManaged(long)} but the memory will immediately be
+     * {@link Structure#claimMemory(NativeMemBuffer, long) claimed} by given {@code structure}.
+     * <br><br>
+     * Memory allocated with this function will be freed automatically using
+     * a {@link java.lang.ref.Cleaner cleaner}.
+     * <br><br>
+     * The size of the memory is the {@link Structure#getRequiredSize() size of given structure}.
+     * @param structure a {@link de.linusdev.lutils.nat.struct.abstracts.StructureStaticVariables#newAllocatable(ABI, int[], Class[]) allocatable}
+     *                  structure
+     * @return given {@code structure}
+     */
     @SuppressWarnings("UnusedReturnValue")
-    default @NotNull NativeMemBuffer allocateManaged(@NotNull Structure structure) {
-        NativeMemBuffer buffer = allocateManaged(structure.getRequiredSize());
+    default @NotNull NativeMemBuffer allocManaged(@NotNull Structure structure) {
+        NativeMemBuffer buffer = allocManaged(structure.getRequiredSize());
         structure.claimMemory(buffer, 0);
         return buffer;
     }

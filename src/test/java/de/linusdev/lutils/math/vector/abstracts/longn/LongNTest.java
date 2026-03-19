@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025 Linus Andera
+ * Copyright (c) 2025-2026 Linus Andera
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,21 +25,23 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.stream.Stream;
 
+import static de.linusdev.lutils.nat.memory.Allocators.allocManaged;
 import static org.junit.jupiter.api.Assertions.*;
 
 class LongNTest {
     private static Stream<Arguments> provideBBVectors() {
         return Stream.of(
-                Arguments.of(BBLong1.newAllocated(null), 1, 8 ),
-                Arguments.of(BBLong2.newAllocated(null), 2, 16 ),
-                Arguments.of(BBLong3.newAllocated(null), 3, 24),
-                Arguments.of(BBLong4.newAllocated(null), 4, 32)
+                Arguments.of(BBLong1.newAllocatable(null), 1, 8 ),
+                Arguments.of(BBLong2.newAllocatable(null), 2, 16 ),
+                Arguments.of(BBLong3.newAllocatable(null), 3, 24),
+                Arguments.of(BBLong4.newAllocatable(null), 4, 32)
         );
     }
 
     @ParameterizedTest
     @MethodSource("provideBBVectors")
     public void testBufferBacked(@NotNull BBLongN vector, int memberCount, int size) {
+        allocManaged(vector);
         assertTrue(vector.isInitialised());
 
         assertTrue(vector.isBufferBacked());
@@ -60,8 +62,7 @@ class LongNTest {
 
     @Test
     public void unsignedTest() {
-        BBULong1 uLong = BBULong1.newAllocatable(null);
-        uLong.allocate();
+        BBULong1 uLong = allocManaged(BBULong1.newAllocatable(null));
 
         assertTrue(uLong.areComponentsUnsigned());
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025 Linus Andera
+ * Copyright (c) 2025-2026 Linus Andera
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,19 +18,22 @@ package de.linusdev.lutils.nat.struct.abstracts;
 
 import de.linusdev.lutils.math.vector.buffer.intn.BBInt1;
 import de.linusdev.lutils.math.vector.buffer.intn.BBInt4;
+import de.linusdev.lutils.nat.abi.ABI;
 import de.linusdev.lutils.nat.struct.annos.StructValue;
 import de.linusdev.lutils.nat.struct.array.StructureArray;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class TestStruct extends ComplexStructure {
 
-    public final @StructValue @NotNull BBInt4 testIntVector = BBInt4.newUnallocated();
-    public final @StructValue @NotNull BBInt1 testInt = BBInt1.newUnallocated();
+    public final @StructValue(0) @NotNull BBInt4 testIntVector = BBInt4.newUnallocated();
+    public final @StructValue(1) @NotNull BBInt1 testInt = BBInt1.newUnallocated();
 
     @StructValue(length = 1000, elementType = BBInt4.class)
     public final @NotNull StructureArray<BBInt4> array = StructureArray.newUnallocated(false, BBInt4::newUnallocated);
 
-    public TestStruct(boolean trackModifications) {
-        super(trackModifications);
+    public TestStruct(@Nullable ABI abi, boolean trackModifications) {
+        super(abi, trackModifications);
+        init(testIntVector, testInt);
     }
 }

@@ -69,6 +69,11 @@ public abstract class ComplexUnion extends ModTrackingStructure {
     }
 
     @Override
+    protected @Nullable StaticGenerator getGenerator() {
+        return GENERATOR;
+    }
+
+    @Override
     public @NotNull ComplexUnionInfo getInfo() {
         return (ComplexUnionInfo) super.getInfo();
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025 Linus Andera
+ * Copyright (c) 2025-2026 Linus Andera
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package de.linusdev.lutils.nat.memory.stack.impl;
 import de.linusdev.lutils.math.vector.buffer.intn.BBInt1;
 import de.linusdev.lutils.math.vector.buffer.intn.BBInt2;
 import de.linusdev.lutils.math.vector.buffer.intn.BBUInt1;
+import de.linusdev.lutils.nat.memory.NativeMemBuffer;
 import de.linusdev.lutils.nat.memory.stack.PopPoint;
 import de.linusdev.lutils.nat.memory.stack.SafePointError;
 import de.linusdev.lutils.nat.pointer.BBPointer64;
@@ -26,12 +27,11 @@ import de.linusdev.lutils.nat.pointer.BBTypedPointer64;
 import de.linusdev.lutils.nat.size.Size;
 import de.linusdev.lutils.nat.string.NullTerminatedUTF8String;
 import de.linusdev.lutils.nat.struct.array.StructureArray;
-import de.linusdev.lutils.nat.struct.utils.BufferUtils;
 import org.junit.jupiter.api.Test;
 
-import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
+import static de.linusdev.lutils.nat.memory.Allocators.allocManaged;
 import static de.linusdev.lutils.nat.pointer.Pointer64.refL;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -47,7 +47,7 @@ class DirectMemoryStack64Test {
         assertEquals(stack.getAddress(), stack.stackPointers.stackPointer);
 
         try(var ignored = stack.safePoint()) {
-            NullTerminatedUTF8String testStr = stack.push(NullTerminatedUTF8String.newAllocatable("Test"));
+            NullTerminatedUTF8String testStr = stack.push(NullTerminatedUTF8String.newAllocatable(null, "Test"));
             assertTrue(testStr.isInitialised());
             assertEquals("Test", testStr.get());
             assertEquals(stack.getAddress() + testStr.getRequiredSize(), stack.stackPointers.stackPointer);
@@ -95,13 +95,13 @@ class DirectMemoryStack64Test {
         stack.pop();
         stack.pop();
 
-        ByteBuffer buf = stack.pushByteBuffer(100, 8);
-        assertEquals(0, BufferUtils.getHeapAddress(buf) % 8);
-        assertEquals(100, buf.capacity());
-        assertEquals(ByteOrder.nativeOrder(), buf.order());
+        NativeMemBuffer buf = stack.pushNativeMemBuffer(100L, 8);
+        assertEquals(0, buf.address() % 8);
+        assertEquals(100, buf.size());
+        assertEquals(ByteOrder.nativeOrder(), buf.byteOrder());
 
         stack.pop();
-
+        stack.close();
     }
 
     @Test
@@ -117,6 +117,7 @@ class DirectMemoryStack64Test {
             }
         }
         assertEquals(stack.getAddress(), stack.stackPointers.stackPointer);
+        stack.close();
 
     }
 
@@ -137,6 +138,7 @@ class DirectMemoryStack64Test {
                 point.pop(); // pop one too many
             }
         });
+        stack.close();
     }
 
     @Test
@@ -153,7 +155,7 @@ class DirectMemoryStack64Test {
                 stack.pop();
             }
         });
-
+        stack.close();
     }
 
     @Test
@@ -168,6 +170,7 @@ class DirectMemoryStack64Test {
 
             }
         }
+        stack.close();
     }
 
     @Test
@@ -184,7 +187,7 @@ class DirectMemoryStack64Test {
 
         stack.pop(); // typedPointer
         stack.pop(); // pointer64
-
+        stack.close();
     }
 
     @Test
@@ -192,6 +195,7 @@ class DirectMemoryStack64Test {
         DirectMemoryStack64 stack64 = new DirectMemoryStack64();
 
         assertNotEquals(0, stack64.getPointer());
+        stack64.close();
     }
 
     @Test
@@ -199,6 +203,7 @@ class DirectMemoryStack64Test {
         DirectMemoryStack64 stack = new DirectMemoryStack64();
 
         assertTrue(stack.isAddressInside(refL(stack.pushString("Test!"))));
-        assertFalse(stack.isAddressInside(refL(BBInt2.newAllocated(null))));
+        assertFalse(stack.isAddressInside(refL(allocManaged(BBInt2.newAllocatable(null)))));
+        stack.close();
     }
 }

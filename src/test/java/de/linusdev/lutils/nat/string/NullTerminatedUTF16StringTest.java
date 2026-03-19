@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025 Linus Andera
+ * Copyright (c) 2025-2026 Linus Andera
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,18 +16,18 @@
 
 package de.linusdev.lutils.nat.string;
 
-import de.linusdev.lutils.nat.struct.annos.SVWrapper;
 import org.junit.jupiter.api.Test;
 
 import java.nio.BufferOverflowException;
 
+import static de.linusdev.lutils.nat.memory.Allocators.allocManaged;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class NullTerminatedUTF16StringTest {
     @Test
     void test() {
-        NullTerminatedUTF16String string = NullTerminatedUTF16String.newAllocated(SVWrapper.length(50));
+        NullTerminatedUTF16String string = allocManaged(NullTerminatedUTF16String.newAllocatable(null, 50));
 
         assertEquals(50, string.length());
 

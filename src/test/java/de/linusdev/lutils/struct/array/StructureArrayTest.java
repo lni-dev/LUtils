@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025 Linus Andera
+ * Copyright (c) 2025-2026 Linus Andera
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
 
 package de.linusdev.lutils.struct.array;
 
-import de.linusdev.lutils.nat.struct.annos.SVWrapper;
 import de.linusdev.lutils.nat.struct.array.StructureArray;
 import de.linusdev.lutils.struct.abstracts.ComplexStructureTest;
 import org.junit.jupiter.api.Test;
@@ -28,10 +27,11 @@ class StructureArrayTest {
 
     @Test
     void test() {
-        StructureArray<ComplexStructureTest.TestStruct> array = StructureArray.newAllocated(
+        StructureArray<ComplexStructureTest.TestStruct> array = StructureArray.newAllocatable(
                 true,
-                SVWrapper.of(10, ComplexStructureTest.TestStruct.class),
                 null,
+                10,
+                ComplexStructureTest.TestStruct.class,
                 () -> new ComplexStructureTest.TestStruct(true, false)
         );
 

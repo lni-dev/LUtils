@@ -19,7 +19,7 @@ package de.linusdev.lutils.nat.memory.stack.impl;
 import de.linusdev.lutils.nat.abi.ABI;
 import de.linusdev.lutils.nat.abi.DefaultABIs;
 import de.linusdev.lutils.nat.memory.AllocatedMemory;
-import de.linusdev.lutils.nat.memory.NativeMemAllocator;
+import de.linusdev.lutils.nat.memory.Allocators;
 import de.linusdev.lutils.nat.memory.NativeMemBuffer;
 import de.linusdev.lutils.nat.memory.stack.PopPoint;
 import de.linusdev.lutils.nat.memory.stack.SafePoint;
@@ -52,7 +52,7 @@ public class DirectMemoryStack64 extends Structure implements Stack, AutoCloseab
     public DirectMemoryStack64(long size) {
         super(null);
         setInfo(new StructureInfo(DefaultABIs.MSVC_X64, ALIGNMENT, false, 0, size, 0));
-        this.allocatedMem = NativeMemAllocator.DEFAULT_ALLOCATOR.allocate(size);
+        this.allocatedMem = Allocators.DEFAULT_ALLOCATOR.allocOwned(size);
         claimMemory(allocatedMem, 0);
         this.address = getPointer();
         this.stackPointers = new StackPointerQueue(address);

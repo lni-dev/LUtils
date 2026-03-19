@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025 Linus Andera
+ * Copyright (c) 2025-2026 Linus Andera
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,14 +25,15 @@ import de.linusdev.lutils.math.vector.Vector;
 import de.linusdev.lutils.math.vector.array.floatn.ABFloat3;
 import org.junit.jupiter.api.Test;
 
+import static de.linusdev.lutils.nat.memory.Allocators.allocManaged;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class CameraMatrixTest {
 
     @Test
     void test() {
-        Float4x4 backing = BBFloat4x4.newAllocated(null);
-        CameraMatrix camera = new CameraMatrix(backing, BBFloat4x4.newAllocated(null));
+        Float4x4 backing = allocManaged(BBFloat4x4.newAllocatable(null));
+        CameraMatrix camera = new CameraMatrix(backing, allocManaged(BBFloat4x4.newAllocatable(null)));
 
 
         camera.lookAt(new ABFloat3(1.4f, 5.3f, 1f));

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025 Linus Andera
+ * Copyright (c) 2025-2026 Linus Andera
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.stream.Stream;
 
+import static de.linusdev.lutils.nat.memory.Allocators.allocManaged;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -33,9 +34,9 @@ class Float4Test {
 
     private static Stream<Arguments> provideVectors() {
         return Stream.of(
-                Arguments.of(BBFloat4.newAllocated(null), 1.3f, 4.5f, 22f, 3f),
+                Arguments.of(allocManaged(BBFloat4.newAllocatable(null)), 1.3f, 4.5f, 22f, 3f),
                 Arguments.of(new ABFloat4(), 6.7f, 7.1f, 10.5f, 34f),
-                Arguments.of(BBFloat4.newAllocated(null).wzyx(), 6.3f, 1.5f, 1f, 7f)
+                Arguments.of(allocManaged(BBFloat4.newAllocatable(null)).wzyx(), 6.3f, 1.5f, 1f, 7f)
         );
     }
 

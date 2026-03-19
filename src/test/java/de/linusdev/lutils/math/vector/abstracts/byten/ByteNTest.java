@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025 Linus Andera
+ * Copyright (c) 2025-2026 Linus Andera
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,13 +27,14 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.stream.Stream;
 
+import static de.linusdev.lutils.nat.memory.Allocators.allocManaged;
 import static org.junit.jupiter.api.Assertions.*;
 
 class ByteNTest {
 
     private static Stream<Arguments> provideBBVectors() {
         return Stream.of(
-                Arguments.of(BBByte1.newAllocated(null), 1, 1 )
+                Arguments.of(allocManaged(BBByte1.newAllocatable(null)), 1, 1 )
         );
     }
 
@@ -75,8 +76,7 @@ class ByteNTest {
 
     @Test
     public void unsignedTest() {
-        BBUByte1 vector = BBUByte1.newAllocatable(null);
-        vector.allocate();
+        BBUByte1 vector = allocManaged(BBUByte1.newAllocatable(null));
 
         assertTrue(vector.areComponentsUnsigned());
     }

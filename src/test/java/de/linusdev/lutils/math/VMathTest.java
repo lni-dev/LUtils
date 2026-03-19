@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025 Linus Andera
+ * Copyright (c) 2025-2026 Linus Andera
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,15 +49,16 @@ import org.junit.jupiter.params.provider.MethodSource;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import static de.linusdev.lutils.nat.memory.Allocators.allocManaged;
 import static org.junit.jupiter.api.Assertions.*;
 
 class VMathTest {
     @Test
     void add() {
-        BBFloat4 a = BBFloat4.newAllocated(null);
+        BBFloat4 a = allocManaged(BBFloat4.newAllocatable(null));
         a.xyzw(1f, 2f, 3f, 4f);
 
-        BBFloat4 b = BBFloat4.newAllocated(null);
+        BBFloat4 b = allocManaged(BBFloat4.newAllocatable(null));
         b.xyzw(1f, 2f, 3f, 4f);
 
         VMath.add(a, b, a);
@@ -70,10 +71,10 @@ class VMathTest {
 
     @Test
     void subtract() {
-        BBFloat4 a = BBFloat4.newAllocated(null);
+        BBFloat4 a = allocManaged(BBFloat4.newAllocatable(null));
         a.xyzw(2f, 2f, 3f, 1f);
 
-        BBFloat4 b = BBFloat4.newAllocated(null);
+        BBFloat4 b = allocManaged(BBFloat4.newAllocatable(null));
         b.xyzw(1f, 2f, 3f, 4f);
 
         VMath.subtract(a, b, a);
@@ -86,10 +87,10 @@ class VMathTest {
 
     @Test
     void multiply() {
-        BBFloat4 a = BBFloat4.newAllocated(null);
+        BBFloat4 a = allocManaged(BBFloat4.newAllocatable(null));
         a.xyzw(2f, 2f, 3f, 1f);
 
-        BBFloat4 b = BBFloat4.newAllocated(null);
+        BBFloat4 b = allocManaged(BBFloat4.newAllocatable(null));
         b.xyzw(1f, 2f, 3f, 4f);
 
         VMath.multiply(a, b, a);
@@ -102,10 +103,10 @@ class VMathTest {
 
     @Test
     void divide() {
-        BBFloat4 a = BBFloat4.newAllocated(null);
+        BBFloat4 a = allocManaged(BBFloat4.newAllocatable(null));
         a.xyzw(2f, 2f, 3f, 1f);
 
-        BBFloat4 b = BBFloat4.newAllocated(null);
+        BBFloat4 b = allocManaged(BBFloat4.newAllocatable(null));
         b.xyzw(1f, 2f, 3f, 4f);
 
         VMath.divide(a, b, a);
@@ -118,7 +119,7 @@ class VMathTest {
 
     @Test
     void scale() {
-        BBFloat4 a = BBFloat4.newAllocated(null);
+        BBFloat4 a = allocManaged(BBFloat4.newAllocatable(null));
         a.xyzw(2f, 2f, 3f, 1f);
 
         VMath.scale(a, 2.f, a);
@@ -131,10 +132,10 @@ class VMathTest {
 
     @Test
     void dot() {
-        BBFloat4 a = BBFloat4.newAllocated(null);
+        BBFloat4 a = allocManaged(BBFloat4.newAllocatable(null));
         a.xyzw(2f, 2f, 3f, 1f);
 
-        BBFloat4 b = BBFloat4.newAllocated(null);
+        BBFloat4 b = allocManaged(BBFloat4.newAllocatable(null));
         b.xyzw(1f, 2f, 3f, 4f);
 
         assertEquals(2f+4f+9f+4f, VMath.dot(a, b));
@@ -142,10 +143,10 @@ class VMathTest {
 
     @Test
     void cross() {
-        BBFloat3 a = BBFloat3.newAllocated(null);
+        BBFloat3 a = allocManaged(BBFloat3.newAllocatable(null));
         a.xyz(2f, 2f, 3f);
 
-        BBFloat3 b = BBFloat3.newAllocated(null);
+        BBFloat3 b = allocManaged(BBFloat3.newAllocatable(null));
         b.xyz(1f, 2f, 3f);
 
         VMath.cross(a, b, a);
@@ -157,7 +158,7 @@ class VMathTest {
 
     @Test
     void normalize() {
-        BBFloat3 a = BBFloat3.newAllocated(null);
+        BBFloat3 a = allocManaged(BBFloat3.newAllocatable(null));
         a.xyz(2f, 2f, 3f);
 
         VMath.normalize(a, a);
@@ -169,7 +170,7 @@ class VMathTest {
 
     @Test
     void absolute() {
-        BBFloat3 a = BBFloat3.newAllocated(null);
+        BBFloat3 a = allocManaged(BBFloat3.newAllocatable(null));
         a.xyz(2f, -2f, -3f);
 
         VMath.absolute(a, a);
@@ -326,13 +327,13 @@ class VMathTest {
 
         Float4x4[] float4x4s = new Float4x4[]{
                 new ABFloat4x4(),
-                BBFloat4x4.newAllocated(null),
+                allocManaged(BBFloat4x4.newAllocatable(null)),
                 new ABFloat4x4(),
-                BBFloat4x4.newAllocated(null),
-                BBFloat4x4.newAllocated(null),
-                BBFloat4x4.newAllocated(null),
-                BBFloat4x4.newAllocated(null),
-                BBFloat4x4.newAllocated(null),
+                allocManaged(BBFloat4x4.newAllocatable(null)),
+                allocManaged(BBFloat4x4.newAllocatable(null)),
+                allocManaged(BBFloat4x4.newAllocatable(null)),
+                allocManaged(BBFloat4x4.newAllocatable(null)),
+                allocManaged(BBFloat4x4.newAllocatable(null)),
                 new ABFloat4x4(),
                 new ABFloat4x4(),
                 new ABFloat4x4(),
@@ -341,26 +342,26 @@ class VMathTest {
 
         Float4[] float4s = new Float4[] {
                 new ABFloat4(),
-                BBFloat4.newAllocated(null),
+                allocManaged(BBFloat4.newAllocatable(null)),
                 new ABFloat4().wzyx(),
-                BBFloat4.newAllocated(null).wzyx(),
+               allocManaged(BBFloat4.newAllocatable(null)).wzyx(),
                 new ABFloat4(),
-                BBFloat4.newAllocated(null),
+               allocManaged(BBFloat4.newAllocatable(null)),
                 new ABFloat4().wzyx(),
-                BBFloat4.newAllocated(null).wzyx(),
+               allocManaged(BBFloat4.newAllocatable(null)).wzyx(),
                 new ABFloat4(),
-                BBFloat4.newAllocated(null),
+               allocManaged(BBFloat4.newAllocatable(null)),
                 new ABFloat4().wzyx(),
-                BBFloat4.newAllocated(null).wzyx(),
+               allocManaged(BBFloat4.newAllocatable(null)).wzyx(),
         };
 
 
 
         Float4[] stores = new Float4[] {
                 new ABFloat4(),
-                BBFloat4.newAllocated(null),
+               allocManaged(BBFloat4.newAllocatable(null)),
                 new ABFloat4().wzyx(),
-                BBFloat4.newAllocated(null).wzyx(),
+               allocManaged(BBFloat4.newAllocatable(null)).wzyx(),
                 float4s[4],
                 float4s[5],
                 float4s[6],
@@ -413,13 +414,13 @@ class VMathTest {
 
         Float3x3[] float3x3s = new Float3x3[]{
                 new ABFloat3x3(),
-                BBFloat3x3.newAllocated(null),
+                allocManaged(BBFloat3x3.newAllocatable(null)),
                 new ABFloat3x3(),
-                BBFloat3x3.newAllocated(null),
-                BBFloat3x3.newAllocated(null),
-                BBFloat3x3.newAllocated(null),
-                BBFloat3x3.newAllocated(null),
-                BBFloat3x3.newAllocated(null),
+                allocManaged(BBFloat3x3.newAllocatable(null)),
+                allocManaged(BBFloat3x3.newAllocatable(null)),
+                allocManaged(BBFloat3x3.newAllocatable(null)),
+                allocManaged(BBFloat3x3.newAllocatable(null)),
+                allocManaged(BBFloat3x3.newAllocatable(null)),
                 new ABFloat3x3(),
                 new ABFloat3x3(),
                 new ABFloat3x3(),
@@ -428,26 +429,26 @@ class VMathTest {
 
         Float3[] float3s = new Float3[] {
                 new ABFloat3(),
-                BBFloat3.newAllocated(null),
+                allocManaged(BBFloat3.newAllocatable(null)),
                 new ABFloat3().zyx(),
-                BBFloat3.newAllocated(null).zyx(),
+                allocManaged(BBFloat3.newAllocatable(null)).zyx(),
                 new ABFloat3(),
-                BBFloat3.newAllocated(null),
+                allocManaged(BBFloat3.newAllocatable(null)),
                 new ABFloat3().zyx(),
-                BBFloat3.newAllocated(null).zyx(),
+                allocManaged(BBFloat3.newAllocatable(null)).zyx(),
                 new ABFloat3(),
-                BBFloat3.newAllocated(null),
+                allocManaged(BBFloat3.newAllocatable(null)),
                 new ABFloat3().zyx(),
-                BBFloat3.newAllocated(null).zyx(),
+                allocManaged(BBFloat3.newAllocatable(null)).zyx(),
         };
 
 
 
         Float3[] stores = new Float3[] {
                 new ABFloat3(),
-                BBFloat3.newAllocated(null),
+                allocManaged(BBFloat3.newAllocatable(null)),
                 new ABFloat3().zyx(),
-                BBFloat3.newAllocated(null).zyx(),
+                allocManaged(BBFloat3.newAllocatable(null)).zyx(),
                 float3s[4],
                 float3s[5],
                 float3s[6],
@@ -494,7 +495,7 @@ class VMathTest {
     private static @NotNull Collection<Arguments> provideVectorEqualsArgs() {
         ArrayList<Arguments> list = new ArrayList<>();
 
-        FloatN[] vectorsA = new FloatN[] {
+        FloatN[] vectorsA = new FloatN[]{
                 new ABFloat1(),
                 new ABFloat2(),
                 new ABFloat3(),
@@ -503,33 +504,33 @@ class VMathTest {
                 new ABFloat2(),
                 new ABFloat3(),
                 new ABFloat4(),
-                BBFloat1.newAllocated(null),
-                BBFloat2.newAllocated(null),
-                BBFloat3.newAllocated(null),
-                BBFloat4.newAllocated(null),
-                BBFloat1.newAllocated(null),
-                BBFloat2.newAllocated(null),
-                BBFloat3.newAllocated(null),
-                BBFloat4.newAllocated(null),
+                allocManaged(BBFloat1.newAllocatable(null)),
+                allocManaged(BBFloat2.newAllocatable(null)),
+                allocManaged(BBFloat3.newAllocatable(null)),
+                allocManaged(BBFloat4.newAllocatable(null)),
+                allocManaged(BBFloat1.newAllocatable(null)),
+                allocManaged(BBFloat2.newAllocatable(null)),
+                allocManaged(BBFloat3.newAllocatable(null)),
+                allocManaged(BBFloat4.newAllocatable(null)),
         };
 
-        FloatN[] vectorsB = new FloatN[] {
+        FloatN[] vectorsB = new FloatN[]{
                 new ABFloat1(),
                 new ABFloat2(),
                 new ABFloat3(),
                 new ABFloat4(),
-                BBFloat1.newAllocated(null),
-                BBFloat2.newAllocated(null),
-                BBFloat3.newAllocated(null),
-                BBFloat4.newAllocated(null),
+                allocManaged(BBFloat1.newAllocatable(null)),
+                allocManaged(BBFloat2.newAllocatable(null)),
+                allocManaged(BBFloat3.newAllocatable(null)),
+                allocManaged(BBFloat4.newAllocatable(null)),
                 new ABFloat1(),
                 new ABFloat2(),
                 new ABFloat3(),
                 new ABFloat4(),
-                BBFloat1.newAllocated(null),
-                BBFloat2.newAllocated(null),
-                BBFloat3.newAllocated(null),
-                BBFloat4.newAllocated(null),
+                allocManaged(BBFloat1.newAllocatable(null)),
+                allocManaged(BBFloat2.newAllocatable(null)),
+                allocManaged(BBFloat3.newAllocatable(null)),
+                allocManaged(BBFloat4.newAllocatable(null)),
         };
 
         float[][] datasA = new float[][] {
@@ -604,8 +605,8 @@ class VMathTest {
     @Test
     void testEqualsIntVector() {
 
-        BBInt2 int2 = BBInt2.newAllocated(null);
-        BBInt2 other = BBInt2.newAllocated(null);
+        BBInt2 int2 = allocManaged(BBInt2.newAllocatable(null));
+        BBInt2 other = allocManaged(BBInt2.newAllocatable(null));
 
         int2.xy(10, 12);
         other.xy(10, 12);
@@ -624,14 +625,14 @@ class VMathTest {
         FloatMxN[] matricesA = new FloatMxN[]{
                 new ABFloat4x4(),
                 new ABFloat3x3(),
-                BBFloat4x4.newAllocated(null),
-                BBFloat3x3.newAllocated(null)
+                allocManaged(BBFloat4x4.newAllocatable(null)),
+                allocManaged(BBFloat3x3.newAllocatable(null))
         };
 
         FloatMxN[] matricesB = new FloatMxN[]{
                 new ABFloat4x4(),
-                BBFloat3x3.newAllocated(null),
-                BBFloat4x4.newAllocated(null),
+                allocManaged(BBFloat3x3.newAllocatable(null)),
+                allocManaged(BBFloat4x4.newAllocatable(null)),
                 new ABFloat3x3(),
         };
 
@@ -710,8 +711,8 @@ class VMathTest {
 
     @Test
     public void minInt() {
-        Int2 a = BBInt2.newAllocated(null);
-        Int2 b = BBInt2.newAllocated(null);
+        Int2 a = allocManaged(BBInt2.newAllocatable(null));
+        Int2 b = allocManaged(BBInt2.newAllocatable(null));
 
         a.xy(1, 5);
         b.xy(3, 4);
@@ -724,8 +725,8 @@ class VMathTest {
 
     @Test
     public void minFloat() {
-        Float2 a = BBFloat2.newAllocated(null);
-        Float2 b = BBFloat2.newAllocated(null);
+        Float2 a = allocManaged(BBFloat2.newAllocatable(null));
+        Float2 b = allocManaged(BBFloat2.newAllocatable(null));
 
         a.xy(1, 5);
         b.xy(3, 4);
@@ -738,8 +739,8 @@ class VMathTest {
 
     @Test
     public void maxInt() {
-        Int2 a = BBInt2.newAllocated(null);
-        Int2 b = BBInt2.newAllocated(null);
+        Int2 a = allocManaged(BBInt2.newAllocatable(null));
+        Int2 b = allocManaged(BBInt2.newAllocatable(null));
 
         a.xy(1, 5);
         b.xy(3, 4);
@@ -752,8 +753,8 @@ class VMathTest {
 
     @Test
     public void maxFloat() {
-        Float2 a = BBFloat2.newAllocated(null);
-        Float2 b = BBFloat2.newAllocated(null);
+        Float2 a = allocManaged(BBFloat2.newAllocatable(null));
+        Float2 b = allocManaged(BBFloat2.newAllocatable(null));
 
         a.xy(1, 5);
         b.xy(3, 4);
@@ -766,9 +767,9 @@ class VMathTest {
 
     @Test
     public void clampInt() {
-        Int2 a = BBInt2.newAllocated(null);
-        Int2 min = BBInt2.newAllocated(null);
-        Int2 max = BBInt2.newAllocated(null);
+        Int2 a = allocManaged(BBInt2.newAllocatable(null));
+        Int2 min = allocManaged(BBInt2.newAllocatable(null));
+        Int2 max = allocManaged(BBInt2.newAllocatable(null));
 
         a.xy(1, 5);
         min.xy(-1, 6);
@@ -782,9 +783,9 @@ class VMathTest {
 
     @Test
     public void clampFloat() {
-        Float2 a = BBFloat2.newAllocated(null);
-        Float2 min = BBFloat2.newAllocated(null);
-        Float2 max = BBFloat2.newAllocated(null);
+        Float2 a = allocManaged(BBFloat2.newAllocatable(null));
+        Float2 min = allocManaged(BBFloat2.newAllocatable(null));
+        Float2 max = allocManaged(BBFloat2.newAllocatable(null));
 
         a.xy(1, 5);
         min.xy(-1, 6);
@@ -798,8 +799,8 @@ class VMathTest {
 
     @Test
     public void minUnsigned() {
-        BBUInt2 a = BBUInt2.newAllocated(null);
-        BBUInt2 b = BBUInt2.newAllocated(null);
+        BBUInt2 a = allocManaged(BBUInt2.newAllocatable(null));
+        BBUInt2 b = allocManaged(BBUInt2.newAllocatable(null));
 
         a.xy(1, 5);
         b.xy(-3, 4);
@@ -812,8 +813,8 @@ class VMathTest {
 
     @Test
     public void maxUnsigned() {
-        BBUInt2 a = BBUInt2.newAllocated(null);
-        BBUInt2 b = BBUInt2.newAllocated(null);
+        BBUInt2 a = allocManaged(BBUInt2.newAllocatable(null));
+        BBUInt2 b = allocManaged(BBUInt2.newAllocatable(null));
 
         a.xy(1, 5);
         b.xy(3, 4);
@@ -826,9 +827,9 @@ class VMathTest {
 
     @Test
     public void clampUnsigned() {
-        BBUInt2 a = BBUInt2.newAllocated(null);
-        BBUInt2 min = BBUInt2.newAllocated(null);
-        BBUInt2 max = BBUInt2.newAllocated(null);
+        BBUInt2 a = allocManaged(BBUInt2.newAllocatable(null));
+        BBUInt2 min = allocManaged(BBUInt2.newAllocatable(null));
+        BBUInt2 max = allocManaged(BBUInt2.newAllocatable(null));
 
         a.xy(1, 5);
         min.xy(-1, 6);

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025 Linus Andera
+ * Copyright (c) 2025-2026 Linus Andera
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package de.linusdev.lutils.nat.struct.abstracts;
 
 import org.junit.jupiter.api.Test;
 
+import static de.linusdev.lutils.nat.memory.Allocators.allocManaged;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class ComplexStructureTest {
@@ -25,8 +26,8 @@ public class ComplexStructureTest {
 
     @Test
     void test() {
-        TestStruct myTestStruct = new TestStruct(false);
-        myTestStruct.allocate();
+        TestStruct myTestStruct = new TestStruct(null, false);
+        allocManaged(myTestStruct);
         myTestStruct.testIntVector.x(10);
         assertEquals(10, myTestStruct.testIntVector.x());
     }
