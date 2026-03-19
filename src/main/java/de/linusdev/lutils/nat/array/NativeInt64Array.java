@@ -17,9 +17,8 @@
 package de.linusdev.lutils.nat.array;
 
 import de.linusdev.lutils.nat.NativeType;
+import de.linusdev.lutils.nat.abi.ABI;
 import de.linusdev.lutils.nat.struct.abstracts.StructureStaticVariables;
-import de.linusdev.lutils.nat.struct.annos.StructValue;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Range;
 
@@ -32,30 +31,22 @@ public class NativeInt64Array extends NativePrimitiveTypeArray<Long> {
      * @see StructureStaticVariables#newUnallocated()
      */
     public static NativeInt64Array newUnallocated() {
-        return new NativeInt64Array(null, false);
+        return new NativeInt64Array();
     }
 
     /**
      * @see StructureStaticVariables#newAllocatable(ABI, int[], Class[]) 
      */
-    public static NativeInt64Array newAllocatable(@NotNull StructValue structValue) {
-        return new NativeInt64Array(structValue, true);
+    public static NativeInt64Array newAllocatable(@Nullable ABI abi, int length) {
+        return new NativeInt64Array(abi, length);
     }
 
-    /**
-     * @see StructureStaticVariables#newAllocated(StructValue)
-     */
-    public static NativeInt64Array newAllocated(@NotNull StructValue structValue) {
-        NativeInt64Array ret = newAllocatable(structValue);
-        ret.allocate();
-        return ret;
+    protected NativeInt64Array() {
+        super(GENERATOR);
     }
 
-    protected NativeInt64Array(
-            @Nullable StructValue structValue,
-            boolean generateInfo
-    ) {
-        super(structValue, generateInfo, GENERATOR);
+    protected NativeInt64Array(@Nullable ABI abi, int length) {
+        super(GENERATOR, abi, length);
     }
 
     @Override
@@ -64,7 +55,7 @@ public class NativeInt64Array extends NativePrimitiveTypeArray<Long> {
     }
 
     public long getLong(@Range(from = 0, to = Integer.MAX_VALUE) int index) {
-        return byteBuf.getLong(positions.position(index));
+        return nativeMem.getLong(positions.position(index));
     }
 
     @Override
@@ -73,7 +64,7 @@ public class NativeInt64Array extends NativePrimitiveTypeArray<Long> {
     }
 
     public void setLong(int index, long item) {
-        byteBuf.putLong(positions.position(index), item);
+        nativeMem.setLong(positions.position(index), item);
     }
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024-2025 Linus Andera
+ * Copyright (c) 2024-2026 Linus Andera
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,9 @@
 
 package de.linusdev.lutils.image.buffer;
 
+import de.linusdev.lutils.nat.abi.ABI;
 import de.linusdev.lutils.nat.struct.info.StructureInfo;
+import org.jetbrains.annotations.NotNull;
 
 public class BBImageInfo extends StructureInfo {
 
@@ -25,6 +27,7 @@ public class BBImageInfo extends StructureInfo {
     private final int pixelSize;
 
     public BBImageInfo(
+            @NotNull ABI abi,
             int alignment,
             boolean compressed,
             int width,
@@ -33,7 +36,7 @@ public class BBImageInfo extends StructureInfo {
             int prePadding,
             int postPadding
     ) {
-        super(alignment, compressed, prePadding, width*height*pixelSize, postPadding);
+        super(abi, alignment, compressed, prePadding, (long) width*height*pixelSize, postPadding);
         this.width = width;
         this.height = height;
         this.pixelSize = pixelSize;

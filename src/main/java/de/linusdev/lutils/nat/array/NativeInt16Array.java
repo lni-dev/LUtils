@@ -17,9 +17,8 @@
 package de.linusdev.lutils.nat.array;
 
 import de.linusdev.lutils.nat.NativeType;
+import de.linusdev.lutils.nat.abi.ABI;
 import de.linusdev.lutils.nat.struct.abstracts.StructureStaticVariables;
-import de.linusdev.lutils.nat.struct.annos.StructValue;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Range;
 
@@ -32,38 +31,31 @@ public class NativeInt16Array extends NativePrimitiveTypeArray<Short> {
      * @see StructureStaticVariables#newUnallocated()
      */
     public static NativeInt16Array newUnallocated() {
-        return new NativeInt16Array(null, false);
+        return new NativeInt16Array();
     }
 
     /**
      * @see StructureStaticVariables#newAllocatable(ABI, int[], Class[]) 
      */
-    public static NativeInt16Array newAllocatable(@NotNull StructValue structValue) {
-        return new NativeInt16Array(structValue, true);
+    public static NativeInt16Array newAllocatable(@Nullable ABI abi, int length) {
+        return new NativeInt16Array(abi, length);
     }
 
-    /**
-     * @see StructureStaticVariables#newAllocated(StructValue)
-     */
-    public static NativeInt16Array newAllocated(@NotNull StructValue structValue) {
-        NativeInt16Array ret = newAllocatable(structValue);
-        ret.allocate();
-        return ret;
+    protected NativeInt16Array(@Nullable ABI abi, int length) {
+        super(GENERATOR, abi, length);
     }
 
-    protected NativeInt16Array(
-            @Nullable StructValue structValue,
-            boolean generateInfo
-    ) {
-        super(structValue, generateInfo, GENERATOR);
+    protected NativeInt16Array() {
+        super(GENERATOR);
     }
+
     @Override
     public Short get(@Range(from = 0, to = Integer.MAX_VALUE) int index) {
         return getInt16(index);
     }
 
     public short getInt16(@Range(from = 0, to = Integer.MAX_VALUE) int index) {
-        return byteBuf.getShort(positions.position(index));
+        return nativeMem.getShort(positions.position(index));
     }
 
     @Override
@@ -72,7 +64,7 @@ public class NativeInt16Array extends NativePrimitiveTypeArray<Short> {
     }
 
     public void setInt16(int index, short item) {
-        byteBuf.putShort(positions.position(index), item);
+        nativeMem.setShort(positions.position(index), item);
     }
 
 }

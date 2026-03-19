@@ -41,13 +41,18 @@ public abstract class BBVector extends Structure implements Vector {
     /**
      * position of given {@code index} in {@link #nativeMem}
      */
-    protected int posInBuf(int index) {
+    protected long posInBuf(int index) {
         return positions.position(index);
     }
 
     @Override
     protected @Nullable StructureInfo generateInfo() {
         return generator.calculateInfo(this.getClass(), abi, null, null);
+    }
+
+    @Override
+    public @NotNull BBVectorGenerator getGenerator() {
+        return generator;
     }
 
     @Override
@@ -96,7 +101,7 @@ public abstract class BBVector extends Structure implements Vector {
 
         @Override
         public @NotNull StructCodeGenerator codeGenerator() {
-            return (language, selfClazz, info) -> {
+            return (language, _, info) -> {
                 BBVectorInfo bbInfo = (BBVectorInfo) info;
 
                 return language.getNativeTypeName(bbInfo.getType()) + bbInfo.getLength();

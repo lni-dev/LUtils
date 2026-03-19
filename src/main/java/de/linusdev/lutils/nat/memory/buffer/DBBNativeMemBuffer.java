@@ -124,6 +124,11 @@ public class DBBNativeMemBuffer implements NativeMemBuffer {
     }
 
     @Override
+    public void getBytes(long index, byte[] dst, long dstOffset, long dstLength) {
+        byteBuffer.get(Math.toIntExact(index), dst, Math.toIntExact(dstOffset), Math.toIntExact(dstLength));
+    }
+
+    @Override
     public @NotNull ByteOrder byteOrder() {
         return byteBuffer.order();
     }

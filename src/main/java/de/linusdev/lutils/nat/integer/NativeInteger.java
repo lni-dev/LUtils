@@ -21,36 +21,30 @@ import de.linusdev.lutils.nat.abi.ABI;
 import de.linusdev.lutils.nat.struct.abstracts.Structure;
 import de.linusdev.lutils.nat.struct.abstracts.StructureStaticVariables;
 import de.linusdev.lutils.nat.struct.annos.RequirementType;
-import de.linusdev.lutils.nat.struct.annos.Struct;
-import de.linusdev.lutils.nat.struct.annos.StructValue;
+import de.linusdev.lutils.nat.struct.generator.SimpleStaticGenerator;
 import de.linusdev.lutils.nat.struct.generator.StaticGenerator;
 import de.linusdev.lutils.nat.struct.info.StructureInfo;
-import de.linusdev.lutils.nat.struct.utils.SSMUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-@Struct(
-        requiresCalculateInfoMethod = true,
-        customLayoutOption = RequirementType.OPTIONAL
-)
 public class NativeInteger extends Structure {
 
     @SuppressWarnings("unused") // accessed via reflection
-    public static final @NotNull StaticGenerator GENERATOR = new StaticGenerator() {
+    public static final @NotNull StaticGenerator GENERATOR = new SimpleStaticGenerator(
+            RequirementType.NOT_SUPPORTED,
+            RequirementType.NOT_SUPPORTED
+    ) {
         @Override
-        public @NotNull StructureInfo calculateInfo(
+        public @NotNull StructureInfo calculateInfoChecked(
                 @NotNull Class<?> selfClazz,
-                @Nullable StructValue structValue,
-                @NotNull StructValue @NotNull [] elementsStructValue,
-                @Nullable ABI abi
+                @NotNull ABI abi,
+                int[] length,
+                @NotNull Class<?>[] elementTypes
         ) {
             MemorySizeable memorySizeable = abi.types().integer();
             return new StructureInfo(
-                    memorySizeable.getAlignment(),
-                    false,
-                    0,
-                    memorySizeable.getRequiredSize(),
-                    0
+                    abi, memorySizeable.getAlignment(), false,
+                    0, memorySizeable.getRequiredSize(), 0
             );
         }
     };
@@ -59,69 +53,54 @@ public class NativeInteger extends Structure {
      * @see StructureStaticVariables#newUnallocated()
      */
     public static NativeInteger newUnallocated() {
-        return new NativeInteger(false, null);
+        return new NativeInteger(null);
     }
 
     /**
      * @see StructureStaticVariables#newAllocatable(ABI, int[], Class[]) 
      */
     public static NativeInteger newAllocatable(@Nullable ABI abi) {
-        return new NativeInteger(true, structValue);
-    }
-
-    /**
-     * @see StructureStaticVariables#newAllocated(StructValue)
-     */
-    public static NativeInteger newAllocated(@Nullable StructValue structValue) {
-        NativeInteger ret = newAllocatable(structValue);
-        ret.allocate();
-        return ret;
+        return new NativeInteger(abi);
     }
 
 
     protected NativeInteger(@Nullable ABI abi) {
-        if(generateInfo) {
-            setInfo(SSMUtils.getInfo(
-                    this.getClass(),
-                    structValue,
-                    null,
-                    null,
-                    null,
-                    null,
-                    GENERATOR
-            ));
-        }
+        super(abi);
     }
 
+    @Override
+    protected @Nullable StaticGenerator getGenerator() {
+        return GENERATOR;
+    }
 
     /**
      * @throws ArithmeticException if given long {@code value} does not fit into this (signed) integer without losing information.
      * @param value value to set
      */
     public void set(long value) {
-        int size = this.getRequiredSize();
+        long size = this.getRequiredSize();
         if(size == 2) {
             if ((short) value != value) {
                 throw new ArithmeticException("short overflow");
             }
-            byteBuf.putShort(0, (short) value);
+            nativeMem.setShort(0, (short) value);
         }
         else if(size == 4)
-            byteBuf.putInt(0,  Math.toIntExact(value));
+            nativeMem.setInt(0,  Math.toIntExact(value));
         else if(size == 8)
-            byteBuf.putLong(0, value);
+            nativeMem.setLong(0, value);
         else
             throw new Error("Unexpected Integer Size");
     }
 
     public long get() {
-        int size = this.getRequiredSize();
+        long size = this.getRequiredSize();
         if(size == 2)
-            return byteBuf.getShort(0);
+            return nativeMem.getShort(0);
         else if(size == 4)
-            return byteBuf.getInt(0);
+            return nativeMem.getInt(0);
         else if(size == 8)
-            return byteBuf.getLong(0);
+            return nativeMem.getLong(0);
         else
             throw new Error("Unexpected Integer Size");
     }

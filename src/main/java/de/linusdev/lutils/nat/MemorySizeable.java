@@ -37,7 +37,7 @@ public interface MemorySizeable {
         };
     }
 
-    static @NotNull MemorySizeable of(long size) {
+    static @NotNull MemorySizeable of(int size) {
         return new MemorySizeable() {
             @Override
             public long getRequiredSize() {

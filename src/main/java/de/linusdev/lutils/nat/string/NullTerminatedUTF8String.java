@@ -16,11 +16,11 @@
 
 package de.linusdev.lutils.nat.string;
 
+import de.linusdev.lutils.nat.abi.ABI;
 import de.linusdev.lutils.nat.array.NativeInt8Array;
+import de.linusdev.lutils.nat.memory.OutOfNativeMemBufferRangeException;
 import de.linusdev.lutils.nat.struct.abstracts.Structure;
 import de.linusdev.lutils.nat.struct.abstracts.StructureStaticVariables;
-import de.linusdev.lutils.nat.struct.annos.SVWrapper;
-import de.linusdev.lutils.nat.struct.annos.StructValue;
 import de.linusdev.lutils.nat.struct.info.StructureInfo;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -38,52 +38,46 @@ public class NullTerminatedUTF8String extends NativeInt8Array {
      * @see StructureStaticVariables#newUnallocated()
      */
     public static NullTerminatedUTF8String newUnallocated() {
-        return new NullTerminatedUTF8String(null, false, null);
+        return new NullTerminatedUTF8String();
     }
 
     /**
      * @see StructureStaticVariables#newAllocatable(ABI, int[], Class[]) 
      */
-    public static NullTerminatedUTF8String newAllocatable(@NotNull StructValue structValue) {
-        return new NullTerminatedUTF8String(structValue, true, null);
+    public static NullTerminatedUTF8String newAllocatable(@Nullable ABI abi, int length) {
+        return new NullTerminatedUTF8String(abi, length);
     }
 
     /**
-     * @see StructureStaticVariables#newAllocated(StructValue)
+     * @see StructureStaticVariables#newAllocatable(ABI, int[], Class[])
      */
-    public static NullTerminatedUTF8String newAllocated(@NotNull StructValue structValue) {
-        NullTerminatedUTF8String ret = newAllocatable(structValue);
-        ret.allocate();
-        return ret;
+    public static NullTerminatedUTF8String newAllocatable(@Nullable ABI abi, @NotNull String value) {
+        return new NullTerminatedUTF8String(abi, value);
     }
 
-    public static NullTerminatedUTF8String newAllocatable(@NotNull String defaultValue) {
-        byte[] bytes = defaultValue.getBytes(StandardCharsets.UTF_8);
-        return new NullTerminatedUTF8String(SVWrapper.length(bytes.length + 1), true, bytes);
+    byte @Nullable [] defaultValue;
+
+    protected NullTerminatedUTF8String(@Nullable ABI abi, int length) {
+        super(abi, length);
     }
 
-    public static NullTerminatedUTF8String newAllocated(@NotNull String string) {
-        NullTerminatedUTF8String natString = newAllocatable(string);
-        natString.allocate();
-        return natString;
+    protected NullTerminatedUTF8String(@Nullable ABI abi, @NotNull String value) {
+        byte[] bytes = value.getBytes(StandardCharsets.UTF_8);
+        super(abi, bytes.length + 1);
+        this.defaultValue = bytes;
     }
 
-    protected final byte @Nullable [] defaultValue;
-
-    protected NullTerminatedUTF8String(
-            @Nullable StructValue structValue,
-            boolean generateInfo,
-            byte @Nullable [] defaultValue
-    ) {
-        super(structValue, generateInfo);
-        this.defaultValue = defaultValue;
+    protected NullTerminatedUTF8String() {
+        super();
     }
 
     @Override
-    protected void useBuffer(@NotNull Structure mostParentStructure, int offset, @NotNull StructureInfo info) {
+    protected void useBuffer(@NotNull Structure mostParentStructure, long offset, @NotNull StructureInfo info) {
         super.useBuffer(mostParentStructure, offset, info);
-        if(defaultValue != null)
+        if(defaultValue != null) {
             set(defaultValue);
+            set(defaultValue.length, (byte)0);
+        }
     }
 
     /**
@@ -93,22 +87,13 @@ public class NullTerminatedUTF8String extends NativeInt8Array {
      * @param value {@link String} value
      */
     public void set(@NotNull String value) {
-        byteBuf.clear();
+        byte[] bytes = value.getBytes(StandardCharsets.UTF_8);
 
-        byteBuf.put(value.getBytes(StandardCharsets.UTF_8));
-        byteBuf.put((byte) 0);
+        if(bytes.length + 1 > length)
+            throw new OutOfNativeMemBufferRangeException(bytes.length, nativeMem);
 
-        byteBuf.clear();
-    }
-
-    /**
-     * Set content of this structure to given {@code value}. A 0-byte will always be added
-     * @param value string as byte[]
-     */
-    @Override
-    public void set(byte @NotNull [] value) {
-        super.set(value);
-        byteBuf.put(value.length, (byte) 0);
+        nativeMem.fill(bytes);
+        nativeMem.setByte(bytes.length, (byte) 0);
     }
 
     /**
@@ -116,10 +101,8 @@ public class NullTerminatedUTF8String extends NativeInt8Array {
      * Reads until the first 0-byte.
      */
     public @NotNull String get() {
-        byteBuf.clear();
-
         byte[] bytes = new byte[length()];
-        byteBuf.get(bytes);
+        nativeMem.getBytes(bytes);
 
         int index = 0;
         for(int i = 0; i < bytes.length; i++) {

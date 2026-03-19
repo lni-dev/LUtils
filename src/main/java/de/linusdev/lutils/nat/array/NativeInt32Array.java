@@ -17,9 +17,8 @@
 package de.linusdev.lutils.nat.array;
 
 import de.linusdev.lutils.nat.NativeType;
+import de.linusdev.lutils.nat.abi.ABI;
 import de.linusdev.lutils.nat.struct.abstracts.StructureStaticVariables;
-import de.linusdev.lutils.nat.struct.annos.StructValue;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Range;
 
@@ -32,30 +31,22 @@ public class NativeInt32Array extends NativePrimitiveTypeArray<Integer> {
      * @see StructureStaticVariables#newUnallocated()
      */
     public static NativeInt32Array newUnallocated() {
-        return new NativeInt32Array(null, false);
+        return new NativeInt32Array();
     }
 
     /**
      * @see StructureStaticVariables#newAllocatable(ABI, int[], Class[]) 
      */
-    public static NativeInt32Array newAllocatable(@NotNull StructValue structValue) {
-        return new NativeInt32Array(structValue, true);
+    public static NativeInt32Array newAllocatable(@Nullable ABI abi, int length) {
+        return new NativeInt32Array(abi, length);
     }
 
-    /**
-     * @see StructureStaticVariables#newAllocated(StructValue)
-     */
-    public static NativeInt32Array newAllocated(@NotNull StructValue structValue) {
-        NativeInt32Array ret = newAllocatable(structValue);
-        ret.allocate();
-        return ret;
+    protected NativeInt32Array(@Nullable ABI abi, int length) {
+        super(GENERATOR, abi, length);
     }
 
-    protected NativeInt32Array(
-            @Nullable StructValue structValue,
-            boolean generateInfo
-    ) {
-        super(structValue, generateInfo, GENERATOR);
+    protected NativeInt32Array() {
+        super(GENERATOR);
     }
 
     @Override
@@ -64,7 +55,7 @@ public class NativeInt32Array extends NativePrimitiveTypeArray<Integer> {
     }
 
     public int getInt(@Range(from = 0, to = Integer.MAX_VALUE) int index) {
-        return byteBuf.getInt(positions.position(index));
+        return nativeMem.getInt(positions.position(index));
     }
 
     @Override
@@ -73,7 +64,7 @@ public class NativeInt32Array extends NativePrimitiveTypeArray<Integer> {
     }
 
     public void setInt(int index, int item) {
-        byteBuf.putInt(positions.position(index), item);
+        nativeMem.setInt(positions.position(index), item);
     }
 
 }

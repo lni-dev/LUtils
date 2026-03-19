@@ -17,20 +17,14 @@
 package de.linusdev.lutils.nat.memory;
 
 import de.linusdev.lutils.id.Identifier;
-import de.linusdev.lutils.nat.memory.allocator.MallocAllocator;
-import de.linusdev.lutils.nat.memory.allocator.UnsafeAllocator;
 import de.linusdev.lutils.nat.struct.abstracts.Structure;
 import org.jetbrains.annotations.NotNull;
 
 public interface NativeMemAllocator {
 
-    NativeMemAllocator UNSAFE_ALLOCATOR = new UnsafeAllocator();
-    NativeMemAllocator MALLOC_ALLOCATOR = new MallocAllocator();
-
-
-    NativeMemAllocator DEFAULT_ALLOCATOR = MALLOC_ALLOCATOR;
-
     @NotNull AllocatedMemory allocate(long size);
+
+    @NotNull AllocatedMemory allocate(long size, @NotNull Identifier debugId);
 
     default @NotNull AllocatedMemory allocate(@NotNull Structure structure) {
         AllocatedMemory buffer = allocate(structure.getRequiredSize());
@@ -38,10 +32,17 @@ public interface NativeMemAllocator {
         return buffer;
     }
 
-    @NotNull AllocatedMemory allocate(long size, @NotNull Identifier debugId);
-
     default @NotNull AllocatedMemory allocate(@NotNull Structure structure, @NotNull Identifier debugId) {
         AllocatedMemory buffer = allocate(structure.getRequiredSize(), debugId);
+        structure.claimMemory(buffer, 0);
+        return buffer;
+    }
+
+    @NotNull NativeMemBuffer allocateManaged(long size);
+
+    @SuppressWarnings("UnusedReturnValue")
+    default @NotNull NativeMemBuffer allocateManaged(@NotNull Structure structure) {
+        NativeMemBuffer buffer = allocateManaged(structure.getRequiredSize());
         structure.claimMemory(buffer, 0);
         return buffer;
     }

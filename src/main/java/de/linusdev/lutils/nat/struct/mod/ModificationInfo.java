@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2025 Linus Andera
+ * Copyright (c) 2023-2026 Linus Andera
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,19 +19,19 @@ package de.linusdev.lutils.nat.struct.mod;
 import org.jetbrains.annotations.Nullable;
 
 public class ModificationInfo {
-    public volatile int startOffset;
-    public volatile int endOffset;
+    public volatile long startOffset;
+    public volatile long endOffset;
 
     public volatile ModificationInfo next = null;
     public volatile ModificationInfo previous = null;
 
-    public ModificationInfo(int startOffset, int endOffset) {
+    public ModificationInfo(long startOffset, long endOffset) {
         this.startOffset = startOffset;
         this.endOffset = endOffset;
     }
 
     @SuppressWarnings("NonAtomicOperationOnVolatileField") //may only be called on the parent structures lock
-    public @Nullable ModificationInfo add(int startOffset, int endOffset, int split, @Nullable ModificationInfo checked) {
+    public @Nullable ModificationInfo add(long startOffset, long endOffset, long split, @Nullable ModificationInfo checked) {
         if(endOffset + split  < this.startOffset) { // new < this
             if(previous == null) {
                 previous = new ModificationInfo(startOffset, endOffset);

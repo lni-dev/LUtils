@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025 Linus Andera
+ * Copyright (c) 2025-2026 Linus Andera
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ import de.linusdev.lutils.math.vector.Vector;
 import de.linusdev.lutils.math.vector.abstracts.floatn.Float2;
 import org.junit.jupiter.api.Test;
 
+import static de.linusdev.lutils.nat.memory.Allocators.allocateManaged;
 import static org.junit.jupiter.api.Assertions.*;
 
 class FloatMxNTest {
@@ -29,7 +30,7 @@ class FloatMxNTest {
     @Test
     public void test() {
         Float4x4 abFloat = new ABFloat4x4();
-        Float4x4 bbFloat = BBFloat4x4.newAllocated(null);
+        Float4x4 bbFloat = allocateManaged(BBFloat4x4.newAllocatable(null));
 
         assertTrue(abFloat.isArrayBacked());
         assertTrue(bbFloat.isBufferBacked());

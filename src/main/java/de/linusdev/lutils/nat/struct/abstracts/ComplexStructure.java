@@ -102,15 +102,20 @@ public abstract class ComplexStructure extends ModTrackingStructure {
         ComplexStructureInfo cInfo = getInfo();
         StructVarInfo[] childrenInfos = cInfo.getChildrenInfo();
 
-        int[] sizes = cInfo.getSizes();
+        long[] sizes = cInfo.getSizes();
 
-        int position = 0;
+        long position = 0;
         for(int i = 0; i < items.length ; i++) {
             position += sizes[i * 2];
             if(items[i] != null)
                 items[i].useBuffer(mostParentStructure, offset + position, childrenInfos[i].getInfo());
             position += sizes[i * 2 + 1];
         }
+    }
+
+    @Override
+    protected @Nullable StaticGenerator getGenerator() {
+        return GENERATOR;
     }
 
     @Override
@@ -136,7 +141,7 @@ public abstract class ComplexStructure extends ModTrackingStructure {
         ComplexStructureInfo cInfo = getInfo();
         StringBuilder sb = new StringBuilder();
 
-        int @NotNull [] sizes = cInfo.getSizes();
+        long @NotNull [] sizes = cInfo.getSizes();
         @NotNull StructVarInfo @NotNull [] childrenInfo = cInfo.getChildrenInfo();
 
         for(int i = 0; i < sizes.length; i++) {
@@ -197,7 +202,7 @@ public abstract class ComplexStructure extends ModTrackingStructure {
                     ComplexStructureInfo cInfo = (ComplexStructureInfo) info;
                     StringBuilder sb = new StringBuilder();
 
-                    int @NotNull [] sizes = cInfo.getSizes();
+                    long @NotNull [] sizes = cInfo.getSizes();
                     @NotNull StructVarInfo @NotNull [] childrenInfo = cInfo.getChildrenInfo();
 
                     int paddingIndex = 0;
@@ -214,7 +219,7 @@ public abstract class ComplexStructure extends ModTrackingStructure {
                             text = childGenerator.codeGenerator().getStructVarDef(language, childInfo.getClazz(), childInfo.getInfo(), childInfo.getVarName());
                         } else {
                             StringBuilder pad = new StringBuilder();
-                            paddingIndex = language.addPadding(pad, sizes[i], paddingIndex);
+                            paddingIndex = language.addPadding(pad, Math.toIntExact(sizes[i]), paddingIndex);
                             text = pad.toString();
                         }
 

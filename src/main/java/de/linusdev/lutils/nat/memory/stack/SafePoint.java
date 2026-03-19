@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024-2025 Linus Andera
+ * Copyright (c) 2024-2026 Linus Andera
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +16,10 @@
 
 package de.linusdev.lutils.nat.memory.stack;
 
+import de.linusdev.lutils.nat.memory.NMemInfo;
+import de.linusdev.lutils.nat.memory.NativeMemBuffer;
 import de.linusdev.lutils.nat.struct.abstracts.Structure;
 import org.jetbrains.annotations.NotNull;
-
-import java.nio.ByteBuffer;
 
 /**
  * @see Stack#safePoint()
@@ -56,8 +56,8 @@ public interface SafePoint extends Stack, AutoCloseable {
     }
 
     @Override
-    default @NotNull ByteBuffer pushByteBuffer(int size, int alignment) {
-        return getStack().pushByteBuffer(size, alignment);
+    default @NotNull NativeMemBuffer pushNativeMemBuffer(long size, int alignment) {
+        return getStack().pushNativeMemBuffer(size, alignment);
     }
 
     @Override
@@ -81,12 +81,12 @@ public interface SafePoint extends Stack, AutoCloseable {
     }
 
     @Override
-    default ByteBuffer getByteBuffer() {
-        return getStack().getByteBuffer();
+    default NMemInfo getNativeMemBuffer() {
+        return getStack().getNativeMemBuffer();
     }
 
     @Override
-    default int getRequiredSize() {
+    default long getRequiredSize() {
         return getStack().getRequiredSize();
     }
 

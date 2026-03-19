@@ -16,9 +16,10 @@
 
 package de.linusdev.lutils.nat.string;
 
+import de.linusdev.lutils.nat.abi.ABI;
 import de.linusdev.lutils.nat.array.NativeInt16Array;
+import de.linusdev.lutils.nat.memory.OutOfNativeMemBufferRangeException;
 import de.linusdev.lutils.nat.struct.abstracts.StructureStaticVariables;
-import de.linusdev.lutils.nat.struct.annos.StructValue;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -35,46 +36,39 @@ public class NullTerminatedUTF16String extends NativeInt16Array {
      * @see StructureStaticVariables#newUnallocated()
      */
     public static NullTerminatedUTF16String newUnallocated() {
-        return new NullTerminatedUTF16String(null, false);
+        return new NullTerminatedUTF16String();
     }
 
     /**
      * @see StructureStaticVariables#newAllocatable(ABI, int[], Class[]) 
      */
-    public static NullTerminatedUTF16String newAllocatable(@NotNull StructValue structValue) {
-        return new NullTerminatedUTF16String(structValue, true);
+    public static NullTerminatedUTF16String newAllocatable(@Nullable ABI abi, int length) {
+        return new NullTerminatedUTF16String(abi, length);
     }
 
-    /**
-     * @see StructureStaticVariables#newAllocated(StructValue)
-     */
-    public static NullTerminatedUTF16String newAllocated(@NotNull StructValue structValue) {
-        NullTerminatedUTF16String ret = newAllocatable(structValue);
-        ret.allocate();
-        return ret;
+    protected NullTerminatedUTF16String(@Nullable ABI abi, int length) {
+        super(abi, length);
     }
 
-    protected NullTerminatedUTF16String(
-            @Nullable StructValue structValue,
-            boolean generateInfo
-    ) {
-        super(structValue, generateInfo);
+    protected NullTerminatedUTF16String() {
+        super();
     }
 
     /**
      * Set content of this structure to given {@code value}. A 0-byte will be added
      * after {@code value} has been added in utf-8 format.
-     * @throws java.nio.BufferOverflowException if given {@code value} (and two 0-byte) does not fit into this structure
+     * @throws OutOfNativeMemBufferRangeException if given {@code value} (and two 0-bytes) does not fit into this structure
      * @param value {@link String} value
      */
-    public void set(@NotNull String value) {
-        byteBuf.clear();
+    public void set(@NotNull String value) throws OutOfNativeMemBufferRangeException {
+        byte[] bytes = value.getBytes(StandardCharsets.UTF_16);
 
-        byteBuf.put(value.getBytes(StandardCharsets.UTF_16));
-        byteBuf.put((byte) 0);
-        byteBuf.put((byte) 0);
+        if(bytes.length + 2 > length)
+            throw new OutOfNativeMemBufferRangeException(bytes.length + 1, nativeMem);
 
-        byteBuf.clear();
+        nativeMem.fill(bytes);
+        nativeMem.setByte(bytes.length, (byte) 0);
+        nativeMem.setByte(bytes.length + 1, (byte) 0);
     }
 
     /**
@@ -82,10 +76,8 @@ public class NullTerminatedUTF16String extends NativeInt16Array {
      * Reads until the first 0-byte.
      */
     public @NotNull String get() {
-        byteBuf.clear();
-
         byte[] bytes = new byte[length()];
-        byteBuf.get(bytes);
+        nativeMem.getBytes(bytes);
 
         int index = 0;
         for(int i = 0; i < bytes.length; i++) {

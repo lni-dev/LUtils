@@ -32,7 +32,7 @@ public class NativeInt8Array extends NativePrimitiveTypeArray<Byte> {
      * @see StructureStaticVariables#newUnallocated()
      */
     public static NativeInt8Array newUnallocated() {
-        return new NativeInt8Array(null);
+        return new NativeInt8Array();
     }
 
     /**
@@ -42,17 +42,12 @@ public class NativeInt8Array extends NativePrimitiveTypeArray<Byte> {
         return new NativeInt8Array(abi, length);
     }
 
-    protected NativeInt8Array(
-            @Nullable ABI abi,
-            int length
-    ) {
+    protected NativeInt8Array(@Nullable ABI abi, int length) {
         super(GENERATOR, abi, length);
     }
 
-    protected NativeInt8Array(
-            @Nullable ABI abi
-    ) {
-        super(GENERATOR, abi);
+    protected NativeInt8Array() {
+        super(GENERATOR);
     }
 
     @Override

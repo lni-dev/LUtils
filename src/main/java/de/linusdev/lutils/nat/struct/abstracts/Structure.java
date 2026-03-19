@@ -55,7 +55,7 @@ public abstract class Structure implements NativeParsable {
      * @param <S> your struct type (required for return type only)
      */
     public static <S extends Structure>  @NotNull S unionWith(@NotNull S view, @NotNull Structure actual) {
-        view.useBuffer(actual.getMostParentStructure(), actual.getOffset(), view.isInfoAvailable());
+        view.useBuffer(actual.getMostParentStructure(), actual.getOffset(), view.getInfoOrFail());
         return view;
     }
 
@@ -143,7 +143,7 @@ public abstract class Structure implements NativeParsable {
      */
     public void claimMemory(@NotNull NativeMemBuffer buffer, long offset) {
         this.nativeMem = buffer;
-        useBuffer(this, offset, isInfoAvailable());
+        useBuffer(this, offset, getInfoOrFail());
     }
 
     /**
@@ -153,10 +153,10 @@ public abstract class Structure implements NativeParsable {
      * @throws IllegalStateException if this structure cannot claim a buffer in its current state. For example,
      * because it was created with not enough information to create its {@link #info}.
      */
-    protected @NotNull StructureInfo isInfoAvailable() {
+    protected @NotNull StructureInfo getInfoOrFail() {
         StructureInfo rInfo = info;
         if(rInfo == null && (rInfo = generateInfo()) == null)
-            throw new IllegalStateException("This structure cannot claim a buffer in it's current state.");
+            throw new IllegalStateException("This structure is missing information to generate an info and no info is currently present.");
 
         return rInfo;
     }
@@ -169,6 +169,16 @@ public abstract class Structure implements NativeParsable {
     protected @Nullable StructureInfo generateInfo() {
         return null;
     }
+
+    protected @NotNull StructureInfo generateInfo(@Nullable ABI abi, int @Nullable [] length, @NotNull Class<?> @Nullable [] elementTypes) {
+        return SSMUtils.getInfo(getGenerator(), this.getClass(), abi, length, elementTypes);
+    }
+
+    /**
+     * Get the {@link StructureStaticVariables#GENERATOR generator} if stored somewhere accessible quickly.
+     * Otherwise {@code null}.
+     */
+    protected abstract @Nullable StaticGenerator getGenerator();
 
     /**
      * returns {@link StructureInfo} of this structure instance if available
@@ -184,10 +194,10 @@ public abstract class Structure implements NativeParsable {
      * This will return the current {@link #info} of this structure. If that is {@code null},
      * it will try to {@link #generateInfo() generate} the info and store it inside this structure.
      * @return {@link #info}
-     * @throws IllegalStateException see {@link #isInfoAvailable()}
+     * @throws IllegalStateException see {@link #getInfoOrFail()}
      */
     public @NotNull StructureInfo getOrGenerateInfo() {
-        setInfo(isInfoAvailable());
+        setInfo(getInfoOrFail());
         return getInfo();
     }
 

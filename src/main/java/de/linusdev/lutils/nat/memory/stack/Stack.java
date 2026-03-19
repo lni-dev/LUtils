@@ -123,12 +123,12 @@ public interface Stack extends DirectMemoryManager {
 
     /**
      * Creates a new {@link NullTerminatedUTF8String} using
-     * {@link NullTerminatedUTF8String#newAllocatable(String) NullTerminatedUTF8String.newAllocatable(string)} and
+     * {@link NullTerminatedUTF8String#newAllocatable(ABI, String) NullTerminatedUTF8String.newAllocatable(string)} and
      * {@link #push(Structure) pushes} it onto this stack.
      * @return pushed {@link NullTerminatedUTF8String}
      */
     default @NotNull NullTerminatedUTF8String pushString(@NotNull String string) {
-        return push(NullTerminatedUTF8String.newAllocatable(string));
+        return push(NullTerminatedUTF8String.newAllocatable(null, string));
     }
 
     /**

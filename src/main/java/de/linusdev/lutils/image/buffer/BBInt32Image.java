@@ -43,7 +43,7 @@ public class BBInt32Image extends Structure implements Image {
     ) {
         @Override
         public @NotNull StructureInfo calculateInfoChecked(@NotNull Class<?> selfClazz, @NotNull ABI abi, int[] length, @NotNull Class<?>[] elementTypes) {
-            return new BBImageInfo(4, false, length[0], length[1], 4, 0, 0);
+            return new BBImageInfo(abi, 4, false, length[0], length[1], 4, 0, 0);
         }
     };
 
@@ -92,9 +92,14 @@ public class BBInt32Image extends Structure implements Image {
     }
 
     @Override
-    protected void useBuffer(@NotNull Structure mostParentStructure, int offset, @NotNull StructureInfo info) {
+    protected void useBuffer(@NotNull Structure mostParentStructure, long offset, @NotNull StructureInfo info) {
         super.useBuffer(mostParentStructure, offset, info);
         assert nativeMem.byteOrder() == ByteOrder.LITTLE_ENDIAN; // Byte order for this class is always little endian
+    }
+
+    @Override
+    protected @Nullable StaticGenerator getGenerator() {
+        return GENERATOR;
     }
 
     @Override

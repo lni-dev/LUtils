@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024-2025 Linus Andera
+ * Copyright (c) 2024-2026 Linus Andera
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package de.linusdev.lutils.nat.struct.array;
 
+import de.linusdev.lutils.nat.abi.ABI;
 import de.linusdev.lutils.nat.struct.info.ArrayInfo;
 import de.linusdev.lutils.nat.struct.info.StructureInfo;
 import org.jetbrains.annotations.NotNull;
@@ -26,17 +27,18 @@ public class StructureArrayInfo extends ArrayInfo {
     protected final @NotNull StructureInfo elementInfo;
 
     public StructureArrayInfo(
+            @NotNull ABI abi,
             int alignment,
             boolean compressed,
-            int size,
-            int[] sizes,
+            long size,
+            long [] sizes,
             int length,
-            int stride,
+            long stride,
             @NotNull ArrayInfo.ArrayPositionFunction positions,
             @NotNull Class<?> elementClass,
             @NotNull StructureInfo elementInfo
     ) {
-        super(alignment, compressed, size, sizes, length, stride, positions);
+        super(abi, alignment, compressed, size, sizes, length, stride, positions);
 
         this.elementClass = elementClass;
         this.elementInfo = elementInfo;

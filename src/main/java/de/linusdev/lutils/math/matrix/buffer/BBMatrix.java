@@ -48,20 +48,25 @@ public abstract class BBMatrix extends Structure implements Matrix {
     /**
      * position of given {@code x} and {@code y} in {@link #nativeMem}
      */
-    protected int posInBuf(int y, int x) {
+    protected long posInBuf(int y, int x) {
         return positions.position(positionToIndex(y, x));
     }
 
     /**
      * position of given {@code index} in {@link #nativeMem}
      */
-    protected int posInBuf(int index) {
+    protected long posInBuf(int index) {
         return positions.position(index);
     }
 
     @Override
     protected @Nullable StructureInfo generateInfo() {
         return generator.calculateInfo(this.getClass(), abi, null, null);
+    }
+
+    @Override
+    public @NotNull BBMatrixGenerator getGenerator() {
+        return generator;
     }
 
     @Override

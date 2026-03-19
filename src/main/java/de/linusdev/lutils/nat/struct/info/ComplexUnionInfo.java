@@ -61,9 +61,10 @@ public class ComplexUnionInfo extends UnionInfo {
             @NotNull StructVarInfo @NotNull [] infos
     ) {
         super(
+                abi,
                 info.alignment,
                 info.compressed,
-                info.sizes[0], info.sizes[1], info.sizes[2], // pre-padding, size, post-padding
+                Math.toIntExact(info.sizes[0]), info.sizes[1], Math.toIntExact(info.sizes[2]), // pre-padding, size, post-padding
                 info.positions
         );
         this.abi = abi;
@@ -86,7 +87,7 @@ public class ComplexUnionInfo extends UnionInfo {
 
     /**
      * Gets all children through reflection. This should be used sparsely. But it is required if this {@link StructureInfo}
-     * was automatically generated (see {@link #generateFromStructVars(Class, ABI, OverwriteChildABI)}) with no {@link StructValue#value() element order} specified.
+     * was automatically generated (see {@link #generateFromStructVars(Class, ABI)}) with no {@link StructValue#value() element order} specified.
      * @param instance instance of the {@link ComplexStructure} this info belongs to
      * @return children {@link Structure} array
      */

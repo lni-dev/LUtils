@@ -38,12 +38,12 @@ public abstract class NativePrimitiveTypeArray<T> extends Structure implements N
      * or {@link #useBuffer(Structure, long, StructureInfo) usebuffer called}.
      */
     protected ArrayInfo.ArrayPositionFunction positions;
+    protected StaticGenerator generator;
+    protected int length;
 
-    protected NativePrimitiveTypeArray(
-            @NotNull StaticGenerator generator,
-            @Nullable ABI abi
-    ) {
-        super(abi);
+    protected NativePrimitiveTypeArray(@NotNull StaticGenerator generator) {
+        super(null);
+        this.generator = generator;
     }
 
     protected NativePrimitiveTypeArray(
@@ -52,7 +52,14 @@ public abstract class NativePrimitiveTypeArray<T> extends Structure implements N
             int length
     ) {
         super(abi);
-        setInfo(generator.calculateInfo(this.getClass(), abi, new int[]{length}, null));
+        this.generator = generator;
+        this.length = length;
+        setInfo(generateInfo(abi, new int[]{length}, null));
+    }
+
+    @Override
+    public @Nullable StaticGenerator getGenerator() {
+        return generator;
     }
 
     @Override

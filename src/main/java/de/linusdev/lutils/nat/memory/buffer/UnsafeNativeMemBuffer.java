@@ -125,7 +125,12 @@ public class UnsafeNativeMemBuffer implements NativeMemBuffer {
 
     @Override
     public void fill(long index, byte[] values, long srcOffset, long srcLength) {
-        UNSAFE.copyMemory(values, BYTE_ARRAY_BASE_OFFSET + srcOffset, null, address, srcLength);
+        UNSAFE.copyMemory(values, BYTE_ARRAY_BASE_OFFSET + srcOffset, null, address + index, srcLength);
+    }
+
+    @Override
+    public void getBytes(long index, byte[] dst, long dstOffset, long dstLength) {
+        UNSAFE.copyMemory(null, address + index,dst, BYTE_ARRAY_BASE_OFFSET + dstOffset, dstLength);
     }
 
     @Override

@@ -117,6 +117,11 @@ public class DirectMemoryStack64 extends Structure implements Stack, AutoCloseab
     }
 
     @Override
+    protected @Nullable StaticGenerator getGenerator() {
+        return GENERATOR;
+    }
+
+    @Override
     public int getAlignment() {
         return ALIGNMENT;
     }

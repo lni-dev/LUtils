@@ -70,6 +70,7 @@ public class StructureArray<T extends Structure> extends ModTrackingStructure im
             );
 
             return new StructureArrayInfo(
+                    abi,
                     info.getAlignment(),
                     info.isCompressed(),
                     info.getRequiredSize(),
@@ -109,7 +110,7 @@ public class StructureArray<T extends Structure> extends ModTrackingStructure im
     };
 
     /**
-     * Creates an unallocated {@link StructureArray}, whose {@link #info} must be supplied when {@link #useBuffer(Structure, int, StructureInfo)}
+     * Creates an unallocated {@link StructureArray}, whose {@link #info} must be supplied when {@link #useBuffer(Structure, long, StructureInfo)}
      * is called. A call to {@link NativeMemAllocator#allocate(Structure) allocate} is not supported.
      * @param trackModifications see {@link #trackModifications}
      * @param creator see {@link #creator}
@@ -127,7 +128,7 @@ public class StructureArray<T extends Structure> extends ModTrackingStructure im
 
     /**
      * Creates an allocatable {@link StructureArray}.
-     * It can be allocated using {@link NativeMemAllocator#allocate(Structure) allocate} or {@link #claimMemory(NativeMemBuffer)}
+     * It can be allocated using {@link NativeMemAllocator#allocate(Structure) allocate} or {@link #claimMemory(NativeMemBuffer, long)}
      * @param trackModifications see {@link #trackModifications}
      * @param abi the {@link ABI} to use for this structure
      * @param length the length of the array
@@ -149,7 +150,7 @@ public class StructureArray<T extends Structure> extends ModTrackingStructure im
 
     /**
      * Creates an allocatable {@link StructureArray}.
-     * It can be allocated using {@link NativeMemAllocator#allocate(Structure)} or {@link #claimMemory(NativeMemBuffer)}
+     * It can be allocated using {@link NativeMemAllocator#allocate(Structure)} or {@link #claimMemory(NativeMemBuffer, long)}
      * @param trackModifications see {@link #trackModifications}
      * @param abi the {@link ABI} to use for this structure
      * @param length Array containing length information. First index must be the length of this array. The following indexes are passed
@@ -189,7 +190,7 @@ public class StructureArray<T extends Structure> extends ModTrackingStructure im
             @NotNull UStructSupplier<T> creator
     ) {
         StructureArray<T> sArray = StructureArray.newAllocatable(trackModifications, abi, length, elementType, creator);
-        sArray.claimMemory(NativeMemBuffer.of(pointer, sArray.getRequiredSize(), ByteOrder.nativeOrder()));
+        sArray.claimMemory(NativeMemBuffer.of(pointer, sArray.getRequiredSize(), ByteOrder.nativeOrder()), 0);
         return sArray;
     }
 
@@ -265,6 +266,11 @@ public class StructureArray<T extends Structure> extends ModTrackingStructure im
     }
 
     @Override
+    protected @Nullable StaticGenerator getGenerator() {
+        return GENERATOR;
+    }
+
+    @Override
     public @NotNull StructureArrayInfo getInfo() {
         return (StructureArrayInfo) super.getInfo();
     }
@@ -337,8 +343,8 @@ public class StructureArray<T extends Structure> extends ModTrackingStructure im
      * @return {@link NativeArrayView}
      */
     public @NotNull NativeArrayView<T> getView(int startIndex, int length) {
-        int byteIndex = positions.position(startIndex);
-        int byteLength = positions.position(startIndex + length) - byteIndex;
+        long byteIndex = positions.position(startIndex);
+        long byteLength = positions.position(startIndex + length) - byteIndex;
         return new NativeArrayView<>(this, nativeMem, startIndex, length, offset + byteIndex, byteLength);
     }
 

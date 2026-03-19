@@ -19,6 +19,7 @@ package de.linusdev.lutils.nat.memory.allocator;
 import de.linusdev.lutils.id.Identifier;
 import de.linusdev.lutils.nat.memory.AllocatedMemory;
 import de.linusdev.lutils.nat.memory.NativeMemAllocator;
+import de.linusdev.lutils.nat.memory.NativeMemBuffer;
 import de.linusdev.lutils.nat.memory.buffer.UnsafeNativeMemBuffer;
 import de.linusdev.lutils.other.log.Logger;
 import org.jetbrains.annotations.NotNull;
@@ -30,7 +31,10 @@ import java.nio.ByteOrder;
 public abstract class MustFreeAllocator implements NativeMemAllocator {
 
     private static final @NotNull Logger LOG = Logger.getLogger();
-    private static @Nullable Cleaner CLEANER = null;
+    private static final @NotNull Cleaner CLEANER = Cleaner.create();
+
+    private static @Nullable Cleaner DEBUG_CLEANER = null;
+
 
     static {
         boolean doCleanup = false;
@@ -38,7 +42,7 @@ public abstract class MustFreeAllocator implements NativeMemAllocator {
         assert !(doCleanup = true); // automatically enable cleaner if assertions are enabled.
 
         if(doCleanup) {
-            CLEANER = Cleaner.create();
+            DEBUG_CLEANER = Cleaner.create();
         }
     }
 
@@ -46,38 +50,82 @@ public abstract class MustFreeAllocator implements NativeMemAllocator {
 
     }
 
-    public static void enableCleaner() {
-        CLEANER = Cleaner.create();
+    public static void enableDebugCleaner() {
+        DEBUG_CLEANER = Cleaner.create();
     }
 
     @Override
     public @NotNull AllocatedMemory allocate(long size) {
         long address = allocateInternal(size);
-        return new Memory(address, size, ByteOrder.nativeOrder(), null);
+        return new ManualMemory(address, size, ByteOrder.nativeOrder(), null);
     }
 
     @Override
     public @NotNull AllocatedMemory allocate(long size, @NotNull Identifier debugId) {
         long address = allocateInternal(size);
-        return new Memory(address, size, ByteOrder.nativeOrder(), debugId);
+        return new ManualMemory(address, size, ByteOrder.nativeOrder(), debugId);
+    }
+
+    @Override
+    public @NotNull NativeMemBuffer allocateManaged(long size) {
+        long address = allocateInternal(size);
+        return new AutoMemory(address, size, ByteOrder.nativeOrder(), this);
     }
 
     protected abstract long allocateInternal(long size);
 
     protected abstract void freeInternal(long address);
 
-    class Memory extends UnsafeNativeMemBuffer implements AllocatedMemory {
+    static class AutoMemory extends UnsafeNativeMemBuffer implements AllocatedMemory {
+
+        private final @NotNull Cleaner.Cleanable cleanable;
+        private final @NotNull State cleaningState;
+
+        public AutoMemory(long address, long size, @NotNull ByteOrder byteOrder, @NotNull MustFreeAllocator allocator) {
+            super(address, size, byteOrder);
+
+            this.cleaningState = new State(address, allocator);
+            this.cleanable = CLEANER.register(this, cleaningState);
+        }
+
+        static class State implements Runnable {
+
+            private final @NotNull MustFreeAllocator allocator;
+            private final long address;
+            private boolean freed = false;
+
+            State(long address, @NotNull MustFreeAllocator allocator) {
+                this.allocator = allocator;
+                this.address = address;
+            }
+
+            @Override
+            public synchronized void run() {
+                if(freed)
+                    return;
+                allocator.freeInternal(address);
+                freed = true;
+            }
+        }
+
+        @Override
+        public void close() {
+            cleanable.clean();
+        }
+    }
+
+    class ManualMemory extends UnsafeNativeMemBuffer implements AllocatedMemory {
 
         private final Cleaner.Cleanable cleanable;
         private final State cleaningState;
         private boolean closed = false;
 
-        public Memory(long address, long size, @NotNull ByteOrder byteOrder, @Nullable Identifier debugId) {
+        public ManualMemory(long address, long size, @NotNull ByteOrder byteOrder, @Nullable Identifier debugId) {
             super(address, size, byteOrder);
 
-            if(CLEANER != null) {
+            if(DEBUG_CLEANER != null) {
                 this.cleaningState = new State(address, debugId);
-                this.cleanable = CLEANER.register(this, cleaningState);
+                this.cleanable = DEBUG_CLEANER.register(this, cleaningState);
             } else {
                 this.cleaningState = null;
                 this.cleanable = null;
@@ -85,7 +133,7 @@ public abstract class MustFreeAllocator implements NativeMemAllocator {
         }
 
         @Override
-        public synchronized void close() throws Exception {
+        public synchronized void close() {
             if(closed)
                 return;
             freeInternal(address());

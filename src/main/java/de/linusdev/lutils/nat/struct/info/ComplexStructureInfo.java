@@ -66,8 +66,8 @@ public class ComplexStructureInfo extends StructureInfo {
     private ComplexStructureInfo(
             int alignment,
             boolean compress,
-            int size,
-            int[] sizes, @NotNull ABI abi,
+            long size,
+            long [] sizes, @NotNull ABI abi,
             @NotNull StructVarInfo @NotNull [] infos
     ) {
         super(abi, alignment, compress, size, sizes);

@@ -64,6 +64,12 @@ public interface NativeMemBuffer {
         fill(0, values, 0, Math.min(values.length, size()));
     }
 
+    void getBytes(long index, byte[] dst, long dstOffset, long dstLength);
+
+    default void getBytes(byte[] dst) {
+        getBytes(0L, dst, 0L, Math.min(dst.length, size()));
+    }
+
     @NotNull ByteOrder byteOrder();
 
 }

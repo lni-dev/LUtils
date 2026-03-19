@@ -19,7 +19,6 @@ package de.linusdev.lutils.nat.array;
 import de.linusdev.lutils.nat.NativeType;
 import de.linusdev.lutils.nat.abi.ABI;
 import de.linusdev.lutils.nat.struct.abstracts.StructureStaticVariables;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Range;
 
@@ -35,13 +34,13 @@ public class NativeUInt8Array extends NativeInt8Array {
      * @see StructureStaticVariables#newUnallocated()
      */
     public static NativeUInt8Array newUnallocated() {
-        return new NativeUInt8Array(null);
+        return new NativeUInt8Array();
     }
 
     /**
      * @see StructureStaticVariables#newAllocatable(ABI, int[], Class[]) 
      */
-    public static NativeUInt8Array newAllocatable(@NotNull ABI abi, int length) {
+    public static NativeUInt8Array newAllocatable(@Nullable ABI abi, int length) {
         return new NativeUInt8Array(abi, length);
     }
 
@@ -49,8 +48,8 @@ public class NativeUInt8Array extends NativeInt8Array {
         super(abi, length);
     }
 
-    protected NativeUInt8Array(@Nullable ABI abi) {
-        super(abi);
+    protected NativeUInt8Array() {
+        super();
     }
 
     public byte getUInt8(@Range(from = 0, to = Integer.MAX_VALUE) int index) {

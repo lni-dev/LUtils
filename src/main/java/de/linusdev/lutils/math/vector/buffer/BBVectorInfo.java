@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024-2025 Linus Andera
+ * Copyright (c) 2024-2026 Linus Andera
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,6 +36,7 @@ public class BBVectorInfo extends ArrayInfo {
         );
 
         return new BBVectorInfo(
+                abi,
                 arrayInfo.getAlignment(),
                 arrayInfo.getRequiredSize(),
                 arrayInfo.getSizes(),
@@ -47,15 +48,16 @@ public class BBVectorInfo extends ArrayInfo {
     }
 
     public BBVectorInfo(
+            @NotNull ABI abi,
             int alignment,
-            int size,
-            int @NotNull [] sizes,
+            long size,
+            long @NotNull [] sizes,
             int length,
-            int stride,
+            long stride,
             @NotNull ArrayPositionFunction positions,
             @NotNull NativeType type
     ) {
-        super(alignment, false, size, sizes, length, stride, positions);
+        super(abi, alignment, false, size, sizes, length, stride, positions);
         this.type = type;
     }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2025 Linus Andera
+ * Copyright (c) 2023-2026 Linus Andera
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,12 +28,13 @@ import java.nio.charset.StandardCharsets;
 /**
  * Util class for creating, slicing and aligning {@link Buffer}
  */
+@SuppressWarnings("removal")
 public class BufferUtils {
 
     private static final long BUFFER_VARIABLE_ADDRESS_OFFSET;
     static {
         try {
-            //noinspection deprecation: It may be deprecated, but we cannot use var handles, as the module is not an open module.
+            //It may be deprecated, but we cannot use var handles, as the module is not an open module.
             BUFFER_VARIABLE_ADDRESS_OFFSET = Utils.UNSAFE.objectFieldOffset(Buffer.class.getDeclaredField("address"));
         } catch (NoSuchFieldException e) {
             throw new RuntimeException(e);

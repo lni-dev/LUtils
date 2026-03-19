@@ -18,8 +18,7 @@ package de.linusdev.lutils.nat.struct.abstracts;
 
 import de.linusdev.lutils.nat.abi.ABI;
 import de.linusdev.lutils.nat.struct.annos.RequirementType;
-import de.linusdev.lutils.nat.struct.annos.Struct;
-import de.linusdev.lutils.nat.struct.annos.StructValue;
+import de.linusdev.lutils.nat.struct.generator.SimpleStaticGenerator;
 import de.linusdev.lutils.nat.struct.generator.StaticGenerator;
 import de.linusdev.lutils.nat.struct.info.ComplexUnionInfo;
 import de.linusdev.lutils.nat.struct.info.StructVarInfo;
@@ -33,7 +32,6 @@ import org.jetbrains.annotations.Nullable;
 import java.util.HashMap;
 import java.util.Map;
 
-@Struct(requiresCalculateInfoMethod = true, customLayoutOption = RequirementType.OPTIONAL)
 public abstract class ComplexUnion extends ModTrackingStructure {
 
     @SuppressWarnings("unused") // accessed via reflection
@@ -41,31 +39,19 @@ public abstract class ComplexUnion extends ModTrackingStructure {
 
     protected Structure [] items;
 
-    protected ComplexUnion(boolean trackModifications) {
-        super(trackModifications);
+    public ComplexUnion(@Nullable ABI abi, boolean trackModifications) {
+        super(abi, trackModifications);
     }
 
-    protected void init(
-            @Nullable StructValue structValue,
-            boolean generateInfo,
-            @Nullable Structure @NotNull ... items
-    ) {
+    protected void init(@Nullable Structure @NotNull ... items) {
         if(items.length != 0)
             this.items = items;
-        if(generateInfo) {
-            setInfo(SSMUtils.getInfo(
-                    this.getClass(),
-                    structValue,
-                    null, null, null, null,
-                    GENERATOR
-            ));
-        }
     }
 
     @Override
     protected void useBuffer(
             @NotNull Structure mostParentStructure,
-            int offset,
+            long offset,
             @NotNull StructureInfo info
     ) {
         super.useBuffer(mostParentStructure, offset, info);
@@ -97,30 +83,28 @@ public abstract class ComplexUnion extends ModTrackingStructure {
 
     @Override
     protected @Nullable StructureInfo generateInfo() {
-        return SSMUtils.getInfo(
-                this.getClass(),
-                null, null, null, null, null,
-                GENERATOR
-        );
+        return SSMUtils.getInfo(GENERATOR, this.getClass(), abi, null, null);
     }
 
-    private static class ComplexUnionGenerator implements StaticGenerator {
+    private static class ComplexUnionGenerator extends SimpleStaticGenerator {
         private final @NotNull Map<ClassAndAbi, ComplexUnionInfo> INFO_MAP = new HashMap<>();
         private final @NotNull Object INFO_MAP_LOCK = new Object();
 
+        protected ComplexUnionGenerator() {
+            super(
+                    RequirementType.NOT_SUPPORTED,
+                    RequirementType.NOT_SUPPORTED
+            );
+        }
+
         @Override
-        public @NotNull StructureInfo calculateInfo(
-                @NotNull Class<?> selfClazz,
-                @Nullable StructValue structValue,
-                @NotNull StructValue @NotNull [] elementsStructValue,
-                @Nullable ABI abi
-        ) {
+        public @NotNull StructureInfo calculateInfoChecked(@NotNull Class<?> selfClazz, @NotNull ABI abi, int[] length, @NotNull Class<?>[] elementTypes) {
             synchronized (INFO_MAP_LOCK) {
                 ClassAndAbi key = new ClassAndAbi(selfClazz, abi);
                 ComplexUnionInfo info = INFO_MAP.get(key);
 
                 if(info == null) {
-                    info = ComplexUnionInfo.generateFromStructVars(selfClazz, abi, overwriteChildAbi);
+                    info = ComplexUnionInfo.generateFromStructVars(selfClazz, abi);
                     INFO_MAP.put(key, info);
                 }
 

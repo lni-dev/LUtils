@@ -33,7 +33,7 @@ public abstract class ModTrackingStructure extends Structure {
      */
     protected final boolean trackModifications;
     protected final ReentrantLock modificationLock;
-    protected final int modificationSplitOffset = 128;
+    protected final long modificationSplitOffset = 128;
     protected ModificationInfo modInfo = null;
 
     /**
@@ -50,7 +50,7 @@ public abstract class ModTrackingStructure extends Structure {
         if(trackModifications) {
             modificationLock.lock();
 
-            int offsetEnd = offset + size;
+            long offsetEnd = offset + size;
 
             if(modInfo == null) {
                 modInfo = new ModificationInfo(offset, offsetEnd);

@@ -17,8 +17,8 @@
 package de.linusdev.lutils.nat.array;
 
 import de.linusdev.lutils.nat.NativeType;
+import de.linusdev.lutils.nat.abi.ABI;
 import de.linusdev.lutils.nat.struct.abstracts.StructureStaticVariables;
-import de.linusdev.lutils.nat.struct.annos.StructValue;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Range;
@@ -32,30 +32,22 @@ public class NativeFloat64Array extends NativePrimitiveTypeArray<Double> {
      * @see StructureStaticVariables#newUnallocated()
      */
     public static NativeFloat64Array newUnallocated() {
-        return new NativeFloat64Array(null, false);
+        return new NativeFloat64Array();
     }
 
     /**
      * @see StructureStaticVariables#newAllocatable(ABI, int[], Class[]) 
      */
-    public static NativeFloat64Array newAllocatable(@NotNull StructValue structValue) {
-        return new NativeFloat64Array(structValue, true);
+    public static NativeFloat64Array newAllocatable(@NotNull ABI abi, int length) {
+        return new NativeFloat64Array(abi, length);
     }
 
-    /**
-     * @see StructureStaticVariables#newAllocated(StructValue)
-     */
-    public static NativeFloat64Array newAllocated(@NotNull StructValue structValue) {
-        NativeFloat64Array ret = newAllocatable(structValue);
-        ret.allocate();
-        return ret;
+    protected NativeFloat64Array(@Nullable ABI abi, int length) {
+        super(GENERATOR, abi, length);
     }
 
-    protected NativeFloat64Array(
-            @Nullable StructValue structValue,
-            boolean generateInfo
-    ) {
-        super(structValue, generateInfo, GENERATOR);
+    protected NativeFloat64Array() {
+        super(GENERATOR);
     }
 
     @Override
@@ -64,7 +56,7 @@ public class NativeFloat64Array extends NativePrimitiveTypeArray<Double> {
     }
 
     public double getFloat64(@Range(from = 0, to = Integer.MAX_VALUE) int index) {
-        return byteBuf.getDouble(positions.position(index));
+        return nativeMem.getDouble(positions.position(index));
     }
 
     @Override
@@ -73,7 +65,7 @@ public class NativeFloat64Array extends NativePrimitiveTypeArray<Double> {
     }
 
     public void setFloat64(int index, double item) {
-        byteBuf.putDouble(positions.position(index), item);
+        nativeMem.setDouble(positions.position(index), item);
     }
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024-2025 Linus Andera
+ * Copyright (c) 2024-2026 Linus Andera
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,6 +38,7 @@ public class BBMatrixInfo extends BBVectorInfo {
         );
 
         return new BBMatrixInfo(
+                abi,
                 arrayInfo.getAlignment(),
                 arrayInfo.getRequiredSize(),
                 arrayInfo.getSizes(),
@@ -54,17 +55,18 @@ public class BBMatrixInfo extends BBVectorInfo {
     protected final int height;
 
     public BBMatrixInfo(
+            @NotNull ABI abi,
             int alignment,
-            int size,
-            int @NotNull [] sizes,
+            long size,
+            long @NotNull [] sizes,
             int length,
-            int stride,
+            long stride,
             @NotNull ArrayPositionFunction positions,
             @NotNull NativeType type,
             int width,
             int height
     ) {
-        super(alignment, size, sizes, length, stride, positions, type);
+        super(abi, alignment, size, sizes, length, stride, positions, type);
         this.width = width;
         this.height = height;
     }
