@@ -98,6 +98,11 @@ public enum DefaultABIs implements ABI, Types {
         public @NotNull Types types() {
             return _DEFAULT.types();
         }
+
+        @Override
+        public @NotNull String identifier() {
+            return _DEFAULT.identifier();
+        }
     },
 
     /**

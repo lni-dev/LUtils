@@ -29,17 +29,17 @@ public class BBInt3 extends BBIntN implements Int3 {
      * @see StructureStaticVariables#newUnallocated()
      */
     public static BBInt3 newUnallocated() {
-        return new BBInt3(null);
+        return new BBInt3(null, false);
     }
 
     /**
      * @see StructureStaticVariables#newAllocatable(ABI, int[], Class[])  
      */
     public static BBInt3 newAllocatable(@Nullable ABI abi) {
-        return new BBInt3(abi);
+        return new BBInt3(abi, true);
     }
 
-    protected BBInt3(@Nullable ABI abi) {
-        super(GENERATOR, abi);
+    protected BBInt3(@Nullable ABI abi, boolean genInfo) {
+        super(GENERATOR, abi, genInfo);
     }
 }

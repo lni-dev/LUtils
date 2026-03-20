@@ -25,8 +25,8 @@ import org.jetbrains.annotations.Nullable;
 
 public abstract class BBIntN extends BBVector implements IntN {
 
-    public BBIntN(@NotNull BBVectorGenerator generator, @Nullable ABI abi) {
-        super(generator, abi);
+    public BBIntN(@NotNull BBVectorGenerator generator, @Nullable ABI abi, boolean genInfo) {
+        super(generator, abi, genInfo);
     }
 
     @Override

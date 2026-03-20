@@ -33,9 +33,11 @@ public abstract class BBVector extends Structure implements Vector {
     protected final @NotNull BBVectorGenerator generator;
     protected ArrayInfo.ArrayPositionFunction positions;
 
-    public BBVector(@NotNull BBVectorGenerator generator, @Nullable ABI abi) {
+    public BBVector(@NotNull BBVectorGenerator generator, @Nullable ABI abi, boolean genInfo) {
         super(abi);
         this.generator = generator;
+        if(genInfo)
+            setInfo(getInfoOrFail());
     }
 
     /**

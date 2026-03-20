@@ -43,9 +43,11 @@ public abstract class ComplexUnion extends ModTrackingStructure {
         super(abi, trackModifications);
     }
 
-    protected void init(@Nullable Structure @NotNull ... items) {
+    protected void init(boolean genInfo, @Nullable Structure @NotNull ... items) {
         if(items.length != 0)
             this.items = items;
+        if(genInfo)
+            setInfo(getInfoOrFail());
     }
 
     @Override

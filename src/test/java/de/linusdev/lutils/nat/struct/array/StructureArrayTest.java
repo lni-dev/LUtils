@@ -24,10 +24,14 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class StructureArrayTest {
 
+    // TODO: new tests for caching enabled/disabled
+
     @Test
     void test() {
 
         StructureArray<BBInt1> array = allocManaged(StructureArray.newAllocatable(12, BBInt1.class, BBInt1::newUnallocated));
+
+        array.enableCaching();
 
         assertNull(array.getOrNull(0));
         assertNotNull(array.get(0));

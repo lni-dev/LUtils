@@ -33,18 +33,18 @@ public class NativeEnumValue32<M extends NativeEnumMember32> extends BBInt1 impl
      * @see StructureStaticVariables#newUnallocated()
      */
     public static <T extends NativeEnumMember32> NativeEnumValue32<T> newUnallocatedT()  {
-        return new NativeEnumValue32<>(null);
+        return new NativeEnumValue32<>(null, false);
     }
 
     /**
      * @see StructureStaticVariables#newAllocatable(ABI, int[], Class[])  
      */
     public static <T extends NativeEnumMember32> NativeEnumValue32<T> newAllocatableT(@Nullable ABI abi)  {
-        return new NativeEnumValue32<>(abi);
+        return new NativeEnumValue32<>(abi, true);
     }
 
-    protected NativeEnumValue32(@Nullable ABI abi) {
-        super(abi);
+    protected NativeEnumValue32(@Nullable ABI abi, boolean genInfo) {
+        super(abi, genInfo);
     }
 
     @Override

@@ -25,11 +25,8 @@ import org.jetbrains.annotations.Nullable;
 
 public abstract class BBByteN extends BBVector implements ByteN {
 
-    public BBByteN(
-            @Nullable ABI abi,
-            @NotNull BBVectorGenerator generator
-    ) {
-        super(generator, abi);
+    public BBByteN(@Nullable ABI abi, @NotNull BBVectorGenerator generator, boolean genInfo) {
+        super(generator, abi, genInfo);
     }
 
     @Override

@@ -30,17 +30,17 @@ public class BBFloat4x4 extends BBFloatMxN implements Float4x4 {
      * @see StructureStaticVariables#newUnallocated()
      */
     public static BBFloat4x4 newUnallocated() {
-        return new BBFloat4x4(null);
+        return new BBFloat4x4(null, false);
     }
 
     /**
      * @see StructureStaticVariables#newAllocatable(ABI, int[], Class[])  
      */
     public static BBFloat4x4 newAllocatable(@Nullable ABI abi) {
-        return new BBFloat4x4(abi);
+        return new BBFloat4x4(abi, true);
     }
 
-    protected BBFloat4x4(@Nullable ABI abi) {
-        super(GENERATOR, abi);
+    protected BBFloat4x4(@Nullable ABI abi, boolean genInfo) {
+        super(GENERATOR, abi, genInfo);
     }
 }

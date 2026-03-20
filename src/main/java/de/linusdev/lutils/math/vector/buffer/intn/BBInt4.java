@@ -29,18 +29,18 @@ public class BBInt4 extends BBIntN implements Int4 {
      * @see StructureStaticVariables#newUnallocated()
      */
     public static BBInt4 newUnallocated() {
-        return new BBInt4(null);
+        return new BBInt4(null, false);
     }
 
     /**
      * @see StructureStaticVariables#newAllocatable(ABI, int[], Class[])  
      */
     public static BBInt4 newAllocatable(@Nullable ABI abi) {
-        return new BBInt4(abi);
+        return new BBInt4(abi, true);
     }
 
 
-    protected BBInt4(@Nullable ABI abi) {
-        super(GENERATOR, abi);
+    protected BBInt4(@Nullable ABI abi, boolean genInfo) {
+        super(GENERATOR, abi, genInfo);
     }
 }

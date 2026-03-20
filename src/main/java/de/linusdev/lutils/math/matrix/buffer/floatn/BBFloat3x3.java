@@ -30,17 +30,17 @@ public class BBFloat3x3 extends BBFloatMxN implements Float3x3 {
      * @see StructureStaticVariables#newUnallocated()
      */
     public static BBFloat3x3 newUnallocated() {
-        return new BBFloat3x3(null);
+        return new BBFloat3x3(null, false);
     }
 
     /**
      * @see StructureStaticVariables#newAllocatable(ABI, int[], Class[])  
      */
     public static BBFloat3x3 newAllocatable(@Nullable ABI abi) {
-        return new BBFloat3x3(abi);
+        return new BBFloat3x3(abi, true);
     }
 
-    protected BBFloat3x3(@Nullable ABI abi) {
-        super(GENERATOR, abi);
+    protected BBFloat3x3(@Nullable ABI abi, boolean genInfo) {
+        super(GENERATOR, abi, genInfo);
     }
 }

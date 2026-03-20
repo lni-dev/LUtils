@@ -20,6 +20,7 @@ import de.linusdev.lutils.nat.struct.array.StructureArray;
 import de.linusdev.lutils.struct.abstracts.ComplexStructureTest;
 import org.junit.jupiter.api.Test;
 
+import static de.linusdev.lutils.nat.memory.Allocators.allocManaged;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -34,6 +35,9 @@ class StructureArrayTest {
                 ComplexStructureTest.TestStruct.class,
                 () -> new ComplexStructureTest.TestStruct(true, false)
         );
+        allocManaged(array);
+
+        array.enableCaching();
 
         ComplexStructureTest.TestStruct element = array.get(0);
         assertTrue(element.isInitialised());

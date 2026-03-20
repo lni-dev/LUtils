@@ -27,18 +27,18 @@ public class BBUByte1 extends BBByte1 implements UnsignedVector {
      * @see StructureStaticVariables#newUnallocated()
      */
     public static BBUByte1 newUnallocated() {
-        return new BBUByte1(null);
+        return new BBUByte1(null, false);
     }
 
     /**
      * @see StructureStaticVariables#newAllocatable(ABI, int[], Class[])  
      */
     public static BBUByte1 newAllocatable(@Nullable ABI abi) {
-        return new BBUByte1(abi);
+        return new BBUByte1(abi, true);
     }
 
-    protected BBUByte1(@Nullable ABI abi) {
-        super(abi);
+    protected BBUByte1(@Nullable ABI abi, boolean genInfo) {
+        super(abi, genInfo);
     }
 
 }

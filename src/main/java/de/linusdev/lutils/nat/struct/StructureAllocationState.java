@@ -17,12 +17,11 @@
 package de.linusdev.lutils.nat.struct;
 
 import de.linusdev.lutils.nat.abi.ABI;
+import de.linusdev.lutils.nat.memory.NativeMemBuffer;
 import de.linusdev.lutils.nat.struct.abstracts.ComplexStructure;
 import de.linusdev.lutils.nat.struct.abstracts.Structure;
 import de.linusdev.lutils.nat.struct.array.StructureArray;
 import de.linusdev.lutils.nat.struct.info.StructureInfo;
-
-import java.nio.ByteBuffer;
 
 /**
  * The possible allocation state of a {@link Structure}.
@@ -40,8 +39,8 @@ public enum StructureAllocationState {
     ALLOCATED,
     /**
      * This structure has an {@link Structure#getInfo() info} but {@link Structure#isInitialised() is <b>not</b> backed by byte buffer}.
-     * This means the structure is ready to be {@link Structure#allocate() allocated} or
-     * {@link Structure#claimMemory(ByteBuffer) an already existing allocation can be assigned}.
+     * This means the structure is ready to be {@link de.linusdev.lutils.nat.memory.Allocators allocated} or
+     * {@link Structure#claimMemory(NativeMemBuffer, long) an already existing allocation can be assigned}.
      */
     ALLOCATABLE,
     /**

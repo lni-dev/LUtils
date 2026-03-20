@@ -56,7 +56,7 @@ class StructureTest {
 
     @Test
     void generateStructCodeOfOpenCLStruct() {
-        String gen = Structure.generateStructCode(Language.OPEN_CL, ComplexStructureTest.TestOpenCLStruct.class);
+        String gen = Structure.generateStructCode(Language.OPEN_CL, ComplexStructureTest.TestOpenCLStruct.class, DefaultABIs.CVG4J_OPEN_CL);
         System.out.println(gen);
 
         StructureInfo info = SSMUtils.getInfo(

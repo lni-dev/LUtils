@@ -27,18 +27,18 @@ public class BBUShort1 extends BBShort1 implements UnsignedVector {
      * @see StructureStaticVariables#newUnallocated()
      */
     public static BBUShort1 newUnallocated() {
-        return new BBUShort1(null);
+        return new BBUShort1(null, false);
     }
 
     /**
      * @see StructureStaticVariables#newAllocatable(ABI, int[], Class[])  
      */
     public static BBUShort1 newAllocatable(@Nullable ABI abi) {
-        return new BBUShort1(abi);
+        return new BBUShort1(abi, true);
     }
 
-    protected BBUShort1(@Nullable ABI abi) {
-        super(abi);
+    protected BBUShort1(@Nullable ABI abi, boolean genInfo) {
+        super(abi, genInfo);
     }
 
 }

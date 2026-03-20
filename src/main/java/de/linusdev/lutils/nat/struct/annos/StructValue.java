@@ -28,8 +28,7 @@ import java.lang.annotation.Target;
 
 /**
  * Holds information about a structure, which may be required to create its {@link StructureInfo}.
- * <br><br>
- * Instances of this interface can also be created at runtime using {@link SVWrapper}.
+ * Used only in subclasses of {@link ComplexStructure}.
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)

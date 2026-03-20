@@ -35,7 +35,7 @@ class ComplexUnionTest {
 
         public TestUnion1() {
             super(null, false);
-            init();
+            init(true);
             allocManaged(this);
         }
     }

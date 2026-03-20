@@ -29,18 +29,18 @@ public class BBByte1 extends BBByteN implements Byte1 {
      * @see StructureStaticVariables#newUnallocated()
      */
     public static BBByte1 newUnallocated() {
-        return new BBByte1(null);
+        return new BBByte1(null, false);
     }
 
     /**
      * @see StructureStaticVariables#newAllocatable(ABI, int[], Class[])  
      */
     public static BBByte1 newAllocatable(@Nullable ABI abi) {
-        return new BBByte1(abi);
+        return new BBByte1(abi, true);
     }
 
 
-    protected BBByte1(@Nullable ABI abi) {
-        super(abi, GENERATOR);
+    protected BBByte1(@Nullable ABI abi, boolean genInfo) {
+        super(abi, GENERATOR, genInfo);
     }
 }

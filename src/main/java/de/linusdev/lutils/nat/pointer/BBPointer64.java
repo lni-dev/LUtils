@@ -30,18 +30,18 @@ public class BBPointer64 extends BBLong1 implements Pointer64{
      * @see StructureStaticVariables#newUnallocated()
      */
     public static BBPointer64 newUnallocated()  {
-        return new BBPointer64(null);
+        return new BBPointer64(null, false);
     }
 
     /**
      * @see StructureStaticVariables#newAllocatable(ABI, int[], Class[])  
      */
     public static BBPointer64 newAllocatable(@Nullable ABI abi)  {
-        return new BBPointer64(abi);
+        return new BBPointer64(abi, true);
     }
 
-    protected BBPointer64(@Nullable ABI abi) {
-        super(abi);
+    protected BBPointer64(@Nullable ABI abi, boolean genInfo) {
+        super(abi, genInfo);
     }
 
     @Override

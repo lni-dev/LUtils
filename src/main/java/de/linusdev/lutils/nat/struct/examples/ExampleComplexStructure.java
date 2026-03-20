@@ -33,14 +33,14 @@ public class ExampleComplexStructure extends ComplexStructure {
      * @see StructureStaticVariables#newUnallocated() 
      */
     public static @NotNull ExampleComplexStructure newUnallocated() {
-        return new ExampleComplexStructure(null);
+        return new ExampleComplexStructure(null, false);
     }
 
     /**
      * @see StructureStaticVariables#newAllocatable(ABI, int[], Class[]) 
      */
     public static @NotNull ExampleComplexStructure newAllocatable(@Nullable ABI abi) {
-        return new ExampleComplexStructure(abi);
+        return new ExampleComplexStructure(abi, true);
     }
 
     /**
@@ -55,8 +55,8 @@ public class ExampleComplexStructure extends ComplexStructure {
     @StructValue(value = 1, length = 5, elementType = BBInt4.class)
     public final @NotNull StructureArray<BBInt4> someIntVectorArray = StructureArray.newUnallocated(false, BBInt4::newUnallocated);
 
-    public ExampleComplexStructure(@Nullable ABI abi) {
+    protected ExampleComplexStructure(@Nullable ABI abi, boolean genInfo) {
         super(abi, false);
-        init(someInt, someIntVectorArray);
+        init(genInfo, someInt, someIntVectorArray);
     }
 }

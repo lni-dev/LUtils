@@ -31,18 +31,18 @@ public class BBFloat2 extends BBFloatN implements Float2 {
      * @see StructureStaticVariables#newUnallocated()
      */
     public static BBFloat2 newUnallocated() {
-        return new BBFloat2(null);
+        return new BBFloat2(null, false);
     }
 
     /**
      * @see StructureStaticVariables#newAllocatable(ABI, int[], Class[])
      */
     public static BBFloat2 newAllocatable(@Nullable ABI abi) {
-        return new BBFloat2(abi);
+        return new BBFloat2(abi, true);
     }
 
 
-    protected BBFloat2(@Nullable ABI abi) {
-        super(GENERATOR, abi);
+    protected BBFloat2(@Nullable ABI abi, boolean genInfo) {
+        super(GENERATOR, abi, genInfo);
     }
 }

@@ -29,11 +29,11 @@ public class TestStruct extends ComplexStructure {
     public final @StructValue(0) @NotNull BBInt4 testIntVector = BBInt4.newUnallocated();
     public final @StructValue(1) @NotNull BBInt1 testInt = BBInt1.newUnallocated();
 
-    @StructValue(length = 1000, elementType = BBInt4.class)
+    @StructValue(value = 2, length = 1000, elementType = BBInt4.class)
     public final @NotNull StructureArray<BBInt4> array = StructureArray.newUnallocated(false, BBInt4::newUnallocated);
 
-    public TestStruct(@Nullable ABI abi, boolean trackModifications) {
+    public TestStruct(@Nullable ABI abi, boolean trackModifications, boolean genInfo) {
         super(abi, trackModifications);
-        init(testIntVector, testInt);
+        init(genInfo, testIntVector, testInt, array);
     }
 }

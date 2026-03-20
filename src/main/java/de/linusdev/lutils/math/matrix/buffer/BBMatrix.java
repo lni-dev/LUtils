@@ -37,12 +37,11 @@ public abstract class BBMatrix extends Structure implements Matrix {
     protected ArrayInfo.ArrayPositionFunction positions;
     protected @NotNull MatrixMemoryLayout memoryLayout = MatrixMemoryLayout.ROW_MAJOR;
 
-    protected BBMatrix(
-            @NotNull BBMatrixGenerator generator,
-            @Nullable ABI abi
-    ) {
+    protected BBMatrix(@NotNull BBMatrixGenerator generator, @Nullable ABI abi, boolean genInfo) {
         super(abi);
         this.generator = generator;
+        if(genInfo)
+            setInfo(getInfoOrFail());
     }
 
     /**

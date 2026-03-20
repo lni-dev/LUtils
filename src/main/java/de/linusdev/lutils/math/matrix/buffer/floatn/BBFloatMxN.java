@@ -25,8 +25,8 @@ import org.jetbrains.annotations.Nullable;
 
 public abstract class BBFloatMxN extends BBMatrix implements FloatMxN {
 
-    protected BBFloatMxN(@NotNull BBMatrixGenerator generator, @Nullable ABI abi) {
-        super(generator, abi);
+    protected BBFloatMxN(@NotNull BBMatrixGenerator generator, @Nullable ABI abi, boolean genInfo) {
+        super(generator, abi, genInfo);
     }
 
     @Override

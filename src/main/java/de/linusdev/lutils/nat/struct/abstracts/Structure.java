@@ -70,10 +70,11 @@ public abstract class Structure implements NativeParsable {
     @Deprecated
     public static @NotNull String generateStructCode(
             @NotNull Language language,
-            @NotNull Class<? extends Structure> structClass
+            @NotNull Class<? extends Structure> structClass,
+            @Nullable ABI abi
     ) {
         StaticGenerator generator = SSMUtils.getGenerator(structClass);
-        StructureInfo info = SSMUtils.getInfo(generator, structClass, null, null,  null);
+        StructureInfo info = SSMUtils.getInfo(generator, structClass, abi, null,  null);
 
         //noinspection DataFlowIssue
         String code = generator.codeGenerator().generateStructCode(language, structClass, info);

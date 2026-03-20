@@ -27,18 +27,18 @@ public class BBTypedPointer64<T extends NativeParsable> extends BBPointer64 impl
      * @see StructureStaticVariables#newUnallocated()
      */
     public static <T extends NativeParsable> BBTypedPointer64<T> newUnallocated1()  {
-        return new BBTypedPointer64<>(null);
+        return new BBTypedPointer64<>(null, false);
     }
 
     /**
      * @see StructureStaticVariables#newAllocatable(ABI, int[], Class[])  
      */
     public static <T extends NativeParsable> BBTypedPointer64<T> newAllocatable1(@Nullable ABI abi)  {
-        return new BBTypedPointer64<>(abi);
+        return new BBTypedPointer64<>(abi, true);
     }
 
-    protected BBTypedPointer64(@Nullable ABI abi) {
-        super(abi);
+    protected BBTypedPointer64(@Nullable ABI abi, boolean genInfo) {
+        super(abi, genInfo);
     }
 
 }

@@ -27,9 +27,10 @@ public abstract class BBDoubleN extends BBVector implements DoubleN {
 
     public BBDoubleN(
             @Nullable ABI abi,
-            @NotNull BBVectorGenerator generator
+            @NotNull BBVectorGenerator generator,
+            boolean genInfo
     ) {
-        super(generator, abi);
+        super(generator, abi, genInfo);
     }
 
     @Override

@@ -25,8 +25,8 @@ import org.jetbrains.annotations.Nullable;
 
 public abstract class BBShortN extends BBVector implements ShortN {
 
-    public BBShortN(@NotNull BBVectorGenerator generator, @Nullable ABI abi) {
-        super(generator, abi);
+    public BBShortN(@NotNull BBVectorGenerator generator, @Nullable ABI abi, boolean genInfo) {
+        super(generator, abi, genInfo);
     }
 
     @Override

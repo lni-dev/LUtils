@@ -22,6 +22,9 @@ import de.linusdev.lutils.nat.memory.allocator.UnsafeAllocator;
 import de.linusdev.lutils.nat.struct.abstracts.Structure;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * TODO: docs
+ */
 public interface Allocators {
 
     NativeMemAllocator UNSAFE_ALLOCATOR = new UnsafeAllocator();

@@ -25,8 +25,8 @@ import org.jetbrains.annotations.Nullable;
 
 public abstract class BBLongN extends BBVector implements LongN {
 
-    public BBLongN(@NotNull BBVectorGenerator generator, @Nullable ABI abi) {
-        super(generator, abi);
+    public BBLongN(@NotNull BBVectorGenerator generator, @Nullable ABI abi, boolean genInfo) {
+        super(generator, abi, genInfo);
     }
 
     @Override

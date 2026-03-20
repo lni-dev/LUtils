@@ -50,8 +50,8 @@ import java.util.Map;
  *     <li>If you require a specific ordering, you should set each {@link StructValue#value()} to the index
  *     of the element</li>
  *     <li>
- *         Create a constructor and call {@link #init(Structure...) init}.
- *         See documentation of {@link #init(Structure...) init} and the
+ *         Create a constructor and call {@link #init(boolean, Structure...) init}.
+ *         See documentation of {@link #init(boolean, Structure...) init} and the
  *         {@link #ComplexStructure(ABI, boolean) constructor} for more information.
  *     </li>
  *     <li>
@@ -81,13 +81,17 @@ public abstract class ComplexStructure extends ModTrackingStructure {
 
     /**
      * Initialise this complex structure.
-     * @param items A non-empty array may only be optionally passed if every element's {@link StructValue#value() index} is set. If
-     *              this is the case the array must contain each element at the correct index. The reason to pass this
-     *              parameter is only to improve performance.
+     *
+     * @param genInfo
+     * @param items   A non-empty array may only be optionally passed if every element's {@link StructValue#value() index} is set. If
+     *                this is the case the array must contain each element at the correct index. The reason to pass this
+     *                parameter is only to improve performance.
      */
-    protected void init(@Nullable Structure @NotNull ... items) {
+    protected void init(boolean genInfo, @Nullable Structure @NotNull ... items) {
         if(items.length != 0)
             this.items = items;
+        if(genInfo)
+            setInfo(getInfoOrFail());
     }
 
     @Override

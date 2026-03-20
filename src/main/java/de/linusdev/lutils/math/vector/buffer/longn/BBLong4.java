@@ -29,17 +29,17 @@ public class BBLong4 extends BBLongN implements Long4 {
      * @see StructureStaticVariables#newUnallocated()
      */
     public static BBLong4 newUnallocated() {
-        return new BBLong4(null);
+        return new BBLong4(null, false);
     }
 
     /**
      * @see StructureStaticVariables#newAllocatable(ABI, int[], Class[])  
      */
     public static BBLong4 newAllocatable(@Nullable ABI abi) {
-        return new BBLong4(abi);
+        return new BBLong4(abi, true);
     }
 
-    protected BBLong4(@Nullable ABI abi) {
-        super(GENERATOR, abi);
+    protected BBLong4(@Nullable ABI abi, boolean genInfo) {
+        super(GENERATOR, abi, genInfo);
     }
 }

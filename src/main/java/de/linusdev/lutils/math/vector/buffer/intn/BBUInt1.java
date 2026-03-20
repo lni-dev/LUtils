@@ -27,17 +27,17 @@ public class BBUInt1 extends BBInt1 implements UnsignedVector {
      * @see StructureStaticVariables#newUnallocated()
      */
     public static BBUInt1 newUnallocated() {
-        return new BBUInt1(null);
+        return new BBUInt1(null, false);
     }
 
     /**
      * @see StructureStaticVariables#newAllocatable(ABI, int[], Class[])  
      */
     public static BBUInt1 newAllocatable(@Nullable ABI abi) {
-        return new BBUInt1(abi);
+        return new BBUInt1(abi, true);
     }
 
-    protected BBUInt1(@Nullable ABI abi) {
-        super(abi);
+    protected BBUInt1(@Nullable ABI abi, boolean genInfo) {
+        super(abi, genInfo);
     }
 }

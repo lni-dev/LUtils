@@ -46,7 +46,7 @@ public class ComplexStructureTest {
 
         public TestStruct(boolean trackModifications, boolean allocateBuffer) {
             super(null, trackModifications);
-            init();
+            init(allocateBuffer);
             if(allocateBuffer)
                 allocManaged(this);
         }
@@ -64,7 +64,7 @@ public class ComplexStructureTest {
 
         public Test2Struct(boolean trackModifications, boolean allocateBuffer) {
             super(null, trackModifications);
-            init();
+            init(allocateBuffer);
             if(allocateBuffer)
                 allocManaged(this);
         }
@@ -83,7 +83,7 @@ public class ComplexStructureTest {
 
         public TestOpenCLStruct(boolean trackModifications, boolean allocateBuffer) {
             super(null, trackModifications);
-            init();
+            init(allocateBuffer);
             if(allocateBuffer)
                 allocManaged(this);
         }
@@ -96,7 +96,7 @@ public class ComplexStructureTest {
 
         public TestOpenCLStruct2(boolean trackModifications, boolean allocateBuffer) {
             super(null, trackModifications);
-            init();
+            init(allocateBuffer);
             if(allocateBuffer)
                 allocManaged(this);
         }
@@ -114,7 +114,7 @@ public class ComplexStructureTest {
 
         public Test3Struct(boolean trackModifications, boolean allocateBuffer) {
             super(null, trackModifications);
-            init();
+            init(allocateBuffer);
             if(allocateBuffer)
                 allocManaged(this);
         }
@@ -176,7 +176,7 @@ public class ComplexStructureTest {
 
         var info = test3Struct.getInfo();
 
-        assertEquals(DefaultABIs.MSVC_X64, info.getAbi());
+        assertEquals(DefaultABIs.MSVC_X64.identifier(), info.getAbi().identifier());
         assertEquals(8, info.getAlignment());
         assertEquals(24, info.getRequiredSize());
         assertArrayEquals(new long[]{0, 4, 4, 8, 0, 4, 4}, info.getSizes());

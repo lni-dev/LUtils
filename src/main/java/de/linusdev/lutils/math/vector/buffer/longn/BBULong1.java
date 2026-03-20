@@ -27,18 +27,18 @@ public class BBULong1 extends BBLong1 implements UnsignedVector {
      * @see StructureStaticVariables#newUnallocated()
      */
     public static BBULong1 newUnallocated() {
-        return new BBULong1(null);
+        return new BBULong1(null, false);
     }
 
     /**
      * @see StructureStaticVariables#newAllocatable(ABI, int[], Class[])  
      */
     public static BBULong1 newAllocatable(@Nullable ABI abi) {
-        return new BBULong1(abi);
+        return new BBULong1(abi, true);
     }
 
-    protected BBULong1(@Nullable ABI abi) {
-        super(abi);
+    protected BBULong1(@Nullable ABI abi, boolean genInfo) {
+        super(abi, genInfo);
     }
 
 }

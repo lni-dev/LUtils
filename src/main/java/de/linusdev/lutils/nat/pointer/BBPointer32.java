@@ -31,20 +31,18 @@ public class BBPointer32 extends BBInt1 implements Pointer32 {
      * @see StructureStaticVariables#newUnallocated()
      */
     public static BBPointer32 newUnallocated()  {
-        return new BBPointer32(null);
+        return new BBPointer32(null, false);
     }
 
     /**
      * @see StructureStaticVariables#newAllocatable(ABI, int[], Class[])  
      */
     public static BBPointer32 newAllocatable(@Nullable ABI abi)  {
-        return new BBPointer32(abi);
+        return new BBPointer32(abi, true);
     }
 
-    protected BBPointer32(
-            @Nullable ABI abi
-    ) {
-        super(abi);
+    protected BBPointer32(@Nullable ABI abi, boolean genInfo) {
+        super(abi, genInfo);
     }
 
     @Override

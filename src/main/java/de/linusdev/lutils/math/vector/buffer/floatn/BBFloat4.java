@@ -31,17 +31,17 @@ public class BBFloat4 extends BBFloatN implements Float4 {
      * @see StructureStaticVariables#newUnallocated()
      */
     public static BBFloat4 newUnallocated() {
-        return new BBFloat4( null);
+        return new BBFloat4( null, false);
     }
 
     /**
      * @see StructureStaticVariables#newAllocatable(ABI, int[], Class[])  
      */
     public static BBFloat4 newAllocatable(@Nullable ABI abi) {
-        return new BBFloat4(abi);
+        return new BBFloat4(abi, true);
     }
 
-    protected BBFloat4(@Nullable ABI abi) {
-        super(GENERATOR, abi);
+    protected BBFloat4(@Nullable ABI abi, boolean genInfo) {
+        super(GENERATOR, abi, genInfo);
     }
 }

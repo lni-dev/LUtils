@@ -29,7 +29,7 @@ public class BBDouble1 extends BBDoubleN implements Double1 {
      * @see StructureStaticVariables#newUnallocated()
      */
     public static BBDouble1 newUnallocated() {
-        return new BBDouble1(null);
+        return new BBDouble1();
     }
 
     /**
@@ -39,7 +39,11 @@ public class BBDouble1 extends BBDoubleN implements Double1 {
         return new BBDouble1(abi);
     }
 
+    protected BBDouble1() {
+        super(null, GENERATOR, false);
+    }
+
     protected BBDouble1(@Nullable ABI abi) {
-        super(abi, GENERATOR);
+        super(abi, GENERATOR, true);
     }
 }

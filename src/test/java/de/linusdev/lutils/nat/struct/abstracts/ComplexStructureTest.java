@@ -26,7 +26,7 @@ public class ComplexStructureTest {
 
     @Test
     void test() {
-        TestStruct myTestStruct = new TestStruct(null, false);
+        TestStruct myTestStruct = new TestStruct(null, false, true);
         allocManaged(myTestStruct);
         myTestStruct.testIntVector.x(10);
         assertEquals(10, myTestStruct.testIntVector.x());

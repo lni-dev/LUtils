@@ -53,24 +53,31 @@ public class NativeInteger extends Structure {
      * @see StructureStaticVariables#newUnallocated()
      */
     public static NativeInteger newUnallocated() {
-        return new NativeInteger(null);
+        return new NativeInteger(null, false);
     }
 
     /**
      * @see StructureStaticVariables#newAllocatable(ABI, int[], Class[]) 
      */
     public static NativeInteger newAllocatable(@Nullable ABI abi) {
-        return new NativeInteger(abi);
+        return new NativeInteger(abi, true);
     }
 
 
-    protected NativeInteger(@Nullable ABI abi) {
+    protected NativeInteger(@Nullable ABI abi, boolean genInfo) {
         super(abi);
+        if(genInfo)
+            setInfo(getInfoOrFail());
     }
 
     @Override
     protected @Nullable StaticGenerator getGenerator() {
         return GENERATOR;
+    }
+
+    @Override
+    protected @Nullable StructureInfo generateInfo() {
+        return GENERATOR.calculateInfo(this.getClass(), abi, null, null);
     }
 
     /**

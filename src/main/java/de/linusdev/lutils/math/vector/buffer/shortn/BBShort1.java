@@ -29,17 +29,17 @@ public class BBShort1 extends BBShortN implements Short1 {
      * @see StructureStaticVariables#newUnallocated()
      */
     public static BBShort1 newUnallocated() {
-        return new BBShort1(null);
+        return new BBShort1(null, false);
     }
 
     /**
      * @see StructureStaticVariables#newAllocatable(ABI, int[], Class[])  
      */
     public static BBShort1 newAllocatable(@Nullable ABI abi) {
-        return new BBShort1(abi);
+        return new BBShort1(abi, true);
     }
 
-    protected BBShort1(@Nullable ABI abi) {
-        super(GENERATOR, abi);
+    protected BBShort1(@Nullable ABI abi, boolean genInfo) {
+        super(GENERATOR, abi, genInfo);
     }
 }

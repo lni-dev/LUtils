@@ -19,6 +19,7 @@ package de.linusdev.lutils.math.vector.abstracts.shortn;
 import de.linusdev.lutils.math.vector.buffer.shortn.BBShort1;
 import de.linusdev.lutils.math.vector.buffer.shortn.BBShortN;
 import de.linusdev.lutils.math.vector.buffer.shortn.BBUShort1;
+import de.linusdev.lutils.nat.struct.abstracts.Structure;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -63,7 +64,7 @@ class ShortNTest {
     @ParameterizedTest
     @MethodSource("provideBBVectors")
     public void testFillFromArray(ShortN vector, int memberCount, int size) {
-
+        allocManaged((Structure) vector);
         short[] array = new short[memberCount];
         for(int i = 0; i < memberCount; i++) {
             array[i] = (short) (i * i + 1);
