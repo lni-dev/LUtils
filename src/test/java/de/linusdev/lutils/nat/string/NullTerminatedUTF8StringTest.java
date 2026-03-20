@@ -16,9 +16,8 @@
 
 package de.linusdev.lutils.nat.string;
 
+import de.linusdev.lutils.nat.memory.IndexOutOfStructRange;
 import org.junit.jupiter.api.Test;
-
-import java.nio.BufferOverflowException;
 
 import static de.linusdev.lutils.nat.memory.Allocators.allocManaged;
 import static org.junit.jupiter.api.Assertions.*;
@@ -37,7 +36,7 @@ class NullTerminatedUTF8StringTest {
         assertEquals(test1, string.get());
 
         String test2 = "a".repeat(51);
-        assertThrows(BufferOverflowException.class, () -> string.set(test2));
+        assertThrows(IndexOutOfStructRange.class, () -> string.set(test2));
 
         String test3 = "Test3";
         string.set(test3);

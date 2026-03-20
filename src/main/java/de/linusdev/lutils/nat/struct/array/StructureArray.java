@@ -340,6 +340,7 @@ public class StructureArray<T extends Structure> extends ModTrackingStructure im
     /**
      * Returns the item at given {@code index} or {@code null} if no item has been {@link #set(int, Structure)}
      * or {@link #get(int)} at given {@code index} before. Only works if {@link #enableCaching() caching} is enabled.
+     * @throws IllegalStateException if caching is disabled.
      */
     @SuppressWarnings("unchecked")
     public T getOrNull(int index) {

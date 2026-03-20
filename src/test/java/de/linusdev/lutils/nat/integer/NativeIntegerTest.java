@@ -16,7 +16,7 @@
 
 package de.linusdev.lutils.nat.integer;
 
-import de.linusdev.lutils.nat.abi.DefaultABIs;
+import de.linusdev.lutils.nat.abi.ABIs;
 import org.junit.jupiter.api.Test;
 
 import static de.linusdev.lutils.nat.memory.Allocators.allocManaged;
@@ -26,7 +26,7 @@ class NativeIntegerTest {
 
     @Test
     public void testMSVC_X64() {
-        NativeInteger integer = allocManaged(NativeInteger.newAllocatable(DefaultABIs.MSVC_X64));
+        NativeInteger integer = allocManaged(NativeInteger.newAllocatable(ABIs.MSVC_X64));
 
         assertEquals(4, integer.getInfo().getRequiredSize());
         assertEquals(4, integer.getInfo().getAlignment());

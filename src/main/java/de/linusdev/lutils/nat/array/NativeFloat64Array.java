@@ -55,7 +55,7 @@ public class NativeFloat64Array extends NativePrimitiveTypeArray<Double> {
     }
 
     public double getFloat64(@Range(from = 0, to = Integer.MAX_VALUE) int index) {
-        return nativeMem.getDouble(positions.position(index));
+        return nativeMem.getDouble(posInBuf(index));
     }
 
     @Override
@@ -64,7 +64,7 @@ public class NativeFloat64Array extends NativePrimitiveTypeArray<Double> {
     }
 
     public void setFloat64(int index, double item) {
-        nativeMem.setDouble(positions.position(index), item);
+        nativeMem.setDouble(posInBuf(index), item);
     }
 
 }

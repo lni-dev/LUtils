@@ -18,7 +18,7 @@ package de.linusdev.lutils.struct.abstracts;
 
 import de.linusdev.lutils.math.vector.buffer.intn.BBInt2;
 import de.linusdev.lutils.math.vector.buffer.longn.BBLong1;
-import de.linusdev.lutils.nat.abi.DefaultABIs;
+import de.linusdev.lutils.nat.abi.ABIs;
 import de.linusdev.lutils.nat.struct.abstracts.Structure;
 import de.linusdev.lutils.nat.struct.generator.Language;
 import de.linusdev.lutils.nat.struct.info.StructureInfo;
@@ -56,13 +56,13 @@ class StructureTest {
 
     @Test
     void generateStructCodeOfOpenCLStruct() {
-        String gen = Structure.generateStructCode(Language.OPEN_CL, ComplexStructureTest.TestOpenCLStruct.class, DefaultABIs.CVG4J_OPEN_CL);
+        String gen = Structure.generateStructCode(Language.OPEN_CL, ComplexStructureTest.TestOpenCLStruct.class, ABIs.CUSTOM_OPEN_CL);
         System.out.println(gen);
 
         StructureInfo info = SSMUtils.getInfo(
                 null,
                 ComplexStructureTest.TestOpenCLStruct.class,
-                DefaultABIs.CVG4J_OPEN_CL, null,
+                ABIs.CUSTOM_OPEN_CL, null,
                 null
         );
 
@@ -83,7 +83,7 @@ class StructureTest {
         StructureInfo msvcStructInfo = SSMUtils.getInfo( // generated with MSVC
                 null,
                 ComplexStructureTest.TestOpenCLStruct2.class,
-                DefaultABIs.MSVC_X64, null,
+                ABIs.MSVC_X64, null,
                 null
         );
 

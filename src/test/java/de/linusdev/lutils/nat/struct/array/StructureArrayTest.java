@@ -24,8 +24,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class StructureArrayTest {
 
-    // TODO: new tests for caching enabled/disabled
-
     @Test
     void test() {
 
@@ -43,6 +41,64 @@ class StructureArrayTest {
 
         assertEquals(20, view.get(0).get());
         assertNotNull(view.get(1));
+
+    }
+
+    @Test
+    void testNoCaching() {
+        StructureArray<BBInt1> array = allocManaged(StructureArray.newAllocatable(12, BBInt1.class, BBInt1::newUnallocated));
+
+        assertThrows(IllegalStateException.class, () -> array.getOrNull(0));
+        BBInt1 a = array.get(0);
+        BBInt1 b = array.get(0);
+
+        assertNotSame(a, b);
+
+        a.set(12);
+
+        assertEquals(12, a.get());
+        assertEquals(12, b.get());
+
+        array.get(1, a);
+
+        assertEquals(0, a.get());
+        BBInt1 c = array.get(1);
+
+        c.set(13);
+        assertEquals(13, a.get());
+        assertEquals(13, c.get());
+        assertEquals(12, b.get());
+
+    }
+
+    @Test
+    void testWithCaching() {
+        StructureArray<BBInt1> array = allocManaged(StructureArray.newAllocatable(12, BBInt1.class, BBInt1::newUnallocated));
+
+        array.enableCaching();
+
+        assertDoesNotThrow(() -> array.getOrNull(0));
+        BBInt1 a = array.get(0);
+        BBInt1 b = array.get(0);
+
+        assertSame(a, b);
+
+        a.set(12);
+
+        assertEquals(12, a.get());
+        assertEquals(12, b.get());
+
+        array.get(1, a);
+
+        assertEquals(0, a.get());
+        BBInt1 c = array.get(1);
+
+        assertNotSame(a, c);
+
+        c.set(13);
+        assertEquals(13, a.get());
+        assertEquals(13, c.get());
+        assertEquals(13, b.get());
 
     }
 }

@@ -93,6 +93,9 @@ public abstract class Structure implements NativeParsable {
      */
     private StructureInfo info;
     protected NativeMemBuffer nativeMem;
+    /**
+     * @see #getOffset()
+     */
     protected long offset;
     protected volatile boolean modified;
     protected ABI abi;
@@ -187,7 +190,7 @@ public abstract class Structure implements NativeParsable {
      */
     public @NotNull StructureInfo getInfo() {
         if(info == null)
-            throw new IllegalStateException("Info is not yet available. allocate or useBuffer must be called first.");
+            throw new IllegalStateException("Info is not yet available. claimMemory or useBuffer must be called first.");
         return info;
     }
 
@@ -231,7 +234,7 @@ public abstract class Structure implements NativeParsable {
     }
 
     /**
-     * Offset in the byte buffer of the {@link #mostParentStructure most parental structure}.
+     * Offset in the {@link #nativeMem} of the {@link #mostParentStructure most parental structure}.
      * @return offset in bytes
      */
     public long getOffset() {

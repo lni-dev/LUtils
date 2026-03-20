@@ -53,11 +53,11 @@ public class NativeUInt8Array extends NativeInt8Array {
     }
 
     public byte getUInt8(@Range(from = 0, to = Integer.MAX_VALUE) int index) {
-        return nativeMem.getByte(positions.position(index));
+        return nativeMem.getByte(posInBuf(index));
     }
 
     public void setUInt8(int index, byte item) {
-        nativeMem.setByte(positions.position(index), item);
+        nativeMem.setByte(posInBuf(index), item);
     }
 
 }

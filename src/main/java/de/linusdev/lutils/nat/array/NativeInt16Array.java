@@ -55,7 +55,7 @@ public class NativeInt16Array extends NativePrimitiveTypeArray<Short> {
     }
 
     public short getInt16(@Range(from = 0, to = Integer.MAX_VALUE) int index) {
-        return nativeMem.getShort(positions.position(index));
+        return nativeMem.getShort(posInBuf(index));
     }
 
     @Override
@@ -64,7 +64,7 @@ public class NativeInt16Array extends NativePrimitiveTypeArray<Short> {
     }
 
     public void setInt16(int index, short item) {
-        nativeMem.setShort(positions.position(index), item);
+        nativeMem.setShort(posInBuf(index), item);
     }
 
 }

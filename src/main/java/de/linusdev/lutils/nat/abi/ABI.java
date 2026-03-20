@@ -35,14 +35,6 @@ public interface ABI {
     }
 
     /**
-     * The default ABI to use for the current CPU and operating system.
-     */
-    static @NotNull ABI defaultABI() {
-        // TODO: check which ABI should be returned.
-        return DefaultABIs.DEFAULT;
-    }
-
-    /**
      * Unique Identifier of this ABI.
      */
     @NotNull String identifier();

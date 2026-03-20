@@ -17,9 +17,9 @@
 package de.linusdev.lutils.nat.memory.allocator;
 
 import de.linusdev.lutils.id.Identifier;
-import de.linusdev.lutils.nat.memory.AllocatedMemory;
 import de.linusdev.lutils.nat.memory.NativeMemAllocator;
 import de.linusdev.lutils.nat.memory.NativeMemBuffer;
+import de.linusdev.lutils.nat.memory.OwnedNativeMemBuffer;
 import de.linusdev.lutils.nat.memory.buffer.UnsafeNativeMemBuffer;
 import de.linusdev.lutils.other.log.Logger;
 import org.jetbrains.annotations.NotNull;
@@ -56,37 +56,36 @@ public abstract class MustFreeAllocator implements NativeMemAllocator {
     }
 
     @Override
-    public @NotNull AllocatedMemory allocOwned(long size) {
-        long address = allocateInternal(size);
-        return new ManualMemory(address, size, ByteOrder.nativeOrder(), null);
+    public @NotNull OwnedNativeMemBuffer allocOwned(long size, boolean zeroMemory, @Nullable Identifier debugId) {
+        OwnedNativeMemBuffer buf = new ManualMemory(allocateInternal(size), size, ByteOrder.nativeOrder(), debugId);
+
+        if(zeroMemory)
+            buf.fill((byte) 0);
+
+        return buf;
     }
 
     @Override
-    public @NotNull AllocatedMemory allocOwned(long size, @NotNull Identifier debugId) {
-        long address = allocateInternal(size);
-        return new ManualMemory(address, size, ByteOrder.nativeOrder(), debugId);
-    }
+    public @NotNull NativeMemBuffer allocManaged(long size, boolean zeroMemory) {
+        NativeMemBuffer buf = new AutoMemory(allocateInternal(size), size, ByteOrder.nativeOrder(), this);
 
-    @Override
-    public @NotNull NativeMemBuffer allocManaged(long size) {
-        long address = allocateInternal(size);
-        return new AutoMemory(address, size, ByteOrder.nativeOrder(), this);
+        if(zeroMemory)
+            buf.fill((byte) 0);
+
+        return buf;
     }
 
     protected abstract long allocateInternal(long size);
 
     protected abstract void freeInternal(long address);
 
-    static class AutoMemory extends UnsafeNativeMemBuffer implements AllocatedMemory {
+    static class AutoMemory extends UnsafeNativeMemBuffer implements OwnedNativeMemBuffer {
 
         private final @NotNull Cleaner.Cleanable cleanable;
-        private final @NotNull State cleaningState;
 
         public AutoMemory(long address, long size, @NotNull ByteOrder byteOrder, @NotNull MustFreeAllocator allocator) {
             super(address, size, byteOrder);
-
-            this.cleaningState = new State(address, allocator);
-            this.cleanable = CLEANER.register(this, cleaningState);
+            this.cleanable = CLEANER.register(this, new State(address, allocator));
         }
 
         static class State implements Runnable {
@@ -115,7 +114,7 @@ public abstract class MustFreeAllocator implements NativeMemAllocator {
         }
     }
 
-    class ManualMemory extends UnsafeNativeMemBuffer implements AllocatedMemory {
+    class ManualMemory extends UnsafeNativeMemBuffer implements OwnedNativeMemBuffer {
 
         private final Cleaner.Cleanable cleanable;
         private final State cleaningState;

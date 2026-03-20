@@ -16,7 +16,7 @@
 
 package de.linusdev.lutils.struct.info;
 
-import de.linusdev.lutils.nat.abi.DefaultABIs;
+import de.linusdev.lutils.nat.abi.ABIs;
 import de.linusdev.lutils.nat.struct.info.StructureInfo;
 import org.junit.jupiter.api.Test;
 
@@ -30,12 +30,12 @@ class ABITest {
         StructureInfo info;
 
         // https://learn.microsoft.com/en-us/cpp/build/x64-software-conventions?view=msvc-170#example-3
-        info = DefaultABIs.MSVC_X64.calculateStructureLayout(
+        info = ABIs.MSVC_X64.calculateStructureLayout(
                 false,
-                new StructureInfo(DefaultABIs.MSVC_X64, 1, false, 0, 1, 0), // c-char
-                new StructureInfo(DefaultABIs.MSVC_X64, 2, false, 0, 2, 0), // c-short
-                new StructureInfo(DefaultABIs.MSVC_X64, 1, false, 0, 1, 0), // c-char
-                new StructureInfo(DefaultABIs.MSVC_X64, 4, false, 0, 4, 0)  // c-int
+                new StructureInfo(ABIs.MSVC_X64, 1, false, 0, 1, 0), // c-char
+                new StructureInfo(ABIs.MSVC_X64, 2, false, 0, 2, 0), // c-short
+                new StructureInfo(ABIs.MSVC_X64, 1, false, 0, 1, 0), // c-char
+                new StructureInfo(ABIs.MSVC_X64, 4, false, 0, 4, 0)  // c-int
         );
 
         assertEquals(12, info.getRequiredSize());
@@ -43,11 +43,11 @@ class ABITest {
         assertArrayEquals(new long[] {0, 1, 1, 2, 0, 1, 3, 4, 0}, info.getSizes());
 
         // https://learn.microsoft.com/en-us/cpp/build/x64-software-conventions?view=msvc-170#example-2
-        info = DefaultABIs.MSVC_X64.calculateStructureLayout(
+        info = ABIs.MSVC_X64.calculateStructureLayout(
                 false,
-                new StructureInfo(DefaultABIs.MSVC_X64, 4, false, 0, 4, 0), // c-int
-                new StructureInfo(DefaultABIs.MSVC_X64, 8, false, 0, 8, 0), // c-double
-                new StructureInfo(DefaultABIs.MSVC_X64, 2, false, 0, 2, 0)  // c-short
+                new StructureInfo(ABIs.MSVC_X64, 4, false, 0, 4, 0), // c-int
+                new StructureInfo(ABIs.MSVC_X64, 8, false, 0, 8, 0), // c-double
+                new StructureInfo(ABIs.MSVC_X64, 2, false, 0, 2, 0)  // c-short
         );
 
         assertEquals(24, info.getRequiredSize());
@@ -55,11 +55,11 @@ class ABITest {
         assertArrayEquals(new long[] {0, 4, 4, 8, 0, 2, 6}, info.getSizes());
 
         // Compress
-        info = DefaultABIs.MSVC_X64.calculateStructureLayout(
+        info = ABIs.MSVC_X64.calculateStructureLayout(
                 true,
-                new StructureInfo(DefaultABIs.MSVC_X64, 4, false, 0, 4, 0), // c-int
-                new StructureInfo(DefaultABIs.MSVC_X64, 8, false, 0, 8, 0), // c-double
-                new StructureInfo(DefaultABIs.MSVC_X64, 2, false, 0, 2, 0)  // c-short
+                new StructureInfo(ABIs.MSVC_X64, 4, false, 0, 4, 0), // c-int
+                new StructureInfo(ABIs.MSVC_X64, 8, false, 0, 8, 0), // c-double
+                new StructureInfo(ABIs.MSVC_X64, 2, false, 0, 2, 0)  // c-short
         );
 
         assertEquals(14, info.getRequiredSize());

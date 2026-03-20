@@ -21,8 +21,6 @@ import de.linusdev.lutils.nat.memory.NativeMemBuffer;
 
 public interface NativeParsable extends MemorySizeable {
 
-
-
     /**
      * Whether this {@link NativeParsable} is already backed by a {@link #getNativeMemBuffer() buffer}.
      * @return {@code true} if initialised

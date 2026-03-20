@@ -55,7 +55,7 @@ public class NativeInt64Array extends NativePrimitiveTypeArray<Long> {
     }
 
     public long getLong(@Range(from = 0, to = Integer.MAX_VALUE) int index) {
-        return nativeMem.getLong(positions.position(index));
+        return nativeMem.getLong(posInBuf(index));
     }
 
     @Override
@@ -64,7 +64,7 @@ public class NativeInt64Array extends NativePrimitiveTypeArray<Long> {
     }
 
     public void setLong(int index, long item) {
-        nativeMem.setLong(positions.position(index), item);
+        nativeMem.setLong(posInBuf(index), item);
     }
 
 }

@@ -18,6 +18,7 @@ package de.linusdev.lutils.nat.array;
 
 import de.linusdev.lutils.nat.NativeType;
 import de.linusdev.lutils.nat.abi.ABI;
+import de.linusdev.lutils.nat.memory.IndexOutOfStructRange;
 import de.linusdev.lutils.nat.struct.abstracts.StructureStaticVariables;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -56,7 +57,7 @@ public class NativeInt8Array extends NativePrimitiveTypeArray<Byte> {
     }
 
     public byte getInt8(@Range(from = 0, to = Integer.MAX_VALUE) int index) {
-        return nativeMem.getByte(positions.position(index));
+        return nativeMem.getByte(posInBuf(index));
     }
 
     @Override
@@ -65,11 +66,32 @@ public class NativeInt8Array extends NativePrimitiveTypeArray<Byte> {
     }
 
     public void setInt8(int index, byte item) {
-        nativeMem.setByte(positions.position(index), item);
+        nativeMem.setByte(posInBuf(index), item);
     }
 
     public void set(byte @NotNull [] values) {
-        nativeMem.fill(values);
+        if(values.length  > length())
+            throw new IndexOutOfStructRange(values.length - 1, this);
+
+        if(getInfo().getStride() == Byte.BYTES) {
+            nativeMem.fill(posInBuf(0), values, 0, values.length);
+        } else {
+            // If for some reason the stride of a byte array is not 1, we have to copy each element individually.
+            for (int i = 0; i < length(); i++) {
+                nativeMem.setByte(posInBuf(i), values[i]);
+            }
+        }
+    }
+
+    public void get(byte @NotNull [] values) {
+        if(getInfo().getStride() == Byte.BYTES) {
+            nativeMem.getBytes(posInBuf(0), values, 0L, Math.min(length(), values.length));
+        } else {
+            // If for some reason the stride of a byte array is not 1, we have to copy each element individually.
+            for (int i = 0; i < length(); i++) {
+                values[i] = nativeMem.getByte(posInBuf(i));
+            }
+        }
     }
 
 }

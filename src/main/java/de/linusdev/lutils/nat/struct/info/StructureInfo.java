@@ -22,7 +22,7 @@ import de.linusdev.lutils.nat.struct.abstracts.Structure;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * Class, which holds information like alignment and size of a structure.
+ * Class, which holds information like alignment, padding and size of a structure.
  */
 public class StructureInfo implements MemorySizeable {
 

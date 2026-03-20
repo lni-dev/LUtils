@@ -44,7 +44,7 @@ public abstract class BBVector extends Structure implements Vector {
      * position of given {@code index} in {@link #nativeMem}
      */
     protected long posInBuf(int index) {
-        return positions.position(index);
+        return offset + positions.position(index);
     }
 
     @Override

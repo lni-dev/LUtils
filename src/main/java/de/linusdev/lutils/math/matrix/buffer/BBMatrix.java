@@ -48,7 +48,7 @@ public abstract class BBMatrix extends Structure implements Matrix {
      * position of given {@code x} and {@code y} in {@link #nativeMem}
      */
     protected long posInBuf(int y, int x) {
-        return positions.position(positionToIndex(y, x));
+        return offset + positions.position(positionToIndex(y, x));
     }
 
     /**

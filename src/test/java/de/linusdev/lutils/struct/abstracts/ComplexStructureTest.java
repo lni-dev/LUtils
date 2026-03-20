@@ -24,7 +24,7 @@ import de.linusdev.lutils.math.vector.buffer.floatn.BBFloat4;
 import de.linusdev.lutils.math.vector.buffer.intn.BBInt1;
 import de.linusdev.lutils.math.vector.buffer.longn.BBLong1;
 import de.linusdev.lutils.nat.abi.ABI;
-import de.linusdev.lutils.nat.abi.DefaultABIs;
+import de.linusdev.lutils.nat.abi.ABIs;
 import de.linusdev.lutils.nat.array.NativeFloat32Array;
 import de.linusdev.lutils.nat.array.NativeFloat64Array;
 import de.linusdev.lutils.nat.struct.abstracts.ComplexStructure;
@@ -105,7 +105,7 @@ public class ComplexStructureTest {
     public static class Test3Struct extends ComplexStructure {
 
         public static ABI abiSelectorTestMethod() {
-            return DefaultABIs.MSVC_X64;
+            return ABIs.MSVC_X64;
         }
 
         public final @StructValue(0) BBInt1 a = BBInt1.newUnallocated();
@@ -176,7 +176,7 @@ public class ComplexStructureTest {
 
         var info = test3Struct.getInfo();
 
-        assertEquals(DefaultABIs.MSVC_X64.identifier(), info.getAbi().identifier());
+        assertEquals(ABIs.MSVC_X64.identifier(), info.getAbi().identifier());
         assertEquals(8, info.getAlignment());
         assertEquals(24, info.getRequiredSize());
         assertArrayEquals(new long[]{0, 4, 4, 8, 0, 4, 4}, info.getSizes());

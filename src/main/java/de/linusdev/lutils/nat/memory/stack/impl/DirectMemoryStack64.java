@@ -16,11 +16,10 @@
 
 package de.linusdev.lutils.nat.memory.stack.impl;
 
-import de.linusdev.lutils.nat.abi.ABI;
-import de.linusdev.lutils.nat.abi.DefaultABIs;
-import de.linusdev.lutils.nat.memory.AllocatedMemory;
+import de.linusdev.lutils.nat.abi.ABIs;
 import de.linusdev.lutils.nat.memory.Allocators;
 import de.linusdev.lutils.nat.memory.NativeMemBuffer;
+import de.linusdev.lutils.nat.memory.OwnedNativeMemBuffer;
 import de.linusdev.lutils.nat.memory.stack.PopPoint;
 import de.linusdev.lutils.nat.memory.stack.SafePoint;
 import de.linusdev.lutils.nat.memory.stack.Stack;
@@ -38,7 +37,7 @@ public class DirectMemoryStack64 extends Structure implements Stack, AutoCloseab
     public static final int ALIGNMENT = 8;
 
     private final long address;
-    private final AllocatedMemory allocatedMem;
+    private final OwnedNativeMemBuffer allocatedMem;
     protected final @NotNull StackPointerQueue stackPointers;
 
     public DirectMemoryStack64(@NotNull Size size) {
@@ -51,7 +50,7 @@ public class DirectMemoryStack64 extends Structure implements Stack, AutoCloseab
 
     public DirectMemoryStack64(long size) {
         super(null);
-        setInfo(new StructureInfo(DefaultABIs.MSVC_X64, ALIGNMENT, false, 0, size, 0));
+        setInfo(new StructureInfo(ABIs.MSVC_X64, ALIGNMENT, false, 0, size, 0));
         this.allocatedMem = Allocators.DEFAULT_ALLOCATOR.allocOwned(size);
         claimMemory(allocatedMem, 0);
         this.address = getPointer();
@@ -83,6 +82,9 @@ public class DirectMemoryStack64 extends Structure implements Stack, AutoCloseab
 
         NativeMemBuffer subBuffer = NativeMemBuffer.of(stackPointer + alignmentFix, size, nativeMem.byteOrder());
         subBuffer.fill((byte) 0);
+
+        stackPointers.push(size + alignmentFix);
+
         return subBuffer;
     }
 
@@ -136,13 +138,9 @@ public class DirectMemoryStack64 extends Structure implements Stack, AutoCloseab
     }
 
     // Only for completion's Sake. Cannot actually be called, as no unallocated Stack can be created.
-    public static final StaticGenerator GENERATOR = new StaticGenerator() {
-
-        @Override
-        public @NotNull StructureInfo calculateInfo(@NotNull Class<?> selfClazz, @Nullable ABI abi, int @Nullable [] length, @NotNull Class<?> @Nullable [] elementTypes) {
-            int size = length == null ? DEFAULT_MEMORY_SIZE : length[0];
-            return new StructureInfo(DefaultABIs.DEFAULT, 8, false, size, new long[]{0, size, 0});
-        }
+    public static final StaticGenerator GENERATOR = (_, _, length, _) -> {
+        int size = length == null ? DEFAULT_MEMORY_SIZE : length[0];
+        return new StructureInfo(ABIs.defaultABI(), 8, false, size, new long[]{0, size, 0});
     };
 
     @Override

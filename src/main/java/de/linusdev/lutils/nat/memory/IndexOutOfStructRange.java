@@ -16,8 +16,11 @@
 
 package de.linusdev.lutils.nat.memory;
 
-public interface AllocatedMemory extends NativeMemBuffer, AutoCloseable {
+import de.linusdev.lutils.nat.struct.abstracts.Structure;
+import org.jetbrains.annotations.NotNull;
 
-    @Override
-    void close();
+public class IndexOutOfStructRange extends RuntimeException {
+    public IndexOutOfStructRange(long index, @NotNull Structure struct) {
+        super("index '" + index + "' is out for range for given struct '" +  struct.getClass().getSimpleName() + "' of size '" + struct.getRequiredSize() + "'.");
+    }
 }

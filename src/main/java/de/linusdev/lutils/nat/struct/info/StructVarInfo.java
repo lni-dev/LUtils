@@ -34,7 +34,6 @@ public class StructVarInfo {
     ) {
         @NotNull Class<?> fieldClass = field.getType();
         StructValue sv = field.getAnnotation(StructValue.class);
-        // TODO: ElementsStructValue annotation
 
         if(sv == null) return null;
 

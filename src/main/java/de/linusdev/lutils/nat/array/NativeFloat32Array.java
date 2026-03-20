@@ -55,7 +55,7 @@ public class NativeFloat32Array extends NativePrimitiveTypeArray<Float> {
     }
 
     public float getFloat(@Range(from = 0, to = Integer.MAX_VALUE) int index) {
-        return nativeMem.getFloat(positions.position(index));
+        return nativeMem.getFloat(posInBuf(index));
     }
 
     @Override
@@ -64,7 +64,7 @@ public class NativeFloat32Array extends NativePrimitiveTypeArray<Float> {
     }
 
     public void setFloat(int index, float item) {
-        nativeMem.setFloat(positions.position(index), item);
+        nativeMem.setFloat(posInBuf(index), item);
     }
 
 }

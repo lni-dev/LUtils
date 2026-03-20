@@ -55,7 +55,7 @@ public class NativeInt32Array extends NativePrimitiveTypeArray<Integer> {
     }
 
     public int getInt(@Range(from = 0, to = Integer.MAX_VALUE) int index) {
-        return nativeMem.getInt(positions.position(index));
+        return nativeMem.getInt(posInBuf(index));
     }
 
     @Override
@@ -64,7 +64,7 @@ public class NativeInt32Array extends NativePrimitiveTypeArray<Integer> {
     }
 
     public void setInt(int index, int item) {
-        nativeMem.setInt(positions.position(index), item);
+        nativeMem.setInt(posInBuf(index), item);
     }
 
 }

@@ -16,7 +16,7 @@
 
 package de.linusdev.lutils.nat.string;
 
-import de.linusdev.lutils.nat.memory.OutOfNativeMemBufferRangeException;
+import de.linusdev.lutils.nat.memory.IndexOutOfStructRange;
 import org.junit.jupiter.api.Test;
 
 import static de.linusdev.lutils.nat.memory.Allocators.allocManaged;
@@ -35,7 +35,7 @@ class NullTerminatedUTF16StringTest {
         assertEquals(test1, string.get());
 
         String test2 = "a".repeat(50);
-        assertThrows(OutOfNativeMemBufferRangeException.class, () -> string.set(test2));
+        assertThrows(IndexOutOfStructRange.class, () -> string.set(test2));
 
         String test3 = "Test3";
         string.set(test3);

@@ -17,6 +17,7 @@
 package de.linusdev.lutils.nat.struct.generator;
 
 import de.linusdev.lutils.nat.abi.ABI;
+import de.linusdev.lutils.nat.abi.ABIs;
 import de.linusdev.lutils.nat.struct.annos.RequirementType;
 import de.linusdev.lutils.nat.struct.info.StructureInfo;
 import org.jetbrains.annotations.NotNull;
@@ -35,7 +36,7 @@ public abstract class SimpleStaticGenerator implements StaticGenerator {
             @NotNull RequirementType customLengthOption,
             @NotNull RequirementType elementTypeInfo
     ) {
-        this(customLengthOption, elementTypeInfo, null, ABI.defaultABI());
+        this(customLengthOption, elementTypeInfo, null, ABIs.defaultABI());
     }
 
     protected SimpleStaticGenerator(

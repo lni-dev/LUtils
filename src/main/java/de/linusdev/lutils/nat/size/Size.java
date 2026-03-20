@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024-2025 Linus Andera
+ * Copyright (c) 2024-2026 Linus Andera
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,14 +45,14 @@ public class Size {
         if(ByteUnits.KiB.getValue() > size)
             return size + " bytes";
         if(ByteUnits.MiB.getValue() > size)
-            return (size / ByteUnits.KiB.getValue()) + "" + ByteUnits.KiB + " bytes";
+            return (size / ByteUnits.KiB.getValue()) + " " + ByteUnits.KiB ;
         if(ByteUnits.GiB.getValue() > size)
-            return (size / ByteUnits.MiB.getValue()) + "" + ByteUnits.MiB + " bytes";
+            return (size / ByteUnits.MiB.getValue()) + " " + ByteUnits.MiB ;
         if(ByteUnits.TiB.getValue() > size)
-            return (size / ByteUnits.GiB.getValue()) + "" + ByteUnits.GiB + " bytes";
+            return (size / ByteUnits.GiB.getValue()) + " " + ByteUnits.GiB ;
         if(ByteUnits.PiB.getValue() > size)
-            return (size / ByteUnits.TiB.getValue()) + "" + ByteUnits.TiB + " bytes";
+            return (size / ByteUnits.TiB.getValue()) + " " + ByteUnits.TiB ;
 
-        return (size / ByteUnits.PiB.getValue()) + "" + ByteUnits.PiB + " bytes";
+        return (size / ByteUnits.PiB.getValue()) + " " + ByteUnits.PiB;
     }
 }

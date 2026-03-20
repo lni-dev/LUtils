@@ -36,18 +36,22 @@ public abstract class NativePrimitiveTypeArray<T> extends Structure implements N
      * That means, this struct must be {@link de.linusdev.lutils.nat.memory.NativeMemAllocator#allocOwned(Structure) allocated},
      * {@link #claimMemory(NativeMemBuffer, long) claimed a buffer}
      * or {@link #useBuffer(Structure, long, StructureInfo) usebuffer called}.
+     * <br><br>
+     * Note: The {@link #offset} must be added to the result of this function.
+     * @see #getPositions()
+     * @see #posInBuf(int) posInBuf() is already adjusted by the offset. 
      */
     protected ArrayInfo.ArrayPositionFunction positions;
-    protected StaticGenerator generator;
+    protected PrimitiveArrayStaticGenerator generator;
     protected int length;
 
-    protected NativePrimitiveTypeArray(@NotNull StaticGenerator generator) {
+    protected NativePrimitiveTypeArray(@NotNull PrimitiveArrayStaticGenerator generator) {
         super(null);
         this.generator = generator;
     }
 
     protected NativePrimitiveTypeArray(
-            @NotNull StaticGenerator generator,
+            @NotNull PrimitiveArrayStaticGenerator generator,
             @Nullable ABI abi,
             int length
     ) {
@@ -55,6 +59,10 @@ public abstract class NativePrimitiveTypeArray<T> extends Structure implements N
         this.generator = generator;
         this.length = length;
         setInfo(generateInfo(abi, new int[]{length}, null));
+    }
+
+    protected long posInBuf(int index) {
+        return offset + positions.position(index);
     }
 
     @Override
@@ -116,5 +124,6 @@ public abstract class NativePrimitiveTypeArray<T> extends Structure implements N
         public @NotNull StructureInfo calculateInfoChecked(@NotNull Class<?> selfClazz, @NotNull ABI abi, int[] length, @NotNull Class<?>[] elementTypes) {
             return abi.calculateArrayLayout(false, nativeType.getMemorySizeable(abi.types()), length[0], -1L);
         }
+
     }
 }

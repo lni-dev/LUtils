@@ -18,7 +18,7 @@ package de.linusdev.lutils.nat.string;
 
 import de.linusdev.lutils.nat.abi.ABI;
 import de.linusdev.lutils.nat.array.NativeInt8Array;
-import de.linusdev.lutils.nat.memory.OutOfNativeMemBufferRangeException;
+import de.linusdev.lutils.nat.memory.IndexOutOfStructRange;
 import de.linusdev.lutils.nat.struct.abstracts.Structure;
 import de.linusdev.lutils.nat.struct.abstracts.StructureStaticVariables;
 import de.linusdev.lutils.nat.struct.info.StructureInfo;
@@ -29,6 +29,9 @@ import java.nio.charset.StandardCharsets;
 
 /**
  * A Structure that can contain a null (0-byte) terminated utf-8 string.
+ * <br><br>
+ * Note: this class only works for {@link ABI abis} where strings are in memory continuously without padding (which is usually the case).
+ * However, it is *not* checked during string creation if a given {@link ABI} supports this!
  * @see #get()
  * @see #set(String)
  */
@@ -76,7 +79,7 @@ public class NullTerminatedUTF8String extends NativeInt8Array {
         super.useBuffer(mostParentStructure, offset, info);
         if(defaultValue != null) {
             set(defaultValue);
-            set(defaultValue.length, (byte)0);
+            setInt8(defaultValue.length, (byte)0);
         }
     }
 
@@ -90,10 +93,10 @@ public class NullTerminatedUTF8String extends NativeInt8Array {
         byte[] bytes = value.getBytes(StandardCharsets.UTF_8);
 
         if(bytes.length + 1 > length)
-            throw new OutOfNativeMemBufferRangeException(bytes.length, nativeMem);
+            throw new IndexOutOfStructRange(bytes.length, this);
 
-        nativeMem.fill(bytes);
-        nativeMem.setByte(bytes.length, (byte) 0);
+        set(bytes);
+        setInt8(bytes.length, (byte) 0);
     }
 
     /**
@@ -102,7 +105,7 @@ public class NullTerminatedUTF8String extends NativeInt8Array {
      */
     public @NotNull String get() {
         byte[] bytes = new byte[length()];
-        nativeMem.getBytes(bytes);
+        get(bytes);
 
         int index = 0;
         for(int i = 0; i < bytes.length; i++) {

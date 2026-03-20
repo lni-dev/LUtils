@@ -90,12 +90,12 @@ public class NativeInteger extends Structure {
             if ((short) value != value) {
                 throw new ArithmeticException("short overflow");
             }
-            nativeMem.setShort(0, (short) value);
+            nativeMem.setShort(offset, (short) value);
         }
         else if(size == 4)
-            nativeMem.setInt(0,  Math.toIntExact(value));
+            nativeMem.setInt(offset,  Math.toIntExact(value));
         else if(size == 8)
-            nativeMem.setLong(0, value);
+            nativeMem.setLong(offset, value);
         else
             throw new Error("Unexpected Integer Size");
     }
@@ -103,11 +103,11 @@ public class NativeInteger extends Structure {
     public long get() {
         long size = this.getRequiredSize();
         if(size == 2)
-            return nativeMem.getShort(0);
+            return nativeMem.getShort(offset);
         else if(size == 4)
-            return nativeMem.getInt(0);
+            return nativeMem.getInt(offset);
         else if(size == 8)
-            return nativeMem.getLong(0);
+            return nativeMem.getLong(offset);
         else
             throw new Error("Unexpected Integer Size");
     }

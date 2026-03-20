@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025 Linus Andera
+ * Copyright (c) 2025-2026 Linus Andera
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,13 +29,13 @@ class SizeTest {
 
         assertEquals(1024L, size.get());
         assertEquals(1024L, size.getAsInt());
-        assertEquals("1KiB bytes", size.toString());
+        assertEquals("1 KiB", size.toString());
 
         size = new Size(1, ByteUnits.KiB);
 
         assertEquals(1024L, size.get());
         assertEquals(1024L, size.getAsInt());
-        assertEquals("1KiB bytes", size.toString());
+        assertEquals("1 KiB", size.toString());
     }
 
     @Test
@@ -44,12 +44,12 @@ class SizeTest {
 
         assertEquals(32432434343L, size.get());
         assertThrows(AssertionError.class, size::getAsInt);
-        assertEquals("30GiB bytes", size.toString());
+        assertEquals("30 GiB", size.toString());
 
         Size size2 = new Size(1, ByteUnits.PiB);
 
         assertEquals(1125899906842624L, size2.get());
         assertThrows(AssertionError.class, size2::getAsInt);
-        assertEquals("1PiB bytes", size2.toString());
+        assertEquals("1 PiB", size2.toString());
     }
 }

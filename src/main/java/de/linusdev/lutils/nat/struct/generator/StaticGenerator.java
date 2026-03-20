@@ -30,23 +30,27 @@ import org.jetbrains.annotations.Nullable;
 public interface StaticGenerator {
 
     /**
-     * TODO: documentation
+     * Calculates the {@link StructureInfo} of a specific structure. This method must also check if the arguments
+     * passed are valid and may throw {@link StructureLayoutGenerationException} if some information is missing or invalid.
+     * <br><br>
+     * Each structure may support different arguments, which should be stated in the documentation in the structure itself.
+     * If nothing is specified it is expected that this structure supports any {@code abi} and {@code length} and {@code elementTypes}
+     * must be {@code null}.
      *
      * @param selfClazz the class of the {@link Structure} itself.
      * @param abi the {@link ABI} to use while creating the {@link StructureInfo}.
      * @param length  length information if required/supported by the structure.
      * @param elementTypes element type information if required/supported by the structure.
+     * @return A {@link StructureInfo}
+     * @throws StructureLayoutGenerationException if some information is missing or invalid.
      */
     @SuppressWarnings("unused")
-    default @NotNull StructureInfo calculateInfo(
+    @NotNull StructureInfo calculateInfo(
             @NotNull Class<?> selfClazz,
             @Nullable ABI abi,
             int @Nullable [] length,
             @NotNull Class<?> @Nullable [] elementTypes
-    ) {
-        //noinspection DataFlowIssue: Example only
-        return null;
-    }
+    );
 
     @ApiStatus.Experimental
     default @Nullable StructCodeGenerator codeGenerator() {

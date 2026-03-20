@@ -27,7 +27,7 @@ public class ArrayInfo extends StructureInfo {
     protected final int length;
 
     /**
-     * The stride (size of one element including padding) of the array or {@code -1}
+     * The stride in bytes (size of one element including padding) of the array or {@code -1}
      * if stride varies for different positions.
      */
     protected final long stride;

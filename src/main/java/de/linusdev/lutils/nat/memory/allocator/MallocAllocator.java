@@ -32,12 +32,12 @@ public class MallocAllocator extends MustFreeAllocator {
         SymbolLookup stdlib = linker.defaultLookup();
 
         MALLOC_HANDLE = linker.downcallHandle(
-                stdlib.find("malloc").get(),
+                stdlib.find("malloc").orElse(null),
                 FunctionDescriptor.of(ValueLayout.JAVA_LONG, ValueLayout.JAVA_LONG)
         );
 
         MFREE_HANDLE = linker.downcallHandle(
-                stdlib.find("free").get(),
+                stdlib.find("free").orElse(null),
                 FunctionDescriptor.ofVoid(ValueLayout.JAVA_LONG)
         );
     }
@@ -46,6 +46,7 @@ public class MallocAllocator extends MustFreeAllocator {
     protected long allocateInternal(long size) {
         try {
             return (long) MALLOC_HANDLE.invokeExact((long) size);
+
         } catch (Throwable t) {
             throw new Error(t);
         }
