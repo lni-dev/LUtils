@@ -33,7 +33,7 @@ public abstract class MustFreeAllocator implements NativeMemAllocator {
     private static final @NotNull Logger LOG = Logger.getLogger();
     private static final @NotNull Cleaner CLEANER = Cleaner.create();
 
-    private static @Nullable Cleaner DEBUG_CLEANER = null;
+    static @Nullable Cleaner DEBUG_CLEANER = null;
 
 
     static {
@@ -44,6 +44,7 @@ public abstract class MustFreeAllocator implements NativeMemAllocator {
         //noinspection ConstantValue
         if(doCleanup) {
             DEBUG_CLEANER = Cleaner.create();
+            LOG.info("The Debug Cleaner of the MustFreeAllocator allocator has been enabled and will report memory leaks.");
         }
     }
 
