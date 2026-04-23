@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025 Linus Andera
+ * Copyright (c) 2025-2026 Linus Andera
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,6 @@ import de.linusdev.lutils.id.Identifier;
 import de.linusdev.lutils.pack.resource.Resource;
 import de.linusdev.lutils.pack.resource.ResourceCollection;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -47,7 +46,7 @@ public class ResourceMap<R extends Resource> implements ResourceCollection<R> {
         return values.get(id);
     }
 
-    public @Nullable R get(@NotNull Identifier id) {
+    public R get(@NotNull Identifier id) {
         return values.get(Identifier.toString(id));
     }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024-2025 Linus Andera
+ * Copyright (c) 2024-2026 Linus Andera
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,6 +42,7 @@ public class StandardHtmlElementTypes {
 
     public final static @NotNull StandardHtmlElement.Type TITLE      =      newInline("title");
     public final static @NotNull StandardHtmlElement.Type P          =      newInline("p");
+    public final static @NotNull StandardHtmlElement.Type PRE        =      newInline("pre");
     public final static @NotNull StandardHtmlElement.Type SPAN       =      newInline("span");
     public final static @NotNull StandardHtmlElement.Type H1         =      newInline("h1");
     public final static @NotNull StandardHtmlElement.Type H2         =      newInline("h2");
@@ -69,7 +70,7 @@ public class StandardHtmlElementTypes {
     public final static @NotNull HtmlElementType<?> @NotNull [] VALUES = new HtmlElementType[] {
             HTML, HEAD, BODY, DIV, A, BUTTON, OL, UL, LI, VIDEO, FORM, FIELDSET, DIALOG,
 
-            TITLE, P, SPAN, H1, H2, H3, H4, H5, H6, B, STRONG,
+            TITLE, P, PRE, SPAN, H1, H2, H3, H4, H5, H6, B, STRONG,
 
             AREA, BASE, BR, COL, EMBED, HR, IMG, INPUT, LINK, META, SOURCE, TRACK, WBR,
     };
