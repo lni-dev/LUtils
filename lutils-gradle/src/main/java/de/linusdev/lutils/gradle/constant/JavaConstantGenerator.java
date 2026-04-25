@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024-2025 Linus Andera
+ * Copyright (c) 2024-2026 Linus Andera
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,6 +28,7 @@ import org.gradle.api.tasks.Internal;
 import org.gradle.api.tasks.OutputDirectory;
 import org.gradle.api.tasks.TaskAction;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -90,15 +91,27 @@ public class JavaConstantGenerator extends DefaultTask {
         generator.write();
     }
 
-    public void add(@NotNull String name, @NotNull Version version) {
+    public void add(@NotNull String name, @Nullable Version version) {
         constants.add(new Constant.VersionConst(name, version));
     }
 
-    public void add(@NotNull String name, @NotNull String value) {
+    public void add(@NotNull String name, @Nullable String value) {
         constants.add(new Constant.StringConst(name, value));
     }
 
-    public void add(@NotNull String name, @NotNull Path value) {
+    public void add(@NotNull String name, @Nullable Path value) {
+        constants.add(new Constant.PathConstant(name, value));
+    }
+
+    public void addVersion(@NotNull String name, @Nullable Version version) {
+        constants.add(new Constant.VersionConst(name, version));
+    }
+
+    public void addString(@NotNull String name, @Nullable String value) {
+        constants.add(new Constant.StringConst(name, value));
+    }
+
+    public void addPath(@NotNull String name, @Nullable Path value) {
         constants.add(new Constant.PathConstant(name, value));
     }
 
