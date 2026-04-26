@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025 Linus Andera
+ * Copyright (c) 2025-2026 Linus Andera
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,13 @@ import java.util.Objects;
  */
 @SuppressWarnings("unused")
 public class ArrayUtils {
+
+    /**
+     * @see FakeArray
+     */
+    public static <E> @NotNull FakeArray<E> fakeArray(int length, E value) {
+        return new FakeArray<>(length, value);
+    }
 
     public static <E> @NotNull IterableArray<E> iterableArray(E @NotNull [] array) {
         return new IterableArray<>(array);
