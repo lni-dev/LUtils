@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025 Linus Andera
+ * Copyright (c) 2025-2026 Linus Andera
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,11 +17,11 @@
 package de.linusdev.lutils.pack;
 
 import de.linusdev.lutils.data.json.Json;
-import de.linusdev.lutils.interfaces.TriConsumer;
 import de.linusdev.lutils.pack.map.ResourceMap;
 import de.linusdev.lutils.pack.resource.Resource;
 import de.linusdev.lutils.pack.resource.ResourceCollection;
 import de.linusdev.lutils.pack.validation.ResourceBoundValidationResultBuilder;
+import de.linusdev.lutils.pack.validation.Validator;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
@@ -31,7 +31,7 @@ import java.util.function.BiFunction;
  * A Group which is filled by {@link AbstractPack AbstractPacks}.
  * @param <G> The resource collection type of this group.
  * @param <I> The resource type of this group.
- * @see #newResourceMapGroup(String, BiFunction, TriConsumer)
+ * @see #newResourceMapGroup(String, BiFunction, Validator) 
  * @see Group
  */
 public abstract class PackGroup<G extends ResourceCollection<I>, I extends Resource> extends Group<G, I> {
@@ -48,7 +48,7 @@ public abstract class PackGroup<G extends ResourceCollection<I>, I extends Resou
     public static <I extends Resource> @NotNull PackGroup<ResourceMap<I>, I> newResourceMapGroup(
             @NotNull String name,
             @NotNull BiFunction<AbstractPack, Json, I> converter,
-            @NotNull TriConsumer<ResourceBoundValidationResultBuilder, Resources, I> validator
+            @NotNull Validator<ResourceMap<I>, I> validator
     ) {
         return new PackGroup<>(name) {
 
@@ -59,7 +59,7 @@ public abstract class PackGroup<G extends ResourceCollection<I>, I extends Resou
 
             @Override
             public void validateItem(@NotNull ResourceBoundValidationResultBuilder result, @NotNull Resources resources, @NotNull I item) {
-                validator.consume(result, resources, item);
+                validator.validate(result, resources, this, item);
             }
 
             @Override
