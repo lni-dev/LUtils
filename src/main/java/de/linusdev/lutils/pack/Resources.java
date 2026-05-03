@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025 Linus Andera
+ * Copyright (c) 2025-2026 Linus Andera
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,9 +18,8 @@ package de.linusdev.lutils.pack;
 
 import de.linusdev.lutils.ansi.sgr.SGR;
 import de.linusdev.lutils.ansi.sgr.SGRParameters;
-import de.linusdev.lutils.collections.Entry;
-import de.linusdev.lutils.data.json.Json;
 import de.linusdev.lutils.data.json.JsonMapImpl;
+import de.linusdev.lutils.data.json.parser.JsonParser;
 import de.linusdev.lutils.id.Identifier;
 import de.linusdev.lutils.optional.Container;
 import de.linusdev.lutils.other.log.Logger;
@@ -39,10 +38,8 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
-import static de.linusdev.lutils.pack.AbstractPack.JSON_PARSER;
-
 /**
- * This class contains all resources of all {@link AbstractPack AbstractPacks} that have been enabled.
+ * This class contains all resources of all {@link InventoriedPack InventoriedPacks} that have been enabled.
  * Instances of this class should only be created by the {@link ResourcesLoader} and then be only used to access the loaded
  * resources.
  *
@@ -53,6 +50,10 @@ public class Resources {
     private final static @NotNull Logger LOG = Logger.getLogger();
 
     private final static @NotNull ResourceCollection<?> DISCARDED_GROUP = new DiscardedGroup();
+
+    final static @NotNull JsonParser JSON_PARSER = new JsonParser()
+            .setJsonBuilderSupplier(() -> new JsonMapImpl(new HashMap<>()))
+            .setAllowComments(true, (parser, str) -> {});
 
     private final @NotNull HashMap<Group<?, ?>, ResourceCollection<?>> groups = new HashMap<>();
 
@@ -69,7 +70,7 @@ public class Resources {
     @Blocking
     @ApiStatus.Internal
     public void load(
-            @NotNull Collection<AbstractPack> packs,
+            @NotNull Collection<InventoriedPack> packs,
             @NotNull List<ProcessingGroup<?, ?>> processingGroups,
             @NotNull ProgressReporter reporter
     ) throws PackException {
@@ -93,7 +94,7 @@ public class Resources {
         // Load content from Packs
         int current = 0;
         reporter.report(ProgressStage.LOADING_PACKS_CONTENT, current, packs.size());
-        for (@NotNull AbstractPack pack : packs) {
+        for (@NotNull InventoriedPack pack : packs) {
             if(!pack.isLoaded()) throw new IllegalArgumentException("Packs must all be loaded.");
 
             LOG.debug("Reading content of pack '" + pack.name() + "'.");
@@ -103,12 +104,8 @@ public class Resources {
                     groups.computeIfAbsent(group, key -> group.createResourceCollection());
                 }
 
-                for (Map.Entry<PackGroup<?, ?>, String> entry : pack.inventory().entrySet()) {
-                    String groupLocation = entry.getValue();
-                    PackGroup<?, ?> group = entry.getKey();
-                    ResourceCollection<?> groupObj = groups.get(group);
-
-                    loadGroup(pack, groupLocation, group, groupObj);
+                for (PackGroup<?, ?> group : pack.inventory()) {
+                    pack.loadGroup(LOG, group, groups.get(group));
                 }
 
             } catch (PackException e) {
@@ -118,7 +115,6 @@ public class Resources {
             }
 
             reporter.report(ProgressStage.LOADING_PACKS_CONTENT, ++current, packs.size());
-
         }
 
         // Start processing
@@ -159,79 +155,6 @@ public class Resources {
         }
 
         valResultBuilder.throwOnError();
-    }
-
-    private void loadGroup(
-            @NotNull AbstractPack pack,
-            @NotNull String groupLocation,
-            @NotNull PackGroup<?, ?> group,
-            @NotNull ResourceCollection<?> resourceCollection
-    ) throws PackContentException {
-        try(var inGroup = pack.resolve(groupLocation)) {
-            Json groupData = JSON_PARSER.parseStream(inGroup);
-
-            @Nullable Json defaultItemData = groupData.grab("common").getAs();
-
-            Container<Object> continuationCon = groupData.grab("continuations");
-            Container<Object> arrayCon = groupData.grab("array");
-
-            if(continuationCon.isNull() && arrayCon.isNull()) {
-                throw new IllegalArgumentException("File '" + groupLocation + "' in pack '" + pack.name() + "' is missing both 'array' and 'continuations', but at least one must be present.");
-            }
-
-            boolean addedSomething = false;
-
-            for (Object continuation : continuationCon.orDefaultIfNull(List.of()).asList().get()) {
-                addedSomething = true;
-                loadGroup(pack, (String) continuation, group, resourceCollection);
-            }
-
-            for (Object item : arrayCon.orDefaultIfNull(List.of()).asList().get()) {
-                addedSomething = true;
-                if(item instanceof String itemLocation) {
-                    // Another location
-                    Json jItem = null;
-                    try(var inItem = pack.resolve(itemLocation)) {
-                        jItem = JSON_PARSER.parseStream(inItem);
-
-                        if(defaultItemData != null) {
-                            // We can safely cast to JsonMapImpl since we defined the used implementation in JSON_PARSER.
-                            for (Entry<String, Object> entry : defaultItemData)
-                                ((JsonMapImpl) jItem).add(entry.getKey(), entry.getValue());
-                        }
-
-                        group._addToResourceCollection(resourceCollection, jItem, pack);
-                    } catch (Throwable t) {
-                        if(jItem == null)
-                            throw new PackContentException(pack, itemLocation, t);
-                        throw new PackContentException(pack, itemLocation, jItem, t);
-                    }
-                } else {
-                    // It is the item
-                    Json jItem = (Json) item;
-                    try {
-                        if(defaultItemData != null) {
-                            // We can safely cast to JsonMapImpl since we defined the used implementation in JSON_PARSER.
-                            for (Entry<String, Object> entry : defaultItemData)
-                                ((JsonMapImpl) jItem).add(entry.getKey(), entry.getValue());
-                        }
-
-                        group._addToResourceCollection(resourceCollection, jItem, pack);
-                    } catch (Throwable t) {
-                        throw new PackContentException(pack, groupLocation, jItem, t);
-                    }
-
-                }
-            }
-
-            if(!addedSomething) {
-                LOG.warning("File '" + groupLocation + "' in pack '" + pack.name() + "' is not adding anything!");
-            }
-        } catch (PackException e) {
-            throw e;
-        } catch (Throwable t) {
-            throw new PackContentException(pack, groupLocation, t);
-        }
     }
 
     /**
@@ -319,6 +242,11 @@ public class Resources {
 
         @Override
         public @NotNull Iterator<Resource> iterator() {
+            throw error();
+        }
+
+        @Override
+        public @NotNull List<Map.Entry<Resource, Integer>> like(@NotNull Identifier id) {
             throw error();
         }
     }

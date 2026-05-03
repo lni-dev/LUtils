@@ -28,7 +28,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.function.BiFunction;
 
 /**
- * A Group which is filled by {@link AbstractPack AbstractPacks}.
+ * A Group which is filled by {@link InventoriedPack InventoriedPacks}.
  * @param <G> The resource collection type of this group.
  * @param <I> The resource type of this group.
  * @see #newResourceMapGroup(String, BiFunction, Validator) 
@@ -47,7 +47,7 @@ public abstract class PackGroup<G extends ResourceCollection<I>, I extends Resou
      */
     public static <I extends Resource> @NotNull PackGroup<ResourceMap<I>, I> newResourceMapGroup(
             @NotNull String name,
-            @NotNull BiFunction<AbstractPack, Json, I> converter,
+            @NotNull BiFunction<InventoriedPack, Json, I> converter,
             @NotNull Validator<ResourceMap<I>, I> validator
     ) {
         return new PackGroup<>(name) {
@@ -63,8 +63,13 @@ public abstract class PackGroup<G extends ResourceCollection<I>, I extends Resou
             }
 
             @Override
-            public void addToResourceCollection(@NotNull ResourceMap<I> collection, @NotNull Json json, @NotNull AbstractPack source) {
+            public void addToResourceCollection(@NotNull ResourceMap<I> collection, @NotNull Json json, @NotNull InventoriedPack source) {
                 collection.put(converter.apply(source, json));
+            }
+
+            @Override
+            public void addToResourceCollection(@NotNull ResourceMap<I> collection, @NotNull I resource, @NotNull InventoriedPack source) {
+                collection.put(resource);
             }
         };
     }
@@ -77,13 +82,27 @@ public abstract class PackGroup<G extends ResourceCollection<I>, I extends Resou
      * Add the resource represented by {@code json} to the resource collection of this group.
      * @param collection the resource collection of this group
      * @param json the resource parsed from json
-     * @param source the {@link AbstractPack} the resource is from
+     * @param source the {@link InventoriedPack} the resource is from
      */
-    public abstract void addToResourceCollection(@NotNull G collection, @NotNull Json json, @NotNull AbstractPack source);
+    public abstract void addToResourceCollection(@NotNull G collection, @NotNull Json json, @NotNull InventoriedPack source);
+
+    /**
+     * Add {@code resource} to the resource collection of this group.
+     * @param collection the resource collection of this group
+     * @param resource the resource to add
+     * @param source the {@link InventoriedPack} the resource is from
+     */
+    public abstract void addToResourceCollection(@NotNull G collection, @NotNull I resource, @NotNull InventoriedPack source);
 
     @ApiStatus.Internal
-    void _addToResourceCollection(@NotNull ResourceCollection<?> collection, @NotNull Json json, @NotNull AbstractPack source) {
+    void _addToResourceCollection(@NotNull ResourceCollection<?> collection, @NotNull Json json, @NotNull InventoriedPack source) {
         //noinspection unchecked
         addToResourceCollection((G) collection, json, source);
+    }
+
+    @ApiStatus.Internal
+    void _addToResourceCollection(@NotNull ResourceCollection<?> collection, @NotNull Resource resource, @NotNull InventoriedPack source) {
+        //noinspection unchecked
+        addToResourceCollection((G) collection, (I) resource, source);
     }
 }

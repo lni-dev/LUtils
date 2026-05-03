@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025 Linus Andera
+ * Copyright (c) 2025-2026 Linus Andera
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,9 @@ import de.linusdev.lutils.pack.Group;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * Resource collection used in {@link Group}.
@@ -82,5 +85,21 @@ public interface ResourceCollection<R extends Resource> extends Iterable<R>{
      */
     @ApiStatus.Internal
     void clear();
+
+    /**
+     * Tries to find resources which might be the resource that was actually meant. This should never be used
+     * in production and is mainly for debug purposes.
+     * <br>
+     * This function can be optionally implemented. If it is not implemented an empty list will be returned.
+     * @param id the original id
+     * @return a list of resources with "similar" ids.
+     */
+    default @NotNull List<Map.Entry<R, Integer>> like(@NotNull Identifier id) {
+        throw new UnsupportedOperationException();
+        /*R resource = get(id);
+        if(resource != null)
+            return List.of(resource);
+        return List.of();*/
+    }
 
 }

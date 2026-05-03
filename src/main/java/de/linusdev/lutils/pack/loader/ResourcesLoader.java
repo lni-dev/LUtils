@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025 Linus Andera
+ * Copyright (c) 2025-2026 Linus Andera
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,7 @@
 package de.linusdev.lutils.pack.loader;
 
 import de.linusdev.lutils.other.log.Logger;
-import de.linusdev.lutils.pack.AbstractPack;
+import de.linusdev.lutils.pack.InventoriedPack;
 import de.linusdev.lutils.pack.Pack;
 import de.linusdev.lutils.pack.ProcessingGroup;
 import de.linusdev.lutils.pack.Resources;
@@ -33,7 +33,7 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * This class is used to load resources from {@link AbstractPack AbstractPacks} and store them in a {@link Resources}
+ * This class is used to load resources from {@link InventoriedPack InventoriedPacks} and store them in a {@link Resources}
  * instance.
  */
 @SuppressWarnings("unused")
@@ -42,12 +42,12 @@ public class ResourcesLoader {
     private final static @NotNull Logger LOG = Logger.getLogger();
 
     private final @NotNull List<ProcessingGroup<?, ?>> processingGroups;
-    private final @NotNull List<AbstractPack> defaultPacks;
+    private final @NotNull List<InventoriedPack> defaultPacks;
     private final @NotNull List<PackProvider> providers;
     private final @NotNull ReloadListener reloadListener;
-    private final @NotNull List<AbstractPack> availablePacks;
+    private final @NotNull List<InventoriedPack> availablePacks;
 
-    private final @NotNull Set<AbstractPack> activePacks;
+    private final @NotNull Set<InventoriedPack> activePacks;
 
     private final @NotNull Resources resources;
 
@@ -55,11 +55,11 @@ public class ResourcesLoader {
      * Create a new resource loader.
      * @param defaultPacks the default packs that are always active. If any of these throw an error the loading will fail.
      * @param processingGroups the processing groups
-     * @param providers the providers for additional packs, which can be {@link #enablePack(AbstractPack) enabled}.
+     * @param providers the providers for additional packs, which can be {@link #enablePack(InventoriedPack) enabled}.
      * @param reloadListener a reload listener which will be notified before a reload will be started and after a reload finished.
      */
     public ResourcesLoader(
-            @NotNull List<AbstractPack> defaultPacks,
+            @NotNull List<InventoriedPack> defaultPacks,
             @NotNull List<ProcessingGroup<?, ?>> processingGroups,
             @NotNull List<PackProvider> providers,
             @NotNull ReloadListener reloadListener
@@ -77,7 +77,7 @@ public class ResourcesLoader {
     /**
      * The currently active packs.
      */
-    public @NotNull Set<AbstractPack> getActivePacks() {
+    public @NotNull Set<InventoriedPack> getActivePacks() {
         return Set.copyOf(activePacks);
     }
 
@@ -85,7 +85,7 @@ public class ResourcesLoader {
      * The available packs. {@link #reloadAvailablePacks(ProgressReporter)} or {@link #reload(ProgressReporter)} must be
      * called first.
      */
-    public @NotNull List<AbstractPack> getAvailablePacks() {
+    public @NotNull List<InventoriedPack> getAvailablePacks() {
         return List.copyOf(availablePacks);
     }
 
@@ -93,7 +93,7 @@ public class ResourcesLoader {
      * Enable a pack from {@link #getAvailablePacks()}.
      * @param pack the pack to enable. Must be contained int {@link #getAvailablePacks()}.
      */
-    public void enablePack(@NotNull AbstractPack pack) {
+    public void enablePack(@NotNull InventoriedPack pack) {
         if(!availablePacks.contains(pack))
             throw new IllegalArgumentException("This pack is not available.");
 
@@ -104,7 +104,7 @@ public class ResourcesLoader {
      * Disable a pack. If the pack was not enabled, nothing happens.
      * @param pack the pack to disable.
      */
-    public void disablePack(@NotNull AbstractPack pack) {
+    public void disablePack(@NotNull InventoriedPack pack) {
         activePacks.remove(pack);
     }
 
@@ -150,8 +150,8 @@ public class ResourcesLoader {
         }
 
         // Load all available packs
-        List<AbstractPack> toRemove = new ArrayList<>(0);
-        for (AbstractPack availablePack : availablePacks) {
+        List<InventoriedPack> toRemove = new ArrayList<>(0);
+        for (InventoriedPack availablePack : availablePacks) {
             try {
                 availablePack.load();
                 reporter.report(ProgressStage.LOADING_PACKS_METADATA, ++current, packCount);
@@ -164,7 +164,7 @@ public class ResourcesLoader {
         toRemove.forEach(availablePacks::remove);
 
         // Check if all active packs are actually available
-        for (AbstractPack activePack : activePacks) {
+        for (InventoriedPack activePack : activePacks) {
             if(!availablePacks.contains(activePack)) {
                 LOG.warning("Removing pack '" + activePack + "' from active packs, because it is not available anymore.");
                 toRemove.add(activePack);
@@ -187,7 +187,7 @@ public class ResourcesLoader {
     @Blocking
     private synchronized void _reload(@NotNull ProgressReporter reporter) {
 
-        ArrayList<AbstractPack> packs = new ArrayList<>(defaultPacks);
+        ArrayList<InventoriedPack> packs = new ArrayList<>(defaultPacks);
         packs.addAll(activePacks);
 
         try {
@@ -200,7 +200,7 @@ public class ResourcesLoader {
                 throw new Error("Resource loading failed with only default packs active.", e);
             }
 
-            AbstractPack pack = e.getPack();
+            InventoriedPack pack = e.getPack();
             boolean isActivePack = activePacks.contains(pack);
 
             if(pack == null || !isActivePack) {
@@ -250,13 +250,5 @@ public class ResourcesLoader {
      */
     public @NotNull Resources getResources() {
         return resources;
-    }
-
-    /**
-     * RELOAD LISTENER!
-     */
-    public interface ReloadListener {
-        void beforeReload(@NotNull ResourcesLoader loader, @NotNull Resources resources);
-        void afterReload(@NotNull ResourcesLoader loader, @NotNull Resources resources);
     }
 }

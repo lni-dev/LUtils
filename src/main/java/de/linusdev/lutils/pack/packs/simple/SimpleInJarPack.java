@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025 Linus Andera
+ * Copyright (c) 2025-2026 Linus Andera
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import de.linusdev.lutils.pack.PackGroup;
 import de.linusdev.lutils.pack.packs.AbstractInJarPack;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Collections;
 import java.util.List;
 
 public class SimpleInJarPack extends AbstractInJarPack {
@@ -30,7 +31,7 @@ public class SimpleInJarPack extends AbstractInJarPack {
     public SimpleInJarPack(@NotNull String root, @NotNull String infoFileName, @NotNull List<PackGroup<?, ?>> allowedInventoryGroups) {
         super(root);
         this.infoFileName = infoFileName;
-        this.allowedInventoryGroups = allowedInventoryGroups;
+        this.allowedInventoryGroups = Collections.unmodifiableList(allowedInventoryGroups);
     }
 
     @Override
@@ -39,7 +40,7 @@ public class SimpleInJarPack extends AbstractInJarPack {
     }
 
     @Override
-    protected @NotNull List<PackGroup<?, ?>> allowedInventoryGroups() {
+    public @NotNull List<PackGroup<?, ?>> allowedInventoryGroups() {
         return allowedInventoryGroups;
     }
 }

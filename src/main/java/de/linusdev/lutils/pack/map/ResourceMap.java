@@ -21,10 +21,11 @@ import de.linusdev.lutils.pack.resource.Resource;
 import de.linusdev.lutils.pack.resource.ResourceCollection;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
+import java.text.CollationKey;
+import java.text.Collator;
+import java.util.*;
 import java.util.function.Supplier;
+import java.util.regex.Pattern;
 
 /**
  * Basic {@link ResourceCollection} implementation.
@@ -66,5 +67,49 @@ public class ResourceMap<R extends Resource> implements ResourceCollection<R> {
     @Override
     public @NotNull Iterator<R> iterator() {
         return values.values().iterator();
+    }
+
+    @Override
+    public @NotNull List<Map.Entry<R, Integer>> like(@NotNull Identifier id) {
+        String searchId = id.id();
+
+        LinkedHashMap<R, Integer> simList = new LinkedHashMap<>();
+        Collator collator = Collator.getInstance();
+
+        final int PART_MIN_DIFF = 5;
+
+        for (Map.Entry<String, R> entry : values.entrySet()) {
+            String currentId = Identifier.ofString(entry.getKey()).id();
+
+            // Diff to complete id
+            int diff = Math.abs(collator.compare(searchId, currentId));
+
+            simList.compute(entry.getValue(), (_, cDiff) -> {
+                if(cDiff == null || diff < cDiff)
+                    return diff;
+                return cDiff;
+            });
+
+            // Diff to parts of id
+            Pattern pattern = Pattern.compile(Identifier.IDENTIFIER_ALLOWED_SEPARATORS_REGEX + "+");
+            String[] cIdParts = pattern.split(currentId);
+            String[] sIdParts = pattern.split(searchId);
+
+            for (String sIdPart : sIdParts) {
+                CollationKey key = collator.getCollationKey(sIdPart);
+                for (String cIdPart : cIdParts) {
+                    int partDiff = key.compareTo(collator.getCollationKey(cIdPart)) + PART_MIN_DIFF;
+                    if(partDiff < diff)
+                        simList.compute(entry.getValue(), (_, cDiff) -> {
+                            if(cDiff == null || partDiff < cDiff)
+                                return partDiff;
+                            return cDiff;
+                        });
+                }
+            }
+        }
+
+
+        return simList.entrySet().stream().sorted(Comparator.comparingInt(Map.Entry::getValue)).toList();
     }
 }

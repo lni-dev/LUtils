@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025 Linus Andera
+ * Copyright (c) 2025-2026 Linus Andera
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class LMathTest {
+
+    @Test
+    void min() {
+        assertEquals(1, LMath.min(20,2,1));
+        assertEquals(10, LMath.min(20,10,100));
+        assertEquals(-21, LMath.min(-21,2,1));
+    }
 
     @Test
     void clampInt() {

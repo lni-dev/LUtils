@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025 Linus Andera
+ * Copyright (c) 2025-2026 Linus Andera
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,8 +17,8 @@
 package de.linusdev.lutils.pack.resource;
 
 import de.linusdev.lutils.id.Identifiable;
-import de.linusdev.lutils.pack.AbstractPack;
 import de.linusdev.lutils.pack.Group;
+import de.linusdev.lutils.pack.InventoriedPack;
 import de.linusdev.lutils.pack.Pack;
 import de.linusdev.lutils.pack.Resources;
 import org.jetbrains.annotations.NotNull;
@@ -32,7 +32,7 @@ public interface Resource extends Identifiable {
     /**
      * The {@link Pack} this item was loaded from.
      */
-    @NotNull AbstractPack getSource();
+    @NotNull InventoriedPack getSource();
 
 
 }

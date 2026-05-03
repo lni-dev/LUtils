@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025 Linus Andera
+ * Copyright (c) 2025-2026 Linus Andera
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ import de.linusdev.lutils.pack.packs.AbstractExtractedOnDiskPack;
 import org.jetbrains.annotations.NotNull;
 
 import java.nio.file.Path;
+import java.util.Collections;
 import java.util.List;
 
 public class SimpleExtractedOnDiskPack extends AbstractExtractedOnDiskPack {
@@ -35,7 +36,7 @@ public class SimpleExtractedOnDiskPack extends AbstractExtractedOnDiskPack {
     ) {
         super(root);
         this.infoFileName = infoFileName;
-        this.allowedInventoryGroups = allowedInventoryGroups;
+        this.allowedInventoryGroups = Collections.unmodifiableList(allowedInventoryGroups);
     }
 
     @Override
@@ -44,7 +45,7 @@ public class SimpleExtractedOnDiskPack extends AbstractExtractedOnDiskPack {
     }
 
     @Override
-    protected @NotNull List<PackGroup<?, ?>> allowedInventoryGroups() {
+    public @NotNull List<PackGroup<?, ?>> allowedInventoryGroups() {
         return allowedInventoryGroups;
     }
 }

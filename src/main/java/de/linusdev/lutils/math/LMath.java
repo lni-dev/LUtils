@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024-2025 Linus Andera
+ * Copyright (c) 2024-2026 Linus Andera
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -70,6 +70,13 @@ public class LMath {
      */
     public static double clamp(double value, double min, double max) {
         return Math.min(Math.max(value, min), max);
+    }
+
+    /**
+     * Smallest of the three values
+     */
+    public static int min(int first, int second, int third) {
+        return Math.min(Math.min(first, second), third);
     }
 
     /**

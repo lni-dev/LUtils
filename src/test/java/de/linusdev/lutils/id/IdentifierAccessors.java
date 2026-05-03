@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025-2026 Linus Andera
+ * Copyright (c) 2026 Linus Andera
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,22 +14,14 @@
  * limitations under the License.
  */
 
-package de.linusdev.lutils.pack.errors;
+package de.linusdev.lutils.id;
 
-import de.linusdev.lutils.pack.InventoriedPack;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
-public class PackException extends Exception {
+public class IdentifierAccessors {
 
-    private final @Nullable InventoriedPack pack;
-
-    public PackException(@Nullable InventoriedPack pack, @NotNull String message, @Nullable Throwable cause) {
-        super(message, cause);
-        this.pack = pack;
+    public static void registerType(@NotNull IdentifierType type) {
+        IdentifierTypesRegistry.registerType(type);
     }
 
-    public @Nullable InventoriedPack getPack() {
-        return pack;
-    }
 }

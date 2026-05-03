@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025 Linus Andera
+ * Copyright (c) 2025-2026 Linus Andera
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,7 +26,7 @@ class IdentifierTest {
 
     public static class TestType implements IdentifierType {
 
-        private static final TestType INSTANCE = new TestType();
+        static final TestType INSTANCE = new TestType();
 
         @Override
         public @NotNull String getName() {

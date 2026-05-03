@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025 Linus Andera
+ * Copyright (c) 2025-2026 Linus Andera
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@ package de.linusdev.lutils.pack.provider;
 
 import de.linusdev.lutils.io.FileUtils;
 import de.linusdev.lutils.other.debug.DebugInfoStringBuilder;
-import de.linusdev.lutils.pack.AbstractPack;
+import de.linusdev.lutils.pack.InventoriedPack;
 import de.linusdev.lutils.pack.errors.PackException;
 import org.jetbrains.annotations.NotNull;
 
@@ -36,13 +36,13 @@ import java.util.function.Function;
 public class ExternalLocationPackProvider implements PackProvider {
 
     private final @NotNull Path packsPath;
-    private final @NotNull Function<Path, AbstractPack> packExtractedCreator;
-    private final @NotNull Function<Path, AbstractPack> packArchiveCreator;
+    private final @NotNull Function<Path, InventoriedPack> packExtractedCreator;
+    private final @NotNull Function<Path, InventoriedPack> packArchiveCreator;
 
     public ExternalLocationPackProvider(
             @NotNull Path packsPath,
-            @NotNull Function<Path, AbstractPack> packExtractedCreator,
-            @NotNull Function<Path, AbstractPack> packArchiveCreator
+            @NotNull Function<Path, InventoriedPack> packExtractedCreator,
+            @NotNull Function<Path, InventoriedPack> packArchiveCreator
     ) throws IOException {
         this.packsPath = packsPath;
         this.packExtractedCreator = packExtractedCreator;
@@ -56,14 +56,14 @@ public class ExternalLocationPackProvider implements PackProvider {
     }
 
     @Override
-    public @NotNull List<@NotNull AbstractPack> provide() throws PackException {
+    public @NotNull List<@NotNull InventoriedPack> provide() throws PackException {
 
         try(var files = Files.list(packsPath)) {
             List<Path> collectedFiles = files.toList();
-            ArrayList<AbstractPack> packs = new ArrayList<>(collectedFiles.size());
+            ArrayList<InventoriedPack> packs = new ArrayList<>(collectedFiles.size());
 
             for (Path file : collectedFiles) {
-                AbstractPack potentialPack;
+                InventoriedPack potentialPack;
                 if(Files.isDirectory(file)) {
                     potentialPack = packExtractedCreator.apply(file);
 

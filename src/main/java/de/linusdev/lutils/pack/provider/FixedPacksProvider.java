@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025 Linus Andera
+ * Copyright (c) 2025-2026 Linus Andera
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package de.linusdev.lutils.pack.provider;
 
 import de.linusdev.lutils.other.debug.DebugInfoStringBuilder;
 import de.linusdev.lutils.pack.AbstractPack;
+import de.linusdev.lutils.pack.InventoriedPack;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -28,14 +29,14 @@ import java.util.List;
 @SuppressWarnings("ClassCanBeRecord")
 public class FixedPacksProvider implements PackProvider {
 
-    private final @NotNull List<@NotNull AbstractPack> packs;
+    private final @NotNull List<@NotNull InventoriedPack> packs;
 
     public FixedPacksProvider(@NotNull AbstractPack @NotNull ... packs) {
         this.packs = List.of(packs);
     }
 
     @Override
-    public @NotNull List<@NotNull AbstractPack> provide() {
+    public @NotNull List<@NotNull InventoriedPack> provide() {
         return packs;
     }
 

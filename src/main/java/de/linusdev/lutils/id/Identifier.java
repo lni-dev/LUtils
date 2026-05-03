@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025 Linus Andera
+ * Copyright (c) 2025-2026 Linus Andera
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,6 +42,11 @@ public interface Identifier extends Identifiable, Simplifiable {
     @RegExp @NotNull String ID_REGEX = "[a-z0-9-_/]+";
     @RegExp @NotNull String IDENTIFIER_REGEX = TYPE_REGEX + ":" + NAMESPACE_REGEX + ":" + ID_REGEX;
     @NotNull Pattern IDENTIFIER_REGEX_PATTERN = Pattern.compile("^" + IDENTIFIER_REGEX + "$");
+
+    /**
+     * A regex that finds a single separator, which is allowed in the {@link #id() id part} of an identifier.
+     */
+    @RegExp @NotNull String IDENTIFIER_ALLOWED_SEPARATORS_REGEX = "[-_/]";
 
     /**
      * Creates a new {@link Identifier} of given string. Does not check if given {@code identifier} is

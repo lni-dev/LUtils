@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025 Linus Andera
+ * Copyright (c) 2025-2026 Linus Andera
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -91,7 +91,7 @@
  * </p>
  * <p>
  *     Each resource json will be passed to
- *     {@link de.linusdev.lutils.pack.PackGroup#addToResourceCollection(de.linusdev.lutils.pack.resource.ResourceCollection, de.linusdev.lutils.data.json.Json, de.linusdev.lutils.pack.AbstractPack) addToResourceCollection}
+ *     {@link de.linusdev.lutils.pack.PackGroup#addToResourceCollection(de.linusdev.lutils.pack.resource.ResourceCollection, de.linusdev.lutils.data.json.Json, de.linusdev.lutils.pack.InventoriedPack) addToResourceCollection}
  *     of the corresponding {@link de.linusdev.lutils.pack.PackGroup PackGroup}.
  * </p>
  *

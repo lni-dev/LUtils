@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025 Linus Andera
+ * Copyright (c) 2025-2026 Linus Andera
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,6 +33,21 @@ public interface ProgressReporter {
 
         @Override
         public void finished(long millis) { }
+    };
+
+    /**
+     * Reports to {@link System#out}.
+     */
+    @NotNull ProgressReporter SOUT_REPORTER = new ProgressReporter() {
+        @Override
+        public void report(@NotNull ProgressStage stage, double progress) {
+            System.out.println("Reload Progress  in stage '" + stage + "': " + progress);
+        }
+
+        @Override
+        public void finished(long millis) {
+            System.out.println("Finished reloading in " + millis + "ms.");
+        }
     };
 
     /**

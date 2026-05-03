@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025 Linus Andera
+ * Copyright (c) 2025-2026 Linus Andera
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,16 +16,16 @@
 
 package de.linusdev.lutils.pack.errors;
 
-import de.linusdev.lutils.pack.AbstractPack;
+import de.linusdev.lutils.pack.InventoriedPack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class PackLoadingException extends PackException {
-    public PackLoadingException(@NotNull AbstractPack pack, @Nullable Throwable cause) {
+    public PackLoadingException(@NotNull InventoriedPack pack, @Nullable Throwable cause) {
         super(pack, "Could not load pack '" + pack + "'", cause);
     }
 
-    public PackLoadingException(@NotNull AbstractPack pack, @NotNull String message, @Nullable Throwable cause) {
+    public PackLoadingException(@NotNull InventoriedPack pack, @NotNull String message, @Nullable Throwable cause) {
         super(pack, "Could not load pack '" + pack + "'. " + message, cause);
     }
 }

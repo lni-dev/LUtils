@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025 Linus Andera
+ * Copyright (c) 2025-2026 Linus Andera
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 package de.linusdev.lutils.pack;
 
 import de.linusdev.lutils.id.Identifier;
+import de.linusdev.lutils.id.IdentifierType;
 import de.linusdev.lutils.pack.errors.PackLoadingException;
 import de.linusdev.lutils.version.Version;
 import org.jetbrains.annotations.NotNull;
@@ -33,6 +34,8 @@ import java.io.InputStream;
  * {@link #equals(Pack, Object)} and {@link #hashcode(Pack)} respectively.
  */
 public interface Pack {
+
+    @NotNull IdentifierType TYPE = PackIdType.TYPE;
 
     static boolean equals(@NotNull Pack that, @Nullable Object other) {
         if(other instanceof Pack otherPack)

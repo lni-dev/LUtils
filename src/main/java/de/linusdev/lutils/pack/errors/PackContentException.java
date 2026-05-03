@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025 Linus Andera
+ * Copyright (c) 2025-2026 Linus Andera
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,20 +18,20 @@ package de.linusdev.lutils.pack.errors;
 
 import de.linusdev.lutils.data.json.Json;
 import de.linusdev.lutils.other.str.StringUtils;
-import de.linusdev.lutils.pack.AbstractPack;
+import de.linusdev.lutils.pack.InventoriedPack;
 import org.jetbrains.annotations.NotNull;
 
 public class PackContentException extends PackException {
 
-    public PackContentException(@NotNull AbstractPack pack, @NotNull Throwable cause) {
+    public PackContentException(@NotNull InventoriedPack pack, @NotNull Throwable cause) {
         super(pack, "Error while reading content of pack '" + pack +  "'.", cause);
     }
 
-    public PackContentException(@NotNull AbstractPack pack, @NotNull String file, @NotNull Throwable cause) {
+    public PackContentException(@NotNull InventoriedPack pack, @NotNull String file, @NotNull Throwable cause) {
         super(pack, "Error while reading/parsing file '" + file + "' from pack '" + pack +  "'.", cause);
     }
 
-    public PackContentException(@NotNull AbstractPack pack, @NotNull String file, @NotNull Json itemInJson, @NotNull Throwable cause) {
+    public PackContentException(@NotNull InventoriedPack pack, @NotNull String file, @NotNull Json itemInJson, @NotNull Throwable cause) {
         super(pack,
                 "Error while parsing item '"
                         + itemInJson.grab("id").orDefaultIfNull("unknown id").get()
