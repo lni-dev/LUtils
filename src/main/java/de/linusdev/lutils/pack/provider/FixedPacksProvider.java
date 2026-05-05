@@ -17,7 +17,6 @@
 package de.linusdev.lutils.pack.provider;
 
 import de.linusdev.lutils.other.debug.DebugInfoStringBuilder;
-import de.linusdev.lutils.pack.AbstractPack;
 import de.linusdev.lutils.pack.InventoriedPack;
 import org.jetbrains.annotations.NotNull;
 
@@ -31,7 +30,7 @@ public class FixedPacksProvider implements PackProvider {
 
     private final @NotNull List<@NotNull InventoriedPack> packs;
 
-    public FixedPacksProvider(@NotNull AbstractPack @NotNull ... packs) {
+    public FixedPacksProvider(@NotNull InventoriedPack @NotNull ... packs) {
         this.packs = List.of(packs);
     }
 
