@@ -19,7 +19,6 @@ package de.linusdev.lutils.pack.validation;
 import de.linusdev.lutils.id.Identifier;
 import de.linusdev.lutils.pack.Group;
 import de.linusdev.lutils.pack.Pack;
-import de.linusdev.lutils.pack.map.SimilarityResult;
 import de.linusdev.lutils.pack.resource.Resource;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -59,8 +58,9 @@ public class ResourceBoundValidationResultBuilder {
 
         var similar = parent.resources.get(group).like(id);
         StringBuilder sb = new StringBuilder();
-        for (SimilarityResult<?> result : similar)
-            sb.append("\n - ").append(result.resource().getIdentifierAsString());
+
+        for (int i = 0; i < 10; i++)
+            sb.append("\n - ").append(similar.get(i).resource().getIdentifierAsString());
 
         String extra = similar.isEmpty() ? "" : " Did you mean any of the following?" + sb;
         error("Group '" + group.name() + "' is missing an item with the id '" + id + "'." + extra);

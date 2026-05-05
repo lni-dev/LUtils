@@ -77,7 +77,7 @@ public class ResourceMap<R extends Resource> implements ResourceCollection<R> {
             String currentId = Identifier.ofString(entry.getKey()).id();
 
             // Diff to complete id
-            int diff = StringUtils.levenshteinDistance(searchId, currentId);
+            int diff = StringUtils.levenshteinDistance(searchId, currentId, 10);
             addToSimList(simList, entry.getValue(), diff);
 
             if(diff <= PART_PENALTY)
@@ -88,12 +88,25 @@ public class ResourceMap<R extends Resource> implements ResourceCollection<R> {
             String[] cIdParts = pattern.split(currentId);
             String[] sIdParts = pattern.split(searchId);
 
+            int maxSimCount = 0;
+            boolean foundMaxSim = false;
             for (String sIdPart : sIdParts) {
+                foundMaxSim = false;
                 for (String cIdPart : cIdParts) {
-                    int partDiff = StringUtils.levenshteinDistance(sIdPart, cIdPart) + PART_PENALTY;
+                    int partDiff = StringUtils.levenshteinDistance(sIdPart, cIdPart, 10) + PART_PENALTY;
                     if(partDiff < diff)
                         addToSimList(simList, entry.getValue(), partDiff);
+
+                    if(!foundMaxSim && partDiff == PART_PENALTY) {
+                        maxSimCount++;
+                        foundMaxSim = true;
+                    }
                 }
+            }
+
+            if(maxSimCount == sIdParts.length) {
+                // very similar remove PART_PENALTY/2
+                addToSimList(simList, entry.getValue(), sIdParts.length == cIdParts.length ? 0 : PART_PENALTY/2);
             }
         }
 
@@ -103,7 +116,7 @@ public class ResourceMap<R extends Resource> implements ResourceCollection<R> {
                 .toList();
     }
 
-    private static final int PART_PENALTY = 5;
+    private static final int PART_PENALTY = 2;
 
     private static <R> void addToSimList(@NotNull Map<R, Integer> simList, R value, int newDiff) {
         simList.compute(value, (_, cDiff) -> {

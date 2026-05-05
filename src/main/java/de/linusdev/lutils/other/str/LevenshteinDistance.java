@@ -22,23 +22,56 @@ import org.jetbrains.annotations.NotNull;
 public class LevenshteinDistance {
 
 
-    static int recLD(@NotNull CharSequence a, @NotNull CharSequence b) {
+    static int recLD(@NotNull String str1, @NotNull String str2, int minSimilarity) {
+        return recLD(new Cache(str1, str2), 0, 0, minSimilarity);
+    }
 
-        // TODO: optimize!
+    static int recLD(@NotNull Cache cache, int str1Index, int str2Index, int minSimilarity) {
+        int penalty = cache.str1.charAt(str1Index) == cache.str2.charAt(str2Index) ? 0 : 1;
 
-        if(a.isEmpty())
-            return b.length();
+        if(minSimilarity == 0 || minSimilarity == penalty)
+            return minSimilarity;
 
-        if(b.isEmpty())
-            return a.length();
-
-        int penalty = a.charAt(0) == b.charAt(0) ? 0 : 1;
-
-        int deletion = recLD(new CharSequenceView(a, 1), b) + 1;
-        int insertion = recLD(new CharSequenceView(b, 1), a) + 1;
-        int substitution = recLD(new CharSequenceView(a, 1), new CharSequenceView(b, 1)) + penalty;
+        int deletion =      minSimilarity > 0 ? cache.get(str1Index+1,    str2Index,    minSimilarity - 1       ) + 1 : 1;
+        int insertion =     minSimilarity > 0 ? cache.get(str1Index,      str2Index+1,  minSimilarity - 1       ) + 1 : 1;
+        int substitution =  cache.get(str1Index+1,    str2Index+1,  minSimilarity - penalty ) + penalty;
 
         return LMath.min(deletion, insertion, substitution);
+    }
+
+    static class Cache {
+
+        private final int[] values;
+        private final int str1Length;
+        private final int str2Length;
+
+        public final String str1;
+        public final String str2;
+
+        public Cache(@NotNull String str1, @NotNull String str2) {
+            this.str1 = str1;
+            this.str2 = str2;
+            str1Length = str1.length();
+            str2Length = str2.length();
+            values = new int[str1Length*str2Length];
+        }
+
+        public int get(int str1Index, int str2Index, int minSimilarity) {
+
+            if(str1Length == str1Index)
+                return str2Length - str2Index;
+
+            if(str2Length == str2Index)
+                return str1Length - str1Index;
+
+            int cached = values[str1Index * str2Length + str2Index];
+            if(cached!= 0)
+                return cached-1;
+
+            cached = recLD(this, str1Index, str2Index, minSimilarity);
+            values[str1Index * str2Length + str2Index] = cached + 1;
+            return cached;
+        }
     }
 
 }

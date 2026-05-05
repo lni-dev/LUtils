@@ -117,7 +117,25 @@ public class StringUtils {
     }
 
     public static int levenshteinDistance(@NotNull String str1, @NotNull String str2) {
-        return LevenshteinDistance.recLD(str1, str2);
+        return levenshteinDistance(str1, str2, Integer.MAX_VALUE);
+    }
+
+    public static int levenshteinDistance(@NotNull String str1, @NotNull String str2, int minSimilarity) {
+
+        if(str1.equals(str2))
+            return 0;
+
+        if(str1.isEmpty())
+            return str2.length();
+
+        if(str2.isEmpty())
+            return str1.length();
+
+        // Levenshtein distance is at least the absolute value of the difference of the sizes of the two strings.
+        if(Math.abs(str1.length() - str2.length()) >= minSimilarity)
+            return minSimilarity;
+
+        return LevenshteinDistance.recLD(str1, str2, minSimilarity);
     }
 
 }
