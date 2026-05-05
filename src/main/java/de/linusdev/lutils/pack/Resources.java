@@ -28,6 +28,7 @@ import de.linusdev.lutils.pack.errors.PackException;
 import de.linusdev.lutils.pack.loader.ProgressReporter;
 import de.linusdev.lutils.pack.loader.ProgressStage;
 import de.linusdev.lutils.pack.loader.ResourcesLoader;
+import de.linusdev.lutils.pack.map.SimilarityResult;
 import de.linusdev.lutils.pack.resource.Resource;
 import de.linusdev.lutils.pack.resource.ResourceCollection;
 import de.linusdev.lutils.pack.validation.ValidationResultBuilder;
@@ -246,7 +247,7 @@ public class Resources {
         }
 
         @Override
-        public @NotNull List<Map.Entry<Resource, Integer>> like(@NotNull Identifier id) {
+        public @NotNull List<SimilarityResult<Resource>> like(@NotNull Identifier id) {
             throw error();
         }
     }

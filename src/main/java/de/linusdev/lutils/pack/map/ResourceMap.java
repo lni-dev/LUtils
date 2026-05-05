@@ -17,12 +17,11 @@
 package de.linusdev.lutils.pack.map;
 
 import de.linusdev.lutils.id.Identifier;
+import de.linusdev.lutils.other.str.StringUtils;
 import de.linusdev.lutils.pack.resource.Resource;
 import de.linusdev.lutils.pack.resource.ResourceCollection;
 import org.jetbrains.annotations.NotNull;
 
-import java.text.CollationKey;
-import java.text.Collator;
 import java.util.*;
 import java.util.function.Supplier;
 import java.util.regex.Pattern;
@@ -70,25 +69,19 @@ public class ResourceMap<R extends Resource> implements ResourceCollection<R> {
     }
 
     @Override
-    public @NotNull List<Map.Entry<R, Integer>> like(@NotNull Identifier id) {
+    public @NotNull List<SimilarityResult<R>> like(@NotNull Identifier id) {
         String searchId = id.id();
-
-        LinkedHashMap<R, Integer> simList = new LinkedHashMap<>();
-        Collator collator = Collator.getInstance();
-
-        final int PART_MIN_DIFF = 5;
+        Map<R, Integer> simList = new HashMap<>();
 
         for (Map.Entry<String, R> entry : values.entrySet()) {
             String currentId = Identifier.ofString(entry.getKey()).id();
 
             // Diff to complete id
-            int diff = Math.abs(collator.compare(searchId, currentId));
+            int diff = StringUtils.levenshteinDistance(searchId, currentId);
+            addToSimList(simList, entry.getValue(), diff);
 
-            simList.compute(entry.getValue(), (_, cDiff) -> {
-                if(cDiff == null || diff < cDiff)
-                    return diff;
-                return cDiff;
-            });
+            if(diff <= PART_PENALTY)
+                continue;
 
             // Diff to parts of id
             Pattern pattern = Pattern.compile(Identifier.IDENTIFIER_ALLOWED_SEPARATORS_REGEX + "+");
@@ -96,20 +89,27 @@ public class ResourceMap<R extends Resource> implements ResourceCollection<R> {
             String[] sIdParts = pattern.split(searchId);
 
             for (String sIdPart : sIdParts) {
-                CollationKey key = collator.getCollationKey(sIdPart);
                 for (String cIdPart : cIdParts) {
-                    int partDiff = key.compareTo(collator.getCollationKey(cIdPart)) + PART_MIN_DIFF;
+                    int partDiff = StringUtils.levenshteinDistance(sIdPart, cIdPart) + PART_PENALTY;
                     if(partDiff < diff)
-                        simList.compute(entry.getValue(), (_, cDiff) -> {
-                            if(cDiff == null || partDiff < cDiff)
-                                return partDiff;
-                            return cDiff;
-                        });
+                        addToSimList(simList, entry.getValue(), partDiff);
                 }
             }
         }
 
+        return simList.entrySet().stream()
+                .sorted(Comparator.comparingInt(Map.Entry::getValue))
+                .map(entry -> new SimilarityResult<>(entry.getKey(), entry.getValue()))
+                .toList();
+    }
 
-        return simList.entrySet().stream().sorted(Comparator.comparingInt(Map.Entry::getValue)).toList();
+    private static final int PART_PENALTY = 5;
+
+    private static <R> void addToSimList(@NotNull Map<R, Integer> simList, R value, int newDiff) {
+        simList.compute(value, (_, cDiff) -> {
+            if(cDiff == null || newDiff < cDiff)
+                return newDiff;
+            return cDiff;
+        });
     }
 }

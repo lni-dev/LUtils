@@ -35,9 +35,12 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 import java.util.Map;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 class ResourceMapTest {
 
-    private final static IdentifierType TEST_TYPE = () -> "test-type";
+    private final static IdentifierType TEST_TYPE = () -> "res-map-test-type";
 
     private final static PackGroup<ResourceMap<TestResource>, TestResource> TEST_GROUP = PackGroup.newResourceMapGroup(
             "test",
@@ -98,7 +101,7 @@ class ResourceMapTest {
     }
 
     @Test
-    void test() {
+    void like() {
 
         ResourcesLoader loader = new ResourcesLoader(
                 List.of(TEST_PACK),
@@ -112,9 +115,21 @@ class ResourceMapTest {
 
         var like = res.like(TEST_TYPE.of("test", "apple"));
 
-        for (Map.Entry<TestResource, Integer> e : like) {
-            System.out.println(e.getKey() + ": " + e.getValue());
+        Map<String, Integer> expected = new java.util.HashMap<>(Map.of(
+                "res-map-test-type:test:apple-cat", 4,
+                "res-map-test-type:test:apple-dog", 4,
+                "res-map-test-type:test:apple-deer", 5,
+                "res-map-test-type:test:fly-dog", 7,
+                "res-map-test-type:test:pineapple-cat", 8,
+                "res-map-test-type:test:orange-deer", 9,
+                "res-map-test-type:test:strawberry-cat", 10,
+                "res-map-test-type:test:strawberry-dog", 10
+        ));
+
+        for (SimilarityResult<TestResource> actual : like) {
+            assertEquals(expected.remove(actual.resource().getIdentifierAsString()), actual.similarity());
         }
 
+        assertTrue(expected.isEmpty());
     }
 }

@@ -21,12 +21,12 @@ import de.linusdev.lutils.optional.Container;
 import de.linusdev.lutils.optional.ExceptionSupplier;
 import de.linusdev.lutils.optional.impl.BasicContainer;
 import de.linusdev.lutils.pack.Group;
+import de.linusdev.lutils.pack.map.SimilarityResult;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * Resource collection used in {@link Group}.
@@ -92,14 +92,14 @@ public interface ResourceCollection<R extends Resource> extends Iterable<R>{
      * <br>
      * This function can be optionally implemented. If it is not implemented an empty list will be returned.
      * @param id the original id
-     * @return a list of resources with "similar" ids.
+     * @return a list of resources with "similar" ids. The list is sorted and distinct per resource
+     * (no resource will appear twice). The most similar result is at index 0.
      */
-    default @NotNull List<Map.Entry<R, Integer>> like(@NotNull Identifier id) {
-        throw new UnsupportedOperationException();
-        /*R resource = get(id);
+    default @NotNull List<SimilarityResult<R>> like(@NotNull Identifier id) {
+        R resource = get(id);
         if(resource != null)
-            return List.of(resource);
-        return List.of();*/
+            return List.of(new SimilarityResult<>(resource, 0));
+        return List.of();
     }
 
 }

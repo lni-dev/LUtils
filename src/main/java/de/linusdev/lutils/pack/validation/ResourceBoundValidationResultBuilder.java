@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025 Linus Andera
+ * Copyright (c) 2025-2026 Linus Andera
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package de.linusdev.lutils.pack.validation;
 import de.linusdev.lutils.id.Identifier;
 import de.linusdev.lutils.pack.Group;
 import de.linusdev.lutils.pack.Pack;
+import de.linusdev.lutils.pack.map.SimilarityResult;
 import de.linusdev.lutils.pack.resource.Resource;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -55,7 +56,14 @@ public class ResourceBoundValidationResultBuilder {
      * @return this
      */
     public @NotNull ResourceBoundValidationResultBuilder errorResourceMissing(@NotNull Group<?, ?> group, @NotNull Identifier id) {
-        error("Group '" + group.name() + "' is missing an item with the id '" + id + "'.");
+
+        var similar = parent.resources.get(group).like(id);
+        StringBuilder sb = new StringBuilder();
+        for (SimilarityResult<?> result : similar)
+            sb.append("\n - ").append(result.resource().getIdentifierAsString());
+
+        String extra = similar.isEmpty() ? "" : " Did you mean any of the following?" + sb;
+        error("Group '" + group.name() + "' is missing an item with the id '" + id + "'." + extra);
         return this;
     }
 

@@ -23,6 +23,9 @@ public class LevenshteinDistance {
 
 
     static int recLD(@NotNull CharSequence a, @NotNull CharSequence b) {
+
+        // TODO: optimize!
+
         if(a.isEmpty())
             return b.length();
 
