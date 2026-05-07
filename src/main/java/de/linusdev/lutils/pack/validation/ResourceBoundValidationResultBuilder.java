@@ -59,7 +59,7 @@ public class ResourceBoundValidationResultBuilder {
         var similar = parent.resources.get(group).like(id);
         StringBuilder sb = new StringBuilder();
 
-        for (int i = 0; i < 10; i++)
+        for (int i = 0; i < Math.min(10, similar.size()); i++)
             sb.append("\n - ").append(similar.get(i).resource().getIdentifierAsString());
 
         String extra = similar.isEmpty() ? "" : " Did you mean any of the following?" + sb;
