@@ -20,7 +20,6 @@ import de.linusdev.lutils.net.http.method.Methods;
 import de.linusdev.lutils.net.http.method.RequestMethod;
 import de.linusdev.lutils.net.routing.RequestHandler;
 import de.linusdev.lutils.net.routing.Route;
-import de.linusdev.lutils.result.BiResult;
 import de.linusdev.lutils.result.TriResult;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
