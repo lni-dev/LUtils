@@ -18,12 +18,16 @@ package de.linusdev.lutils.net.routing;
 
 import de.linusdev.lutils.net.http.HTTPMessageBuilder;
 import de.linusdev.lutils.net.http.method.RequestMethod;
+import de.linusdev.lutils.result.TriResult;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Route {
 
@@ -31,8 +35,17 @@ public class Route {
      * Sub routes.
      */
     protected final @NotNull HashMap<String, Route> routes;
+
     /**
-     * Default route. Used if no route in {@link #routes} matches an incoming route.
+     * Path param routes. First string is the regex and second the parameter name.
+     * If the regex matches the hole path part, the path param is selected and other path params will not be checked.
+     * Path param routes are evaluated after {@link #routes normal routes}. If a normal route is selected first
+     * path param routes are ignored.
+     */
+    private final @NotNull List<TriResult<@Nullable String, @NotNull String, @NotNull Route>> pathParams;
+
+    /**
+     * Default route. Used if no route in {@link #routes} or {@link #pathParams path params} matches an incoming route.
      * If no default route is set, it will fall back to the parents default route.
      */
     protected final @Nullable Route defaultRoute;
@@ -49,19 +62,23 @@ public class Route {
 
     /**
      * Create a route.
-     * @param defaultRoute see {@link #defaultRoute}
-     * @param routes see {@link #routes}
-     * @param handlers see {@link #handlers}
+     *
+     * @param defaultRoute   see {@link #defaultRoute}
+     * @param routes         see {@link #routes}
+     * @param pathParams     see {@link #pathParams}
+     * @param handlers       see {@link #handlers}
      * @param defaultHandler see {@link #defaultHandler}
      */
     public Route(
             @Nullable Route defaultRoute,
             @NotNull HashMap<String, Route> routes,
+            @NotNull List<TriResult<@Nullable String, @NotNull String, @NotNull Route>> pathParams,
             @NotNull Map<RequestMethod, RequestHandler> handlers,
             @Nullable RequestHandler defaultHandler
     ) {
         this.defaultRoute = defaultRoute;
         this.routes = routes;
+        this.pathParams = pathParams;
         this.handlers = handlers;
         this.defaultHandler = defaultHandler;
     }
@@ -71,17 +88,20 @@ public class Route {
      * @param defaultRouteIsSelf {@code true} will set this routes {@link #defaultRoute} to itself.
      *                                      Useful to make any sub routes root to this route.
      * @param routes see {@link #routes}
+     * @param pathParams     see {@link #pathParams}
      * @param handlers see {@link #handlers}
      * @param defaultHandler see {@link #defaultHandler}
      */
     public Route(
             boolean defaultRouteIsSelf,
             @NotNull HashMap<String, Route> routes,
+            @NotNull List<TriResult<@Nullable String, @NotNull String, @NotNull Route>> pathParams,
             @NotNull Map<RequestMethod, RequestHandler> handlers,
             @Nullable RequestHandler defaultHandler
     ) {
         this.defaultRoute = defaultRouteIsSelf ? this : null;
         this.routes = routes;
+        this.pathParams = pathParams;
         this.handlers = handlers;
         this.defaultHandler = defaultHandler;
     }
@@ -145,10 +165,28 @@ public class Route {
      * @return {@code null} if routing was not possible.
      */
     private @Nullable HTTPMessageBuilder route(@NotNull RoutingState state) throws IOException {
-        Route route = routes.get(state.getNextPathPart());
+        String nextPathPart = state.getNextPathPart();
 
-        if(route == null) return null; // can route
-        return route.accept(state); // Let's try this route!
+        Route route = routes.get(nextPathPart);
+        if(route != null)
+            return route.accept(state);
+
+        for (TriResult<@Nullable String, @NotNull String, @NotNull Route> pathParam : pathParams) {
+            @Nullable String regex = pathParam.result1();
+            @NotNull String name = pathParam.result2();
+            @NotNull Route paramRoute = pathParam.result3();
+            @Nullable Matcher matcher = null;
+
+            if(regex != null)
+                matcher = Pattern.compile(regex).matcher(nextPathPart);
+
+            if(regex == null || matcher.matches())  {
+                state.setPathParam(name, nextPathPart);
+                return paramRoute.accept(state);
+            }
+        }
+
+        return null;
     }
 
 }

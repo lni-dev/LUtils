@@ -20,10 +20,14 @@ import de.linusdev.lutils.net.http.method.Methods;
 import de.linusdev.lutils.net.http.method.RequestMethod;
 import de.linusdev.lutils.net.routing.RequestHandler;
 import de.linusdev.lutils.net.routing.Route;
+import de.linusdev.lutils.result.BiResult;
+import de.linusdev.lutils.result.TriResult;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
@@ -34,6 +38,7 @@ public class RouteBuilder<PARENT> implements RouteBuilderParent {
     private final @NotNull HashMap<RequestMethod, RequestHandler> handlers = new HashMap<>();
     private @Nullable RequestHandler defaultHandler;
     private final @NotNull HashMap<String, RouteBuilder<?>> routes = new HashMap<>();
+    private final @NotNull List<TriResult<@Nullable String, @NotNull String, RouteBuilder<?>>> pathParams = new ArrayList<>(0);
     private @Nullable RouteBuilder<RouteBuilder<PARENT>> defaultRoute;
     private boolean defaultRouteIsSelf = false;
 
@@ -53,7 +58,25 @@ public class RouteBuilder<PARENT> implements RouteBuilderParent {
      * Add a handler for {@link Methods#GET GET}.
      */
     public RouteBuilder<PARENT> GET(@NotNull RequestHandler handler) {
-        handlers.put(Methods.GET, handler);
+        return handle(Methods.GET, handler);
+    }
+
+    /**
+     * Add a handler for {@link Methods#POST POST}.
+     */
+    public RouteBuilder<PARENT> POST(@NotNull RequestHandler handler) {
+        return handle(Methods.POST, handler);
+    }
+
+    /**
+     * Add a handler for given {@code method}.
+     * @param method the {@link RequestMethod}. For example {@link Methods#GET}.
+     * @param handler the request handler.
+     * @return this
+     * @see Methods
+     */
+    public RouteBuilder<PARENT> handle(@NotNull RequestMethod method, @NotNull RequestHandler handler) {
+        handlers.put(method, handler);
         return this;
     }
 
@@ -92,10 +115,25 @@ public class RouteBuilder<PARENT> implements RouteBuilderParent {
      * @throws IllegalArgumentException if {@code path} is empty.
      */
     public @NotNull RouteBuilder<RouteBuilder<PARENT>> route(@NotNull String path) {
-        if(path.isEmpty())
+        if(path.isBlank())
             throw new IllegalArgumentException("Path cannot be empty.");
         RouteBuilder<RouteBuilder<PARENT>> builder = new RouteBuilder<>(routingBuilder, this);
         routes.put(path, builder);
+        return builder;
+    }
+
+    /**
+     * Add a path param.<br>
+     * Path params are evaluated after normal routes
+     * @param name the name of the path param
+     * @param regex regex the path part must match for this param. If it is {@code null}, any text will match.
+     * @return this
+     */
+    public @NotNull RouteBuilder<RouteBuilder<PARENT>> param(@Nullable String regex, @NotNull String name) {
+        if (name.isBlank())
+            throw new IllegalArgumentException("Name cannot be empty");
+        RouteBuilder<RouteBuilder<PARENT>> builder = new RouteBuilder<>(routingBuilder, this);
+        pathParams.add(new TriResult<>(regex, name, builder));
         return builder;
     }
 
@@ -121,9 +159,15 @@ public class RouteBuilder<PARENT> implements RouteBuilderParent {
         for (Map.Entry<String, RouteBuilder<?>> route : this.routes.entrySet()) {
             routes.put(route.getKey(), route.getValue().getRoute());
         }
+
+        List<TriResult<String, String, Route>> paramRoutes = new ArrayList<>(this.pathParams.size());
+        for (var paramRoute : this.pathParams) {
+            paramRoutes.add(new TriResult<>(paramRoute.result1(), paramRoute.result2(), paramRoute.result3().getRoute()));
+        }
+
         if(defaultRouteIsSelf)
-            return new Route(true, routes, handlers, defaultHandler);
-        return new Route(defaultRoute == null ? null : defaultRoute.getRoute(), routes, handlers, defaultHandler);
+            return new Route(true, routes, paramRoutes, handlers, defaultHandler);
+        return new Route(defaultRoute == null ? null : defaultRoute.getRoute(), routes, paramRoutes, handlers, defaultHandler);
     }
 
     public PARENT buildRoute() {

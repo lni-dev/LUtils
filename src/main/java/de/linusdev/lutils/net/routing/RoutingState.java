@@ -16,19 +16,27 @@
 
 package de.linusdev.lutils.net.routing;
 
+import de.linusdev.lutils.collections.BiIterable;
+import de.linusdev.lutils.collections.MapView;
 import de.linusdev.lutils.net.http.HTTPRequest;
 import de.linusdev.lutils.net.http.body.UnparsedBody;
 import de.linusdev.lutils.net.http.method.RequestMethod;
+import de.linusdev.lutils.other.iterator.IteratorUtils;
+import de.linusdev.lutils.result.BiResult;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class RoutingState {
 
     private final @Nullable Socket socket;
     private final @NotNull HTTPRequest<UnparsedBody> request;
     private final @NotNull String[] path;
+    private final @NotNull ArrayList<BiResult<String, String>> pathParams = new ArrayList<>(1);
 
     private int pathIndex = 0;
     private boolean handled = false;
@@ -77,6 +85,36 @@ public class RoutingState {
      */
     public @Nullable Socket getSocket() {
         return socket;
+    }
+
+    /**
+     * Set a path param.
+     * @param key path param key (name)
+     * @param value path param value
+     */
+    public void setPathParam(@NotNull String key, @NotNull String value) {
+        pathParams.add(new BiResult<>(key, value));
+    }
+
+    /**
+     * Get a map of all path params.
+     */
+    public @NotNull MapView<String, String> getPathParams() {
+        return new MapView<>(
+                pathParams::size,
+                key -> {
+                    for (BiResult<String, String> pathParam : pathParams) {
+                        if (pathParam.result1().equals(key))
+                            return pathParam.result2();
+                    }
+                    return null;
+                },
+                BiIterable.of(pathParams, BiResult::result1, BiResult::result2)
+        );
+    }
+
+    public @Nullable String getFirstPathParam() {
+        return pathParams.isEmpty() ? null : pathParams.getFirst().result2();
     }
 
     /**

@@ -24,6 +24,7 @@ import de.linusdev.lutils.net.routing.Routing;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
@@ -90,7 +91,7 @@ public class RoutingBuilder {
             routes.put(route.getKey(), route.getValue().getRoute());
         }
 
-        return new Routing(prefix, defaultRoute.getRoute(), routes, exceptionHandler);
+        return new Routing(prefix, defaultRoute.getRoute(), routes, new ArrayList<>(0), exceptionHandler);
     }
 
 }

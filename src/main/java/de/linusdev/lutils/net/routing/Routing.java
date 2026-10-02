@@ -23,6 +23,7 @@ import de.linusdev.lutils.net.http.body.BodyParsers;
 import de.linusdev.lutils.net.http.body.UnparsedBody;
 import de.linusdev.lutils.net.http.status.StatusCodes;
 import de.linusdev.lutils.net.routing.builder.RoutingBuilder;
+import de.linusdev.lutils.result.TriResult;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -32,6 +33,7 @@ import java.io.OutputStream;
 import java.net.Socket;
 import java.net.SocketException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.function.Function;
 
 public class Routing extends Route {
@@ -64,9 +66,10 @@ public class Routing extends Route {
             @NotNull String prefix,
             @NotNull Route defaultRoute,
             @NotNull HashMap<String, Route> routes,
+            @NotNull List<TriResult<@Nullable String, @NotNull String, @NotNull Route>> pathParams,
             @NotNull Function<@NotNull Throwable, @Nullable HTTPMessageBuilder> exceptionHandler
     ) {
-        super(defaultRoute, routes, new HashMap<>(0), null);
+        super(defaultRoute, routes, pathParams, new HashMap<>(0), null);
         this.prefix = prefix;
         this.prefixNoEndSlash = prefix.substring(0, prefix.length() - 1);
         this.exceptionHandler = exceptionHandler;

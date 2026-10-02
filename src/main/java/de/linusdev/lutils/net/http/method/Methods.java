@@ -18,6 +18,20 @@ package de.linusdev.lutils.net.http.method;
 
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * Basic HTTP request methods.
+ *
+ * <ul>
+ *     <li>{@link #GET} - Retrieves a resource without modifying it.</li>
+ *     <li>{@link #HEAD} - Retrieves only the headers of a resource, without its response body.</li>
+ *     <li>{@link #POST} - Submits data to a resource, commonly to create a new resource or trigger an action.</li>
+ *     <li>{@link #PUT} - Creates or completely replaces a resource at a specified URI.</li>
+ *     <li>{@link #DELETE} - Removes a resource identified by the request URI.</li>
+ *     <li>{@link #CONNECT} - Establishes a tunnel to the server, commonly used by HTTP proxies for HTTPS.</li>
+ *     <li>{@link #OPTIONS} - Describes the communication options supported by a resource or server.</li>
+ *     <li>{@link #TRACE} - Performs a diagnostic loop-back test to inspect the request as received by the server.</li>
+ * </ul>
+ */
 public enum Methods implements RequestMethod {
     GET("GET"),
     HEAD("HEAD"),
