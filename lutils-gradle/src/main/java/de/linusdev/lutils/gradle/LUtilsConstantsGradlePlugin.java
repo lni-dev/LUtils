@@ -25,7 +25,7 @@ import org.gradle.api.tasks.TaskProvider;
 import org.gradle.api.tasks.compile.JavaCompile;
 import org.jetbrains.annotations.NotNull;
 
-public class LUtilsGradlePlugin implements Plugin<Project> {
+public class LUtilsConstantsGradlePlugin implements Plugin<Project> {
 
     @Override
     public void apply(@NotNull Project target) {

@@ -19,6 +19,15 @@ plugins {
     id 'com.gradle.plugin-publish' version '+'
 }
 
+def customProps = new Properties()
+def propsFile = rootProject.file('gradle-secrets.properties')
+if (propsFile.exists()) {
+    propsFile.withInputStream { customProps.load(it) }
+    customProps.each { key, value ->
+        System.properties.setProperty(key as String, value as String)
+    }
+}
+
 group = 'de.linusdev'
 version = lutils_version
 
@@ -34,9 +43,8 @@ repositories {
 }
 
 dependencies {
+    implementation gradleApi()
     implementation "de.linusdev:lutils:$lutils_version"
-    implementation "de.linusdev:data:2.3.0"
-    compileOnly gradleApi()
 }
 
 publishing {
@@ -46,16 +54,15 @@ publishing {
 }
 
 gradlePlugin {
-    // Define the plugin
     website = 'https://www.linudev.de'
     vcsUrl = 'https://github.com/lni-dev/lutils.git'
     plugins {
-        "lutils-gradle" {
-            id = 'de.linusdev.lutils.gradle'
-            displayName = 'lutils-gradle'
-            description = 'Linusdevs gradle utils'
-            tags.addAll('utils')
-            implementationClass = 'de.linusdev.lutils.gradle.LUtilsGradlePlugin'
+        "lutils-gradle-constants" {
+            id = 'de.linusdev.lutils.gradle.constants'
+            displayName = 'lutils-gradle-constants'
+            description = 'Gradle plugin to generate a java class containing constants defined in gradle.'
+            tags.addAll('constants', 'utils', 'java')
+            implementationClass = 'de.linusdev.lutils.gradle.LUtilsConstantsGradlePlugin'
         }
     }
 }

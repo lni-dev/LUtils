@@ -54,9 +54,9 @@ public interface Constant extends Serializable {
 
     class StringConst implements Constant {
         private final @NotNull String name;
-        private final @NotNull String string;
+        private final @Nullable String string;
 
-        public StringConst(@NotNull String name, @NotNull String string) {
+        public StringConst(@NotNull String name, @Nullable String string) {
             this.name = name;
             this.string = string;
         }
@@ -73,7 +73,7 @@ public interface Constant extends Serializable {
 
         @Override
         public @NotNull JavaExpression value() {
-            return JavaExpression.ofString(string);
+            return string == null ? JavaExpression.nullExpression() : JavaExpression.ofString(string);
         }
 
         @Override
@@ -84,11 +84,11 @@ public interface Constant extends Serializable {
 
     class VersionConst implements Constant {
         private final @NotNull String name;
-        private final @NotNull String version;
+        private final @Nullable String version;
 
-        public VersionConst(@NotNull String name, @NotNull Version version) {
+        public VersionConst(@NotNull String name, @Nullable Version version) {
             this.name = name;
-            this.version = version.getAsUserFriendlyString();
+            this.version = version == null ? null : version.getAsUserFriendlyString();
         }
 
         @Override
@@ -103,7 +103,7 @@ public interface Constant extends Serializable {
 
         @Override
         public @NotNull JavaExpression value() {
-            return JavaExpression.ofCode("Version.of(\"" + version + "\")");
+            return version == null ? JavaExpression.nullExpression() : JavaExpression.ofCode("Version.of(\"" + version + "\")");
         }
 
         @Override
