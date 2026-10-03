@@ -23,16 +23,14 @@ import org.gradle.api.file.Directory;
 import org.gradle.api.file.DirectoryProperty;
 import org.gradle.api.provider.Property;
 import org.gradle.api.provider.SetProperty;
-import org.gradle.api.tasks.Input;
-import org.gradle.api.tasks.Internal;
-import org.gradle.api.tasks.OutputDirectory;
-import org.gradle.api.tasks.TaskAction;
+import org.gradle.api.tasks.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.nio.file.Path;
 
+@CacheableTask
 public class JavaConstantGenerator extends DefaultTask {
 
     @Input
@@ -89,18 +87,6 @@ public class JavaConstantGenerator extends DefaultTask {
         }
 
         generator.write();
-    }
-
-    public void add(@NotNull String name, @Nullable Version version) {
-        constants.add(new Constant.VersionConst(name, version));
-    }
-
-    public void add(@NotNull String name, @Nullable String value) {
-        constants.add(new Constant.StringConst(name, value));
-    }
-
-    public void add(@NotNull String name, @Nullable Path value) {
-        constants.add(new Constant.PathConstant(name, value));
     }
 
     public void addVersion(@NotNull String name, @Nullable Version version) {

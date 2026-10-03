@@ -22,6 +22,7 @@ import de.linusdev.lutils.net.http.HTTPResponse;
 import de.linusdev.lutils.net.http.body.Bodies;
 import de.linusdev.lutils.net.http.body.UnparsedBody;
 import de.linusdev.lutils.net.http.status.StatusCodes;
+import de.linusdev.lutils.net.routing.param.PathParamRequestHandler;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -52,6 +53,10 @@ public interface RequestHandler {
 
     static @NotNull RequestHandler ofJsResource(@NotNull String name) {
         return ofJsResource(null, name);
+    }
+
+    static @NotNull RequestHandler withPathParam(@NotNull PathParamRequestHandler handler) {
+        return handler;
     }
 
     @Nullable HTTPMessageBuilder handle(@NotNull HTTPRequest<UnparsedBody> request);

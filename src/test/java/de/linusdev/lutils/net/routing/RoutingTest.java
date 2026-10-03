@@ -33,6 +33,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
+import static de.linusdev.lutils.net.routing.RequestHandler.withPathParam;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class RoutingTest {
@@ -68,7 +69,32 @@ class RoutingTest {
                     (p, route) -> route.GET(request -> HTTPResponse.builder().setStatusCode(StatusCodes.NO_CONTENT)),
                     "test", "a", "b", "c"
             ).buildRoute()
+            .route("test-with-param")
+                .defaultRoute()
+                    .defaultHandler(request -> HTTPResponse.responses().badRequest("Missing path parameter")).buildRoute()
+                .param("\\d+", "number")
+                .GET(withPathParam((request, number) -> HTTPResponse.responses().ok(Bodies.textUtf8().ofStringUtf8("Your number is " + number))))
+                .buildRoute()
+                .buildRoute()
             .build();
+
+    @Test
+    void testPathParamRoute() throws IOException {
+        HTTPRequest<UnparsedBody> request = parseRequest(HTTPRequest.builder().GET("/some/prefix/test-with-param/1234"));
+        HTTPResponse<UnparsedBody> response = parseResponse(routing.route(request));
+
+        assertEquals(StatusCodes.OK, response.getStatusCode());
+        assertEquals("Your number is 1234", response.getBody().parseTo(BodyParsers.newStringBodyParser()));
+    }
+
+    @Test
+    void testPathParamRouteFail() throws IOException {
+        HTTPRequest<UnparsedBody> request = parseRequest(HTTPRequest.builder().GET("/some/prefix/test-with-param/nonumber"));
+        HTTPResponse<UnparsedBody> response = parseResponse(routing.route(request));
+
+        assertEquals(StatusCodes.BAD_REQUEST, response.getStatusCode());
+        assertEquals("Missing path parameter", response.getBody().parseTo(BodyParsers.newStringBodyParser()));
+    }
 
     @Test
     void testRoute() throws IOException {

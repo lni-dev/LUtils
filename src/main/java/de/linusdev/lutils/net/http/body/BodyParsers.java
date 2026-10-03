@@ -16,6 +16,7 @@
 
 package de.linusdev.lutils.net.http.body;
 
+import de.linusdev.lutils.net.http.header.Header;
 import de.linusdev.lutils.net.http.header.HeaderMap;
 import de.linusdev.lutils.net.http.header.HeaderNames;
 import de.linusdev.lutils.net.http.header.value.BasicHeaderValue;
@@ -45,8 +46,13 @@ public class BodyParsers {
         return new BodyParser<>() {
             @Override
             public @NotNull String parse(@NotNull HeaderMap headers, @NotNull InputStream in) throws IOException {
-                BasicHeaderValue contentType = headers.get(HeaderNames.CONTENT_TYPE).parseValue(BasicHeaderValue.PARSER);
-                String charset = contentType.get("charset");
+                String charset = null;
+                Header ctHeader = headers.get(HeaderNames.CONTENT_TYPE);
+
+                if(ctHeader != null) {
+                    BasicHeaderValue contentType = ctHeader.parseValue(BasicHeaderValue.PARSER);
+                    charset = contentType.get("charset");
+                }
 
                 if(charset == null)
                     charset = StandardCharsets.UTF_8.name();
