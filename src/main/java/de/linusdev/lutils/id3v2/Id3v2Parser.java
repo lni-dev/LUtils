@@ -49,11 +49,8 @@ public class Id3v2Parser {
     public Id3v2Data parse(@NotNull InputStream in, @NotNull FileType fileType) throws IOException, ParseException {
         if(FileType.equals(StandardFileTypes.MP3, fileType))
             return parse(in);
-        else if(FileType.equals(StandardFileTypes.WAV, fileType))
-    }
-
-    public Id3v2Data parseWave(@NotNull InputStream in) {
-        
+        else
+            throw new UnsupportedOperationException("Unsupported filetype " + fileType.fullName());
     }
 
     public Id3v2Data parse(@NotNull InputStream in) throws IOException, ParseException {
