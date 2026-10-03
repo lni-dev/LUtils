@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024-2026 Linus Andera
+ * Copyright (c) 2026 Linus Andera
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,20 +14,17 @@
  * limitations under the License.
  */
 
-package de.linusdev.lutils.image.wip_webp.reader.simple.lossless.transforms;
+package de.linusdev.lutils.id3v2;
 
-import de.linusdev.lutils.binary.BitReader;
-import de.linusdev.lutils.image.wip_webp.reader.WebPImageInfo;
+import de.linusdev.lutils.bitfield.IntBitfield;
+import de.linusdev.lutils.bitfield.IntBitfieldImpl;
+import de.linusdev.lutils.version.Version;
 import org.jetbrains.annotations.NotNull;
 
-public class PredictorTypeTransform {
+public record Id3v2Header(@NotNull Version version, int flags, int size) {
 
-    public static void read(@NotNull BitReader reader, @NotNull WebPImageInfo info) {
-        int sizeBits = reader.readBitsToInt(3) + 2;
-        int blockWidth = 1 << sizeBits;
-        int blockHeight = 1 << sizeBits;
-        int transformWidth = (info.imageWidth() + (1 << sizeBits) - 1) / (1 << sizeBits);
-
+    public IntBitfield<Id3v2HeaderFlags> getFlagsAsBitfield() {
+        return new IntBitfieldImpl<>(flags);
     }
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024-2025 Linus Andera
+ * Copyright (c) 2024-2026 Linus Andera
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package de.linusdev.lutils.image.wip_webp.reader;
 
+import de.linusdev.lutils.binary.BitReader;
 import de.linusdev.lutils.image.wip_webp.reader.simple.lossless.SimpleLosslessWebP;
 import de.linusdev.lutils.io.InputStreamUtils;
 import de.linusdev.lutils.nat.EndianUtils;
@@ -81,7 +82,7 @@ public class WebPReader {
                 if(!InputStreamUtils.readUntilArrayIsFull(in, chunk))
                     throw new WebPReaderException("Webp missing chunk data.");
 
-                BitReader reader = new BitReader(chunk);
+                BitReader reader = new BitReader(chunk, 0);
 
                 SimpleLosslessWebP.read(reader);
 

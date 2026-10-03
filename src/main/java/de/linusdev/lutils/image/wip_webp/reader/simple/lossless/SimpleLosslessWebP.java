@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024-2025 Linus Andera
+ * Copyright (c) 2024-2026 Linus Andera
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 
 package de.linusdev.lutils.image.wip_webp.reader.simple.lossless;
 
-import de.linusdev.lutils.image.wip_webp.reader.BitReader;
+import de.linusdev.lutils.binary.BitReader;
 import de.linusdev.lutils.image.wip_webp.reader.WebPImageInfo;
 import de.linusdev.lutils.image.wip_webp.reader.WebPReaderException;
 import de.linusdev.lutils.image.wip_webp.reader.simple.lossless.transforms.PredictorTypeTransform;

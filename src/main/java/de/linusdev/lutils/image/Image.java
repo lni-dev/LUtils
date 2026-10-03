@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024-2025 Linus Andera
+ * Copyright (c) 2024-2026 Linus Andera
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -154,6 +154,17 @@ public interface Image extends ImageSize{
         }
 
         return image;
+    }
+
+    /**
+     * Scale given image {@code src} to the dimensions of {@code dst} and store in {@code dst}.
+     * @param src source image
+     * @param dst destination image and destination size. Content will be overwritten.
+     * @param scaleType how to scale.
+     * @return {@code dst}.
+     */
+    static @NotNull Image scale(@NotNull Image src, @NotNull Image dst, @NotNull ScaleType scaleType) {
+       return scaleType.scale(src, dst);
     }
 
     static @NotNull Image create(int width, int height) {
