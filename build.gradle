@@ -20,6 +20,15 @@ plugins {
     id "com.vanniktech.maven.publish" version "0.36.0"
 }
 
+def customProps = new Properties()
+def propsFile = rootProject.file('gradle-secrets.properties')
+if (propsFile.exists()) {
+    propsFile.withInputStream { customProps.load(it) }
+    customProps.each { key, value ->
+        ext.setProperty(key as String, value as String)
+    }
+}
+
 group = 'de.linusdev'
 version = lutils_version
 

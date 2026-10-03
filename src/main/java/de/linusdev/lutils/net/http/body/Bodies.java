@@ -68,6 +68,10 @@ public class Bodies {
         return new Creator(ContentTypes.Text.plain().setCharset(StandardCharsets.UTF_8.name()));
     }
 
+    public static @NotNull Creator json() {
+        return new Creator(ContentTypes.Application.json().setCharset(StandardCharsets.UTF_8.name()));
+    }
+
     /**
      * Create a png body
      * @see Creator
