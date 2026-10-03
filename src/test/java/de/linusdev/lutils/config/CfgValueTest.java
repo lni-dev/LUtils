@@ -16,15 +16,15 @@ class CfgValueTest {
 
         assertNull(TEST.get());
         System.setProperty("some-key", "hallo");
-        CfgValue.load(TEST);
+        Configuration.load(TEST);
         assertEquals("hallo", TEST.get());
 
         System.setProperty("k2", "-10");
-        CfgValue.load(TEST2);
+        Configuration.load(TEST2);
         assertEquals(-10, TEST2.get());
 
         System.setProperty("k2", "1");
-        CfgValue.load(TEST2);
+        Configuration.load(TEST2);
         assertEquals(-10, TEST2.get());
 
         assertThrows(IllegalStateException.class, () -> TEST2.set("10"));

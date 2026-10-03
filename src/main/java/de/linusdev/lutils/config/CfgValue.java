@@ -1,45 +1,35 @@
 package de.linusdev.lutils.config;
 
 import de.linusdev.lutils.interfaces.TConverter;
-import de.linusdev.lutils.other.log.Logger;
 import de.linusdev.lutils.result.BiResult;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 
+import static de.linusdev.lutils.config.Configuration.load;
+
+/**
+ * A config value. Will be automatically {@link Configuration#load(CfgValue) loaded} when the constructor is called.
+ * @param <T> config value type
+ * @see Configuration#addArgs(String[], Map)
+ */
 public class CfgValue<T> {
-
-    protected static @NotNull Logger LOG = Logger.getLogger();
-
-    protected static void load(@NotNull CfgValue<?> value) {
-        try {
-            LOG.debug("Checking config value '" + value.getKey() + "':" +
-                    "\nproperty: " + System.getProperty(value.getKey()) +
-                    "\nenvironment: " + System.getenv(value.getKey())
-            );
-
-            String property = System.getProperty(value.getKey());
-            String env = System.getenv(value.getKey());
-
-            if(property != null) {
-                value.set(property);
-            } else if(env != null) {
-                value.set(env);
-            }
-        } catch (Throwable e) {
-            LOG.error("Failed to set config value '" + value.getKey() + "':", e);
-        }
-    }
-
     private final @NotNull String key;
     private final @NotNull TConverter<String, T, Throwable> converter;
     private final @Nullable Function<T, BiResult<Boolean, @Nullable String>> isChangeAllowed;
 
     private final @NotNull AtomicReference<T> value = new AtomicReference<>(null);
 
+    /**
+     *
+     * @param key config value key
+     * @param converter value converter
+     * @param isChangeAllowed function which checks if the value can be changed. Must return a boolean and a reason string.
+     */
     public CfgValue(
             @NotNull String key,
             @NotNull TConverter<String, T, Throwable> converter,
@@ -66,6 +56,9 @@ public class CfgValue<T> {
         return value.get();
     }
 
+    /**
+     * Set the value of this config to given {@code value} and ignores {@link #isChangeAllowed}.
+     */
     public synchronized void forceSet(T value) {
         T oldValue = this.value.get();
         if(Objects.equals(oldValue, value))
