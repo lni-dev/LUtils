@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025 Linus Andera
+ * Copyright (c) 2025-2026 Linus Andera
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import de.linusdev.lutils.color.Color;
 import de.linusdev.lutils.color.Colors;
 import de.linusdev.lutils.color.creator.ColorCreator;
 import de.linusdev.lutils.image.Image;
-import de.linusdev.lutils.image.png.reader.PNGReader;
+import de.linusdev.lutils.image.ImageIO;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -39,7 +39,7 @@ class AtlasImageTest {
 
 
 
-        builder.add(ImageRef.ofImage(PNGReader.readFromResource("de/linusdev/lutils/image/buffer/grass_side-v1.png"), "grass"));
+        builder.add(ImageRef.ofImage(ImageIO.readFromResource("/de/linusdev/lutils/image/buffer/grass_side-v1.png"), "grass"));
         //System.out.println("Result: \n" + Image.printable(builder.build(Image::create)));
 
         for (int i = 0; i < 20; i++) {

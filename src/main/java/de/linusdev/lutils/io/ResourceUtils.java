@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024-2025 Linus Andera
+ * Copyright (c) 2024-2026 Linus Andera
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -69,6 +69,30 @@ public class ResourceUtils {
             @NotNull String path
     ) {
         return getURLConnectionOfResource(null, path, false);
+    }
+
+    /**
+     * Get input stream of a resource
+     * @param relClazz class used to get the resource or {@code null} if an absolute path is passed.
+     * @param path Either absolute (starting with {@code /}) or relative to the package of given {@code relClazz}
+     *             (not starting {@code /}).
+     * @return input stream.
+     * @throws Error if resource with given {@code path} does not exist.
+     */
+    public static @NotNull InputStream getInputStream(
+            @Nullable Class<?> relClazz,
+            @NotNull String path
+    ) throws IOException {
+        return getURLConnectionOfResource(relClazz, path, false).openInputStream();
+    }
+
+    /**
+     * Same as {@link #getInputStream(Class, String) getInputStream(null, path)}.
+     */
+    public static @NotNull InputStream getInputStream(
+            @NotNull String path
+    ) throws IOException {
+        return getInputStream(null, path);
     }
 
     /**

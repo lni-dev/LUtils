@@ -17,8 +17,8 @@
 package de.linusdev.lutils.image.buffer;
 
 import de.linusdev.lutils.image.Image;
+import de.linusdev.lutils.image.ImageIO;
 import de.linusdev.lutils.image.PixelFormat;
-import de.linusdev.lutils.image.png.reader.PNGReader;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 
@@ -33,7 +33,7 @@ class BBInt32ImageTest {
     @Test
     void test() throws IOException {
 
-        @NotNull Image read = PNGReader.readFromResource("de/linusdev/lutils/image/buffer/grass_side-v1.png");
+        @NotNull Image read = ImageIO.readFromResource("/de/linusdev/lutils/image/buffer/grass_side-v1.png");
 
         System.out.println("Original:");
         System.out.println(Image.printable(read));

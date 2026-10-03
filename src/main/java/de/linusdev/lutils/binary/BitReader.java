@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024-2025 Linus Andera
+ * Copyright (c) 2024-2026 Linus Andera
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package de.linusdev.lutils.image.wip_webp.reader;
+package de.linusdev.lutils.binary;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -48,8 +48,9 @@ public class BitReader {
     private int bitPos = 0;
     private int bytePos = 0;
 
-    public BitReader(byte @NotNull [] data) {
+    public BitReader(byte @NotNull [] data, int offset) {
         this.data = data;
+        this.bytePos = offset;
     }
 
     public byte readByte() {
